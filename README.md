@@ -11,6 +11,7 @@
 - Seleccionar y reservar actividades con cupo disponible. Sin lista de espera. Con la clase cargada desde DB.
 - Pagar con mercado pago.
 
+&nbsp;
 ### Temas opcionales:
 
 - Crear clase.
@@ -30,6 +31,7 @@
 - Anotarse a clase única - [ 7 Pts. ]
 - Pagar con mercado pago - [ 8 Pts. ]
 
+&nbsp;
 ### Historias opcionales que incluye:
 - Crear sala - [ 1 Pts. ]
 - Modificar sala - [ 1 Pts. ]
