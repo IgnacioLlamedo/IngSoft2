@@ -44,5 +44,3 @@
 - Salir de lista de espera - [ 2 Pts. ]
 - Aceptar cupo liberado - [ 4 Pts. ]
 - Rechazar cupo liberado - [ 4 Pts. ]
-
-&nbsp;
