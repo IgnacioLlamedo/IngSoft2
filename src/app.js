@@ -58,7 +58,7 @@ const mailOptions = {
     
 console.log("aaaaaa")
 
-clienteDao.create({
+/* clienteDao.create({
     mail: "mail@mail.com",
     contraseña: "muy segura",
     nombre: "gonzalo gonzales",
@@ -66,4 +66,4 @@ clienteDao.create({
     telefono: "123",
     genero: "a",
     planilla: "a"
-})
+}) */
