@@ -1,7 +1,7 @@
 import config from './config.js'
 import express from 'express'
 import nodemailer from 'nodemailer'
-import { clienteDao } from './daos/index.js'
+import { usuarioDao } from './daos/index.js'
 
 const app = express()
 
@@ -58,12 +58,13 @@ const mailOptions = {
     
 console.log("aaaaaa")
 
-/* clienteDao.create({
+usuarioDao.create({
     mail: "mail@mail.com",
+    dni: "123",
     contraseña: "muy segura",
     nombre: "gonzalo gonzales",
     nacimiento: "ayer",
     telefono: "123",
     genero: "a",
     planilla: "a"
-}) */
+})

@@ -6,6 +6,7 @@ import { claseDao as clase } from "./clase.dao.js";
 import { salaDao as sala } from "./sala.dao.js";
 import { sedeDao as sede } from "./sede.dao.js";
 import { profesorDao as profesor } from "./profesor.dao.js";
+import { planillaDao as planilla } from "./planilla.dao.js";
 
 await mongoose.connect(config.cnxStr)
 console.log("Base de datos conectada")
@@ -16,3 +17,4 @@ export const claseDao = new clase()
 export const salaDao = new sala()
 export const sedeDao = new sede()
 export const profesorDao = new profesor()
+export const planillaDao = new planilla()
