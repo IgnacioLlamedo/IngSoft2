@@ -7,7 +7,7 @@ const collection = 'usuarios'
 
 const usuarioSchema = new Schema({
     _id: { type: String, default: randomUUID },
-    mail: { type: String, unique: true, required: true },
+    mail: { type: String, unique: true, /* required: true */ },
     dni: { type: String, required: true },
     contraseña: { type: String, required: true },
     nombre: { type: String, required: true },
