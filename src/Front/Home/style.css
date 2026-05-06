@@ -3,6 +3,11 @@ body {
     background-color: #1b1b1b;
 }
 
+main {
+    flex: 1;
+    padding: 20px;
+}
+
 .header-nav {
     height: 70px;
     background-color: rgb(54, 54, 54);
