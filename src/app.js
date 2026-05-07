@@ -6,7 +6,7 @@ import { MercadoPagoConfig, Preference } from 'mercadopago';
 const app = express()
 
 app.use(express.json());
-app.use(express.static("src/public"));
+app.use(express.static("src/Front/Home"));
 
 app.listen(config.port, () => {
     console.log(`Listening in port ${config.port}`)
@@ -66,7 +66,8 @@ const client = new MercadoPagoConfig({
   accessToken: process.env.MP_ACCESS_TOKEN
 });
 
-//Más adelante: Agregar Webhook y guardar en DB.
+//Más adelante: Agregar Webhook y
+// guardar en DB -> Preguntar a Nacho
 app.post("/controllers/crearPreferencia", async (req, res) => {
   try {
     const preference = new Preference(client)
@@ -74,17 +75,18 @@ app.post("/controllers/crearPreferencia", async (req, res) => {
         body: {
             items: [
             {
-                title: "Clase de Spinning",     //Esto se tiene que cambiar con el req.body
-                quantity: 1,
-                unit_price: 1500                //Esto tmb.
+                title: req.body.tipo,
+                quantity: Number(req.body.cantidad),
+                unit_price: Number(req.body.precio)
             }
             ],
-            back_urls: { //Una vez realizado el pago dentro de mercado pago, se retorna  a algúno de estas url, crear una para cada caso dentro de /public
+            back_urls: { //Una vez realizado el pago dentro de mercado pago, se retorna  a algúno de estas url,
+            // crear una para cada caso dentro de /Front o, cambiar la url para que siempre vuelva a index y en todo caso mostrar un msg
             success: "http://localhost:8080/success.html",
             failure: "http://localhost:8080/failure.html",
             pending: "http://localhost:8080/pending.html"
             },
-        //auto_return: "approved"  -->>   descomentar cuando la dirección de retorno (cualquier back_url) NO sea local. -> de otra forma tira error.
+        //auto_return: "approved"  -->>   descomentar cuando la dirección de retorno (cualquier back_url) NO sea local.
         }
 });
     res.json({ init_point: response.init_point });

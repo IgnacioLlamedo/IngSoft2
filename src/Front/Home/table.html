@@ -35,7 +35,7 @@
 
             <tr>
                 <td>7:00 - 8:00</td>
-                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div data-clase="Spinning" data-precio="3500" onclick="abrirPago(this)">Spinning</div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
                 <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
                 <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
                 <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
@@ -184,5 +184,15 @@
             </tr>
         </table>
     </div>
+    <script>
+    function abrirPago(elemento) {
+
+        const clase = elemento.dataset.clase;
+        const precio = elemento.dataset.precio;
+
+        // Llama a una función del index.html
+        window.parent.mostrarPanelPago(clase, precio);
+    }
+</script>
 </body>
 </html>

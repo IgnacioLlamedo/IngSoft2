@@ -1,7 +1,6 @@
 export const crearPreferencia = async (req, res) => {
   const { tipo, precio } = req.body;
 
-  console.log("dentro del body de crearPref", req.body);
   const preference = {
     items: [
       {

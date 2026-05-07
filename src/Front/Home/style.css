@@ -99,3 +99,70 @@ iframe.tabla {
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
+.panel-pago {
+
+    position: fixed;
+    inset: 0;
+
+    background: rgba(0,0,0,0.5);
+
+    display: none;
+
+    justify-content: center;
+    align-items: center;
+
+    z-index: 1000;
+}
+
+.panel-abierto {
+    display: flex;
+}
+
+.panel-contenido {
+
+    background: white;
+
+    padding: 30px;
+
+    border-radius: 10px;
+
+    min-width: 300px;
+
+    position: relative;
+}
+
+.cerrar-panel {
+
+    position: absolute;
+
+    right: 15px;
+    top: 10px;
+
+    cursor: pointer;
+
+    font-size: 24px;
+}
+
+.botones-pago {
+
+    margin-top: 20px;
+
+    display: flex;
+
+    gap: 10px;
+}
+
+.botones-pago button {
+
+    padding: 10px 20px;
+
+    border: none;
+
+    background: #333;
+
+    color: white;
+
+    border-radius: 5px;
+
+    cursor: pointer;
+}

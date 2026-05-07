@@ -55,15 +55,76 @@
                 if (!userIcon.contains(e.target) && !userOptions.contains(e.target))
                     userOptions.classList.remove("user-options-open");
             });
+
+            //Acceso a el elemento para pago
+            let claseSeleccionada = "";
+            let precioSeleccionado = 0;
+
+            function pagarClaseUnica() {
+                pagar(claseSeleccionada, precioSeleccionado, 1);
+            }
+
+            function pagarMensual() {
+                pagar(claseSeleccionada, precioSeleccionado, 1); //Consultar si se decide el precio de pago mensual o
+                //es simplemente clase única x cantidad de semanas del mes actual.
+            }
+            /* La cantidad debería seguir siendo 1, solo se cambia el precio porque la preferenciade mercado pago,
+            en caso de tener cantidad > 1 no muestra un solo producto de tipo "Spinning", sino que muestra una lista
+            de productos "Spinning"*/
+
+            function mostrarPanelPago(clase, precio) {
+
+                claseSeleccionada = clase;
+                precioSeleccionado = precio;
+
+                document.getElementById("tituloClase").innerText = clase;
+                document.getElementById("precioClase").innerText = "$" + precio;
+
+                document.getElementById("panelPago").classList.add("panel-abierto");
+            }
+
+            function cerrarPanel() {
+                document.getElementById("panelPago").classList.remove("panel-abierto"); //Elemento emergente para pagos
+            }
+
         </script>
         
-
     </header>
     <main>
         <iframe src="table.html" class="tabla"></iframe>
     </main>
+
+    <div class="panel-pago" id="panelPago">
+
+    <div class="panel-contenido">
+
+        <span class="cerrar-panel" onclick="cerrarPanel()">&times;</span>
+
+        <h2 id="tituloClase"></h2>
+
+        <p>
+            Precio por clase:
+            <span id="precioClase"></span>
+        </p>
+
+        <div class="botones-pago">
+
+            <button onclick="pagarClaseUnica()">
+                Pagar clase única
+            </button>
+
+            <button onclick="pagarMensual()">
+                Pago mensual
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
     <footer>
         © 2026 CEF Servicios • Planifica tus días y haz crecer tu negocio.
     </footer>
+<script src="app.js"></script>
 </body>
 </html>
