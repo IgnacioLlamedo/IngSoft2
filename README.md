@@ -1,6 +1,6 @@
 <h1 align="center"> Demo 1 - 46 Puntos </h1>
 
-![Badge en desarrollo](https://img.shields.io/badge/Status-In_Progress-orange) ![Badge nota](https://img.shields.io/badge/Nota_obetenida-Indef-purple)
+![Badge en desarrollo](https://img.shields.io/badge/Status-In_Progress-orange) ![Badge nota](https://img.shields.io/badge/Nota_PREDEMO_obtenida-Indef-purple) ![Badge nota](https://img.shields.io/badge/Nota_DEMO_obtenida-Indef-purple)
 
 &nbsp;
 ### Temas a cubrir:

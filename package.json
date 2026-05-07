@@ -1,6 +1,6 @@
 {
   "type": "module",
-  "name": "IngSoft2",
+  "name": "ingsoft2",
   "version": "1.0.0",
   "description": "",
   "main": "src/app.js",
