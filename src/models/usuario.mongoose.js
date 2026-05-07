@@ -7,13 +7,13 @@ const collection = 'usuarios'
 
 const usuarioSchema = new Schema({
     _id: { type: String, default: randomUUID },
-    mail: { type: String, unique: true, /* required: true */ },
+    mail: { type: String, unique: true, required: true },
     dni: { type: String, required: true },
     contraseña: { type: String, required: true },
     nombre: { type: String, required: true },
-    nacimiento: { type: String, required: true },
+    nacimiento: { type: Date, required: true },
     telefono: { type: String, required: true },
-    genero: { type: String, required: true },
+    genero: { type: String, enum: ['femenino', 'masculino', 'otro'], required: true },
     planilla: { type: String, required: true },
     rol: { type: String, enum: ['cliente', 'administrador', 'empleado'], default: 'cliente' },
 }, {

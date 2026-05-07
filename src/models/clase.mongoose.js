@@ -5,13 +5,20 @@ const collection = 'clases'
 
 const claseSchema = new Schema({
     _id: { type: String, default: randomUUID },
-    mail: { type: String, unique: true, required: true },
-    contraseña: { type: String, required: true },
-    nombre: { type: String, required: true },
-    nacimiento: { type: String, required: true },
-    telefono: { type: String, required: true },
-    genero: { type: String, required: true },
-    planilla: { type: String, required: true }
+    idActividad: { type: String, required: true },
+    idSala: { type: String, required: true },
+    idProfesor: { type: String, required: true },
+    anotados : [{
+        idUsuario: { type: String, ref: 'usuarios', required: true },
+        tipo: { type: String, enum: ['mensualidad', 'unico'], required: true },
+    }],
+    espera : [{
+        idUsuario: { type: String, ref: 'usuarios' },
+        tipo: { type: String, enum: ['mensualidad', 'unico'], required: true },
+    }],
+    limiteClase: { type: Number, required: true },
+    dia: { type: String, required: true },
+    hora: { type: Number, required: true },
 }, {
     strict: 'throw',
     versionKey: false

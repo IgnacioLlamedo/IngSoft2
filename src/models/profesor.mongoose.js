@@ -7,7 +7,7 @@ const profesorSchema = new Schema({
     _id: { type: String, default: randomUUID },
     dni: { type: String, required: true },
     nombre: { type: String, required: true },
-    genero: { type: String, required: true }
+    genero: { type: String, enum: ['femenino', 'masculino', 'otro'], required: true }
 }, {
     strict: 'throw',
     versionKey: false
