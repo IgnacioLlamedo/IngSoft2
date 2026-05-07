@@ -46,3 +46,12 @@
 - Salir de lista de espera - [ 2 Pts. ]
 - Aceptar cupo liberado - [ 4 Pts. ]
 - Rechazar cupo liberado - [ 4 Pts. ]
+
+&nbsp;
+### A agregar:
+- El Front en teoría se agrega en la carpeta src/public -> index.html va a ser la homepage
+- Crear un nuevo html para el registro, inicio de sesión y recuperación de contraseña.
+- Otros aspectos del código y/o dudas:
+    * daos -> Data Access Objects, modelos de objetos?
+    * controllers -> Donde voy a ir agregando servicios
+    * puto el que lee
