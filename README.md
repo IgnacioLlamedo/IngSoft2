@@ -14,7 +14,7 @@
 &nbsp;
 ### Temas opcionales:
 
-- Crear clase.
+- Crear clase. hola
 - Lista de espera.
 
 &nbsp;
