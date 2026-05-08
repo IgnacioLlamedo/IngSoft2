@@ -14,7 +14,7 @@ const usuarioSchema = new Schema({
     nacimiento: { type: Date, required: true },
     telefono: { type: String, required: true },
     genero: { type: String, enum: ['femenino', 'masculino', 'otro'], required: true },
-    planilla: { type: String, required: true },
+    planilla: { type: String, required: true, ref: 'planillas' },
     rol: { type: String, enum: ['cliente', 'administrador', 'empleado'], default: 'cliente' },
 }, {
     strict: 'throw',

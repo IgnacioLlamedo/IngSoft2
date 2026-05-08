@@ -5,9 +5,9 @@ const collection = 'clases'
 
 const claseSchema = new Schema({
     _id: { type: String, default: randomUUID },
-    idActividad: { type: String, required: true },
-    idSala: { type: String, required: true },
-    idProfesor: { type: String, required: true },
+    idActividad: { type: String, required: true, ref: 'actividades' },
+    idSala: { type: String, required: true, ref: 'salas' },
+    idProfesor: { type: String, required: true, ref: 'profesores' },
     anotados : [{
         idUsuario: { type: String, ref: 'usuarios', required: true },
         tipo: { type: String, enum: ['mensualidad', 'unico'], required: true },
