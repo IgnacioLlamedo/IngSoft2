@@ -35,6 +35,12 @@ main {
 
 .logo-img {
     height: 70px;
+    position: relative;
+    left: 600px;
+}
+
+.homepage-img{
+    height: 70px;
 }
 
 .user-ico { /* No sé hacer que sea clickeable circularmente */

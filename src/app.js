@@ -57,7 +57,7 @@ const mailOptions = {
         </ul>
         `
         }
-        const info = await transporter.sendMail(mailOptions)
+        //const info = await transporter.sendMail(mailOptions)
     
 console.log("aaaaaa")
 
@@ -80,7 +80,7 @@ app.post("/controllers/crearPreferencia", async (req, res) => {
                 unit_price: Number(req.body.precio)
             }
             ],
-            back_urls: { //Una vez realizado el pago dentro de mercado pago, se retorna  a algúno de estas url,
+            back_urls: {//Una vez realizado el pago dentro de mercado pago, se retorna  a algúno de estas url,
             // crear una para cada caso dentro de /Front o, cambiar la url para que siempre vuelva a index y en todo caso mostrar un msg
             success: "http://localhost:8080/success.html",
             failure: "http://localhost:8080/failure.html",
