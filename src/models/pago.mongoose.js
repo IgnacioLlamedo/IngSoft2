@@ -3,7 +3,7 @@ import { randomUUID } from "node:crypto"
 
 const collection = 'pagos'
 
-const usuarioSchema = new Schema({
+const pagoSchema = new Schema({
     _id: { type: String, default: randomUUID },
     monto: { type: Number, unique: true, required: true },
     idUsuario: { type: String, required: true, ref: 'usuarios' },
@@ -14,5 +14,5 @@ const usuarioSchema = new Schema({
     versionKey: false,
 })
 
-export const Pago = model(collection, usuarioSchema)
+export const Pago = model(collection, pagoSchema)
 
