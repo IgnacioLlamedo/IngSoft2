@@ -1,3 +1,4 @@
+
 import mongoose from "mongoose";
 import config from "../config.js";
 import { usuarioDao as usuario } from "./usuario.dao.js";
@@ -8,6 +9,9 @@ import { sedeDao as sede } from "./sede.dao.js";
 import { profesorDao as profesor } from "./profesor.dao.js";
 import { planillaDao as planilla } from "./planilla.dao.js";
 import { pagoDao as pago } from "./pago.dao.js";
+import dns from 'node:dns'
+
+dns.setServers(['8.8.8.8', '8.8.4.4'])
 
 await mongoose.connect(config.cnxStr)
 console.log("Base de datos conectada")
