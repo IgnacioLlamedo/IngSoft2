@@ -3,10 +3,11 @@ import express from 'express'
 import nodemailer from 'nodemailer'
 import path from 'path';
 import { fileURLToPath } from 'url';
-//import { usuarioDao } from './daos/index.js'
+import { usuarioDao } from './daos/index.js'
 
 const app = express()
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
 
 app.listen(config.port, () => {
     console.log(`Listening in port ${config.port}`)

@@ -32,8 +32,8 @@ body {
     height: 70px;
 }
 
-.user-ico { /* No sé hacer que sea clickeable circularmente */
-    height: 100px;
+.user-ico {
+    height: 80px;
     margin-left: 10px;
     border-radius: 50%;
     cursor: pointer;
@@ -48,7 +48,7 @@ body {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
     width: 20%;
     max-width: 180px;
-    right: 4%;
+    right: 3%;
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.5s;

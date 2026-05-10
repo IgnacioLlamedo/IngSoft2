@@ -2,7 +2,8 @@ import { Usuario } from "../models/usuario.mongoose.js";
 
 export class usuarioDao {
     async create(datos){
-        return await Usuario.create(datos)
+        //return await Usuario.create(datos)
+        console.log(datos)
     }
     async readOne(query){
         const usuario = await Usuario.findOne({ mail: query }).lean()
