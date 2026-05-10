@@ -1,13 +1,27 @@
 import config from './config.js'
 import express from 'express'
 import nodemailer from 'nodemailer'
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { usuarioDao } from './daos/index.js'
 
 const app = express()
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 app.listen(config.port, () => {
     console.log(`Listening in port ${config.port}`)
 })
+
+app.use(express.json());
+
+// Statics
+app.use(express.static(__dirname + "/Front/Static"));
+
+// Routes
+app.get("/", (req,res) => res.sendFile(__dirname + "/Front/Home/index.html"))
+app.get("/registro", (req,res) => res.sendFile(__dirname + "/Front/SignUp/signUp.html"))
+
+
 class mailer{
     constructor() {
         this.transport = nodemailer.createTransport({
@@ -69,7 +83,7 @@ console.log("aaaaaa")
     planilla: "a"
 }) */
 
-app.use(express.static(__dirname + "/Home"))
+/* app.use(express.static(__dirname + "/Home"))
 app.get("/registro", (req, res) => {
     res.sendFile(__dirname + "/Front/Sign-up/signUp.html")
-})
+}) */
