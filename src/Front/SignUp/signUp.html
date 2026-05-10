@@ -8,22 +8,22 @@
 </head>
 <body>
     <div class="container-form">
-        <form id="register-form" onsubmit="return false">
+        <form id="register-form">
             <section>
 
                 <h2>Registrarse</h2>
 
                 <div class="input-section">
 
-                    <input type="text" placeholder="Nombre completo">
-                    <input type="text" placeholder="DNI">
-                    <input type="email" placeholder="Ingrese correo electrónico">
-                    <input type="password" placeholder="Ingrese contraseña">
+                    <input type="text" name="nombre" placeholder="Nombre completo">
+                    <input type="text" name="dni" placeholder="DNI">
+                    <input type="email" name="mail" placeholder="Ingrese correo electrónico">
+                    <input type="password" name="contraseña" placeholder="Ingrese contraseña">
                     <input type="password" placeholder="Ingrese la misma contraseña">
-                    <input type="date" placeholder="Fecha de nacimiento">
-                    <input type="tel" placeholder="Número de telefono celular">
+                    <input type="date" name="nacimiento" placeholder="Fecha de nacimiento">
+                    <input type="tel" name="telefono" placeholder="Número de telefono celular">
                     
-                    <select name="" id="">
+                    <select name="genero">
                         <option value="masculino">Masculino</option>
                         <option value="femenino">Femenino</option>
                         <option value="otro">Otro</option>
@@ -44,98 +44,98 @@
 
                     <h3>Contacto de emergencia</h3>
 
-                    <input type="text" placeholder="Nombre completo">
-                    <input type="text" placeholder="Relación">
-                    <input type="tel" placeholder="Teléfono">
+                    <input type="text" name="nombreEmergencia" placeholder="Nombre completo">
+                    <input type="text" name="relacionEmergencia" placeholder="Relación">
+                    <input type="tel" name="telefonoEmergencia" placeholder="Teléfono">
 
                     <h3>Antecedentes médicos</h3>
  
                     <label>
-                        <input class="checkbox" type="checkbox">
+                        <input class="checkbox" name="hipertension" type="checkbox">
                         Hipertensión
                     </label>
                     
                     <label>
-                        <input class="checkbox" type="checkbox">
+                        <input class="checkbox" name="diabetes" type="checkbox">
                         Diabetes
                     </label>
 
                     <label>
-                        <input class="checkbox" type="checkbox">
+                        <input class="checkbox" name="asma" type="checkbox">
                         Asma
                     </label>
 
                     <label>
-                        <input class="checkbox" type="checkbox">
+                        <input class="checkbox" name="cardiacos" type="checkbox">
                         Cardiacos
                     </label>
 
                     <label>
-                        <input class="checkbox" type="checkbox">
+                        <input class="checkbox" name="artitris" type="checkbox">
                         Artitris
                     </label>
 
                     <label>
-                        <input class="checkbox" type="checkbox">
+                        <input class="checkbox" name="epilepsia" type="checkbox">
                         Epilepsia
                     </label>
 
                     <label>
-                        <input class="checkbox" type="checkbox">
+                        <input class="checkbox" name="lesiones" type="checkbox">
                         Lesiones
                     </label>
 
-                    <input type="text" placeholder="Otros antecedentes médicos">
+                    <input type="text" name="otrosAntecedentes" placeholder="Otros antecedentes médicos">
 
                     <h3>Información adicional de salud</h3>
 
                     <label>
-                        <input class="checkbox" type="checkbox">
+                        <input class="checkbox" name="fuma" type="checkbox">
                         Fuma
                     </label>
 
                     <label>
-                        <input class="checkbox" type="checkbox">
+                        <input class="checkbox" name="alcohol" type="checkbox">
                         Consume alcohol
                     </label>
 
                     <label>
-                        <input class="checkbox" type="checkbox">
+                        <input class="checkbox" name="sintomasRecientes" type="checkbox">
                         Sintomas recientes
                     </label>
 
-                    <input type="text" placeholder="Horas de sueño">
+                    <input type="text" name="sueño" placeholder="Horas de sueño">
 
                     <label>
-                        <input class="checkbox" type="checkbox">
+                        <input class="checkbox" name="dificultadDormir" type="checkbox">
                         Dificultad para dormir
                     </label>
                     
                     
 
-                    <input type="text" placeholder="Dieta/Nutrición">
+                    <input type="text" name="nutricion" placeholder="Dieta/Nutrición">
 
                     <h3>Historial de cirugías</h3>
 
-                    <input type="text" placeholder="Descripción de la cirugía">
-                    <input type="date" placeholder="Fecha de ">
-                    <input type="text" placeholder="Secuelas de la cirugía">
+                    <input type="text" name="cirugia" placeholder="Descripción de la cirugía">
+                    <input type="date" name="fechaCirugiaDia" placeholder="Fecha de cirugia">
+                    <input type="text" name="secuelasCirugias" placeholder="Secuelas de la cirugía">
 
                     <h3>Alegias y medicación</h3>
 
-                    <input type="text" placeholder="Alergias">
-                    <input type="text" placeholder="Medicación actual">
+                    <input type="text" name="alergias" placeholder="Alergias">
+                    <input type="text" name="medicacionAlergia" placeholder="Medicación actual">
 
                     <h3>Actividad física y objetivos</h3>
 
                     <label>
-                        <input class="checkbox" name="ACTIVIDADFISICA" type="checkbox">
+                        <input class="checkbox" name="actividadFisica" type="checkbox">
                         Realiza actividad física
                     </label>
 
-                    <input type="text" placeholder="Frecuencia">
+                    <input type="text" name="frecuenciaActividad" placeholder="Frecuencia">
 
-                    <select name="" id="">
+                    <select name="objetivo">
                         <option value="0">Perdida de peso</option>
                         <option value="1">Tonificación</option>
                         <option value="2">Salud</option>
@@ -152,6 +152,6 @@
         </form>
     </div>
 
-    <script type="module" src="SignUp/signUpLogic.mjs"></script>
+    <script src="SignUp/signUpLogic.js"></script>
 </body>
 </html>

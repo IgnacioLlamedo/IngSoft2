@@ -1,0 +1,27 @@
+document.getElementById("register-form").addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const formData = new FormData(event.target);
+    const data = Object.fromEntries(formData);
+
+    data.hipertension = !(data.hipertension === undefined)
+    data.diabetes = !(data.diabetes === undefined)
+    data.asma = !(data.asma === undefined)
+    data.cardiacos = !(data.cardiacos === undefined)
+    data.artitris = !(data.artitris === undefined)
+    data.epilepsia = !(data.epilepsia === undefined)
+    data.lesiones = !(data.tieneLesiones === undefined);
+    data.fuma = !(data.fuma === undefined)
+    data.alcohol = !(data.alcohol === undefined)
+    data.sintomasRecientes = !(data.sintomasRecientes === undefined)
+    data.dificultadDormir = !(data.dificultadSueño === undefined)
+    data.actividadFisica = !(data.actividadFisica === undefined)
+
+    const res = await fetch("/api/register", {
+        method: "POST",
+        headers: {
+            "Content-Type" : "application/json"
+        },
+        body: JSON.stringify(data)
+    })
+})

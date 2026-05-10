@@ -16,7 +16,16 @@ app.listen(config.port, () => {
 app.use(express.json());
 
 // Statics
-app.use(express.static(__dirname + "/Front/Static"));
+//app.use(express.static(__dirname + "/Front/Static"));
+
+app.use(express.static(__dirname + "/Front/Static", {
+  setHeaders: (res, path) => {
+    if (path.endsWith('.js')) {
+      res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+    }
+  }
+}));
+
 
 // Routes
 app.get("/", (req,res) => res.sendFile(__dirname + "/Front/Home/index.html"))
