@@ -2,6 +2,7 @@ import config from './config.js'
 import express from 'express'
 import nodemailer from 'nodemailer'
 import { MercadoPagoConfig, Preference } from 'mercadopago';
+import { usuarioDao } from './daos/index.js'
 
 const app = express()
 
@@ -97,3 +98,15 @@ app.post("/controllers/crearPreferencia", async (req, res) => {
     res.status(500).send("Error al crear preferencia");
   }
 });
+
+//prueba de base de datos
+/* usuarioDao.create({
+    mail: "mail@mail.com",
+    dni: "123",
+    contraseña: "muy segura",
+    nombre: "gonzalo gonzales",
+    nacimiento: "ayer",
+    telefono: "123",
+    genero: "a",
+    planilla: "a"
+}) */

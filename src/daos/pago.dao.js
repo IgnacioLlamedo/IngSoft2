@@ -1,0 +1,43 @@
+import { Pago } from "../models/pago.mongoose.js";
+
+export class pagoDao {
+    async create(datos){
+        return await Pago.create(datos)
+    }
+    async readOne(query){
+        const pago = await Pago.findOne({ _id: query }).lean()
+        if(!pago){
+            //provisional, desarrollar luego
+            console.log("error")
+        }
+        return pago
+    }
+    async readMany(query){
+        return await Pago.find(query).lean()
+    }
+    async updateOne(query, datos){
+        const updated = await Pago.findOneAndUpdate({ _id: query }, newData, { new: true }).lean()
+        if(!updated){
+            //provisional, desarrollar luego
+            console.log("error")
+        }
+        return updated
+    }
+    async deleteOne(query){
+        const deleted = await Pago.findOneAndDelete({ _id: query }).lean()
+        if(!deleted){
+            //provisional, desarrollar luego
+            console.log("error")
+        }
+        return deleted
+    }
+    async deleteMany(query){
+        const deleted = await Pago.deleteMany(query).lean()
+        if(!deleted){
+            //provisional, desarrollar luego
+            console.log("error")
+        }
+        return deleted
+    }
+}
+
