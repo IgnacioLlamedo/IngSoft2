@@ -68,3 +68,8 @@ console.log("aaaaaa")
     genero: "a",
     planilla: "a"
 }) */
+
+app.use(express.static(__dirname + "/Home"))
+app.get("/registro", (req, res) => {
+    res.sendFile(__dirname + "/Front/Sign-up/signUp.html")
+})
