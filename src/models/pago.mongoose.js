@@ -12,14 +12,6 @@ const usuarioSchema = new Schema({
 }, {
     strict: 'throw',
     versionKey: false,
-    /* methods: {
-        public: function(){
-            return {
-                email: this.email,
-                username: this.username
-            }
-        }
-    } */
 })
 
 export const Pago = model(collection, usuarioSchema)
