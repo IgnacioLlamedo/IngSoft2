@@ -8,7 +8,6 @@ const planillaSchema = new Schema({
     nombreEmergencia: { type: String, required: true },
     relacionEmergencia: { type: String, required: true },
     telefonoEmergencia: { type: String, required: true },
-    telefonoEmergencia: { type: String, required: true },
     //antecedentes medicos
     hipertension: { type: Boolean, required: true },
     diabetes: { type: Boolean, required: true },
