@@ -1,6 +1,7 @@
 import config from './config.js'
 import express from 'express'
 import nodemailer from 'nodemailer'
+import { usuarioDao } from './daos/index.js'
 
 const app = express()
 
@@ -53,6 +54,17 @@ const mailOptions = {
         </ul>
         `
         }
-        const info = await transporter.sendMail(mailOptions)
+        //const info = await transporter.sendMail(mailOptions)
     
 console.log("aaaaaa")
+
+/* usuarioDao.create({
+    mail: "mail@mail.com",
+    dni: "123",
+    contraseña: "muy segura",
+    nombre: "gonzalo gonzales",
+    nacimiento: "ayer",
+    telefono: "123",
+    genero: "a",
+    planilla: "a"
+}) */
