@@ -10,11 +10,11 @@ document.getElementById("register-form").addEventListener("submit", async (event
     data.cardiacos = !(data.cardiacos === undefined)
     data.artitris = !(data.artitris === undefined)
     data.epilepsia = !(data.epilepsia === undefined)
-    data.lesiones = !(data.tieneLesiones === undefined);
+    data.lesiones = !(data.lesiones === undefined);
     data.fuma = !(data.fuma === undefined)
     data.alcohol = !(data.alcohol === undefined)
     data.sintomasRecientes = !(data.sintomasRecientes === undefined)
-    data.dificultadDormir = !(data.dificultadSueño === undefined)
+    data.dificultadDormir = !(data.dificultadDormir === undefined)
     data.actividadFisica = !(data.actividadFisica === undefined)
 
     const res = await fetch("/api/register", {
