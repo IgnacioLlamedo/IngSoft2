@@ -59,12 +59,12 @@ const mailOptions = {
 console.log("aaaaaa")
 
 /* usuarioDao.create({
-    mail: "mail@mail.com",
-    dni: "123",
+    mail: "aaaa@mail.com",
+    dni: "aaaaaaaaa",
     contraseña: "muy segura",
     nombre: "gonzalo gonzales",
-    nacimiento: "ayer",
+    nacimiento: Date.now,
     telefono: "123",
-    genero: "a",
+    genero: "otro",
     planilla: "a"
 }) */
