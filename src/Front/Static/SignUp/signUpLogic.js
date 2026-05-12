@@ -4,6 +4,12 @@ document.getElementById("register-form").addEventListener("submit", async (event
     const formData = new FormData(event.target);
     const data = Object.fromEntries(formData);
 
+    const birth = new Date(data.nacimiento)
+    const dateNow = new Date(Date.now())
+
+    if((dateNow.getFullYear() - birth.getFullYear()) < 14)
+        return
+
     data.hipertension = !(data.hipertension === undefined)
     data.diabetes = !(data.diabetes === undefined)
     data.asma = !(data.asma === undefined)
@@ -16,6 +22,7 @@ document.getElementById("register-form").addEventListener("submit", async (event
     data.sintomasRecientes = !(data.sintomasRecientes === undefined)
     data.dificultadDormir = !(data.dificultadDormir === undefined)
     data.actividadFisica = !(data.actividadFisica === undefined)
+
 
     const res = await fetch("/api/register", {
         method: "POST",
