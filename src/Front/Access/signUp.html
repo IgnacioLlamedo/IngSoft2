@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="Access/accessCommon.css">
+    <link rel="stylesheet" href="Access/signUpStyle.css">
+    <title>CEF - Registrarse</title>
+</head>
+<body>
+    
+    <main>
+        <div class="form-container">
+            <form id="register-form">
+                <section>
+
+                    <h2>Registrarse</h2>
+
+                    <div class="input-section">
+
+                        <input type="text" name="nombre" required placeholder="Nombre completo">
+                        <input type="text" name="dni" required placeholder="DNI">
+                        <input type="email" name="mail" required placeholder="Ingrese correo electrónico">
+                        <input type="password" name="contraseña" required placeholder="Ingrese contraseña">
+                        <input type="password" name="confirmarContraseña" placeholder="Confirmar contraseña">
+                        <input type="date" name="nacimiento" required placeholder="Fecha de nacimiento">
+                        <input type="tel" name="telefono" required placeholder="Número de telefono celular">
+                        
+
+                        <div class="selector">
+                            <p>Género:</p>
+                            <select name="genero">
+                                <option value="masculino">Masculino</option>
+                                <option value="femenino">Femenino</option>
+                                <option value="otro">Otro</option>
+                            </select>
+                        </div>
+
+                        
+                        
+                        
+
+                    </div>
+
+                </section>
+
+                
+
+                <section>
+
+                    <h2>Planilla médica</h2>
+                    <div class="input-section">
+
+                        <fieldset>
+                            <legend>Contacto de emergencia</legend>
+                            <input type="text" name="nombreEmergencia" required placeholder="Nombre completo">
+                            <input type="text" name="relacionEmergencia" required placeholder="Relación">
+                            <input type="tel" name="telefonoEmergencia" required placeholder="Teléfono">
+                        </fieldset>
+
+                        <fieldset>
+                            <legend>Antecedentes médicos</legend>
+
+                            <div class="checkbox-container">
+                                <input type="checkbox" name="hipertension">
+                                <label>Hipertensión</label>
+                            </div>
+
+                            <div class="checkbox-container">
+                                <input type="checkbox" name="diabetes">
+                                <label>Diabetes</label>
+                            </div>
+
+                            <div class="checkbox-container">
+                                <input type="checkbox" name="asma">
+                                <label>Asma</label>
+                            </div>
+
+                            <div class="checkbox-container">
+                                <input type="checkbox" name="cardiacos">
+                                <label>Cardiacos</label>
+                            </div>
+
+                            <div class="checkbox-container">
+                                <input type="checkbox" name="artritis">
+                                <label>Artritis</label>
+                            </div>
+
+                            <div class="checkbox-container">
+                                <input type="checkbox" name="epilepsia">
+                                <label>Epilepsia</label>
+                            </div>
+
+                            <div class="checkbox-container">
+                                <input type="checkbox" name="lesiones">
+                                <label>Lesiones</label>
+                            </div>
+
+                            <input type="text" name="otrosAntecedentes" placeholder="Otros antecedentes médicos...">
+                        </fieldset>
+                       
+
+                        <fieldset>
+                            <legend>Información adicional de salud</legend>
+
+                            <div class="checkbox-container">
+                                <input type="checkbox" name="fuma">
+                                <label>Fuma</label>
+                            </div>
+
+                            <div class="checkbox-container">
+                                <input type="checkbox" name="alcohol">
+                                <label>Consume alcohol</label>
+                            </div>
+
+                            <div class="checkbox-container">
+                                <input type="checkbox" name="sintomasRecientes">
+                                <label>Sintomas recientes</label>
+                            </div>
+
+                            <input type="text" name="sueño" placeholder="Horas de sueño">
+
+                            <div class="checkbox-container">
+                                <input type="checkbox" name="dificultadDormir">
+                                <label>Dificultad para dormir</label>
+                            </div>
+
+                            <input type="text" name="nutricion" required placeholder="Dieta/Nutrición">
+                        </fieldset>
+                        
+
+                        
+
+
+                        <fieldset>
+                            <legend>Historial de cirugías</legend>
+
+                            <div class="checkbox-container">
+                                <input type="checkbox" id="tieneCirugias">
+                                <label>¿Le realizaron cirugías?</label>
+                            </div>
+
+                            <input type="text" hidden name="cirugia" placeholder="Descripción de la cirugía">
+                            <input type="date" hidden name="fechaCirugiaDia" placeholder="Fecha de cirugia">
+                            <input type="text" hidden name="secuelasCirugias" placeholder="Secuelas de la cirugía">
+                        </fieldset>
+
+                        <fieldset>
+                            <legend>Alergias y medicación</legend>
+
+                            <div class="checkbox-container">
+                                <input type="checkbox" id="tieneAlergias">
+                                <label>¿Tiene alguna alergia?</label>
+                            </div>
+
+                            <input type="text" hidden name="alergias" placeholder="Alergias">
+                            <input type="text" hidden name="medicacionAlergia" placeholder="Medicación actual">
+                        </fieldset>
+
+                        <fieldset>
+                            <legend>Actividad física y objetivos</legend>
+
+                            <div class="checkbox-container">
+                                <input type="checkbox" id="haceActividad" name="actividadFisica">
+                                <label>¿Realiza actividad física?</label>
+                            </div>
+
+                            <!-- depende de checkbox -->
+                            <input type="text" hidden name="frecuenciaActividad" placeholder="Frecuencia">
+
+                            
+
+                            <div class="selector">
+                                <p>Objetivo:</p>
+                                <select name="objetivo">
+                                    <option value="0">Perdida de peso</option>
+                                    <option value="1">Tonificación</option>
+                                    <option value="2">Salud</option>
+                                    <option value="3">Competencia</option>
+                                </select>
+                            </div>
+
+                        </fieldset>
+
+                    </div>
+
+                </section>
+
+                <section>
+                    <button>REGISTRARSE</button>
+                </section>
+            </form>
+        </div>
+    </main>
+
+    <script src="SignUp/signUpLogic.js"></script>
+    <script>
+        
+    </script>
+</body>
+</html>

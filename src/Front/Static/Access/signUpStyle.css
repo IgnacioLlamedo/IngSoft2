@@ -1,0 +1,29 @@
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+fieldset {
+    display: flex;
+    flex-direction: column;
+    width: 95%;
+    gap: 15px;
+}
+
+.checkbox-container input {
+    height: 40px;
+    width: 40px;
+}
+
+.selector {
+    display: flex;
+    gap: 15px;
+    width: 90%;
+    margin: 0 auto;
+}
+
+.selector select {
+    flex: 1;
+    justify-content: center;
+}

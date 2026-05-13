@@ -1,6 +1,7 @@
 
 body {
     background-color: #1b1b1b;
+    font-family: sans-serif;
 }
 
 .header-nav {
@@ -9,8 +10,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px;
-    font-family: sans-serif;
+    padding: 15px;   
     position: relative;
 }
 

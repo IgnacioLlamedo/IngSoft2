@@ -29,7 +29,9 @@ app.use(express.static(__dirname + "/Front/Static", {
 
 // Routes
 app.get("/", (req,res) => res.sendFile(__dirname + "/Front/Home/index.html"))
-app.get("/registro", (req,res) => res.sendFile(__dirname + "/Front/SignUp/signUp.html"))
+app.get("/registro", (req,res) => res.sendFile(__dirname + "/Front/Access/signUp.html"))
+app.get("/iniciosesion", (req,res) => res.sendFile(__dirname + "/Front/Access/signIn.html"))
+
 
 
 class mailer{

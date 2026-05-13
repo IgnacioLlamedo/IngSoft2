@@ -23,7 +23,7 @@ document.getElementById("register-form").addEventListener("submit", async (event
     data.dificultadDormir = !(data.dificultadDormir === undefined)
     data.actividadFisica = !(data.actividadFisica === undefined)
 
-
+    // autenticar?
     const res = await fetch("/api/register", {
         method: "POST",
         headers: {
