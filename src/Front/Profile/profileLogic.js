@@ -5,6 +5,9 @@ const saveBtn = document.getElementById('saveBtn');
 const cancelBtn = document.getElementById('cancelBtn');
 const messageDiv = document.getElementById('message');
 
+// Mock password
+const mockPassword = '123456';
+
 // Store original values for cancellation
 let originalValues = {};
 let isEditMode = false;
@@ -65,7 +68,9 @@ function populateForm(userData) {
     document.getElementById('nombre').value = userData.nombre || '';
     document.getElementById('email').value = userData.mail || '';
     document.getElementById('dni').value = userData.dni || '';
-    document.getElementById('contraseña-actual').value = '********';
+    document.getElementById('contraseña-actual').value = '';
+    document.getElementById('contraseña-nueva').value = '';
+    document.getElementById('contraseña-confirmar').value = '';
 
     // Format date for date input (AAAA-MM-DD)
     if (userData.nacimiento) {
@@ -222,8 +227,26 @@ function validateForm() {
     const telefono = document.getElementById('telefono').value.trim();
     const genero = document.getElementById('genero').value;
 
-    if (!nombre || !email || !dni || /* !contraseñaActual || */ !nacimiento || !telefono || !genero) {
+    // Validate required fields
+    if (!nombre || !email || !dni || !nacimiento || !telefono || !genero) {
         showMessage('Por favor completa todos los campos', 'error');
+        return false;
+    }
+
+    // Validate password change
+    // TODO: Replace mock password validation with real backend validation
+    if (contraseñaActual !== '' && contraseñaActual !== mockPassword) {
+        showMessage('Las contraseña actual es incorrecta', 'error');
+        return false;
+    }
+
+    if (contraseñaNueva !== contraseñaConfirmar || (contraseñaActual && !contraseñaNueva)) {
+        showMessage('Las contraseñas no coinciden', 'error');
+        return false;
+    }
+    
+    if (contraseñaNueva && contraseñaNueva.length < 6) {
+        showMessage('La nueva contraseña debe tener al menos 6 caracteres', 'error');
         return false;
     }
 
