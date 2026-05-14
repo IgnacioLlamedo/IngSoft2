@@ -63,7 +63,7 @@ body {
     flex-direction: column;
 }
 
-.user-options-list div {
+.user-options-list a {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -81,6 +81,6 @@ body {
 }
 
 .user-options-open {
-    max-height: 150px;
+    max-height: 200px;
 }
 

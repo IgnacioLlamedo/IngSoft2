@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="Home/style.css">
+    <link rel="stylesheet" href="/Home/style.css">
     <title>CEF</title>
 </head>
 <body>
@@ -11,11 +11,14 @@
     <header>
  
         <nav class="header-nav">
-            <img class="logo-img" src="Images/Logo.png" alt="Logo">
+
+            <a href="/">
+                <img class="logo-img" src="Images/Logo.png" alt="Logo">
+            </a>
             
             <ul>
-                <li><a href="/registro">Registrarse</a></li>
-                <li><a href="/iniciosesion">Iniciar Sesión</a></li>
+                <li><a href="/access/register">Registrarse</a></li>
+                <li><a href="/access/login">Iniciar Sesión</a></li>
             </ul>
             
             <img class="user-ico" id="userIcon" src="Images/user_ico.webp" alt="Opciones de usuario">
@@ -26,15 +29,21 @@
 
                     <div class="user-options-list">
 
-                        <div>
+                        <a href="/account/user">
+                            <img src="Images/account_ico.webp" alt="Cuenta">
+                            <p>Cuenta</p>
+                        </a>
+
+                        <a>
+                            <img src="Images/assistance.webp" alt="Asistencias">
+                            <p>Asistencia</p>
+                        </a>
+
+                        <a>
                             <img src="Images/logout_ico.webp" alt="Cerrar sesión">
                             <p>Cerrar sesión</p>
-                        </div>
+                        </a>
 
-                        <div>
-                            <img src="Images/logout_ico.webp" alt="Cerrar sesión">
-                            <p>Hola</p>
-                        </div>
                     </div>
 
                 </div>

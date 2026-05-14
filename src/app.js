@@ -29,8 +29,16 @@ app.use(express.static(__dirname + "/Front/Static", {
 
 // Routes
 app.get("/", (req,res) => res.sendFile(__dirname + "/Front/Home/index.html"))
-app.get("/registro", (req,res) => res.sendFile(__dirname + "/Front/Access/signUp.html"))
-app.get("/iniciosesion", (req,res) => res.sendFile(__dirname + "/Front/Access/signIn.html"))
+
+// Access
+app.get("/access/register", (req,res) => res.sendFile(__dirname + "/Front/Access/signUp.html"))
+app.get("/access/login", (req,res) => res.sendFile(__dirname + "/Front/Access/signIn.html"))
+app.get("/access/recover-password", (req,res) => res.sendFile(__dirname + "/Front/Access/recoverPassword.html"))
+app.get("/access/reset-password", (req,res) => res.sendFile(__dirname + "/Front/Access/resetPassword.html"))
+
+// Account
+app.get("/account/user", (req,res) => res.sendFile(__dirname + "/Front/Account/userPage.html"))
+
 
 
 
