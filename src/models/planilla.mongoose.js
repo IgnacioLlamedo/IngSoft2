@@ -27,7 +27,7 @@ const planillaSchema = new Schema({
     cirugia: { type: String },
     fechaCirugia: { type: Date },
     secuelasCirugia: { type: String },
-    alergia: { type: String },
+    alergias: { type: String },
     medicacionAlergia: { type: String },
     actividadFisica: { type: Boolean, required: true },
     frecuenciaActividad: { type: String },
