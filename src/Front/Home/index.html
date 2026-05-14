@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,8 +11,10 @@
     <header>
 
         <nav class="header-nav">
-            <img class="homepage-img" id="homepageIcon" src="Images/homepage.png" alt="Homepage">
-            <img class="logo-img" src="Images/Logo.png" alt="Logo">
+            <a href="/">
+                <img class="homepage-img" id="homepageIcon" src="Images/Logo.png" alt="Homepage">
+            </a>
+            <!-- <img class="logo-img" src="Images/homepage.png" alt="Logo"> Lo saco porque el logo no sería el link a la Homepage también? -->
             
             <ul>
                 <li><a href="">Registrarse</a></li>
@@ -28,8 +30,16 @@
                     <div class="user-options-list">
 
                         <div>
-                            <img src="Images/Logout-ico.png" alt="Cerrar sesión">
-                            <p>Cerrar sesión</p>
+                            <p><a href="/profile">
+                                <img src="Images/User-Profile.png" alt="Ver perfil">
+                                Ver perfil
+                            </a></p>
+                        </div>
+                        <div>
+                            <p><a href="https://www.google.com">
+                                <img src="Images/Logout-ico.png" alt="Cerrar sesión">
+                                Cerrar sesión
+                            </a></p>
                         </div>
                     </div>
 
@@ -42,16 +52,11 @@
         <script>
             const userIcon = document.getElementById("userIcon");
             const userOptions = document.getElementById("userOptions");
-            const homepageIcon = document.getElementById("homepageIcon");
 
             userIcon.addEventListener("click", () => {
                 userOptions.classList.toggle("user-options-open")
             })
 
-            homepageIcon.addEventListener("click", () => {
-                //ir a la homepage(?)
-                console.log("Yendo a homepage")
-            })
 
             document.addEventListener("click", (e) => {
                 if (!userIcon.contains(e.target) && !userOptions.contains(e.target))
