@@ -8,6 +8,11 @@ const app = express()
 
 app.use(express.json());
 app.use(express.static("src/Front/Home"));
+app.use(express.static("src/Front/Profile"));
+
+app.get("/profile", (req, res) => {
+    res.sendFile(process.cwd() + "/src/Front/Profile/profile.html");
+});
 
 app.listen(config.port, () => {
     console.log(`Listening in port ${config.port}`)
@@ -101,12 +106,12 @@ app.post("/controllers/crearPreferencia", async (req, res) => {
 
 //prueba de base de datos
 /* usuarioDao.create({
-    mail: "mail@mail.com",
-    dni: "123",
-    contraseña: "muy segura",
-    nombre: "gonzalo gonzales",
-    nacimiento: "ayer",
-    telefono: "123",
-    genero: "a",
-    planilla: "a"
+    mail: "test@example.com",
+    dni: "12345678",
+    contraseña: "password123",
+    nombre: "Usuario Test",
+    nacimiento: new Date("1990-01-01"),
+    telefono: "123456789",
+    genero: "masculino",
+    planilla: "planilla123"
 }) */
