@@ -71,19 +71,34 @@
             <div class="profile-content">
                 <form id="passwordForm" class="profile-form">
 
-                    <div class="form-group">
+                        <div class="form-group">
                         <label for="contraseña-actual">Contraseña actual:</label>
-                        <input type="password" id="contraseña-actual" name="contraseña-actual" disabled>
+                        <div class="password-wrapper">
+                            <input type="password" id="contraseña-actual" name="contraseña-actual" disabled>
+                            <button type="button" class="password-toggle-button" aria-label="Mostrar contraseña">
+                                <img class="password-toggle-icon" src="/Images/eye-icon-hidden-white.png" alt="Mostrar contraseña">
+                            </button>
+                        </div>
                     </div>
 
                     <div class="form-group">
                         <label for="contraseña-nueva">Contraseña nueva:</label>
-                        <input type="password" id="contraseña-nueva" name="contraseña-nueva" disabled>
+                        <div class="password-wrapper">
+                            <input type="password" id="contraseña-nueva" name="contraseña-nueva" disabled>
+                            <button type="button" class="password-toggle-button" aria-label="Mostrar contraseña">
+                                <img class="password-toggle-icon" src="/Images/eye-icon-hidden-white.png" alt="Mostrar contraseña">
+                            </button>
+                        </div>
                     </div>
 
                     <div class="form-group">
                         <label for="contraseña-confirmar">Confirmar contraseña:</label>
-                        <input type="password" id="contraseña-confirmar" name="contraseña-confirmar" disabled>
+                        <div class="password-wrapper">
+                            <input type="password" id="contraseña-confirmar" name="contraseña-confirmar" disabled>
+                            <button type="button" class="password-toggle-button" aria-label="Mostrar contraseña">
+                                <img class="password-toggle-icon" src="/Images/eye-icon-hidden-white.png" alt="Mostrar contraseña">
+                            </button>
+                        </div>
                     </div>
 
                 </form>

@@ -71,6 +71,60 @@ body {
     color: #ffffff;
 }
 
+.password-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.password-wrapper input {
+    width: 100%;
+    padding-right: 48px;
+}
+
+.password-toggle-button {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, background-color 0.2s ease;
+    z-index: 1;
+}
+
+.password-toggle-button .password-toggle-icon {
+    width: 18px;
+    height: 18px;
+}
+
+.password-wrapper:hover input:not(:disabled) + .password-toggle-button,
+.password-wrapper:focus-within input:not(:disabled) + .password-toggle-button {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.password-toggle-button:hover,
+.password-toggle-button:focus {
+    background-color: rgba(255, 255, 255, 0.08);
+    outline: none;
+}
+
+.password-toggle-button:hover,
+.password-toggle-button:focus {
+    background-color: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+    outline: none;
+}
+
 .form-group input::placeholder,
 .form-group select::placeholder {
     color: #888888;

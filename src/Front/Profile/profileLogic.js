@@ -110,6 +110,7 @@ function setupEventListeners() {
     editBtn2.addEventListener('click', toggleEditPasswordMode);
     saveBtn2.addEventListener('click', savePassword);
     cancelBtn2.addEventListener('click', cancelPasswordEdit);
+    setupPasswordVisibilityToggle();
 }
 
 // Toggle edit profile mode
@@ -153,7 +154,51 @@ function toggleEditPasswordMode() {
         editBtn2.style.display = 'block';
         saveBtn2.style.display = 'none';
         cancelBtn2.style.display = 'none';
+        setPasswordInputsType('password');
     }
+}
+
+function setPasswordInputsType(type) {
+    const passwordInputs = passwordForm.querySelectorAll('input[id^="contraseña-"]');
+    passwordInputs.forEach(input => {
+        input.type = type;
+    });
+
+    const iconSrc = type === 'password'
+        ? '/Images/eye-icon-hidden-white.png'
+        : '/Images/eye-icon-visible-white.png';
+    const ariaLabel = type === 'password' ? 'Mostrar contraseña' : 'Ocultar contraseña';
+
+    const iconImages = document.querySelectorAll('.password-toggle-icon');
+    iconImages.forEach(icon => {
+        icon.src = iconSrc;
+        icon.alt = ariaLabel;
+    });
+
+    const toggles = document.querySelectorAll('.password-toggle-button');
+    toggles.forEach(toggle => {
+        toggle.setAttribute('aria-label', ariaLabel);
+    });
+}
+
+function setupPasswordVisibilityToggle() {
+    const toggles = document.querySelectorAll('.password-toggle-button');
+    toggles.forEach(toggle => {
+        toggle.addEventListener('click', () => {
+            const wrapper = toggle.closest('.password-wrapper');
+            if (!wrapper) return;
+            const input = wrapper.querySelector('input');
+            const icon = toggle.querySelector('.password-toggle-icon');
+            if (!input || !icon) return;
+            const show = input.type === 'password';
+            input.type = show ? 'text' : 'password';
+            icon.src = show
+                ? '/Images/eye-icon-visible-white.png'
+                : '/Images/eye-icon-hidden-white.png';
+            icon.alt = show ? 'Ocultar contraseña' : 'Mostrar contraseña';
+            toggle.setAttribute('aria-label', show ? 'Ocultar contraseña' : 'Mostrar contraseña');
+        });
+    });
 }
 
 // Save profile changes
