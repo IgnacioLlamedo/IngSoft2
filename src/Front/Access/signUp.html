@@ -21,9 +21,16 @@
                         <input type="text" name="nombre" required placeholder="Nombre completo">
                         <input type="text" name="dni" required placeholder="DNI">
                         <input type="email" name="mail" required placeholder="Ingrese correo electrónico">
-                        <input type="password" name="contraseña" required placeholder="Ingrese contraseña">
-                        <input type="password" name="confirmarContraseña" placeholder="Confirmar contraseña">
-                        <input type="date" name="nacimiento" required placeholder="Fecha de nacimiento">
+
+                        <input id="password" type="password" name="contraseña" required placeholder="Ingrese contraseña">
+                        <p id="passwordRequirementError" class="errorMsg hidden"></p>
+
+                        <input id="confirmPassword" type="password" name="confirmarContraseña" required placeholder="Confirmar contraseña">
+                        <p id="confirmPasswordError" class="errorMsg hidden"></p>
+
+                        <input id="birthDate" type="date" name="nacimiento" required placeholder="Fecha de nacimiento">
+                        <p id="birthDateError" class="errorMsg hidden"></p>
+
                         <input type="tel" name="telefono" required placeholder="Número de telefono celular">
                         
 
@@ -136,37 +143,36 @@
                             <legend>Historial de cirugías</legend>
 
                             <div class="checkbox-container">
-                                <input type="checkbox" id="tieneCirugias">
+                                <input type="checkbox" id="hasSurgeries">
                                 <label>¿Le realizaron cirugías?</label>
                             </div>
 
-                            <input type="text" hidden name="cirugia" placeholder="Descripción de la cirugía">
-                            <input type="date" hidden name="fechaCirugiaDia" placeholder="Fecha de cirugia">
-                            <input type="text" hidden name="secuelasCirugias" placeholder="Secuelas de la cirugía">
+                            <input class="surgeriesFields hidden" type="text" name="cirugia" placeholder="Descripción de la cirugía">
+                            <input class="surgeriesFields hidden" type="date" name="fechaCirugia" placeholder="Fecha de cirugia">
+                            <input class="surgeriesFields hidden" type="text" name="secuelasCirugia" placeholder="Secuelas de la cirugía">
                         </fieldset>
 
                         <fieldset>
                             <legend>Alergias y medicación</legend>
 
                             <div class="checkbox-container">
-                                <input type="checkbox" id="tieneAlergias">
+                                <input type="checkbox" id="hasAllergies">
                                 <label>¿Tiene alguna alergia?</label>
                             </div>
 
-                            <input type="text" hidden name="alergias" placeholder="Alergias">
-                            <input type="text" hidden name="medicacionAlergia" placeholder="Medicación actual">
+                            <input class="allergiesFields hidden" type="text" name="alergia" placeholder="Alergias">
+                            <input class="allergiesFields hidden" type="text" name="medicacionAlergia" placeholder="Medicación actual">
                         </fieldset>
 
                         <fieldset>
                             <legend>Actividad física y objetivos</legend>
 
                             <div class="checkbox-container">
-                                <input type="checkbox" id="haceActividad" name="actividadFisica">
+                                <input type="checkbox" id="physicallyActive" name="actividadFisica">
                                 <label>¿Realiza actividad física?</label>
                             </div>
 
-                            <!-- depende de checkbox -->
-                            <input type="text" hidden name="frecuenciaActividad" placeholder="Frecuencia">
+                            <input class="physicallyActiveFields hidden" type="text" name="frecuenciaActividad" placeholder="Frecuencia">
 
                             
 
@@ -187,13 +193,14 @@
                 </section>
 
                 <section>
+                    <p id="registerError" class="errorMsg hidden">Corregí todos los errores antes de registrarte</p>
                     <button>REGISTRARSE</button>
                 </section>
             </form>
         </div>
     </main>
 
-    <script src="SignUp/signUpLogic.js"></script>
+    <script src="/Access/signUpLogic.js"></script>
     <script>
         
     </script>

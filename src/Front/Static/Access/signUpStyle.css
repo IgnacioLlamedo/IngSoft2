@@ -27,3 +27,22 @@ fieldset {
     flex: 1;
     justify-content: center;
 }
+
+.inputError, .passwordRequirementError, .confirmPasswordError {
+    border-style: solid;
+    border-color: rgb(245, 45, 45);
+    color: rgb(245, 45, 45);
+}
+
+.inputError:focus, .passwordRequirementError:focus, .confirmPasswordError:focus {
+    color: black;
+}
+
+.errorMsg {
+    color: rgb(245, 45, 45);
+    font-weight: bold;
+}
+
+.hidden {
+    display: none;
+}

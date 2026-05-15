@@ -28,7 +28,7 @@ app.use(express.static(__dirname + "/Front/Static", {
 
 
 // Routes
-app.get("/", (req,res) => res.sendFile(__dirname + "/Front/Home/index.html"))
+app.get("/", (req,res) => res.sendFile(__dirname + "/Front/Home/homePage.html"))
 
 // Access
 app.get("/access/register", (req,res) => res.sendFile(__dirname + "/Front/Access/signUp.html"))
