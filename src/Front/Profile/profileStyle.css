@@ -12,113 +12,15 @@ body {
     padding: 20px;
 }
 
-/* Header Styles */
-header {
-    background-color: rgb(54, 54, 54);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-    margin-bottom: 40px;
-}
-
-.header-nav {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 15px 30px;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.header-nav ul {
-    list-style: none;
-    display: flex;
-    gap: 30px;
-    margin: 0 auto;
-}
-
-.header-nav a {
-    text-decoration: none;
-    color: #D01F25;
-    font-weight: 500;
-    transition: color 0.3s ease;
-}
-
-.header-nav a:hover {
-    color: #ff5a5a;
-}
-
-.homepage-img,
-.logo-img {
-    height: 40px;
-    cursor: pointer;
-}
-
-.user-ico {
-    height: 35px;
-    cursor: pointer;
-    transition: transform 0.3s ease;
-}
-
-.user-ico:hover {
-    transform: scale(1.1);
-}
-
-.user-options-menu {
-    position: absolute;
-    top: 60px;
-    right: 30px;
-    background-color: rgb(54, 54, 54);
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    display: none;
-    z-index: 1000;
-}
-
-.user-options-menu.user-options-open {
-    display: block;
-}
-
-.user-options-wrapper {
-    padding: 10px;
-}
-
-.user-options-list {
-    display: flex;
-    flex-direction: column;
-}
-
-.user-options-list div {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 20px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.user-options-list div:hover {
-    background-color: #333333;
-    border-radius: 4px;
-}
-
-.user-options-list img {
-    height: 20px;
-    width: 20px;
-}
-
-.user-options-list p {
-    color: #ffffff;
-    font-size: 14px;
-    font-weight: 500;
-}
-
-/* Profile Container */
 .profile-container {
     display: flex;
     justify-content: center;
     align-items: flex-start;
     padding: 40px 20px;
-    max-width: 1200px;
+    max-width: 1000px;
     margin: 0 auto;
+    gap: 30px;
+    flex-flow: row wrap;
 }
 
 .profile-card {
@@ -126,7 +28,7 @@ header {
     border-radius: 12px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
     padding: 40px;
-    width: 100%;
+    flex: 1;
     max-width: 600px;
 }
 
@@ -137,7 +39,6 @@ header {
     font-size: 28px;
 }
 
-/* Form Styles */
 .profile-form {
     display: flex;
     flex-direction: column;
@@ -196,7 +97,6 @@ header {
     border-color: #444444;
 }
 
-/* Button Styles */
 .button-group {
     display: flex;
     gap: 12px;
@@ -254,7 +154,6 @@ header {
     transform: translateY(0);
 }
 
-/* Message Styles */
 .message {
     margin-top: 20px;
     padding: 12px 15px;
@@ -291,15 +190,6 @@ header {
         padding: 25px;
     }
 
-    .header-nav {
-        padding: 12px 20px;
-    }
-
-    .header-nav ul {
-        gap: 15px;
-        font-size: 14px;
-    }
-
     .profile-card h1 {
         font-size: 22px;
     }
@@ -325,17 +215,5 @@ header {
     .profile-card {
         padding: 20px;
         margin-top: 20px;
-    }
-
-    .header-nav {
-        flex-direction: column;
-        gap: 15px;
-        padding: 15px;
-    }
-
-    .header-nav ul {
-        flex-direction: column;
-        gap: 10px;
-        text-align: center;
     }
 }

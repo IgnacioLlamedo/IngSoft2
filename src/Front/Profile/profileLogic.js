@@ -1,16 +1,22 @@
 // Get DOM elements
 const profileForm = document.getElementById('profileForm');
-const editBtn = document.getElementById('editBtn');
-const saveBtn = document.getElementById('saveBtn');
-const cancelBtn = document.getElementById('cancelBtn');
-const messageDiv = document.getElementById('message');
+const passwordForm = document.getElementById('passwordForm');
+const editBtn1 = document.getElementById('editBtn1');
+const saveBtn1 = document.getElementById('saveBtn1');
+const cancelBtn1 = document.getElementById('cancelBtn1');
+const editBtn2 = document.getElementById('editBtn2');
+const saveBtn2 = document.getElementById('saveBtn2');
+const cancelBtn2 = document.getElementById('cancelBtn2');
+const profileMessageDiv = document.getElementById('profileMessage');
+const passwordMessageDiv = document.getElementById('passwordMessage');
 
 // Mock password
 const mockPassword = '123456';
 
 // Store original values for cancellation
 let originalValues = {};
-let isEditMode = false;
+let isEditProfileMode = false;
+let isEditPasswordMode = false;
 
 // Set date input maximum to ensure user is at least 14 years old
 const edadMin = 14;
@@ -24,11 +30,9 @@ document.addEventListener('DOMContentLoaded', () => {
     setupEventListeners();
 });
 
-
 // Load user profile data
 async function loadUserProfile() {
-    try {
-        
+    try {        
         // TODO: Fetch user data from the backend
         /*
         const response = await fetch('/api/usuario/profile', {
@@ -53,34 +57,36 @@ async function loadUserProfile() {
             genero: 'masculino'
         };
            
-        populateForm(userData);
+        populateProfileForm(userData);
         storeOriginalValues();
 
     } catch (error) {
-        showMessage('Error al cargar el perfil: ' + error.message, 'error');
+        showMessage('Error al cargar el perfil: ' + error.message, 'error', 'profileMessage');
         console.error('Error:', error);
     }
 }
 
-// Populate form with user data
-function populateForm(userData) {
+// Populate profile form with user data
+function populateProfileForm(userData) {
 
     document.getElementById('nombre').value = userData.nombre || '';
     document.getElementById('email').value = userData.mail || '';
     document.getElementById('dni').value = userData.dni || '';
-    document.getElementById('contraseña-actual').value = '';
-    document.getElementById('contraseña-nueva').value = '';
-    document.getElementById('contraseña-confirmar').value = '';
-
-    // Format date for date input (AAAA-MM-DD)
+    // Format date for date input (YYYY-MM-DD)
     if (userData.nacimiento) {
         const date = new Date(userData.nacimiento);
         const formattedDate = date.toISOString().split('T')[0];
         document.getElementById('nacimiento').value = formattedDate;
     }
-
     document.getElementById('telefono').value = userData.telefono || '';
     document.getElementById('genero').value = userData.genero || '';
+}
+
+// Reset password form
+function resetPasswordForm() {
+    document.getElementById('contraseña-actual').value = '';
+    document.getElementById('contraseña-nueva').value = '';
+    document.getElementById('contraseña-confirmar').value = '';
 }
 
 // Store original values for cancellation
@@ -89,7 +95,6 @@ function storeOriginalValues() {
         nombre: document.getElementById('nombre').value,
         email: document.getElementById('email').value,
         dni: document.getElementById('dni').value,
-        contraseña: document.getElementById('contraseña-actual').value,
         nacimiento: document.getElementById('nacimiento').value,
         telefono: document.getElementById('telefono').value,
         genero: document.getElementById('genero').value
@@ -98,42 +103,66 @@ function storeOriginalValues() {
 
 // Setup event listeners
 function setupEventListeners() {
-    editBtn.addEventListener('click', toggleEditMode);
-    saveBtn.addEventListener('click', saveProfile);
-    cancelBtn.addEventListener('click', cancelEdit);
+    editBtn1.addEventListener('click', toggleEditProfileMode);
+    saveBtn1.addEventListener('click', saveProfile);
+    cancelBtn1.addEventListener('click', cancelProfileEdit);
+    
+    editBtn2.addEventListener('click', toggleEditPasswordMode);
+    saveBtn2.addEventListener('click', savePassword);
+    cancelBtn2.addEventListener('click', cancelPasswordEdit);
 }
 
-// Toggle edit mode
-function toggleEditMode() {
-    isEditMode = !isEditMode;
+// Toggle edit profile mode
+function toggleEditProfileMode() {
+    isEditProfileMode = !isEditProfileMode;
 
     const formInputs = profileForm.querySelectorAll('input, select');
     formInputs.forEach(input => {
-        input.disabled = !isEditMode;
+        input.disabled = !isEditProfileMode;
     });
 
-    if (isEditMode) {
-        editBtn.style.display = 'none';
-        saveBtn.style.display = 'block';
-        cancelBtn.style.display = 'block';
-        messageDiv.textContent = '';
-        messageDiv.className = 'message';
+    if (isEditProfileMode) {
+        editBtn1.style.display = 'none';
+        saveBtn1.style.display = 'block';
+        cancelBtn1.style.display = 'block';
+        profileMessageDiv.textContent = '';
+        profileMessageDiv.className = 'message';
     } else {
-        editBtn.style.display = 'block';
-        saveBtn.style.display = 'none';
-        cancelBtn.style.display = 'none';
+        editBtn1.style.display = 'block';
+        saveBtn1.style.display = 'none';
+        cancelBtn1.style.display = 'none';
+    }
+}
+
+// Toggle edit password mode
+function toggleEditPasswordMode() {
+    isEditPasswordMode = !isEditPasswordMode;
+
+    const formInputs = passwordForm.querySelectorAll('input, select');
+    formInputs.forEach(input => {
+        input.disabled = !isEditPasswordMode;
+    });
+
+    if (isEditPasswordMode) {
+        editBtn2.style.display = 'none';
+        saveBtn2.style.display = 'block';
+        cancelBtn2.style.display = 'block';
+        passwordMessageDiv.textContent = '';
+        passwordMessageDiv.className = 'message';
+    } else {
+        editBtn2.style.display = 'block';
+        saveBtn2.style.display = 'none';
+        cancelBtn2.style.display = 'none';
     }
 }
 
 // Save profile changes
 async function saveProfile() {
     try {
-        // Validate form
-        if (!validateForm()) {
+        if (!validateProfileForm()) {
             return;
         }
 
-        // Prepare data
         const userData = {
             nombre: document.getElementById('nombre').value.trim(),
             mail: document.getElementById('email').value.trim(),
@@ -164,36 +193,87 @@ async function saveProfile() {
         */
 
         const updatedUser = userData;
-        populateForm(updatedUser);
+        populateProfileForm(updatedUser);
         storeOriginalValues();
 
-        // Exit edit mode
-        isEditMode = true;
-        toggleEditMode();
+        // Exit edit profile mode
+        isEditProfileMode = true;
+        toggleEditProfileMode();
 
-        showMessage('Perfil actualizado exitosamente', 'success');
+        showMessage('Perfil actualizado exitosamente', 'success', 'profileMessage');
 
         // Clear message after 3 seconds
         setTimeout(() => {
-            messageDiv.textContent = '';
-            messageDiv.className = 'message';
+            profileMessageDiv.textContent = '';
+            profileMessageDiv.className = 'message';
         }, 3000);
 
     } catch (error) {
-        showMessage('Error: ' + error.message, 'error');
+        showMessage('Error: ' + error.message, 'error', 'profileMessage');
         console.error('Error:', error);
     }
 }
 
-// Cancel edit
-function cancelEdit() {
+// Save new password
+async function savePassword() {
+    try {
+        if (!validatePasswordForm()) {
+            return;
+        }
+
+        const userData = {
+            // mail: document.getElementById('email').value.trim(),
+            contraseña: document.getElementById('contraseña-nueva').value,
+        };
+
+        // TODO: Send update request
+        /*
+        const response = await fetch('/api/usuario/profile', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify(userData)
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Error al guardar el perfil');
+        }
+
+        const updatedUser = await response.json();
+        */
+
+        const updatedUser = userData;
+        resetPasswordForm();
+
+        // Exit edit password mode
+        isEditPasswordMode = true;
+        toggleEditPasswordMode();
+
+        showMessage('Contraseña actualizada exitosamente', 'success', 'passwordMessage');
+
+        // Clear message after 3 seconds
+        setTimeout(() => {
+            passwordMessageDiv.textContent = '';
+            passwordMessageDiv.className = 'message';
+        }, 3000);
+
+    } catch (error) {
+        showMessage('Error: ' + error.message, 'error', 'passwordMessage');
+        console.error('Error:', error);
+    }
+}
+
+// Cancel profile edit
+function cancelProfileEdit() {
     // Restore original values
     Object.keys(originalValues).forEach(key => {
         const fieldMap = {
             'email': 'email',
             'nombre': 'nombre',
             'dni': 'dni',
-            'contraseña': 'contraseña-actual',
             'nacimiento': 'nacimiento',
             'telefono': 'telefono',
             'genero': 'genero'
@@ -204,68 +284,91 @@ function cancelEdit() {
     });
 
     // Exit edit mode
-    isEditMode = true;
-    toggleEditMode();
+    isEditProfileMode = true;
+    toggleEditProfileMode();
 
-    showMessage('Cambios cancelados', 'info');
+    showMessage('Cambios cancelados', 'info', 'profileMessage');
 
     setTimeout(() => {
-        messageDiv.textContent = '';
-        messageDiv.className = 'message';
+        profileMessageDiv.textContent = '';
+        profileMessageDiv.className = 'message';
     }, 2000);
 }
 
-// Validate form
-function validateForm() {
+// Cancel password edit
+function cancelPasswordEdit() {
+    // Restore original values
+    resetPasswordForm();
+
+    // Exit edit mode
+    isEditPasswordMode = true;
+    toggleEditPasswordMode();
+
+    showMessage('Cambios cancelados', 'info', 'passwordMessage');
+
+    setTimeout(() => {
+        passwordMessageDiv.textContent = '';
+        passwordMessageDiv.className = 'message';
+    }, 2000);
+}
+
+// Validate profile form
+function validateProfileForm() {
     const nombre = document.getElementById('nombre').value.trim();
     const email = document.getElementById('email').value.trim();
     const dni = document.getElementById('dni').value.trim();
-    const contraseñaActual = document.getElementById('contraseña-actual').value;
-    const contraseñaNueva = document.getElementById('contraseña-nueva').value;
-    const contraseñaConfirmar = document.getElementById('contraseña-confirmar').value;
     const nacimiento = document.getElementById('nacimiento').value;
     const telefono = document.getElementById('telefono').value.trim();
     const genero = document.getElementById('genero').value;
 
     // Validate required fields
     if (!nombre || !email || !dni || !nacimiento || !telefono || !genero) {
-        showMessage('Por favor completa todos los campos', 'error');
-        return false;
-    }
-
-    // Validate password change
-    // TODO: Replace mock password validation with real backend validation
-    if (contraseñaActual !== '' && contraseñaActual !== mockPassword) {
-        showMessage('Las contraseña actual es incorrecta', 'error');
-        return false;
-    }
-
-    if (contraseñaNueva !== contraseñaConfirmar || (contraseñaActual && !contraseñaNueva)) {
-        showMessage('Las contraseñas no coinciden', 'error');
-        return false;
-    }
-    
-    if (contraseñaNueva && contraseñaNueva.length < 6) {
-        showMessage('La nueva contraseña debe tener al menos 6 caracteres', 'error');
+        showMessage('Por favor completa todos los campos', 'error', 'profileMessage');
         return false;
     }
 
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-        showMessage('Por favor ingresa un email válido', 'error');
+        showMessage('Por favor ingresa un email válido', 'error', 'profileMessage');
         return false;
     }
 
     // Validate DNI format (basic validation)
     if (dni.length < 7 || dni.length > 10) {
-        showMessage('DNI inválido', 'error');
+        showMessage('DNI inválido', 'error', 'profileMessage');
         return false;
     }
 
     // Validate phone (basic validation)
     if (telefono.length < 7 || telefono.length > 15) {
-        showMessage('Teléfono inválido', 'error');
+        showMessage('Teléfono inválido', 'error', 'profileMessage');
+        return false;
+    }
+
+    return true;
+}
+
+// Validate password form
+function validatePasswordForm() {
+    const contraseñaActual = document.getElementById('contraseña-actual').value;
+    const contraseñaNueva = document.getElementById('contraseña-nueva').value;
+    const contraseñaConfirmar = document.getElementById('contraseña-confirmar').value;
+    
+    // Validate password change
+    // TODO: Replace mock password validation with real backend validation
+    if (contraseñaActual !== mockPassword) {
+        showMessage('Las contraseña actual es incorrecta', 'error', 'passwordMessage');
+        return false;
+    }
+
+    if (contraseñaNueva !== contraseñaConfirmar) {
+        showMessage('Las contraseñas no coinciden', 'error', 'passwordMessage');
+        return false;
+    }
+    
+    if (!contraseñaNueva || (contraseñaNueva && contraseñaNueva.length < 6)) {
+        showMessage('La nueva contraseña debe tener al menos 6 caracteres', 'error', 'passwordMessage');
         return false;
     }
 
@@ -273,7 +376,8 @@ function validateForm() {
 }
 
 // Show message
-function showMessage(message, type) {
+function showMessage(message, type, id) {
+    const messageDiv = document.getElementById(id);
     messageDiv.textContent = message;
     messageDiv.className = `message ${type}`;
 }
