@@ -54,4 +54,3 @@
 - Otros aspectos del código y/o dudas:
     * daos -> Data Access Objects, modelos de objetos?
     * controllers -> Donde voy a ir agregando servicios
-    * puto el que lee
