@@ -1,5 +1,6 @@
 import { usuarioDao } from "../daos/index.js";
 import { planillaDao } from "../daos/index.js";
+import { generateOtp } from '@mx7/otp';
 
 export async function postController(req, res) {
     const planilla = {
@@ -42,4 +43,12 @@ export async function postController(req, res) {
     }
     await usuarioDao.create(usuario)
 }
+
+export async function crearCodigo(req, res){
+    await usuarioDao.updateOne(req.body.mail, {
+        codigo: generateOtp(),
+        limiteCodigo: new Date(Date.now() + 600000)
+    })
+}
+
 
