@@ -8,7 +8,6 @@ const errorMessages = {
 
 export async function postController(req, res) {
     try {
-        console.log("CONTROLLER: " + JSON.stringify(req.body.planillaData));
         const planilla = await planillaDao.create(req.body.planillaData);
 
         const userData = req.body.userData;
