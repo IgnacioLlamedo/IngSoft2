@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="/Images/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="/Access/accessCommon.css">
+    <link rel="stylesheet" href="/Access/loginStyle.css">
     <title>CEF - Recuperar contraseña</title>
 </head>
 <body>
@@ -21,14 +22,17 @@
                         <input type="number" name="codigo" required placeholder="Código recibido por email">                    
                     </div>
 
+                    <a href="#" id="reenviar-codigo">Enviar código otra vez</a>
                 </section>
 
                 <section>
                     <button>VALIDAR CÓDIGO</button>
-                    <button>VOLVER A ENVIAR</button>
                 </section>
             </form>
+            
         </div>
     </main>
+
+    <script src="/Access/twoFactorAuthentication.js"></script>
 </body>
 </html>

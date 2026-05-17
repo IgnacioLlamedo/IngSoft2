@@ -1,6 +1,10 @@
 import { usuarioDao } from "../daos/index.js";
 import { planillaDao } from "../daos/index.js";
+<<<<<<< HEAD
 import { generateOtp } from '@mx7/otp';
+=======
+import { homeRoutes } from "../app.js";
+>>>>>>> origin/Front-Facu
 
 const errorMessages = {
     11000: "Error al crear la cuenta, el email ya está registrado.",
@@ -52,16 +56,8 @@ export async function loginController(req,res) {
             });
         }
 
-        //guardo la sesión del usuario
-        /* req.session.user = {
-            id: user._id,
-            mail: user.mail,
-            rol: user.rol,
-        }; */
 
-        //Se decide desde que vista se iniciará sesión.
-        let redirect = "/access/authentication";
-
+        let redirect = `/access/authentication?email=${mail}`;
         res.json({
             success: true,
             redirect
@@ -75,6 +71,30 @@ export async function loginController(req,res) {
     }
 }
 
+export async function authenticationController(req,res) {
+    try {
+
+
+
+        /* req.session.user = {
+            id: user._id,
+            mail: user.mail,
+            rol: user.rol,
+        };
+
+        const redirect = homeRoutes[user.rol];
+        res.json({
+            success: true,
+            redirect
+        }); */
+    } 
+    catch(error) {
+        res.json({
+            success: false,
+            message: "Error al validar el código. Inténtelo más tarde."
+        });
+    }
+}
 
 export async function logoutController(req,res) {
     try {
