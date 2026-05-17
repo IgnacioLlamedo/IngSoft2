@@ -12,6 +12,7 @@ body {
     align-items: center;
     padding: 15px;   
     position: relative;
+    padding-right: 20px;
 }
 
 .header-nav ul {
@@ -20,6 +21,7 @@ body {
     gap: 15px;
     flex: 1;
     justify-content: flex-end;
+    padding-right: 20px;
 }
 
 .header-nav a {

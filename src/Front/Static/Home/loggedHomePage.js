@@ -9,3 +9,13 @@ document.addEventListener("click", (e) => {
     if (!userIcon.contains(e.target) && !userOptions.contains(e.target))
         userOptions.classList.remove("user-options-open");
 });
+
+document.getElementById("logout").addEventListener("click", async (e) => {
+    e.preventDefault();
+
+    await fetch("/api/logout", {
+        method: "POST"
+    });
+
+    window.location.href = "/";
+});

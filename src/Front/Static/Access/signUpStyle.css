@@ -38,10 +38,6 @@ fieldset {
     color: black;
 }
 
-.errorMsg {
-    color: rgb(245, 45, 45);
-    font-weight: bold;
-}
 
 .hidden {
     display: none;

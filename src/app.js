@@ -1,13 +1,20 @@
-import config from './config.js'
-import express from 'express'
-import nodemailer from 'nodemailer'
+import config from './config.js';
+import express from 'express';
+import nodemailer from 'nodemailer';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { usuarioDao } from './daos/index.js'
+import { usuarioDao } from './daos/index.js';
+import session from 'express-session';
+import { conectarMongo } from "./db/mongoose.js";
+
+
+// Imports Routers /api/..
+import registerRouter from "./routes/api/register.js";
+import loginRouter from "./routes/api/login.js"
+
 
 const app = express()
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
 
 app.listen(config.port, () => {
     console.log(`Listening in port ${config.port}`)
@@ -15,10 +22,19 @@ app.listen(config.port, () => {
 
 app.use(express.json());
 
-// Statics
-//app.use(express.static(__dirname + "/Front/Static"));
+//Conexión con DB
+await conectarMongo();
 
-app.use(express.static(__dirname + "/Front/Static", {
+//sesion de usuario
+app.use(session({
+    secret: "secreto",
+    resave: false,
+    saveUninitialized: false
+}));
+
+
+// Statics
+app.use(express.static(path.join(__dirname, "Front/Static"), {
   setHeaders: (res, path) => {
     if (path.endsWith('.js')) {
       res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
@@ -28,16 +44,48 @@ app.use(express.static(__dirname + "/Front/Static", {
 
 
 // Routes
-app.get("/", (req,res) => res.sendFile(__dirname + "/Front/Home/homePage.html"))
+export const homeRoutes = { 
+    cliente: "/home", 
+    empleado: "/home-employee", 
+    administrador: "/home-admin",
+};
 
-// Access
-app.get("/access/register", (req,res) => res.sendFile(__dirname + "/Front/Access/signUp.html"))
-app.get("/access/login", (req,res) => res.sendFile(__dirname + "/Front/Access/signIn.html"))
-app.get("/access/recover-password", (req,res) => res.sendFile(__dirname + "/Front/Access/recoverPassword.html"))
-app.get("/access/reset-password", (req,res) => res.sendFile(__dirname + "/Front/Access/resetPassword.html"))
+app.get("/", (req,res) => {
+    if(req.session.user) return res.redirect(homeRoutes[req.session.user.rol]);
+    res.sendFile(path.join(__dirname, "Front/Home/visitorHomePage.html"));
+});
+
+// Access GET
+app.get("/access/register", (req,res) => res.sendFile(path.join(__dirname, "Front/Access/signUp.html")));
+app.get("/access/login", (req,res) => res.sendFile(path.join(__dirname, "Front/Access/login.html")));
+app.get("/access/recover-password", (req,res) => res.sendFile(path.join(__dirname, "Front/Access/recoverPassword.html")));
+app.get("/access/reset-password", (req,res) => res.sendFile(path.join(__dirname, "Front/Access/resetPassword.html")));
+
+app.get("/home", (req, res) => {
+    if(!req.session.user) return res.redirect("/access/login");
+    if(req.session.user.rol !== "cliente") return res.redirect(homeRoutes[req.session.user.rol]);
+    res.sendFile(path.join(__dirname, "Front/Home/userHomePage.html"));
+});
+
+app.get("/home-employee", (req, res) => {
+    if(!req.session.user) return res.redirect("/access/login");
+    if(req.session.user.rol !== "empleado") return res.redirect(homeRoutes[req.session.user.rol]);
+    res.sendFile(path.join(__dirname, "Front/Home/employeeHomePage.html"));
+});
+
+app.get("/home-admin", (req, res) => {
+    if(!req.session.user) return res.redirect("/access/login");
+    if(req.session.user.rol !== "administrador") return res.redirect(homeRoutes[req.session.user.rol]);
+    res.sendFile(path.join(__dirname, "Front/Home/adminHomePage.html"));
+});
+
+
+// Access USE
+app.use("/api", registerRouter);
+app.use("/api", loginRouter);
 
 // Account
-app.get("/account/user", (req,res) => res.sendFile(__dirname + "/Front/Account/userPage.html"))
+app.get("/account/user", (req,res) => res.sendFile(path.join(__dirname, "Front/Account/userPage.html")));
 
 
 
@@ -66,44 +114,26 @@ class mailer{
         await this.transport.sendMail(mailOptions)
     }
 }
+
 const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            port: 587,
-            auth: {
-                user: config.mailUser,
-                pass: config.mailPass
-            }
-        })
+    service: 'gmail',
+    port: 587,
+    auth: {
+        user: config.mailUser,
+        pass: config.mailPass
+    }
+})
 const mailOptions = {
-            from: config.mailUser,
-            to: "ignaciollamedo@hotmail.com",
-            subject: "subject",
-            html: `
-        <h1>Purchase Ticket</h1>
-        <ul>
-            <li>Purchaser:</li>
-            <li>Total amount: </li>
-            <li>Date: </li>
-            <li>Ticket code: </li>
-        </ul>
-        `
-        }
-        //const info = await transporter.sendMail(mailOptions)
-    
-console.log("aaaaaa")
-
-/* usuarioDao.create({
-    mail: "mail@mail.com",
-    dni: "123",
-    contraseña: "muy segura",
-    nombre: "gonzalo gonzales",
-    nacimiento: "ayer",
-    telefono: "123",
-    genero: "a",
-    planilla: "a"
-}) */
-
-/* app.use(express.static(__dirname + "/Home"))
-app.get("/registro", (req, res) => {
-    res.sendFile(__dirname + "/Front/Sign-up/signUp.html")
-}) */
+    from: config.mailUser,
+    to: "ignaciollamedo@hotmail.com",
+    subject: "subject",
+    html: `
+    <h1>Purchase Ticket</h1>
+    <ul>
+        <li>Purchaser:</li>
+        <li>Total amount: </li>
+        <li>Date: </li>
+        <li>Ticket code: </li>
+    </ul>
+    `
+}

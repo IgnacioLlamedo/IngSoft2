@@ -18,9 +18,9 @@
 
                     <div class="input-section">
 
-                        <input type="text" name="nombre" required placeholder="Nombre completo">
+                        <input type="text" name="nombreCompleto" required placeholder="Nombre completo">
                         <input type="text" name="dni" required placeholder="DNI">
-                        <input type="email" name="mail" required placeholder="Ingrese correo electrónico">
+                        <input type="email" name="email" required placeholder="Ingrese correo electrónico">
 
                         <input id="password" type="password" name="contraseña" required placeholder="Ingrese contraseña">
                         <p id="passwordRequirementError" class="errorMsg hidden"></p>
@@ -28,10 +28,10 @@
                         <input id="confirmPassword" type="password" name="confirmarContraseña" required placeholder="Confirmar contraseña">
                         <p id="confirmPasswordError" class="errorMsg hidden"></p>
 
-                        <input id="birthDate" type="date" name="nacimiento" required placeholder="Fecha de nacimiento">
+                        <input id="birthDate" type="date" name="fechaNacimiento" required placeholder="Fecha de nacimiento">
                         <p id="birthDateError" class="errorMsg hidden"></p>
 
-                        <input type="tel" name="telefono" required placeholder="Número de telefono celular">
+                        <input type="tel" name="numeroTelefono" required placeholder="Número de telefono celular">
                         
 
                         <div class="selector">
@@ -60,50 +60,55 @@
 
                         <fieldset>
                             <legend>Contacto de emergencia</legend>
-                            <input type="text" name="nombreEmergencia" required placeholder="Nombre completo">
-                            <input type="text" name="relacionEmergencia" required placeholder="Relación">
-                            <input type="tel" name="telefonoEmergencia" required placeholder="Teléfono">
+                            <input type="text" name="nombreCompletoContactoEmergencia" required placeholder="Nombre completo">
+                            <input type="text" name="relacionContactoEmergencia" required placeholder="Relación">
+                            <input type="tel" name="telefonoContactoEmergencia" required placeholder="Teléfono">
                         </fieldset>
 
                         <fieldset>
                             <legend>Antecedentes médicos</legend>
 
                             <div class="checkbox-container">
-                                <input type="checkbox" name="hipertension">
+                                <input type="checkbox" name="tieneHipertension">
                                 <label>Hipertensión</label>
                             </div>
 
                             <div class="checkbox-container">
-                                <input type="checkbox" name="diabetes">
+                                <input type="checkbox" name="tieneDiabetes">
                                 <label>Diabetes</label>
                             </div>
 
                             <div class="checkbox-container">
-                                <input type="checkbox" name="asma">
+                                <input type="checkbox" name="tieneAsma">
                                 <label>Asma</label>
                             </div>
 
                             <div class="checkbox-container">
-                                <input type="checkbox" name="cardiacos">
+                                <input type="checkbox" name="tieneCardiacos">
                                 <label>Cardiacos</label>
                             </div>
 
                             <div class="checkbox-container">
-                                <input type="checkbox" name="artritis">
+                                <input type="checkbox" name="tieneArtritis">
                                 <label>Artritis</label>
                             </div>
 
                             <div class="checkbox-container">
-                                <input type="checkbox" name="epilepsia">
+                                <input type="checkbox" name="tieneEpilepsia">
                                 <label>Epilepsia</label>
                             </div>
 
                             <div class="checkbox-container">
-                                <input type="checkbox" name="lesiones">
+                                <input type="checkbox" name="tieneLesiones">
                                 <label>Lesiones</label>
                             </div>
 
-                            <input type="text" name="otrosAntecedentes" placeholder="Otros antecedentes médicos...">
+                            <div class="checkbox-container">
+                                <input type="checkbox" id="hasOtherHistory" name="haceActividadFisica">
+                                <label>¿Tiene algún otro antecedente médico?</label>
+                            </div>
+
+                            <input class="otherHistoryFields hidden" type="text" name="otrosAntecedentes" placeholder="Otros antecedentes médicos...">
                         </fieldset>
                        
 
@@ -116,7 +121,7 @@
                             </div>
 
                             <div class="checkbox-container">
-                                <input type="checkbox" name="alcohol">
+                                <input type="checkbox" name="tomaAlcohol">
                                 <label>Consume alcohol</label>
                             </div>
 
@@ -125,10 +130,10 @@
                                 <label>Sintomas recientes</label>
                             </div>
 
-                            <input type="text" name="sueño" placeholder="Horas de sueño">
+                            <input type="text" name="horasSueño" placeholder="Horas de sueño">
 
                             <div class="checkbox-container">
-                                <input type="checkbox" name="dificultadDormir">
+                                <input type="checkbox" name="tieneDificultadDormir">
                                 <label>Dificultad para dormir</label>
                             </div>
 
@@ -147,7 +152,7 @@
                                 <label>¿Le realizaron cirugías?</label>
                             </div>
 
-                            <input class="surgeriesFields hidden" type="text" name="cirugia" placeholder="Descripción de la cirugía">
+                            <input class="surgeriesFields hidden" type="text" name="descripcionCirugia" placeholder="Descripción de la cirugía">
                             <input class="surgeriesFields hidden" type="date" name="fechaCirugia" placeholder="Fecha de cirugia">
                             <input class="surgeriesFields hidden" type="text" name="secuelasCirugia" placeholder="Secuelas de la cirugía">
                         </fieldset>
@@ -160,19 +165,19 @@
                                 <label>¿Tiene alguna alergia?</label>
                             </div>
 
-                            <input class="allergiesFields hidden" type="text" name="alergia" placeholder="Alergias">
-                            <input class="allergiesFields hidden" type="text" name="medicacionAlergia" placeholder="Medicación actual">
+                            <input class="allergiesFields hidden" type="text" name="alergias" placeholder="Alergias">
+                            <input class="allergiesFields hidden" type="text" name="medicacionAlergias" placeholder="Medicación actual">
                         </fieldset>
 
                         <fieldset>
                             <legend>Actividad física y objetivos</legend>
 
                             <div class="checkbox-container">
-                                <input type="checkbox" id="physicallyActive" name="actividadFisica">
+                                <input type="checkbox" id="isPhysicallyActive" name="haceActividadFisica">
                                 <label>¿Realiza actividad física?</label>
                             </div>
 
-                            <input class="physicallyActiveFields hidden" type="text" name="frecuenciaActividad" placeholder="Frecuencia">
+                            <input class="physicallyActiveFields hidden" type="text" name="frecuenciaActividadFisica" placeholder="Frecuencia">
 
                             
 
@@ -193,16 +198,13 @@
                 </section>
 
                 <section>
-                    <p id="registerError" class="errorMsg hidden">Corregí todos los errores antes de registrarte</p>
+                    <p id="registerError" class="errorMsg hidden"></p>
                     <button>REGISTRARSE</button>
                 </section>
             </form>
         </div>
     </main>
 
-    <script src="/Access/signUpLogic.js"></script>
-    <script>
-        
-    </script>
+    <script src="/Access/signUp.js"></script>
 </body>
 </html>

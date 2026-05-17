@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/Access/accessCommon.css">
-    <link rel="stylesheet" href="/Access/signInStyle.css">
+    <link rel="stylesheet" href="/Access/loginStyle.css">
     <title>CEF - Iniciar sesión</title>
 </head>
 <body>
@@ -17,7 +17,7 @@
 
                     <div class="input-section">
 
-                        <input type="email" name="mail" required placeholder="Email registrado">
+                        <input type="email" name="email" required placeholder="Email registrado">
                         <input type="password" name="contraseña" required placeholder="Contraseña">                        
 
                     </div>
@@ -28,10 +28,14 @@
 
                 <section>
                     <!-- autenticación -->
+
+                    <p id="loginError" class="errorMsg hidden"></p>
                     <button>INICIAR SESIÓN</button>
                 </section>
             </form>
         </div>
     </main>
+
+    <script src="/Access/login.js"></script>
 </body>
 </html>

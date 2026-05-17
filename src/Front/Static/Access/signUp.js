@@ -15,13 +15,16 @@ let birthDateError = false;
 
 const errorInForm = () => passwordRequirementError || confirmPasswordError || birthDateError;
 
+const hasOtherHistory = document.getElementById("hasOtherHistory");
+const otherHistoryFields = document.getElementsByClassName("otherHistoryFields");
+
 const hasSurgeries = document.getElementById("hasSurgeries");
 const surgeriesFields = document.getElementsByClassName("surgeriesFields");
 
 const hasAllergies = document.getElementById("hasAllergies");
 const allergiesFields = document.getElementsByClassName("allergiesFields");
 
-const activityCheckbox = document.getElementById("physicallyActive");
+const activityCheckbox = document.getElementById("isPhysicallyActive");
 const activityFields = document.getElementsByClassName("physicallyActiveFields");
 
 const registerErrorMsg = document.getElementById("registerError");
@@ -160,6 +163,14 @@ function disableBirthError() {
 }
 
 
+hasOtherHistory.onclick = function() {
+    for(const field of otherHistoryFields) {
+        if(!field.classList.contains("hidden"))
+            field.value = "";
+        field.classList.toggle("hidden");
+        field.toggleAttribute("required");
+    }
+}
 
 hasSurgeries.onclick = function() {
     for(const field of surgeriesFields) {
@@ -200,36 +211,106 @@ document.getElementById("register-form").addEventListener("submit", async (event
     event.preventDefault();
 
     if(errorInForm()) {
+        registerErrorMsg.textContent = "Corregí todos los errores antes de registrarte";
         registerErrorMsg.classList.remove("hidden");
         return;
     }
-
     registerErrorMsg.classList.add("hidden");
 
-    const formData = new FormData(event.target);
-    const data = Object.fromEntries(formData);
+    const form = event.target;
 
-    data.hipertension = !(data.hipertension === undefined)
-    data.diabetes = !(data.diabetes === undefined)
-    data.asma = !(data.asma === undefined)
-    data.cardiacos = !(data.cardiacos === undefined)
-    data.artitris = !(data.artitris === undefined)
-    data.epilepsia = !(data.epilepsia === undefined)
-    data.lesiones = !(data.lesiones === undefined);
-    data.fuma = !(data.fuma === undefined)
-    data.alcohol = !(data.alcohol === undefined)
-    data.sintomasRecientes = !(data.sintomasRecientes === undefined)
-    data.dificultadDormir = !(data.dificultadDormir === undefined)
-    data.actividadFisica = !(data.actividadFisica === undefined)
+    const planillaData = {
+        nombreEmergencia: form.nombreCompletoContactoEmergencia.value,
+        relacionEmergencia: form.relacionContactoEmergencia.value,
+        telefonoEmergencia: form.telefonoContactoEmergencia.value,
+        hipertension: form.tieneHipertension.checked,
+        diabetes: form.tieneDiabetes.checked,
+        asma: form.tieneAsma.checked,
+        cardiacos: form.tieneCardiacos.checked,
+        artritis: form.tieneArtritis.checked,
+        epilepsia: form.tieneEpilepsia.checked,
+        lesiones: form.tieneLesiones.checked,
+        otrosAntecedentes: form.otrosAntecedentes.value,
+        fuma: form.fuma.checked,
+        alcohol: form.tomaAlcohol.checked,
+        sintomasRecientes: form.sintomasRecientes.checked,
+        sueño: form.horasSueño.value,
+        dificultadDormir: form.tieneDificultadDormir.checked,
+        nutricion: form.nutricion.value,
+        cirugia: form.descripcionCirugia.value,
+        fechaCirugia: form.fechaCirugia.value,
+        secuelasCirugia: form.secuelasCirugia.value,
+        alergia: form.alergias.value,
+        medicacionAlergia: form.medicacionAlergias.value,
+        actividadFisica: form.haceActividadFisica.checked,
+        frecuenciaActividad: form.frecuenciaActividadFisica.value,
+        objetivo: form.objetivo.value
+    }
+
+    const planillaDataString = JSON.stringify(planillaData);
+
+    const userData = {
+        mail: form.email.value,
+        dni: form.dni.value,
+        contraseña: form.contraseña.value,
+        nombre: form.nombreCompleto.value,
+        nacimiento: form.fechaNacimiento.value,
+        telefono: form.numeroTelefono.value,
+        genero: form.genero.value,
+        planilla: planillaDataString,
+        rol: "cliente"
+    }
+
+    const userDataString = JSON.stringify(userData);
 
 
-    console.log(data);
-    // autenticar?
-    /* const res = await fetch("/api/register", {
+    // autenticar req?
+    const res = await fetch("/api/register", {
         method: "POST",
         headers: {
             "Content-Type" : "application/json"
         },
-        body: JSON.stringify(data)
-    }) */
+        body: userDataString
+    });
+
+    const resData = await res.json();
+
+    if(resData.success)
+        //AutoLogear??? quedaría mucho código repetido ya que no se puede importar. Hice un ejemplo rápido, está abajo.
+        window.location.href = "/access/login";
+    else 
+    {
+        registerErrorMsg.textContent = resData.message;
+        registerErrorMsg.classList.remove("hidden");
+    }
 })
+
+
+/*
+function AutoLogin(email, password) {
+
+    const userData = {
+        mail: email,
+        contraseña: password,
+    }
+
+    const userDataString = JSON.stringify(userData);
+
+    const res = await fetch("/api/login", {
+        method: "POST",
+        headers: {
+            "Content-Type" : "application/json"
+        },
+        body: userDataString
+    });
+
+    const resData = res.json();
+
+    if(resData.success)
+        window.location.href = resData.redirect;
+    else {
+        registerErrorMsg.textContent = resData.message;
+        registerErrorMsg.classList.remove("hidden");
+    }
+}
+*/
