@@ -6,7 +6,7 @@
   "main": "src/app.js",
   "scripts": {
     "start": "node src/app.js",
-    "dev": "nodemon -e js src/app.js --env-file=.env ."
+    "dev": "nodemon -e js,html src/app.js --env-file=.env ."
   },
   "dependencies": {
     "connect-mongo": "^6.0.0",
@@ -17,6 +17,8 @@
     "mongodb": "^7.2.0",
     "mongoose": "^9.6.2",
     "nodemailer": "^8.0.7",
-    "nodemon": "^3.1.14"
+    "nodemon": "^3.1.14",
+    "passport": "^0.7.0",
+    "passport-local": "^1.0.0"
   }
 }

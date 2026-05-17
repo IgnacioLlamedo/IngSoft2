@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="profileStyle.css">
+    <link rel="icon" href="Images/favicon.ico" type="image/x-icon">
+    <title>Mi Perfil - CEF</title>
+</head>
+
+<body>
+
+    <main class="profile-container">
+        <div class="profile-card">
+            <h1>Mi Perfil</h1>
+
+            <div class="profile-content">
+                <form id="profileForm" class="profile-form">
+
+                    <div class="form-group">
+                        <label for="nombre">Nombre:</label>
+                        <input type="text" id="nombre" name="nombre" disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="email" id="email" name="email" disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dni">DNI:</label>
+                        <input type="text" id="dni" name="dni" disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="nacimiento">Fecha de Nacimiento:</label>
+                        <input type="date" id="nacimiento" name="nacimiento" disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="telefono">Teléfono:</label>
+                        <input type="tel" id="telefono" name="telefono" disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="genero">Género:</label>
+                        <select id="genero" name="genero" disabled>
+                            <option value="">Selecciona un género</option>
+                            <option value="femenino">Femenino</option>
+                            <option value="masculino">Masculino</option>
+                            <option value="otro">Otro</option>
+                        </select>
+                    </div>
+
+                </form>
+            </div>
+
+            <div class="button-group">
+                <button id="editBtn1" class="btn btn-edit">Editar Perfil</button>
+                <button id="saveBtn1" class="btn btn-save" style="display: none;">Guardar Cambios</button>
+                <button id="cancelBtn1" class="btn btn-cancel" style="display: none;">Cancelar</button>
+            </div>
+
+            <div id="profileMessage" class="message"></div>
+
+        </div>
+
+        <div class="profile-card">
+            <h1>Cambiar contraseña</h1>
+
+            <div class="profile-content">
+                <form id="passwordForm" class="profile-form">
+
+                        <div class="form-group">
+                        <label for="contraseña-actual">Contraseña actual:</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="contraseña-actual" name="contraseña-actual" disabled>
+                            <button type="button" class="password-toggle-button" aria-label="Mostrar contraseña">
+                                <img class="password-toggle-icon" src="/Images/eye-icon-hidden-white.png" alt="Mostrar contraseña">
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contraseña-nueva">Contraseña nueva:</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="contraseña-nueva" name="contraseña-nueva" disabled>
+                            <button type="button" class="password-toggle-button" aria-label="Mostrar contraseña">
+                                <img class="password-toggle-icon" src="/Images/eye-icon-hidden-white.png" alt="Mostrar contraseña">
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contraseña-confirmar">Confirmar contraseña:</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="contraseña-confirmar" name="contraseña-confirmar" disabled>
+                            <button type="button" class="password-toggle-button" aria-label="Mostrar contraseña">
+                                <img class="password-toggle-icon" src="/Images/eye-icon-hidden-white.png" alt="Mostrar contraseña">
+                            </button>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+
+            <div class="button-group">
+                <button id="editBtn2" class="btn btn-edit">Editar Contraseña</button>
+                <button id="saveBtn2" class="btn btn-save" style="display: none;">Guardar Cambios</button>
+                <button id="cancelBtn2" class="btn btn-cancel" style="display: none;">Cancelar</button>
+            </div>
+
+            <div id="passwordMessage" class="message"></div>
+
+        </div>
+    </main>
+
+    <script src="profileLogic.js"></script>
+</body>
+</html>

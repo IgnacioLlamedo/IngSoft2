@@ -1,0 +1,177 @@
+
+body {
+    background-color: #1b1b1b;
+}
+
+main {
+    flex: 1;
+    padding: 20px;
+}
+
+.header-nav {
+    height: 70px;
+    background-color: rgb(54, 54, 54);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    font-family: sans-serif;
+    position: relative;
+}
+
+.header-nav ul {
+    display: flex;
+    list-style: none;
+    gap: 15px;
+    flex: 1;
+    justify-content: flex-end;
+}
+
+.header-nav a {
+    text-decoration: none;
+    color: #D01F25;
+    font-weight: bold;
+}
+
+.logo-img {
+    height: 70px;
+    position: relative;
+    left: 600px;
+}
+
+.homepage-img{
+    height: 85px;
+}
+
+.user-ico {
+    height: 80px;
+    margin-left: 10px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+
+.user-options-menu {
+    background-color: rgb(54, 54, 54);
+    position: absolute;
+    top: 110%;
+    border-radius: 5%;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    width: 20%;
+    max-width: 180px;
+    right: 3%;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s;
+}
+
+.user-options-wrapper {
+    padding: 10px;
+}
+
+.user-options-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-options-list div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.user-options-list img {
+    height: 28px;
+}
+
+.user-options-list p {
+    flex: 1;
+    margin-left: 10px;
+    font-size: 16px;
+}
+
+.user-options-list a {
+    color: white;
+}
+
+.user-options-open {
+    max-height: 150px;
+}
+
+iframe.tabla {
+    width: 70%;
+    margin: 0 auto;  
+    height: 600px;
+    border: none;
+    background: white;
+    display: block;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.panel-pago {
+
+    position: fixed;
+    inset: 0;
+
+    background: rgba(0,0,0,0.5);
+
+    display: none;
+
+    justify-content: center;
+    align-items: center;
+
+    z-index: 1000;
+}
+
+.panel-abierto {
+    display: flex;
+}
+
+.panel-contenido {
+
+    background: white;
+
+    padding: 30px;
+
+    border-radius: 10px;
+
+    min-width: 300px;
+
+    position: relative;
+}
+
+.cerrar-panel {
+
+    position: absolute;
+
+    right: 15px;
+    top: 10px;
+
+    cursor: pointer;
+
+    font-size: 24px;
+}
+
+.botones-pago {
+
+    margin-top: 20px;
+
+    display: flex;
+
+    gap: 10px;
+}
+
+.botones-pago button {
+
+    padding: 10px 20px;
+
+    border: none;
+
+    background: #333;
+
+    color: white;
+
+    border-radius: 5px;
+
+    cursor: pointer;
+}

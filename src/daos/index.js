@@ -13,6 +13,9 @@ import dns from 'node:dns'
 
 dns.setServers(['8.8.8.8', '8.8.4.4'])
 
+import dns from 'node:dns'
+dns.setServers(['8.8.8.8', '8.8.4.4'])
+
 await mongoose.connect(config.cnxStr)
 console.log("Base de datos conectada")
 
