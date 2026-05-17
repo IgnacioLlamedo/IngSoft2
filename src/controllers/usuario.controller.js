@@ -1,10 +1,7 @@
 import { usuarioDao } from "../daos/index.js";
 import { planillaDao } from "../daos/index.js";
-<<<<<<< HEAD
 import { generateOtp } from '@mx7/otp';
-=======
 import { homeRoutes } from "../app.js";
->>>>>>> origin/Front-Facu
 
 const errorMessages = {
     11000: "Error al crear la cuenta, el email ya está registrado.",
