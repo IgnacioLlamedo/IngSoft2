@@ -3,6 +3,11 @@ body {
     background-color: #1b1b1b;
 }
 
+main {
+    flex: 1;
+    padding: 20px;
+}
+
 .header-nav {
     height: 70px;
     background-color: rgb(54, 54, 54);
@@ -30,6 +35,12 @@ body {
 
 .logo-img {
     height: 70px;
+    position: relative;
+    left: 600px;
+}
+
+.homepage-img{
+    height: 85px;
 }
 
 .user-ico {
@@ -77,6 +88,9 @@ body {
     flex: 1;
     margin-left: 10px;
     font-size: 16px;
+}
+
+.user-options-list a {
     color: white;
 }
 
@@ -84,3 +98,80 @@ body {
     max-height: 150px;
 }
 
+iframe.tabla {
+    width: 70%;
+    margin: 0 auto;  
+    height: 600px;
+    border: none;
+    background: white;
+    display: block;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.panel-pago {
+
+    position: fixed;
+    inset: 0;
+
+    background: rgba(0,0,0,0.5);
+
+    display: none;
+
+    justify-content: center;
+    align-items: center;
+
+    z-index: 1000;
+}
+
+.panel-abierto {
+    display: flex;
+}
+
+.panel-contenido {
+
+    background: white;
+
+    padding: 30px;
+
+    border-radius: 10px;
+
+    min-width: 300px;
+
+    position: relative;
+}
+
+.cerrar-panel {
+
+    position: absolute;
+
+    right: 15px;
+    top: 10px;
+
+    cursor: pointer;
+
+    font-size: 24px;
+}
+
+.botones-pago {
+
+    margin-top: 20px;
+
+    display: flex;
+
+    gap: 10px;
+}
+
+.botones-pago button {
+
+    padding: 10px 20px;
+
+    border: none;
+
+    background: #333;
+
+    color: white;
+
+    border-radius: 5px;
+
+    cursor: pointer;
+}

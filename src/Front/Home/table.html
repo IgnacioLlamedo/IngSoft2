@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Tabla de Horarios</title>
+  <link rel="stylesheet" href="tableStyle.css">
+</head>
+<body>
+    <div class="tabla-container">
+        <div class="week-nav">
+            <button>&larr;</button>
+            <div class="week-display">Semana 18 (13/04 - 18/04)</div>
+            <button>&rarr;</button>
+        </div>
+        <table>
+            <tr>
+                <th class="th-vacio"></th>
+                <th>Lunes</th>
+                <th>Martes</th>
+                <th>Miércoles</th>
+                <th>Jueves</th>
+                <th>Viernes</th>
+                <th>Sábado</th>
+            </tr>
+
+            <tr>
+                <th>Horarios</th>
+                <td><div class="slotHeader">S1</div><div class="slotHeader">S2</div><div class="slotHeader">S3</div></td>
+                <td><div class="slotHeader">S1</div><div class="slotHeader">S2</div><div class="slotHeader">S3</div></td>
+                <td><div class="slotHeader">S1</div><div class="slotHeader">S2</div><div class="slotHeader">S3</div></td>
+                <td><div class="slotHeader">S1</div><div class="slotHeader">S2</div><div class="slotHeader">S3</div></td>
+                <td><div class="slotHeader">S1</div><div class="slotHeader">S2</div><div class="slotHeader">S3</div></td>
+                <td><div class="slotHeader">S1</div><div class="slotHeader">S2</div><div class="slotHeader">S3</div></td>
+            </tr>
+
+            <tr>
+                <td>7:00 - 8:00</td>
+                <td><div data-clase="Spinning" data-precio="3500" onclick="abrirPago(this)">Spinning</div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+            </tr>
+
+            <tr>
+                <td>8:00 - 9:00</td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>   
+            </tr>
+
+            <tr>
+                <td>9:00 - 10:00</td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>      
+            </tr>
+
+            <tr>
+                <td>10:00 - 11:00</td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+            </tr>
+
+            <tr>
+                <td>11:00 - 12:00</td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+            </tr>
+
+            <tr>
+                <td>12:00 - 13:00</td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+            </tr>
+
+            <tr>
+                <td>13:00 - 14:00</td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+            </tr>
+
+            <tr>
+                <td>14:00 - 15:00</td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+            </tr>
+
+            <tr>
+                <td>15:00 - 16:00</td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+            </tr>
+
+            <tr>
+                <td>16:00 - 17:00</td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+            </tr>
+
+            <tr>
+                <td>17:00 - 18:00</td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+            </tr>
+
+            <tr>
+                <td>18:00 - 19:00</td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+            </tr>
+
+            <tr>
+                <td>19:00 - 20:00</td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+            </tr>
+
+            <tr>
+                <td>20:00 - 21:00</td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+            </tr>
+
+            <tr>
+                <td>21:00 - 22:00</td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+                <td><div class="slotDeClase"></div><div class="slotDeClase"></div><div class="slotDeClase"></div></td>
+            </tr>
+        </table>
+    </div>
+    <script>
+    function abrirPago(elemento) {
+
+        const clase = elemento.dataset.clase;
+        const precio = elemento.dataset.precio;
+
+        // Llama a una función del index.html
+        window.parent.mostrarPanelPago(clase, precio);
+    }
+</script>
+</body>
+</html>

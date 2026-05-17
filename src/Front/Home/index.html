@@ -1,17 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="Home/style.css">
     <title>CEF</title>
 </head>
 <body>
-    
+
     <header>
- 
+
         <nav class="header-nav">
-            <img class="logo-img" src="Images/Logo.png" alt="Logo">
+            <a href="/">
+                <img class="homepage-img" id="homepageIcon" src="Images/Logo.png" alt="Homepage">
+            </a>
+            <!-- <img class="logo-img" src="Images/homepage.png" alt="Logo"> Lo saco porque el logo no sería el link a la Homepage también? -->
             
             <ul>
                 <li><a href="/registro">Registrarse</a></li>
@@ -27,13 +29,8 @@
                     <div class="user-options-list">
 
                         <div>
-                            <img src="Images/logout_ico.webp" alt="Cerrar sesión">
-                            <p>Cerrar sesión</p>
                         </div>
-
                         <div>
-                            <img src="Images/logout_ico.webp" alt="Cerrar sesión">
-                            <p>Hola</p>
                         </div>
                     </div>
 
@@ -51,15 +48,86 @@
                 userOptions.classList.toggle("user-options-open")
             })
 
+
             document.addEventListener("click", (e) => {
                 if (!userIcon.contains(e.target) && !userOptions.contains(e.target))
                     userOptions.classList.remove("user-options-open");
             });
+
+            //Acceso a el elemento para pago
+            let claseSeleccionada = "";
+            let precioSeleccionado = 0;
+
+            function pagarClaseUnica() {
+                pagar(claseSeleccionada, precioSeleccionado, 1);
+            }
+
+            function pagarMensual() {
+                pagar(claseSeleccionada, precioSeleccionado/0.3, 1); //Consultar si se decide el precio de pago mensual o
+                //es simplemente clase única x cantidad de semanas del mes actual.
+            }
+            /* La cantidad debería seguir siendo 1, solo se cambia el precio porque la preferenciade mercado pago,
+            en caso de tener cantidad > 1 no muestra un solo producto de tipo "Spinning", sino que muestra una lista
+            de productos "Spinning"*/
+
+            function mostrarPanelPago(clase, precio) {
+
+                claseSeleccionada = clase;
+                precioSeleccionado = precio;
+
+                document.getElementById("tituloClase").innerText = clase;
+                document.getElementById("precioClase").innerText = "$" + precio;
+
+                document.getElementById("panelPago").classList.add("panel-abierto");
+            }
+
+            function cerrarPanel() {
+                document.getElementById("panelPago").classList.remove("panel-abierto"); //Elemento emergente para pagos
+            }
+
+            function mostrarPanelInicioDeSesión() {
+            }
+
+            function cerrarPanelInicioDeSesión() {
+            }
         </script>
         
-
     </header>
+    <main>
+        <iframe src="table.html" class="tabla"></iframe>
+    </main>
 
+    <div class="panel-pago" id="panelPago">
 
+    <div class="panel-contenido">
+
+        <span class="cerrar-panel" onclick="cerrarPanel()">&times;</span>
+
+        <h2 id="tituloClase"></h2>
+
+        <p>
+            Precio por clase:
+            <span id="precioClase"></span>
+        </p>
+
+        <div class="botones-pago">
+
+            <button onclick="pagarClaseUnica()">
+                Pagar clase única
+            </button>
+
+            <button onclick="pagarMensual()">
+                Pago mensual
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+    <footer>
+        © 2026 CEF Servicios • Planifica tus días y haz crecer tu negocio.
+    </footer>
+<script src="app.js"></script>
 </body>
 </html>
