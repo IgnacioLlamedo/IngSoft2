@@ -7,10 +7,8 @@ import { usuarioDao } from './daos/index.js';
 import session from 'express-session';
 import { conectarMongo } from "./db/mongoose.js";
 
-
 // Imports Routers /api/..
-import registerRouter from "./routes/api/register.js";
-import loginRouter from "./routes/api/login.js"
+import { apiRouter } from './routes/api/api.router.js';
 
 
 const app = express()
@@ -81,16 +79,13 @@ app.get("/home-admin", (req, res) => {
 
 
 // Access USE
-app.use("/api", registerRouter);
-app.use("/api", loginRouter);
+app.use('/api', apiRouter)
 
 // Account
 app.get("/account/user", (req,res) => res.sendFile(path.join(__dirname, "Front/Account/userPage.html")));
 
 
-
-
-class mailer{
+/* class mailer{
     constructor() {
         this.transport = nodemailer.createTransport({
             service: 'gmail',
@@ -136,4 +131,4 @@ const mailOptions = {
         <li>Ticket code: </li>
     </ul>
     `
-}
+} */
