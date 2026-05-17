@@ -53,14 +53,14 @@ export async function loginController(req,res) {
         }
 
         //guardo la sesión del usuario
-        /* req.session.user = {
+        req.session.user = {
             id: user._id,
             mail: user.mail,
             rol: user.rol,
-        }; */
+        };
 
         //Se decide desde que vista se iniciará sesión.
-        let redirect = "/access/authentication";
+        let redirect = "/home"//"/access/authentication";
 
         res.json({
             success: true,

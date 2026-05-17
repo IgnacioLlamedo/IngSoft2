@@ -9,6 +9,7 @@ import { conectarMongo } from "./db/mongoose.js";
 
 // Imports Routers /api/..
 import { apiRouter } from './routes/api/api.router.js';
+import { mercadoRouter } from "./routes/api/mercadoPago.router.js";
 
 
 const app = express()
@@ -81,6 +82,8 @@ app.get("/home-admin", (req, res) => {
 
 // Access USE
 app.use('/api', apiRouter);
+
+app.use('/api', mercadoRouter);
 
 
 // Account
