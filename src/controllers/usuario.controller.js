@@ -1,5 +1,6 @@
 import { usuarioDao } from "../daos/index.js";
 import { planillaDao } from "../daos/index.js";
+import { generateOtp } from '@mx7/otp';
 
 const errorMessages = {
     11000: "Error al crear la cuenta, el email ya está registrado.",
@@ -77,8 +78,6 @@ export async function loginController(req,res) {
 
 
 export async function logoutController(req,res) {
-    
-
     try {
         req.session.destroy(() => {
             //res.clearCookie("connect.sid");
@@ -95,4 +94,20 @@ export async function logoutController(req,res) {
         });
     }
 }
+
+export async function crearCodigo(req, res){
+    try {
+        await usuarioDao.updateOne(req.body.mail, {
+        codigo: generateOtp(),
+        limiteCodigo: new Date(Date.now() + 600000)
+    })
+    } 
+    catch(error) {
+        res.json({
+            success: false,
+            message: "Error al crear código de autenticación. Inténtelo más tarde."
+        });
+    }
+}
+
 
