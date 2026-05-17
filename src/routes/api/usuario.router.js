@@ -1,9 +1,13 @@
 import express from "express";
-import { postController } from "../../controllers/usuario.controller.js";
+import { postController, loginController, logoutController } from "../../controllers/usuario.controller.js";
 
 export const usuarioRouter = express.Router()
 
 usuarioRouter.post('/register', postController)
+
+usuarioRouter.post('/login', loginController)
+
+usuarioRouter.post('/logout', logoutController)
 
 /* usuarioRouter.post('/', postController)
 

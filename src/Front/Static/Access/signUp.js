@@ -240,9 +240,9 @@ document.getElementById("register-form").addEventListener("submit", async (event
         cirugia: form.descripcionCirugia.value,
         fechaCirugia: form.fechaCirugia.value,
         secuelasCirugia: form.secuelasCirugia.value,
-        alergia: form.alergias.value,
+        alergias: form.alergias.value,
         medicacionAlergia: form.medicacionAlergias.value,
-        actividadFisica: form.haceActividadFisica.checked,
+        actividadFisica: form.isPhysicallyActive.checked,
         frecuenciaActividad: form.frecuenciaActividadFisica.value,
         objetivo: form.objetivo.value
     }
@@ -257,12 +257,19 @@ document.getElementById("register-form").addEventListener("submit", async (event
         nacimiento: form.fechaNacimiento.value,
         telefono: form.numeroTelefono.value,
         genero: form.genero.value,
-        planilla: planillaDataString,
+        planilla: 0,
         rol: "cliente"
     }
 
     const userDataString = JSON.stringify(userData);
 
+    const data = {
+        userData: userData,
+        planillaData: planillaData,
+    }
+
+    const dataString = JSON.stringify(data);
+    console.log("Front:" + JSON.stringify(planillaData));
 
     // autenticar req?
     const res = await fetch("/api/register", {
@@ -270,13 +277,13 @@ document.getElementById("register-form").addEventListener("submit", async (event
         headers: {
             "Content-Type" : "application/json"
         },
-        body: userDataString
+        body: dataString
     });
 
     const resData = await res.json();
 
     if(resData.success)
-        //AutoLogear??? quedaría mucho código repetido ya que no se puede importar. Hice un ejemplo rápido, está abajo.
+        // Mandar a login con campos completos.
         window.location.href = "/access/login";
     else 
     {
@@ -284,33 +291,3 @@ document.getElementById("register-form").addEventListener("submit", async (event
         registerErrorMsg.classList.remove("hidden");
     }
 })
-
-
-/*
-function AutoLogin(email, password) {
-
-    const userData = {
-        mail: email,
-        contraseña: password,
-    }
-
-    const userDataString = JSON.stringify(userData);
-
-    const res = await fetch("/api/login", {
-        method: "POST",
-        headers: {
-            "Content-Type" : "application/json"
-        },
-        body: userDataString
-    });
-
-    const resData = res.json();
-
-    if(resData.success)
-        window.location.href = resData.redirect;
-    else {
-        registerErrorMsg.textContent = resData.message;
-        registerErrorMsg.classList.remove("hidden");
-    }
-}
-*/

@@ -56,6 +56,7 @@ app.get("/", (req,res) => {
 // Access GET
 app.get("/access/register", (req,res) => res.sendFile(path.join(__dirname, "Front/Access/signUp.html")));
 app.get("/access/login", (req,res) => res.sendFile(path.join(__dirname, "Front/Access/login.html")));
+app.get("/access/authentication", (req,res) => res.sendFile(path.join(__dirname, "Front/Access/twoFactorAuthentication.html")));
 app.get("/access/recover-password", (req,res) => res.sendFile(path.join(__dirname, "Front/Access/recoverPassword.html")));
 app.get("/access/reset-password", (req,res) => res.sendFile(path.join(__dirname, "Front/Access/resetPassword.html")));
 
@@ -79,10 +80,11 @@ app.get("/home-admin", (req, res) => {
 
 
 // Access USE
-app.use('/api', apiRouter)
+app.use('/api', apiRouter);
+
 
 // Account
-app.get("/account/user", (req,res) => res.sendFile(path.join(__dirname, "Front/Account/userPage.html")));
+app.get("/account/user", (req,res) => res.sendFile(path.join(__dirname, "Front/Account/profile.html")));
 
 
 /* class mailer{

@@ -17,7 +17,7 @@ const planillaSchema = new Schema({
     epilepsia: { type: Boolean, required: true },
     lesiones: { type: Boolean, required: true },
     //
-    otrosAntecedentes: { type: String, required: true },
+    otrosAntecedentes: { type: String },
     fuma: { type: Boolean, required: true },
     alcohol: { type: Boolean, required: true },
     sintomasRecientes: { type: Boolean, required: true },
