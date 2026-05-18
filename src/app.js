@@ -86,6 +86,10 @@ app.use('/api', apiRouter);
 // Account
 app.get("/account/user", (req,res) => res.sendFile(path.join(__dirname, "Front/Account/profile.html")));
 
+// Navbars
+app.get('/userNav', (req, res) => res.sendFile(path.join(__dirname, 'Front/Navbar/userNav.html')));
+app.get('/visitorNav', (req, res) => res.sendFile(path.join(__dirname, 'Front/Navbar/visitorNav.html')));
+
 
 /* class mailer{
     constructor() {
