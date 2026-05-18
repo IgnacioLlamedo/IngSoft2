@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="/Images/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="/Navbar/navStyle.css">
+    <link rel="stylesheet" href="/Navbar/footerStyle.css">
     <link rel="stylesheet" href="/Home/homePageStyle.css">
     <title>CEF</title>
 
@@ -17,6 +18,17 @@
     <script>
         $(function () {
             $("#nav-placeholder").load("/visitorNav");
+        });
+    </script>
+
+    <main>
+        <h1 class="welcome-message">¡Bienvenido a CEF!</h1>
+    </main>
+
+    <div id="footer-placeholder"></div>
+    <script>
+        $(function () {
+            $("#footer-placeholder").load("/footer");
         });
     </script>
 

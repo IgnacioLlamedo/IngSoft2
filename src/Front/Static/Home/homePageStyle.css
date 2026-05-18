@@ -2,3 +2,13 @@ body {
     background-color: #1b1b1b;
     font-family: sans-serif;
 }
+
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+    padding: 40px 20px;    
+    height: 500px;
+    color: beige;
+}

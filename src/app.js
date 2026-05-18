@@ -89,6 +89,7 @@ app.get("/account/user", (req,res) => res.sendFile(path.join(__dirname, "Front/A
 // Navbars
 app.get('/userNav', (req, res) => res.sendFile(path.join(__dirname, 'Front/Navbar/userNav.html')));
 app.get('/visitorNav', (req, res) => res.sendFile(path.join(__dirname, 'Front/Navbar/visitorNav.html')));
+app.get('/footer', (req, res) => res.sendFile(path.join(__dirname, 'Front/Navbar/footer.html')));
 
 
 /* class mailer{
