@@ -1,11 +1,13 @@
 import express from "express";
-import { postController, loginController, logoutController } from "../../controllers/usuario.controller.js";
+import { postController, loginController, logoutController, authenticationController } from "../../controllers/usuario.controller.js";
 
 export const usuarioRouter = express.Router()
 
 usuarioRouter.post('/register', postController)
 
 usuarioRouter.post('/login', loginController)
+
+usuarioRouter.post('/authenticate', authenticationController);
 
 usuarioRouter.post('/logout', logoutController)
 

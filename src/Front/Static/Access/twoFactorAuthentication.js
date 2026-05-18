@@ -1,7 +1,7 @@
-const parameteresURL = new URLSearchParams(window.location.search);
+const parametrosURL = new URLSearchParams(window.location.search);
 const verificationErrorMsg = document.getElementById("verificationError");
 
-const email = parametrosURL.get('mail');
+const email = parametrosURL.get('email');
 
 document.getElementById("reenviar-codigo").addEventListener("click", async (event) => {
     const res = await fetch("/api/..", {
@@ -14,6 +14,7 @@ document.getElementById("reenviar-codigo").addEventListener("click", async (even
 });
 
 document.getElementById("two-factor-authenticator-form").addEventListener("submit", async (event) => {
+
     event.preventDefault();
 
     const codigo = event.target.codigo.value;
@@ -35,8 +36,10 @@ document.getElementById("two-factor-authenticator-form").addEventListener("submi
 
     const resData = await res.json();
 
-    if(resData.success)
+    if(resData.success) {
+        console.log("La dirección conseguida de retorno es: " + resData.redirect);
         window.location.href = resData.redirect;
+    }
     else 
     {
         verificationErrorMsg.textContent = resData.message;

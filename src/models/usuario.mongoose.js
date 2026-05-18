@@ -17,7 +17,7 @@ const usuarioSchema = new Schema({
     planilla: { type: String, required: true, ref: 'planillas' },
     rol: { type: String, enum: ['cliente', 'administrador', 'empleado'], default: 'cliente' },
 }, {
-    strict: 'throw',
+    strict: false,
     versionKey: false,
     /* methods: {
         public: function(){

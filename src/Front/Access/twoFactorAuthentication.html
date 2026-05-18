@@ -21,14 +21,16 @@
                         <input type="number" name="codigo" required placeholder="Código recibido por email">                    
                     </div>
 
+                    <a href="#" id="reenviar-codigo">Enviar código otra vez</a>
                 </section>
 
                 <section>
+                    <p id="verificationError" class="errorMsg hidden"></p>
                     <button>VALIDAR CÓDIGO</button>
-                    <button>VOLVER A ENVIAR</button>
                 </section>
             </form>
         </div>
     </main>
 </body>
+<script src="/Access/twoFactorAuthentication.js"></script>
 </html>
