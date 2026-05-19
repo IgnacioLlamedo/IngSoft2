@@ -20,7 +20,7 @@ export async function crearPreferencia(req, res) {
                     failure: "http://localhost:8080/failure.html",
                     pending: "http://localhost:8080/pending.html"
                 },
-                auto_return: "approved"
+                //auto_return: "approved"
             }
         });
 

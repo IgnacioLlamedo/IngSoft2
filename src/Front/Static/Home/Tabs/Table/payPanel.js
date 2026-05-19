@@ -7,8 +7,13 @@ async function getSessionData() {
     const sessionDataRes = await fetch("/session-data");
     const sessionData = await sessionDataRes.json();
     console.log(sessionData);
-    if(!sessionData.logged || (sessionData.session.rol !== "cliente"))
-        document.getElementById("paymentButtons").hidden = true;
+
+    if(sessionData.logged && (sessionData.session.rol === "cliente")) {
+        const buttons = document.getElementsByClassName("paymentButtons");
+        for(const button of buttons) {
+            button.removeAttribute("hidden");
+        }
+    }
 }
 
 
@@ -52,10 +57,10 @@ function pagarMensual() {
 }
 
 async function pagar(tipoClase, precio) {
-    const res = await fetch("/api/payment/crear-preferencia", {
+    const res = await fetch("/api/crear-preferencia", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ tipo: tipoClase, precio: precio })
+        body: JSON.stringify({ tipo: tipoClase, cantidad:1, precio: precio })
     });
 
     const resData = await res.json();

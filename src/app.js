@@ -70,20 +70,20 @@ app.get("/", (req,res) => {
 });
 
 app.get("/home", (req, res) => {
-    //if(!req.session.user) return res.redirect("/access/login");
-    //if(req.session.user.rol !== "cliente") return res.redirect(homeRoutes[req.session.user.rol]);
+    if(!req.session.user) return res.redirect("/access/login");
+    if(req.session.user.rol !== "cliente") return res.redirect(homeRoutes[req.session.user.rol]);
     res.sendFile(path.join(__dirname, "Front/Home/userHomePage.html"));
 });
 
 app.get("/home-employee", (req, res) => {
-    //if(!req.session.user) return res.redirect("/access/login");
-    //if(req.session.user.rol !== "empleado") return res.redirect(homeRoutes[req.session.user.rol]);
+    if(!req.session.user) return res.redirect("/access/login");
+    if(req.session.user.rol !== "empleado") return res.redirect(homeRoutes[req.session.user.rol]);
     res.sendFile(path.join(__dirname, "Front/Home/employeeHomePage.html"));
 });
 
 app.get("/home-admin", (req, res) => {
-    //if(!req.session.user) return res.redirect("/access/login");
-    //if(req.session.user.rol !== "administrador") return res.redirect(homeRoutes[req.session.user.rol]);
+    if(!req.session.user) return res.redirect("/access/login");
+    if(req.session.user.rol !== "administrador") return res.redirect(homeRoutes[req.session.user.rol]);
     res.sendFile(path.join(__dirname, "Front/Home/adminHomePage.html"));
 });
 

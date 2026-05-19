@@ -96,7 +96,8 @@ export async function authenticationController(req, res) {
                 rol: usuario.rol,
             };
 
-            //Eligo a donde se redirige
+            //Elijo a donde se redirige
+            
             const redirect = homeRoutes[usuario.rol];
             res.json({
                 success: true,
