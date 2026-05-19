@@ -11,6 +11,7 @@ usuarioRouter.post('/authenticate', authenticationController);
 
 usuarioRouter.post('/logout', logoutController);
 
+
 /* usuarioRouter.post('/', postController)
 
 usuarioRouter.get('/', getController)
