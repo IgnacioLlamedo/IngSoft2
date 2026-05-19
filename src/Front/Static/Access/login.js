@@ -1,3 +1,9 @@
+const parametersURL = new URLSearchParams(window.location.search);
+
+const email = parametersURL.get('mail');
+const password = parametersURL.get('password'); // Cómo logeo sin pass? pasarla por url me parece una locura
+
+
 const loginErrorMsg = document.getElementById("loginError");
 
 document.getElementById("login-form").addEventListener("submit", async (event) => {

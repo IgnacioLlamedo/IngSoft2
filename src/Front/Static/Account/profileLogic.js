@@ -165,8 +165,8 @@ function setPasswordInputsType(type) {
     });
 
     const iconSrc = type === 'password'
-        ? '/Images/eye-icon-hidden-white.png'
-        : '/Images/eye-icon-visible-white.png';
+        ? '/Images/Common/eye-icon-hidden-white.png'
+        : '/Images/Common/eye-icon-visible-white.png';
     const ariaLabel = type === 'password' ? 'Mostrar contraseña' : 'Ocultar contraseña';
 
     const iconImages = document.querySelectorAll('.password-toggle-icon');
@@ -193,8 +193,8 @@ function setupPasswordVisibilityToggle() {
             const show = input.type === 'password';
             input.type = show ? 'text' : 'password';
             icon.src = show
-                ? '/Images/eye-icon-visible-white.png'
-                : '/Images/eye-icon-hidden-white.png';
+                ? '/Images/Common/eye-icon-visible-white.png'
+                : '/Images/Common/eye-icon-hidden-white.png';
             icon.alt = show ? 'Ocultar contraseña' : 'Mostrar contraseña';
             toggle.setAttribute('aria-label', show ? 'Ocultar contraseña' : 'Mostrar contraseña');
         });

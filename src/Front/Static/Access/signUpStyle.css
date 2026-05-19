@@ -1,10 +1,22 @@
+* {
+    font-family: sans-serif;
+    margin: 0px;
+    padding: 0px;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+
 .checkbox-container {
     display: flex;
     align-items: center;
     gap: 15px;
 }
 
-fieldset {
+.form-container fieldset {
     display: flex;
     flex-direction: column;
     width: 95%;

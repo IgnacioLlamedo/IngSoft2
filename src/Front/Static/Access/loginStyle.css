@@ -1,8 +1,20 @@
-a {
+* {
+    font-family: sans-serif;
+    margin: 0px;
+    padding: 0px;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.form-container a {
     color: #163F7A;
     text-decoration: none;
 }
 
-a:hover {
+.form-container a:hover {
     text-decoration: underline;
 }
