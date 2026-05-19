@@ -5,7 +5,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { usuarioDao } from './daos/index.js';
 import session from 'express-session';
-import { conectarMongo } from "./db/mongoose.js";
+/* import { conectarMongo } from "./db/mongoose.js"; */
 
 // Imports Routers /api/..
 import { apiRouter } from './routes/api/api.router.js';
@@ -21,7 +21,7 @@ app.listen(config.port, () => {
 app.use(express.json());
 
 //Conexión con DB
-await conectarMongo();
+/* await conectarMongo(); */
 
 //sesion de usuario
 app.use(session({
