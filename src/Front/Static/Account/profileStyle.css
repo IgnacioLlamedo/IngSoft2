@@ -8,6 +8,30 @@ body {
     color: #ffffff;
 }
 
+.profile-title {
+    width: 100%;
+    max-width: 1000px;
+    margin: 15px auto;
+    padding: 20px 0 10px;
+    text-align: center;
+    font-size: 35px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #ffffff;
+    position: relative;
+}
+
+.profile-title::after {
+    content: '';
+    display: block;
+    width: 140px;
+    height: 4px;
+    margin: 18px auto 0;
+    border-radius: 999px;
+    background: #D01F25;
+    box-shadow: 0 0 20px rgba(208, 31, 37, 0.45);
+}
+
 .profile-container {
     display: flex;
     justify-content: center;
@@ -28,11 +52,11 @@ body {
     max-width: 600px;
 }
 
-.profile-card h1 {
+.profile-card h2 {
     color: #ffffff;
     margin-bottom: 30px;
     text-align: center;
-    font-size: 28px;
+    font-size: 26px;
 }
 
 .profile-form {
@@ -240,7 +264,7 @@ body {
         padding: 25px;
     }
 
-    .profile-card h1 {
+    .profile-card h2 {
         font-size: 22px;
     }
 

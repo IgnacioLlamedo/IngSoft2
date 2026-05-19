@@ -385,6 +385,12 @@ function validateProfileForm() {
         return false;
     }
 
+    // Validate date of birth (minimum 14 years old)
+    if (nacimiento && new Date(nacimiento) > fechaMax) {
+        showMessage('Fecha de nacimiento no válida', 'error', 'profileMessage');
+        return false;
+    }
+
     // Validate phone (basic validation)
     if (telefono.length < 7 || telefono.length > 15) {
         showMessage('Teléfono inválido', 'error', 'profileMessage');

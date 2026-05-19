@@ -9,10 +9,11 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px;   
+    padding: 15px;
+    padding-left: 10px;
+    padding-right:  50px;
     position: relative;
-    padding-right: 20px;
-    
+    border-bottom: 1px solid rgba(208, 31, 37, 0.3);
 }
 
 .header-nav ul {
@@ -37,7 +38,7 @@
 
 .logo-img {
     margin-top: 8px;
-    height: 100px;
+    height: 110px;
 }
 
 .user-ico {
@@ -99,4 +100,3 @@
 .user-options-open {
     max-height: 200px;
 }
-

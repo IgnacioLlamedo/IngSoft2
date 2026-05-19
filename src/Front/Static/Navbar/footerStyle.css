@@ -39,20 +39,20 @@
 }
 
 .footer-section a {
-    color: #D01F25;
+    color: #ccc;
     text-decoration: none;
     font-weight: bold;
     transition: color 0.3s ease;
 }
 
 .footer-section a:hover {
-    color: #fff;
+    color: #D01F25;
 }
 
 .footer-logo {
-    max-height: 120px;
+    max-height: 90px;
     display: block;
-    margin: 0 auto;
+    margin: 15px auto;
 }
 
 .footer-bottom {
