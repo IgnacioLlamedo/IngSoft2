@@ -48,34 +48,84 @@ export const homeRoutes = {
     administrador: "/home-admin",
 };
 
+// Req de Datos
+app.get("/session-data", (req, res) => {
+    if(!req.session.user)
+        res.json({  
+            logged: false,
+        });
+        
+    else
+        res.json({
+            session: req.session.user,
+            logged: true,
+        });
+});
+
+
+// Home
 app.get("/", (req,res) => {
     if(req.session.user) return res.redirect(homeRoutes[req.session.user.rol]);
     res.sendFile(path.join(__dirname, "Front/Home/visitorHomePage.html"));
 });
 
-// Access GET
-app.get("/access/register", (req,res) => res.sendFile(path.join(__dirname, "Front/Access/signUp.html")));
-app.get("/access/login", (req,res) => res.sendFile(path.join(__dirname, "Front/Access/login.html")));
-app.get("/access/authentication", (req,res) => res.sendFile(path.join(__dirname, "Front/Access/twoFactorAuthentication.html")));
-app.get("/access/recover-password", (req,res) => res.sendFile(path.join(__dirname, "Front/Access/recoverPassword.html")));
-app.get("/access/reset-password", (req,res) => res.sendFile(path.join(__dirname, "Front/Access/resetPassword.html")));
-
 app.get("/home", (req, res) => {
-    if(!req.session.user) return res.redirect("/access/login");
-    if(req.session.user.rol !== "cliente") return res.redirect(homeRoutes[req.session.user.rol]);
+    //if(!req.session.user) return res.redirect("/access/login");
+    //if(req.session.user.rol !== "cliente") return res.redirect(homeRoutes[req.session.user.rol]);
     res.sendFile(path.join(__dirname, "Front/Home/userHomePage.html"));
 });
 
 app.get("/home-employee", (req, res) => {
-    if(!req.session.user) return res.redirect("/access/login");
-    if(req.session.user.rol !== "empleado") return res.redirect(homeRoutes[req.session.user.rol]);
+    //if(!req.session.user) return res.redirect("/access/login");
+    //if(req.session.user.rol !== "empleado") return res.redirect(homeRoutes[req.session.user.rol]);
     res.sendFile(path.join(__dirname, "Front/Home/employeeHomePage.html"));
 });
 
 app.get("/home-admin", (req, res) => {
-    if(!req.session.user) return res.redirect("/access/login");
-    if(req.session.user.rol !== "administrador") return res.redirect(homeRoutes[req.session.user.rol]);
+    //if(!req.session.user) return res.redirect("/access/login");
+    //if(req.session.user.rol !== "administrador") return res.redirect(homeRoutes[req.session.user.rol]);
     res.sendFile(path.join(__dirname, "Front/Home/adminHomePage.html"));
+});
+
+app.get("/home/table", (req, res) => {
+    // Solución temporal para que no puedan poner la ruta en el navegador.
+    const isIframe = req.headers["sec-fetch-dest"] === "iframe";
+    if(!isIframe)
+        return res.status(403).send("Acceso denegado");
+    //
+
+    res.sendFile(path.join(__dirname, "Front/Home/HomeTabs/table.html"));
+});
+
+
+// Tabs
+
+app.get("/my-activities", (req, res) => {
+    if(!req.session.user) return res.redirect("/access/login");
+    if(req.session.user.rol !== "cliente") return res.redirect(homeRoutes[req.session.user.rol]);
+    res.sendFile(path.join(__dirname, "Front/Home/HomeTabs/tabMyActivities.html"));
+});
+
+
+// Access GET
+app.get("/access/register", (req,res) => {
+    if(req.session.user) return res.redirect(homeRoutes[req.session.user.rol]);
+    res.sendFile(path.join(__dirname, "Front/Access/signUp.html"));
+});
+
+app.get("/access/login", (req,res) => {
+    if(req.session.user) return res.redirect(homeRoutes[req.session.user.rol]); 
+    res.sendFile(path.join(__dirname, "Front/Access/login.html"))
+});
+
+app.get("/access/authentication", (req,res) => {
+    if(req.session.user) return res.redirect(homeRoutes[req.session.user.rol]);
+    res.sendFile(path.join(__dirname, "Front/Access/twoFactorAuthentication.html"))
+});
+
+app.get("/access/recover-password", (req,res) => {
+    if(req.session.user) return res.redirect(homeRoutes[req.session.user.rol]); 
+    res.sendFile(path.join(__dirname, "Front/Access/recoverPassword.html"))
 });
 
 

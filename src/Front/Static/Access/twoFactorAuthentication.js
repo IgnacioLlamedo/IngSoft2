@@ -1,6 +1,6 @@
-const parameteresURL = new URLSearchParams(window.location.search);
+const parametersURL = new URLSearchParams(window.location.search);
 
-const email = parametrosURL.get('mail');
+const email = parametersURL.get('mail');
 
 document.getElementById("reenviar-codigo").addEventListener("click", async (event) => {
     const res = await fetch("/api/..", {

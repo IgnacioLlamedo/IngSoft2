@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" href="/Images/Common/favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="/Home/Tabs/Table/tableStyle.css">
+  <title>Tabla de Horarios</title> 
+</head>
+<body>
+    <div class="table-container">
+        <div class="week-nav">
+            <button id="prevWeek">&larr;</button>
+            <div class="week-display" id="weekDisplay">13/04 - 18/04</div>
+            <button id="nextWeek">&rarr;</button>
+        </div>
+
+        
+
+
+        <table>
+            <tr id="diasHeader">
+                <th>Horarios</th>
+                <th></th>
+                <th class = "slotHeader" data-dia="Lunes">Lunes</th>
+                <th class = "slotHeader" data-dia="Martes">Martes</th>
+                <th class = "slotHeader" data-dia="Miércoles">Miércoles</th>
+                <th class = "slotHeader" data-dia="Jueves">Jueves</th>
+                <th class = "slotHeader" data-dia="Viernes">Viernes</th>
+                <th class = "slotHeader" data-dia="Sábado">Sábado</th>
+            </tr>
+
+            <tr>
+                <td>7:00 - 8:00</td>
+                <td><div class="slotDeSala">S1</div><div class="slotDeSala">S2</div><div class="slotDeSala">S3</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Spinning</div><div class="slotDeClase" data-sala="S2">Yoga</div><div class="slotDeClase" data-sala="S3">Funcional</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Yoga</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+            </tr>
+
+            <tr>
+                <td>8:00 - 9:00</td>
+               <td><div class="slotDeSala">S1</div><div class="slotDeSala">S2</div><div class="slotDeSala">S3</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Funcional</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>   
+            </tr>
+
+            <tr>
+                <td>9:00 - 10:00</td>
+                <td><div class="slotDeSala">S1</div><div class="slotDeSala">S2</div><div class="slotDeSala">S3</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Funcional</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>      
+            </tr>
+
+            <tr>
+                <td>10:00 - 11:00</td>
+                <td><div class="slotDeSala">S1</div><div class="slotDeSala">S2</div><div class="slotDeSala">S3</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+            </tr>
+
+            <tr>
+                <td>11:00 - 12:00</td>
+                <td><div class="slotDeSala">S1</div><div class="slotDeSala">S2</div><div class="slotDeSala">S3</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+            </tr>
+
+            <tr>
+                <td>12:00 - 13:00</td>
+                <td><div class="slotDeSala">S1</div><div class="slotDeSala">S2</div><div class="slotDeSala">S3</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+            </tr>
+
+            <tr>
+                <td>13:00 - 14:00</td>
+                <td><div class="slotDeSala">S1</div><div class="slotDeSala">S2</div><div class="slotDeSala">S3</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Yoga</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Yoga</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Yoga</div></td>
+            </tr>
+
+            <tr>
+                <td>14:00 - 15:00</td>
+                <td><div class="slotDeSala">S1</div><div class="slotDeSala">S2</div><div class="slotDeSala">S3</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+            </tr>
+
+            <tr>
+                <td>15:00 - 16:00</td>
+                <td><div class="slotDeSala">S1</div><div class="slotDeSala">S2</div><div class="slotDeSala">S3</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Yoga</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+            </tr>
+
+            <tr>
+                <td>16:00 - 17:00</td>
+                <td><div class="slotDeSala">S1</div><div class="slotDeSala">S2</div><div class="slotDeSala">S3</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Yoga</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+            </tr>
+
+            <tr>
+                <td>17:00 - 18:00</td>
+                <td><div class="slotDeSala">S1</div><div class="slotDeSala">S2</div><div class="slotDeSala">S3</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Yoga</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+            </tr>
+
+            <tr>
+                <td>18:00 - 19:00</td>
+                <td><div class="slotDeSala">S1</div><div class="slotDeSala">S2</div><div class="slotDeSala">S3</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Yoga</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Yoga</div></td>
+            </tr>
+
+            <tr>
+                <td>19:00 - 20:00</td>
+                <td><div class="slotDeSala">S1</div><div class="slotDeSala">S2</div><div class="slotDeSala">S3</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+            </tr>
+
+            <tr>
+                <td>19:00 - 20:00</td>
+                <td><div class="slotDeSala">S1</div><div class="slotDeSala">S2</div><div class="slotDeSala">S3</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+
+            </tr>
+
+            <tr>
+                <td>20:00 - 21:00</td>
+                <td><div class="slotDeSala">S1</div><div class="slotDeSala">S2</div><div class="slotDeSala">S3</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+            </tr>
+
+            <tr>
+                <td>21:00 - 22:00</td>
+                <td><div class="slotDeSala">S1</div><div class="slotDeSala">S2</div><div class="slotDeSala">S3</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+                <td><div class="slotDeClase" data-sala="S1">Sin Clase</div><div class="slotDeClase" data-sala="S2">Sin Clase</div><div class="slotDeClase" data-sala="S3">Sin Clase</div></td>
+            </tr>
+        </table>
+    </div>
+
+
+
+    <div class="panel-pago" id="panelPago">
+        <div class="panel-contenido">
+            <span class="cerrar-panel" onclick="cerrarPanel()">&times;</span>
+
+            <h2 id="tituloClase"></h2>
+            
+            <p>
+                Precio por clase:
+                <span id="precioClase"></span>
+            </p>
+
+            <p>
+                Fecha:
+                <span id="fechaClase"></s>
+            </p>
+
+            <p>
+                Sala:
+                <span id="salaClase"></span>
+            </p>
+
+            <div class="botones-pago" id="paymentButtons">
+                <button onclick="pagarClaseUnica()">Pagar clase única</button>
+                <button onclick="pagarMensual()">Pago mensual</button>
+            </div>
+        </div>
+    </div>
+
+
+    
+    <!-- Script para asignar data-clase y abrir el panel -->
+    <script src="/Home/Tabs/Table//payPanel.js"></script>
+    <script src="/Home/Tabs/Table/classSlot.js"></script>
+    <script src="/Home/Tabs/Table/weekNav.js"></script>
+</body>
+</html>
