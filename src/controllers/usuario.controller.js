@@ -97,7 +97,7 @@ export async function authenticationController(req, res) {
             };
 
             //Elijo a donde se redirige
-            
+
             const redirect = homeRoutes[usuario.rol];
             res.json({
                 success: true,
@@ -118,32 +118,6 @@ export async function authenticationController(req, res) {
         });
     }
 }
-
-
-/* export async function authenticationController(req,res) {
-    try {
-
-
-
-        req.session.user = {
-            id: user._id,
-            mail: user.mail,
-            rol: user.rol,
-        };
-
-        const redirect = homeRoutes[user.rol];
-        res.json({
-            success: true,
-            redirect
-        });
-    } 
-    catch(error) {
-        res.json({
-            success: false,
-            message: "Error al validar el código. Inténtelo más tarde."
-        });
-    }
-} */
 
 export async function logoutController(req,res) {
     try {
