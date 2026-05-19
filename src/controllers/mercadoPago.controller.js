@@ -2,7 +2,10 @@ import { Preference } from "mercadopago";
 import { client } from "../servicios/mercado.servicio.js";
 
 export async function crearPreferencia(req, res) {
+
     try {
+
+        const { tipo, precio } = req.body;
 
         const preference = new Preference(client);
 
@@ -10,17 +13,16 @@ export async function crearPreferencia(req, res) {
             body: {
                 items: [
                     {
-                        title: req.body.tipo,
-                        quantity: Number(req.body.cantidad),
-                        unit_price: Number(req.body.precio)
+                        title: tipo,
+                        quantity: 1,
+                        unit_price: Number(precio)
                     }
                 ],
                 back_urls: {
-                    success: "http://localhost:8080/success.html",
-                    failure: "http://localhost:8080/failure.html",
-                    pending: "http://localhost:8080/pending.html"
-                },
-                auto_return: "approved"
+                    success: "http://localhost:8080/success",
+                    failure: "http://localhost:8080/failure",
+                    pending: "http://localhost:8080/pending"
+                }
             }
         });
 
@@ -29,7 +31,9 @@ export async function crearPreferencia(req, res) {
         });
 
     } catch(error) {
+
         console.error(error);
+
         res.status(500).json({
             error: "Error al crear preferencia"
         });

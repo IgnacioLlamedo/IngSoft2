@@ -6,5 +6,6 @@ export default {
     cnxStr:process.env.MONGO_CNX_STR,
     port:process.env.PORT,
     mailUser:process.env.EMAIL_USER,
-    mailPass:process.env.EMAIL_PASS
+    mailPass:process.env.EMAIL_PASS,
+    mpAccessToken:process.env.MP_ACCESS_TOKEN
 }
