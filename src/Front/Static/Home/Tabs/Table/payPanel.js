@@ -52,12 +52,12 @@ function pagarMensual() {
 }
 
 async function pagar(tipoClase, precio) {
-    const res = await fetch("/api/payment/pay", {
+    const res = await fetch("/api/payment/crear-preferencia", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ tipo: tipoClase, precio: precio })
     });
 
     const resData = await res.json();
-    window.location.href = data.init_point;
+    window.location.href = resData.init_point;
 }

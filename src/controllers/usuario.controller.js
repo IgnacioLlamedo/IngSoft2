@@ -119,12 +119,12 @@ export async function authenticationController(req, res) {
 }
 
 
-export async function authenticationController(req,res) {
+/* export async function authenticationController(req,res) {
     try {
 
 
 
-        /* req.session.user = {
+        req.session.user = {
             id: user._id,
             mail: user.mail,
             rol: user.rol,
@@ -134,7 +134,7 @@ export async function authenticationController(req,res) {
         res.json({
             success: true,
             redirect
-        }); */
+        });
     } 
     catch(error) {
         res.json({
@@ -142,7 +142,7 @@ export async function authenticationController(req,res) {
             message: "Error al validar el código. Inténtelo más tarde."
         });
     }
-}
+} */
 
 export async function logoutController(req,res) {
     try {
