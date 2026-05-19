@@ -9,7 +9,7 @@ html, body {
   overflow-x: hidden; /* bloquea scroll horizontal */
 }
 
-body {
+/* body { */
 
   /* min-height: 100vh; Para mí no es necesario */
 
@@ -20,7 +20,7 @@ body {
   background-position: center;   
   background-attachment: fixed;  
   */
-}
+/* } */
 
 
 
