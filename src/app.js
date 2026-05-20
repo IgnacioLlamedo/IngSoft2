@@ -48,6 +48,12 @@ export const homeRoutes = {
     administrador: "/home-admin",
 };
 
+export const profileRoutes = { 
+    cliente: "/account/client", 
+    empleado: "/account/employee", 
+    administrador: "/account/admin",
+};
+
 // Req de Datos
 app.get("/session-data", (req, res) => {
     if(!req.session.user)
@@ -133,8 +139,29 @@ app.get("/access/recover-password", (req,res) => {
 app.use('/api', apiRouter);
 
 
-// Account
-app.get("/account/user", (req,res) => res.sendFile(path.join(__dirname, "Front/Account/profile.html")));
+// Profile
+app.get("/account/user", (req,res) => {
+    if(req.session.user) return res.redirect(profileRoutes[req.session.user.rol]);
+    res.sendFile(path.join(__dirname, "Front/Home/visitorHomePage.html"));
+});
+
+app.get("/account/client", (req, res) => {
+    if(!req.session.user) return res.redirect("/access/login");
+    if(req.session.user.rol !== "cliente") return res.redirect(profileRoutes[req.session.user.rol]);
+    res.sendFile(path.join(__dirname, "Front/Account/userProfile.html"));
+});
+
+app.get("/account/employee", (req, res) => {
+    if(!req.session.user) return res.redirect("/access/login");
+    if(req.session.user.rol !== "empleado") return res.redirect(profileRoutes[req.session.user.rol]);
+    res.sendFile(path.join(__dirname, "Front/Account/employeeProfile.html"));
+});
+
+app.get("/account/admin", (req, res) => {
+    if(!req.session.user) return res.redirect("/access/login");
+    if(req.session.user.rol !== "administrador") return res.redirect(profileRoutes[req.session.user.rol]);
+    res.sendFile(path.join(__dirname, "Front/Account/adminProfile.html"));
+});
 
 // Navbars
 app.get('/userNav', (req, res) => res.sendFile(path.join(__dirname, 'Front/Navbar/userNav.html')));
