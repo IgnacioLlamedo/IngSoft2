@@ -201,7 +201,7 @@ export async function resetPass(req, res){
         const usuario = await usuarioDao.updateOne(req.body.mail, {
             contraseña: hash(req.body.contraseña)
         })
-
+        
         req.session.user = {
             id: usuario._id,
             mail: usuario.mail,

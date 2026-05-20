@@ -3,7 +3,6 @@ import express from 'express';
 import nodemailer from 'nodemailer';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { usuarioDao } from './daos/index.js';
 import session from 'express-session';
 
 // Imports Routers /api/..
@@ -83,51 +82,3 @@ app.use('/api', apiRouter);
 // Account
 app.get("/account/user", (req,res) => res.sendFile(path.join(__dirname, "Front/Account/profile.html")));
 
-
-/* class mailer{
-    constructor() {
-        this.transport = nodemailer.createTransport({
-            service: 'gmail',
-            port: 587,
-            auth: {
-                user: config.mailUser,
-                pass: config.mailPass
-            }
-        })
-    }
-    async send(receiver, subject, body, attach = []){
-        const mailOptions = {
-            from: config.mailUser,
-            to: receiver,
-            subject: subject,
-            html: body
-        }
-        if(attach.length > 0){
-            mailOptions.attachments = attach
-        }
-        await this.transport.sendMail(mailOptions)
-    }
-}
-
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    port: 587,
-    auth: {
-        user: config.mailUser,
-        pass: config.mailPass
-    }
-})
-const mailOptions = {
-    from: config.mailUser,
-    to: "ignaciollamedo@hotmail.com",
-    subject: "subject",
-    html: `
-    <h1>Purchase Ticket</h1>
-    <ul>
-        <li>Purchaser:</li>
-        <li>Total amount: </li>
-        <li>Date: </li>
-        <li>Ticket code: </li>
-    </ul>
-    `
-} */
