@@ -5,7 +5,7 @@ export class actividadDao {
         return await Actividad.create(datos)
     }
     async readOne(query){
-        const actividad = await Actividad.findOne({ _id: query }).lean()
+        const actividad = await Actividad.findOne(query).lean()
         if(!actividad){
             //provisional, desarrollar luego
             console.log("error")
@@ -16,7 +16,7 @@ export class actividadDao {
         return await Actividad.find(query).lean()
     }
     async updateOne(query, datos){
-        const updated = await Actividad.findOneAndUpdate({ nombre: query }, datos, { returnDocument: 'after' }).lean()
+        const updated = await Actividad.findOneAndUpdate(query, datos, { returnDocument: 'after' }).lean()
         if(!updated){
             //provisional, desarrollar luego
             console.log("error")
@@ -24,7 +24,7 @@ export class actividadDao {
         return updated
     }
     async deleteOne(query){
-        const deleted = await Actividad.findOneAndDelete({ nombre: query }).lean()
+        const deleted = await Actividad.findOneAndDelete(query).lean()
         if(!deleted){
             //provisional, desarrollar luego
             console.log("error")

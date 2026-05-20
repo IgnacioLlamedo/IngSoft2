@@ -1,6 +1,5 @@
 import express from "express";
-import { postController, loginController, logoutController, authenticationController, crearCodigo, authPass, resetPass } from "../../controllers/usuario.controller.js";
-
+import { postController, loginController, logoutController, authenticationController, crearCodigo, authPass, resetPass, loadProfileController, saveProfileController, checkPasswordController, setPasswordController } from "../../controllers/usuario.controller.js";
 
 export const usuarioRouter = express.Router();
 
@@ -14,8 +13,13 @@ usuarioRouter.put('/authentication', crearCodigo)
 
 usuarioRouter.post('/logout', logoutController);
 
+usuarioRouter.get('/load-profile', loadProfileController);
 
+usuarioRouter.post('/save-profile', saveProfileController);
 
+usuarioRouter.post('/check-password', checkPasswordController);
+
+usuarioRouter.post('/set-password', setPasswordController);
 
 usuarioRouter.post('/resetpass', crearCodigo)
 
