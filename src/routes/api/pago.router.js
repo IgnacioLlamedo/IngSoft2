@@ -4,5 +4,4 @@ import { crearPreferencia, almacenarPagoController } from "../../controllers/mer
 export const pagoRouter = express.Router();
 
 pagoRouter.post("/crear-preferencia", crearPreferencia);
-
 pagoRouter.post("/guardarPago", almacenarPagoController);

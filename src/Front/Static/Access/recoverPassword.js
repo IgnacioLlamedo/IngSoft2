@@ -1,6 +1,6 @@
 const verificationErrorMsg = document.getElementById("verificationError");
 
-document.getElementById("login-form").addEventListener("submit", async (event) => {
+document.getElementById("recover-password-form").addEventListener("submit", async (event) => {
 
     event.preventDefault()
 

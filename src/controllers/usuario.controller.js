@@ -216,9 +216,10 @@ export async function resetPass(req, res){
         };
 
         const redirect = homeRoutes[usuario.rol];
+    
         res.json({
             success: true,
-            redirect
+            redirect: redirect,
         });
     } 
     catch(error) {
