@@ -1,5 +1,5 @@
 import express from "express";
-import { postController, loginController, authenticationController, logoutController, accountController } from "../../controllers/usuario.controller.js";
+import { postController, loginController, authenticationController, logoutController, loadProfileController, saveProfileController, checkPasswordController, setPasswordController } from "../../controllers/usuario.controller.js";
 import { crearPreferencia } from "../../controllers/mercadoPago.controller.js";
 
 export const usuarioRouter = express.Router();
@@ -14,8 +14,10 @@ usuarioRouter.post('/logout', logoutController);
 
 usuarioRouter.post("/crear-preferencia", crearPreferencia);
 
-usuarioRouter.get('/account', accountController);
-usuarioRouter.post('/account', accountController);
+usuarioRouter.get('/load-profile', loadProfileController);
+usuarioRouter.post('/save-profile', saveProfileController);
+usuarioRouter.post('/check-password', checkPasswordController);
+usuarioRouter.post('/set-password', setPasswordController);
 
 
 /* usuarioRouter.post('/', postController)

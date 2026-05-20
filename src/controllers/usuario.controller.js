@@ -149,7 +149,7 @@ export async function crearCodigo(req, res) {
 	}
 }
 
-export async function accountController(req, res) {
+export async function loadProfileController(req, res) {
 	try {
 		// Return the current logged-in user's profile
 		const sessionUser = req.session && req.session.user;		
@@ -172,5 +172,87 @@ export async function accountController(req, res) {
 	} catch (error) {
 		console.error('accountController error:', error);
 		res.status(500).json({ success: false, message: 'Error al obtener perfil. Inténtelo más tarde.' });
+	}
+}
+
+
+export async function saveProfileController(req, res) {
+	try {
+		const sessionUser = req.session && req.session.user;		
+		const mail = sessionUser.mail;
+
+		if (!sessionUser || !mail) {
+			return res.status(401).json({ success: false, message: 'Usuario no autenticado' });
+		}
+
+		const updatedData = req.body;
+		// Prevent updating password through this endpoint
+		delete updatedData.contraseña;
+
+		const updatedUser = await usuarioDao.updateOne(mail, updatedData);
+		if (!updatedUser) {
+			return res.status(404).json({ success: false, message: 'Usuario no encontrado' });
+		}
+
+		return res.json(updatedUser);
+	} catch (error) {
+		console.error('saveProfileController error:', error);
+		res.status(500).json({ success: false, message: 'Error al actualizar perfil. Inténtelo más tarde.' });
+	}
+}
+
+
+export async function checkPasswordController(req, res) {
+	try {
+		// Return the current logged-in user's profile
+		const sessionUser = req.session && req.session.user;		
+		const mail = sessionUser.mail;
+
+		if (!sessionUser || !mail) {
+			return res.status(401).json({ success: false, message: 'Usuario no autenticado' });
+		}
+		const user = await usuarioDao.readOne(mail);
+
+		if (!user) {
+			return res.status(404).json({ success: false, message: 'Usuario no encontrado' });
+		}
+		
+		const isPasswordCorrect = req.body.contraseña === user.contraseña;
+		
+		console.log('checkPasswordController received password:', req.body.contraseña);
+		console.log('User password in DB:', user.contraseña);
+
+		return res.json({ success: isPasswordCorrect });
+	} catch (error) {
+		console.error('checkPasswordController error:', error);
+		res.status(500).json({ success: false, message: 'Error al obtener contraseña. Inténtelo más tarde.' });
+	}
+}
+
+
+export async function setPasswordController(req, res) {
+	try {
+		const sessionUser = req.session && req.session.user;		
+		const mail = sessionUser.mail;
+
+		if (!sessionUser || !mail) {
+			return res.status(401).json({ success: false, message: 'Usuario no autenticado' });
+		}
+
+		const updatedData = req.body;
+
+		if (!req.body.contraseña) {
+			return res.status(400).json({ success: false, message: 'Contraseña no proporcionada' });
+		}
+
+		const updatedUser = await usuarioDao.updateOne(mail, { contraseña: req.body.contraseña });
+		if (!updatedUser) {
+			return res.status(404).json({ success: false, message: 'Usuario no encontrado' });
+		}
+		return res.json(updatedUser);
+
+	} catch (error) {
+		console.error('savePasswordController error:', error);
+		res.status(500).json({ success: false, message: 'Error al actualizar contraseña. Inténtelo más tarde.' });
 	}
 }

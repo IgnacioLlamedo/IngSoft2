@@ -1,4 +1,3 @@
-// Get DOM elements
 const profileForm = document.getElementById('profileForm');
 const passwordForm = document.getElementById('passwordForm');
 const editBtn1 = document.getElementById('editBtn1');
@@ -10,15 +9,10 @@ const cancelBtn2 = document.getElementById('cancelBtn2');
 const profileMessageDiv = document.getElementById('profileMessage');
 const passwordMessageDiv = document.getElementById('passwordMessage');
 
-// Mock password
-const mockPassword = '123456';
-
-// Store original values for cancellation
 let originalValues = {};
 let isEditProfileMode = false;
 let isEditPasswordMode = false;
 
-// Set date input maximum to ensure user is at least 14 years old
 const edadMin = 14;
 const fechaMax = new Date();
 fechaMax.setFullYear(fechaMax.getFullYear() - edadMin);
@@ -26,14 +20,14 @@ document.getElementById("nacimiento").max = fechaMax.toISOString().split('T')[0]
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
-    loadUserProfile();
+    loadProfile();
     setupEventListeners();
 });
 
 // Load user profile data
-async function loadUserProfile() {
-    try {        
-        const response = await fetch('/api/account', {
+async function loadProfile() {
+    try {
+        const response = await fetch('/api/load-profile', {
             method: 'GET',
             credentials: 'include' // Include session cookies
         });
@@ -42,16 +36,6 @@ async function loadUserProfile() {
             throw new Error('Error al cargar el perfil');
         }
         const userData = await response.json();
-
-        /* const userData = {
-            nombre: 'Juan Pérez',
-            mail: 'juan@123.com',
-            dni: '12345678',
-            contraseña: '********',
-            nacimiento: '1990-05-15',
-            telefono: '123456789',
-            genero: 'masculino'
-        }; */
            
         populateProfileForm(userData);
         storeOriginalValues();
@@ -104,7 +88,7 @@ function setupEventListeners() {
     cancelBtn1.addEventListener('click', cancelProfileEdit);
     
     editBtn2.addEventListener('click', toggleEditPasswordMode);
-    saveBtn2.addEventListener('click', savePassword);
+    saveBtn2.addEventListener('click', changePassword);
     cancelBtn2.addEventListener('click', cancelPasswordEdit);
     setupPasswordVisibilityToggle();
 }
@@ -161,8 +145,8 @@ function setPasswordInputsType(type) {
     });
 
     const iconSrc = type === 'password'
-        ? '/Images/Common/eye-icon-hidden-white.png'
-        : '/Images/Common/eye-icon-visible-white.png';
+        ? '/Images/Inputs/eye-icon-hidden-white.png'
+        : '/Images/Inputs/eye-icon-visible-white.png';
     const ariaLabel = type === 'password' ? 'Mostrar contraseña' : 'Ocultar contraseña';
 
     const iconImages = document.querySelectorAll('.password-toggle-icon');
@@ -189,8 +173,8 @@ function setupPasswordVisibilityToggle() {
             const show = input.type === 'password';
             input.type = show ? 'text' : 'password';
             icon.src = show
-                ? '/Images/Common/eye-icon-visible-white.png'
-                : '/Images/Common/eye-icon-hidden-white.png';
+                ? '/Images/Inputs/eye-icon-visible-white.png'
+                : '/Images/Inputs/eye-icon-hidden-white.png';
             icon.alt = show ? 'Ocultar contraseña' : 'Mostrar contraseña';
             toggle.setAttribute('aria-label', show ? 'Ocultar contraseña' : 'Mostrar contraseña');
         });
@@ -208,16 +192,13 @@ async function saveProfile() {
             nombre: document.getElementById('nombre').value.trim(),
             mail: document.getElementById('email').value.trim(),
             dni: document.getElementById('dni').value.trim(),
-            contraseña: document.getElementById('contraseña-actual').value,
             nacimiento: document.getElementById('nacimiento').value,
             telefono: document.getElementById('telefono').value.trim(),
             genero: document.getElementById('genero').value
         };
 
-        // TODO: Send update request
-        /*
-        const response = await fetch('/api/usuario/profile', {
-            method: 'PUT',
+        const response = await fetch('/api/save-profile', {
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
@@ -231,9 +212,8 @@ async function saveProfile() {
         }
 
         const updatedUser = await response.json();
-        */
+        // console.log('Perfil actualizado:', updatedUser);
 
-        const updatedUser = userData;
         populateProfileForm(updatedUser);
         storeOriginalValues();
 
@@ -256,55 +236,78 @@ async function saveProfile() {
 }
 
 // Save new password
-async function savePassword() {
-    try {
-        if (!validatePasswordForm()) {
-            return;
-        }
+async function changePassword() {
+	if (!validatePasswordLocal()) {
+		return;
+	}
 
-        const userData = {
-            // mail: document.getElementById('email').value.trim(),
-            contraseña: document.getElementById('contraseña-nueva').value,
-        };
+	console.log("Validación local de pw exitosa, comparando con backend...");
 
-        // TODO: Send update request
-        /*
-        const response = await fetch('/api/usuario/profile', {
-            method: 'PUT',
+	try {
+		const res1 = await fetch("/api/check-password", {
+            method: "POST",
             headers: {
-                'Content-Type': 'application/json'
+                "Content-Type": "application/json",
             },
-            credentials: 'include',
-            body: JSON.stringify(userData)
+            credentials: "include",
+            body: JSON.stringify({
+                contraseña: document.getElementById("contraseña-actual").value,
+            }),
         });
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || 'Error al guardar el perfil');
+        if (!res1.ok) {
+            const errorData = await res1.json();
+            throw new Error(
+                errorData.message || "Error al verificar la contraseña actual",
+            );
         }
 
-        const updatedUser = await response.json();
-        */
+        const responseData = await res1.json();
+        const isPasswordCorrect = responseData.success;
 
-        const updatedUser = userData;
-        resetPasswordForm();
+        if (!isPasswordCorrect) {
+            showMessage("La contraseña actual es incorrecta", "error", "passwordMessage");
+            return;
+        }
+        
+        const res2 = await fetch("/api/set-password", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			credentials: "include",
+			body: JSON.stringify({
+				contraseña: document.getElementById("contraseña-nueva").value,
+			}),
+		});
 
-        // Exit edit password mode
-        isEditPasswordMode = true;
-        toggleEditPasswordMode();
+		if (!res2.ok) {
+			const errorData = await res2.json();
+			throw new Error(
+				errorData.message || "Error al cambiar la contraseña",
+			);
+		}
 
-        showMessage('Contraseña actualizada exitosamente', 'success', 'passwordMessage');
+		const updatedUser = await res2.json();
 
-        // Clear message after 3 seconds
-        setTimeout(() => {
-            passwordMessageDiv.textContent = '';
-            passwordMessageDiv.className = 'message';
-        }, 3000);
+		console.log("Contraseña actualizada:", updatedUser);
 
-    } catch (error) {
-        showMessage('Error: ' + error.message, 'error', 'passwordMessage');
-        console.error('Error:', error);
-    }
+		// Exit edit password mode
+		resetPasswordForm();
+		isEditPasswordMode = true;
+		toggleEditPasswordMode();
+
+		showMessage("Contraseña actualizada exitosamente", "success", "passwordMessage");
+
+		// Clear message after 3 seconds
+		setTimeout(() => {
+			passwordMessageDiv.textContent = "";
+			passwordMessageDiv.className = "message";
+		}, 3000);
+	} catch (error) {
+		showMessage("Error: " + error.message, "error", "passwordMessage");
+		console.error("Error:", error);
+	}
 }
 
 // Cancel profile edit
@@ -396,25 +399,24 @@ function validateProfileForm() {
     return true;
 }
 
-// Validate password form
-function validatePasswordForm() {
+// Local validations
+function validatePasswordLocal() {
     const contraseñaActual = document.getElementById('contraseña-actual').value;
     const contraseñaNueva = document.getElementById('contraseña-nueva').value;
     const contraseñaConfirmar = document.getElementById('contraseña-confirmar').value;
-    
-    // Validate password change
-    // TODO: Replace mock password validation with real backend validation
-    if (contraseñaActual !== mockPassword) {
-        showMessage('Las contraseña actual es incorrecta', 'error', 'passwordMessage');
+    console.log("Validando localmente:", { contraseñaActual, contraseñaNueva, contraseñaConfirmar });
+
+    if (!contraseñaActual || !contraseñaNueva || !contraseñaConfirmar) {
+        showMessage('Por favor completa todos los campos', 'error', 'passwordMessage');
         return false;
     }
-
+    
     if (contraseñaNueva !== contraseñaConfirmar) {
         showMessage('Las contraseñas no coinciden', 'error', 'passwordMessage');
         return false;
     }
     
-    if (!contraseñaNueva || (contraseñaNueva && contraseñaNueva.length < 6)) {
+    if (contraseñaNueva.length < 6) {
         showMessage('La nueva contraseña debe tener al menos 6 caracteres', 'error', 'passwordMessage');
         return false;
     }
