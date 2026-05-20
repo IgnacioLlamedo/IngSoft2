@@ -6,7 +6,7 @@ export class usuarioDao {
         console.log(datos)
     }
     async readOne(query){
-        const usuario = await Usuario.findOne({ mail: query }).lean()
+        const usuario = await Usuario.findOne(query).lean()
         if(!usuario){
             //provisional, desarrollar luego
             console.log("error usuario con mail " + query + " no encontrado")
@@ -17,7 +17,7 @@ export class usuarioDao {
         return await Usuario.find(query).lean()
     }
     async updateOne(query, datos){
-        const updated = await Usuario.findOneAndUpdate({ mail: query }, newData, { new: true }).lean()
+        const updated = await Usuario.findOneAndUpdate({ mail: query }, datos, { returnDocument: 'after' }).lean()
         if(!updated){
             //provisional, desarrollar luego
             console.log("error")

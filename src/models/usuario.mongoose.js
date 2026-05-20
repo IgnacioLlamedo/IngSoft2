@@ -16,6 +16,8 @@ const usuarioSchema = new Schema({
     genero: { type: String, enum: ['femenino', 'masculino', 'otro'], required: true },
     planilla: { type: String, required: true, ref: 'planillas' },
     rol: { type: String, enum: ['cliente', 'administrador', 'empleado'], default: 'cliente' },
+    codigo: { type: String },
+    limiteCodigo: { type: Date },
 }, {
     strict: false,
     versionKey: false,

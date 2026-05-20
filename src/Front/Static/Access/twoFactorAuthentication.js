@@ -4,12 +4,12 @@ const verificationErrorMsg = document.getElementById("verificationError");
 const email = parametrosURL.get('email');
 
 document.getElementById("reenviar-codigo").addEventListener("click", async (event) => {
-    const res = await fetch("/api/..", {
-        method: "POST",
+    const res = await fetch("/api/authentication", {
+        method: "PUT",
         headers: {
             "Content-Type" : "application/json"
         },
-        body: email
+        body: JSON.stringify({mail: email})
     });
 });
 
@@ -26,7 +26,7 @@ document.getElementById("two-factor-authenticator-form").addEventListener("submi
 
     const dataString = JSON.stringify(data);
 
-    const res = await fetch("/api/authenticate", {
+    const res = await fetch("/api/authentication", {
         method: "POST",
         headers: {
             "Content-Type" : "application/json"
