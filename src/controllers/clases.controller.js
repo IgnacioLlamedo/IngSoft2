@@ -42,8 +42,6 @@ export async function getAllClases(req, res) {
  * Si se puede general, ¿también se puede individual?
  */
 
-
-
 export async function postReservaUnica(req, res) {
     try {
         const reservaData = req.body.reservaData;
