@@ -5,6 +5,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { usuarioDao } from './daos/index.js';
 import session from 'express-session';
+import MongoStore from "connect-mongo";
 /* import { conectarMongo } from "./db/mongoose.js"; */
 
 // Imports Routers /api/..
@@ -47,6 +48,7 @@ export const homeRoutes = {
     empleado: "/home-employee", 
     administrador: "/home-admin",
 };
+
 
 // Req de Datos
 app.get("/session-data", (req, res) => {
@@ -99,7 +101,6 @@ app.get("/home/table", (req, res) => {
 
 
 // Tabs
-
 app.get("/my-activities", (req, res) => {
     if(!req.session.user) return res.redirect("/access/login");
     if(req.session.user.rol !== "cliente") return res.redirect(homeRoutes[req.session.user.rol]);

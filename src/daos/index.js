@@ -8,6 +8,7 @@ import { sedeDao as sede } from "./sede.dao.js";
 import { profesorDao as profesor } from "./profesor.dao.js";
 import { planillaDao as planilla } from "./planilla.dao.js";
 import { pagoDao as pago } from "./pago.dao.js";
+import { reservaDao as reserva } from "./reserva.dao.js";
 
 import dns from 'node:dns'
 dns.setServers(['8.8.8.8', '8.8.4.4'])
@@ -23,3 +24,4 @@ export const sedeDao = new sede()
 export const profesorDao = new profesor()
 export const planillaDao = new planilla()
 export const pagoDao = new pago()
+export const reservaDao = new reserva()

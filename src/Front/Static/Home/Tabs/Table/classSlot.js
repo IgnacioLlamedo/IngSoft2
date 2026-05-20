@@ -1,33 +1,49 @@
-document.addEventListener("DOMContentLoaded", () => {
-    document.querySelectorAll('.slotDeClase').forEach(div => {
-        const texto = div.innerText.trim();
 
-        switch(texto) {
-        case "Spinning":
-            div.classList.add("spinning");
-            div.dataset.clase = "Spinning";
-            div.dataset.precio = "3500";
-            div.onclick = () => abrirPago(div);
-            break;
-        case "Yoga":
-            div.classList.add("yoga");
-            div.dataset.clase = "Yoga";
-            div.dataset.precio = "2500";
-            div.onclick = () => abrirPago(div); 
-            break;
-        case "Funcional":
-            div.classList.add("funcional");
-            div.dataset.clase = "Funcional";
-            div.dataset.precio = "3000";
-            div.onclick = () => abrirPago(div);
-            break;
-        case "Sin Clase":
-            div.classList.add("sinclase");
-            break;
-        default:
-            div.classList.add("otro");
-            break;
-        }
+let clasesData;
 
+getAllClasses();
+
+async function getAllClasses() {
+    const res = await fetch("/api/clases/get-all", {
+        method: 'GET'
     });
-});
+
+    const resData = await res.json();
+    clasesData = resData.clases;
+
+    clasesData.forEach(claseObj => {
+
+        const tdId = `${claseObj.clase.dia}-${claseObj.clase.hora}`;
+
+        const celda = document.querySelector(`#${tdId} [data-sala="${claseObj.sala.nombre}"]`);
+
+        if (celda) {
+            celda.innerText = claseObj.actividad.nombre;
+            celda.dataset.id = claseObj.clase._id;
+            celda.dataset.clase = claseObj.actividad.nombre;
+            celda.dataset.precio = 1;
+            celda.onclick = () => abrirPago(celda);
+
+            switch (claseObj.actividad.nombre) {
+                case "spinning":
+                    celda.classList.add("spinning");
+                    break;
+                case "yoga":
+                    celda.classList.add("yoga");
+                    break;
+                case "funcional":
+                    celda.classList.add("funcional");
+                    break;
+                default:
+                    celda.classList.add("otro");
+                    break;
+            }
+        }
+    });
+
+    document.querySelectorAll('.slotDeClase').forEach(div => {
+        if (div.innerText.trim() === "Sin Clase") {
+            div.classList.add("sinclase");
+        }
+    });
+}

@@ -1,6 +1,58 @@
 const userIcon = document.getElementById("userIcon");
 const userOptions = document.getElementById("userOptions");
 
+const parametersURL = new URLSearchParams(window.location.search);
+const statusPago = parametersURL.get('status');
+
+
+if(statusPago == "approved") {
+    alert("Pago aprobado.");
+    
+    const id_pago = parametersURL.get('payment_id')
+    const ext = parametersURL.get('external_reference')
+    const externo = JSON.parse(ext);
+    
+    console.log("Valores de retorno desde Mercado Pago: ");
+    console.log(externo);
+    
+    const pagoData = {
+        _id: id_pago,           //abria que decidir si el id que se deja en base de datos es este o el automáticos
+        monto: externo.precio,
+        idUsuario: externo.idUsuario,
+        idClase: externo.idClase //Este id clase debe modificarse ->>> en payPanel (pagar debe recibirlo desde el slothClase)
+    }
+    
+    const pagoDataString = JSON.stringify(pagoData);
+    guardarPago(pagoDataString)
+}
+
+async function guardarPago(data) {
+    const res = await fetch("/api/guardarPago", {
+        method: "POST",
+        headers: {
+            "Content-Type" : "application/json"
+        },
+        body: data
+    })
+
+    const resData = res.json();
+    if(resData.success)
+        guardarReserva(resData);
+}
+
+
+async function guardarReserva(pagoData) {
+    const res = await fetch("/api/clases/post-reserva", {
+        method: "POST",
+        headers: {
+            "Content-Type" : "application/json"
+        },
+        body: data
+    })
+}
+
+
+
 userIcon.addEventListener("click", () => {
     userOptions.classList.toggle("user-options-open")
 })

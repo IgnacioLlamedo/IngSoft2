@@ -9,6 +9,7 @@ export async function userAutoLoginController(req,res) {
             mail: user.mail,
             rol: user.rol,
         };
+        //await req.session.save();
 
         return res.json({
             success: true,
@@ -33,6 +34,7 @@ export async function employeeAutoLoginController(req,res) {
             mail: user.mail,
             rol: user.rol,
         };
+        //await req.session.save();
 
         return res.json({
             success: true,
@@ -57,6 +59,7 @@ export async function adminAutoLoginController(req,res) {
             mail: user.mail,
             rol: user.rol,
         };
+        //await req.session.save();
 
         return res.json({
             success: true,

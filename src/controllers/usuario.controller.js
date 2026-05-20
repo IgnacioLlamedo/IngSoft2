@@ -94,6 +94,7 @@ export async function authenticationController(req, res) {
                 mail: usuario.mail,
                 rol: usuario.rol,
             };
+            //await req.session.save();
 
             //Elijo a donde se redirige
 
@@ -148,5 +149,25 @@ export async function crearCodigo(req, res){
             success: false,
             message: "Error al crear código de autenticación. Inténtelo más tarde."
         });
+    }
+}
+
+export async function almacenarPagoController(req, res){
+    try {
+        const dataPago = req.body;
+        console.log(dataPago);
+
+        const pagoData = await pagoDao.create(dataPago);   //Crea el nuevo pago y lo almacena en DB
+
+        res.json({
+            success: true,
+            data: pagoData,
+        })
+    }
+    catch(error) {
+        res.json({
+            success: false,
+            message: "Error al almacenar datos de pago en DB."
+        })
     }
 }

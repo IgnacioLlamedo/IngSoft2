@@ -6,17 +6,20 @@ import { claseDao } from "../daos/index.js";
 export async function getAllClases(req, res) {
     try {
         const clasesData = await claseDao.readMany({});
+        const activitiesData = await actividadDao.readMany({});
+        const salasData = await salaDao.readMany({});
+        const profesoresData = await profesorDao.readMany({});
 
         let clasesTotal = [];
         for(let claseData of clasesData) {
             clasesTotal.push({
                 clase: claseData,
-                actividad: await actividadDao.readOne(claseData.idActividad),
-                sala: await salaDao.readOne(claseData.idSala),
-                profesor:  await profesorDao.readOne(claseData.idProfesor),
+                actividad: activitiesData.find(a => a._id === claseData.idActividad),
+                sala: salasData.find(s => s._id === claseData.idSala),
+                profesor:  profesoresData.find(p => p._id === claseData.idProfesor),
             })
         }
-        console.log(clasesTotal);
+        
         res.json({
             success: true,
             clases: clasesTotal,
@@ -35,6 +38,17 @@ export async function getAllClases(req, res) {
  * Consultas:
  * ¿los precios son de cada clase o hay precios generales?
  * 
- * En base a eso, cuando se realiza un aumento,¿ se hace un aumento general o un aumento individual por clase?
+ * En base a eso, cuando se realiza un aumento,¿se hace un aumento general o un aumento individual por clase?
  * Si se puede general, ¿también se puede individual?
  */
+
+
+
+export async function postReserva(req, res) {
+    try {
+        
+    }
+    catch(error) {
+
+    }
+}

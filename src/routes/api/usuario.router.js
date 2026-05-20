@@ -1,5 +1,5 @@
 import express from "express";
-import { postController, loginController, logoutController, authenticationController, /*recuperarClases*/ } from "../../controllers/usuario.controller.js";
+import { postController, loginController, logoutController, authenticationController, almacenarPagoController } from "../../controllers/usuario.controller.js";
 import { crearPreferencia } from "../../controllers/mercadoPago.controller.js";
 
 export const usuarioRouter = express.Router();
@@ -14,7 +14,7 @@ usuarioRouter.post('/logout', logoutController);
 
 usuarioRouter.post("/crear-preferencia", crearPreferencia);
 
-//usuarioRouter.get("/clases", recuperarClases);
+usuarioRouter.post("/guardarPago", almacenarPagoController);
 
 
 /* usuarioRouter.post('/', postController)

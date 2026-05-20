@@ -57,12 +57,30 @@ function pagarMensual() {
 }
 
 async function pagar(tipoClase, precio) {
-    const res = await fetch("/api/crear-preferencia", {
+    /* const res = await fetch("/api/crear-preferencia", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ tipo: tipoClase, cantidad:1, precio: precio })
     });
 
     const resData = await res.json();
-    window.location.href = resData.init_point;
+    window.location.href = resData.init_point; */
+
+    const data = {
+        monto: 1,
+        idUsuario: req.session.user.id,
+        idClase: celda.dataset.id,
+        fecha: Date.now().toString(),
+    };
+
+    const res = await fetch("/api/guardarPago", {
+        method: "POST",
+        headers: {
+            "Content-Type" : "application/json"
+        },
+        body: data
+    })
+
+    const resData = res.json();
+    console.log(resData);
 }

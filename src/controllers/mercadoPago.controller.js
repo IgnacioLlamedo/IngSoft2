@@ -4,8 +4,15 @@ import { client } from "../servicios/mercado.servicio.js";
 export async function crearPreferencia(req, res) {
 
     try {
-
-        const { tipo, precio } = req.body;
+        //body: JSON.stringify({ tipo: tipoClase, cantidad:1, monto: precio, id_Clase: idClase })
+        const tipo = req.body.tipo;
+        const monto = req.body.monto;
+        const id_clase = req.body.id_Clase;
+        console.log("Desde crear Preferencia!")
+        console.log(tipo)
+        console.log(id_clase)
+        console.log(monto)
+        console.log("finalizado el log desde crear preferencia!");
 
         const preference = new Preference(client);
 
@@ -15,15 +22,20 @@ export async function crearPreferencia(req, res) {
                     {
                         title: tipo,
                         quantity: 1,
-                        unit_price: Number(precio)
+                        unit_price: Number(monto)
                     }
                 ],
+                external_reference: JSON.stringify({    //Todo esto termina en la url una vez que se retorna a /home
+                    idUsuario: req.session.user.id,        //Este es asignado al usuario cuando se logea (en autenticaión doble controller)
+                    idClase: id_clase,         //Este se guarda al llamar a /crear-preferencia (en payPanel.js)
+                    precio: monto
+                }),
                 back_urls: {
-                    success: "http://localhost:8080/success.html",
-                    failure: "http://localhost:8080/failure.html",
-                    pending: "http://localhost:8080/pending.html"
+                    success: "https://ingsoft2front.vercel.app/home",
+                    failure: "https://ingsoft2front.vercel.app/home",
+                    pending: "https://ingsoft2front.vercel.app/home"
                 },
-                //auto_return: "approved"
+                auto_return: "approved"
             }
         });
 
