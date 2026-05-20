@@ -1,35 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="/Images/Common/favicon.ico" type="image/x-icon">
-
-    <link rel="stylesheet" href="/Home/headerStyle.css">
+    <link rel="stylesheet" href="/Navbar/navStyle.css">
     <link rel="stylesheet" href="/Access/accessCommon.css">
     <link rel="stylesheet" href="/Access/signUpStyle.css">
     
     <title>CEF - Registrarse</title>
+    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
 </head>
-<body>
-    
-    <header>
- 
-        <nav class="header-nav">
 
-            <a href="/">
-              <img class="logo-img" src="/Images/HomeImages/logo.png" alt="Logo">
-            </a>
-            
-            <ul>
-              <li><a href="/access/login">Iniciar Sesión</a></li>
-              <li><a href="/access/register">Registrarse</a></li>
-            </ul>
-
-        </nav>
-
-    </header>
-
+<body>    
+    <div id="nav-placeholder"></div>
+    <script>
+        $(function () {
+            $("#nav-placeholder").load("/visitorNav");
+        });
+    </script>
 
     <main>
         <div class="form-container">
