@@ -107,6 +107,13 @@ app.get("/my-activities", (req, res) => {
 });
 
 
+app.get("/test-clases", (req, res) => {
+    if(!req.session.user) return res.redirect("/access/login");
+    if(req.session.user.rol !== "cliente") return res.redirect(homeRoutes[req.session.user.rol]);
+    res.sendFile(path.join(__dirname, "Front/Home/HomeTabs/testClases.html"));
+});
+
+
 // Access GET
 app.get("/access/register", (req,res) => {
     if(req.session.user) return res.redirect(homeRoutes[req.session.user.rol]);

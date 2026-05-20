@@ -78,8 +78,7 @@ export async function loginController(req,res) {
 }
 
 export async function authenticationController(req, res) {
-    try { 
-
+    try {
         const mail = req.body.mail;
         //Vuelvo a buscar los datos del usuario, esta vez con el código
         const usuario = await usuarioDao.readOne(mail);
@@ -140,9 +139,9 @@ export async function logoutController(req,res) {
 export async function crearCodigo(req, res){
     try {
         await usuarioDao.updateOne(req.body.mail, {
-        codigo: generateOtp(),
-        limiteCodigo: new Date(Date.now() + 600000)
-    })
+            codigo: generateOtp(),
+            limiteCodigo: new Date(Date.now() + 600000)
+        })
     } 
     catch(error) {
         res.json({

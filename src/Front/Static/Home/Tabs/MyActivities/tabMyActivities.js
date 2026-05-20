@@ -103,7 +103,8 @@ function renderActividades() {
       const pPrecio = document.createElement("p");
       pPrecio.textContent = `Precio por clase: $${act.precio}`;
       boxData.appendChild(pPrecio);
-    } else {
+    } 
+    else {
       const pDia = document.createElement("p");
       pDia.textContent = `Día: ${act.dia}`;
       boxData.appendChild(pDia);
@@ -135,7 +136,8 @@ function renderActividades() {
         console.log(`Pagaste el resto de la clase única de ${act.actividad}`);
       });
       buttonsContainer.appendChild(btnPagar);
-    } else {
+    } 
+    else {
       const btnCancelarClase = document.createElement("button");
       btnCancelarClase.classList.add("box-button", "cancel-next-class");
       btnCancelarClase.textContent = "Cancelar Siguiente Clase";

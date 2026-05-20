@@ -5,7 +5,7 @@ export class actividadDao {
         return await Actividad.create(datos)
     }
     async readOne(query){
-        const actividad = await Actividad.findOne({ nombre: query }).lean()
+        const actividad = await Actividad.findOne({ _id: query }).lean()
         if(!actividad){
             //provisional, desarrollar luego
             console.log("error")

@@ -50,3 +50,7 @@ adminAutoLogin.addEventListener("click", async (event) => {
     else
         console.error(resData.message);
 })
+
+
+
+

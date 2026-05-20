@@ -21,6 +21,7 @@ body {
     flex-direction: column;
     width: 95%;
     gap: 15px;
+    padding: 10px;
 }
 
 .checkbox-container input {
