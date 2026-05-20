@@ -3,36 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="/Images/Common/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/Images/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="/Access/accessCommon.css">
     <title>CEF - Recuperar contraseña</title>
 </head>
 <body>
     <main>
         <div class="form-container">
-            <form id="login-form">
+            <form id="two-factor-authenticator-form">
                 <section>
 
-                    <h1>Recuperar contraseña</h1>
+                    <h1>Autenticación de doble factor</h1>
 
                     <div class="input-section">
 
-                        <span>Ingresá el email de tu cuenta:</span>
-                        <input type="email" name="mail" required placeholder="Email de la cuenta">                    
-                    
-                        <!-- Habilitar casilla de cóidigo -->
+                        <span>Ingresá el código recibido por email:</span>
+                        <input type="number" name="codigo" required placeholder="Código recibido por email">                    
                     </div>
 
+                    <a href="#" id="reenviar-codigo">Enviar código otra vez</a>
                 </section>
 
                 <section>
-                    <!-- Cambiar botón a Verficar código y llevar a resetPassword -->
                     <p id="verificationError" class="errorMsg hidden"></p>
-                    <button>ENVIAR CÓDIGO</button>
+                    <button>VALIDAR CÓDIGO</button>
                 </section>
             </form>
         </div>
     </main>
 </body>
-<script src="/Access/recoverPassword.js"></script>
+<script src="/Access/authPass.js"></script>
 </html>

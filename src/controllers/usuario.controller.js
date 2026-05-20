@@ -2,7 +2,8 @@ import { usuarioDao } from "../daos/index.js";
 import { planillaDao } from "../daos/index.js";
 import { generateOtp } from '@mx7/otp';
 import { homeRoutes } from "../app.js";
-import { Usuario } from "../models/usuario.mongoose.js";
+import { mailer } from "../servicios/mailer.servicio.js";
+import { hash, compareHash } from "../servicios/crypt.servicio.js";
 
 
 const errorMessages = {
@@ -13,7 +14,8 @@ export async function postController(req, res) {
     try {
         const planilla = await planillaDao.create(req.body.planillaData);
 
-        const userData = req.body.userData;
+        let userData = req.body.userData;
+        userData.contraseña = hash(userData.contraseña)
         userData.planilla = planilla._id;
 
         await usuarioDao.create(userData);
@@ -37,8 +39,7 @@ export async function loginController(req,res) {
         const mail = req.body.mail;
         const password = req.body.contraseña;
 
-        const user = await usuarioDao.readOne(mail);
-
+        const user = await usuarioDao.readOne({ mail: mail });
         // usuario no encontrado
         if(!user) {
             return res.json({
@@ -46,22 +47,24 @@ export async function loginController(req,res) {
                 message: "Error al Iniciar Sesión en la cuenta. El email ingresado no está registrado."
             });
         }
-
         // Contraseña incorrecta
-        if(user.contraseña !== password) {
+        if(compareHash(user.contraseña, password)) {
             return res.json({
                 success: false,
                 message: "Error al Iniciar Sesión en la cuenta. La contraseña ingresada es incorrecta."
             });
         }
-
         //Genero el código de acceso y lo cargo en la DB ---> No sé si esto era lo que queria hacer Nacho (?)
-        const usuario = await Usuario.updateOne({ mail: mail }, {
-            codigo: generateOtp(),
-            limiteCodigo: new Date(Date.now() + 600000)
-        });
+        const limite = new Date(Date.now() + 600000)
+        const otp = generateOtp()
+        const usuario = await usuarioDao.updateOne(mail, {
+        codigo: otp,
+        limiteCodigo: limite
+        })
+        console.log("enviando codigo: " + usuario.codigo)
 
         //Acá habria que mandar el mail con el código generado.
+        await mailer.auth(mail, otp);
 
         let redirect = `/access/authentication?email=${mail}`;
         res.json({
@@ -78,38 +81,39 @@ export async function loginController(req,res) {
 }
 
 export async function authenticationController(req, res) {
-    try {
+    try { 
         const mail = req.body.mail;
         //Vuelvo a buscar los datos del usuario, esta vez con el código
-        const usuario = await usuarioDao.readOne(mail);
+        const usuario = await usuarioDao.readOne({ mail: mail });
 
         //si se encontró el usuario y el código ingresado es igual al guardado en DB
 
-
-        if (usuario.codigo == req.body.codigo) {
-
-            //Creo la sesion del usuario
-            req.session.user = {
-                id: usuario._id,
-                mail: usuario.mail,
-                rol: usuario.rol,
-            };
-            //await req.session.save();
-
-            //Elijo a donde se redirige
-
-            const redirect = homeRoutes[usuario.rol];
-            res.json({
-                success: true,
-                redirect
-            });
-        }
-        else{
+       if(usuario.codigo != req.body.codigo){
             return res.json({
                 success: false,
-                message: "Mail o código no encontrado"
-            })
+                message: "Error al ingresar el código de validación."
+            });
         }
+
+        if(usuario.limiteCodigo.getTime() < new Date(Date.now()).getTime()){
+            return res.json({
+                success: false,
+                message: "Error al ingresar el código de validación. El código ya expiró"
+            });
+        }
+
+        req.session.user = {
+            id: usuario._id,
+            mail: usuario.mail,
+            rol: usuario.rol,
+        };
+        // AWAIT FACU POR FAVOOR
+        
+        const redirect = homeRoutes[usuario.rol];
+        res.json({
+            success: true,
+            redirect
+        });
     } 
     catch(error) {
         res.json({
@@ -139,10 +143,20 @@ export async function logoutController(req,res) {
 
 export async function crearCodigo(req, res){
     try {
-        await usuarioDao.updateOne(req.body.mail, {
-            codigo: generateOtp(),
-            limiteCodigo: new Date(Date.now() + 600000)
+        const limite = new Date(Date.now() + 600000)
+        const otp = generateOtp()
+        const usuario = await usuarioDao.updateOne(req.body.mail, {
+            codigo: otp,
+            limiteCodigo: limite
         })
+        console.log("reenviando codigo: " + usuario.codigo)
+        await mailer.auth(usuario.mail, otp)
+        
+        const redirect = `/access/auth-pass?email=${req.body.mail}`;
+        res.json({
+            success: true,
+            redirect
+        });
     } 
     catch(error) {
         res.json({
@@ -151,6 +165,7 @@ export async function crearCodigo(req, res){
         });
     }
 }
+
 
 export async function almacenarPagoController(req, res){
     try {
@@ -169,5 +184,65 @@ export async function almacenarPagoController(req, res){
             success: false,
             message: "Error al almacenar datos de pago en DB."
         })
+    }
+}
+
+export async function authPass(req, res){
+    try { 
+        const mail = req.body.mail;
+        //Vuelvo a buscar los datos del usuario, esta vez con el código
+        const usuario = await usuarioDao.readOne({ mail: mail });
+
+        //si se encontró el usuario y el código ingresado es igual al guardado en DB
+       if(usuario.codigo != req.body.codigo){
+            return res.json({
+                success: false,
+                message: "Error al ingresar el código de validación."
+            });
+        }
+        if(usuario.limiteCodigo.getTime() < new Date(Date.now()).getTime()){
+            return res.json({
+                success: false,
+                message: "Error al ingresar el código de validación. El código ya expiró"
+            });
+        }
+        
+        const redirect = `/access/reset-password?email=${req.body.mail}`;
+        res.json({
+            success: true,
+            redirect
+        });
+    } 
+    catch(error) {
+        res.json({
+            success: false,
+            message: "Error al validar el código. Inténtelo más tarde."
+        });
+    }
+}
+
+export async function resetPass(req, res){
+    try {
+        const usuario = await usuarioDao.updateOne(req.body.mail, {
+            contraseña: hash(req.body.contraseña)
+        })
+        
+        req.session.user = {
+            id: usuario._id,
+            mail: usuario.mail,
+            rol: usuario.rol,
+        };
+
+        const redirect = homeRoutes[usuario.rol];
+        res.json({
+            success: true,
+            redirect
+        });
+    } 
+    catch(error) {
+        res.json({
+            success: false,
+            message: "Error al cambiar contraseña. Inténtelo más tarde."
+        });
     }
 }

@@ -16,7 +16,7 @@ export class actividadDao {
         return await Actividad.find(query).lean()
     }
     async updateOne(query, datos){
-        const updated = await Actividad.findOneAndUpdate({ nombre: query }, newData, { new: true }).lean()
+        const updated = await Actividad.findOneAndUpdate({ nombre: query }, datos, { returnDocument: 'after' }).lean()
         if(!updated){
             //provisional, desarrollar luego
             console.log("error")

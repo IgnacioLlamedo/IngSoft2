@@ -3,7 +3,6 @@ const verificationErrorMsg = document.getElementById("verificationError");
 
 const email = parametrosURL.get('email');
 
-
 document.getElementById("reenviar-codigo").addEventListener("click", async (event) => {
     const res = await fetch("/api/authentication", {
         method: "PUT",
@@ -15,6 +14,7 @@ document.getElementById("reenviar-codigo").addEventListener("click", async (even
 });
 
 document.getElementById("two-factor-authenticator-form").addEventListener("submit", async (event) => {
+    
     event.preventDefault();
 
     const codigo = event.target.codigo.value;
@@ -26,13 +26,14 @@ document.getElementById("two-factor-authenticator-form").addEventListener("submi
 
     const dataString = JSON.stringify(data);
 
-    const res = await fetch("/api/authentication", {
+    const res = await fetch("/api/authPass", {
         method: "POST",
         headers: {
             "Content-Type" : "application/json"
         },
         body: dataString
     });
+
     const resData = await res.json();
 
     if(resData.success) {
@@ -43,5 +44,5 @@ document.getElementById("two-factor-authenticator-form").addEventListener("submi
     {
         verificationErrorMsg.textContent = resData.message;
         verificationErrorMsg.classList.remove("hidden");
-    }
+    } 
 });

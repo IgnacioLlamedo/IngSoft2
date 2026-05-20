@@ -19,6 +19,7 @@ const claseSchema = new Schema({
     limiteClase: { type: Number, required: true },
     dia: { type: String, required: true },
     hora: { type: Number, required: true },
+    precioMensual: { type: Number, required: true },
 }, {
     strict: 'throw',
     versionKey: false

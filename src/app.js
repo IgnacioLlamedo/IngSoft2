@@ -3,10 +3,10 @@ import express from 'express';
 import nodemailer from 'nodemailer';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { usuarioDao } from './daos/index.js';
 import session from 'express-session';
 import MongoStore from "connect-mongo";
 /* import { conectarMongo } from "./db/mongoose.js"; */
+
 
 // Imports Routers /api/..
 import { apiRouter } from './routes/api/api.router.js';
@@ -20,9 +20,6 @@ app.listen(config.port, () => {
 })
 
 app.use(express.json());
-
-//Conexión con DB
-/* await conectarMongo(); */
 
 //sesion de usuario
 app.use(session({
@@ -136,6 +133,16 @@ app.get("/access/recover-password", (req,res) => {
     res.sendFile(path.join(__dirname, "Front/Access/recoverPassword.html"))
 });
 
+app.get("/access/reset-password", (req,res) => {
+    if(req.session.user) return res.redirect(homeRoutes[req.session.user.rol]);
+    res.sendFile(path.join(__dirname, "Front/Access/resetPassword.html"));
+});
+
+app.get("/access/auth-pass", (req,res) => {
+    if(req.session.user) return res.redirect(homeRoutes[req.session.user.rol]);
+    res.sendFile(path.join(__dirname, "Front/Access/authPass.html"));
+});
+
 
 // Access USE
 app.use('/api', apiRouter);
@@ -144,51 +151,3 @@ app.use('/api', apiRouter);
 // Account
 app.get("/account/user", (req,res) => res.sendFile(path.join(__dirname, "Front/Account/profile.html")));
 
-
-/* class mailer{
-    constructor() {
-        this.transport = nodemailer.createTransport({
-            service: 'gmail',
-            port: 587,
-            auth: {
-                user: config.mailUser,
-                pass: config.mailPass
-            }
-        })
-    }
-    async send(receiver, subject, body, attach = []){
-        const mailOptions = {
-            from: config.mailUser,
-            to: receiver,
-            subject: subject,
-            html: body
-        }
-        if(attach.length > 0){
-            mailOptions.attachments = attach
-        }
-        await this.transport.sendMail(mailOptions)
-    }
-}
-
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    port: 587,
-    auth: {
-        user: config.mailUser,
-        pass: config.mailPass
-    }
-})
-const mailOptions = {
-    from: config.mailUser,
-    to: "ignaciollamedo@hotmail.com",
-    subject: "subject",
-    html: `
-    <h1>Purchase Ticket</h1>
-    <ul>
-        <li>Purchaser:</li>
-        <li>Total amount: </li>
-        <li>Date: </li>
-        <li>Ticket code: </li>
-    </ul>
-    `
-} */
