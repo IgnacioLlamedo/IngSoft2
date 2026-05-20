@@ -48,39 +48,27 @@ function cerrarPanel() {
 }
 
 function pagarClaseUnica() {
-    pagar(claseSeleccionada, precioSeleccionado);
+    pagar("unica", precioSeleccionado);
 }
 
 function pagarMensual() {
     // Ajustá la lógica de precio mensual según tu necesidad
-    pagar(claseSeleccionada, precioSeleccionado * 4);
+    pagar("mensual", precioSeleccionado * 4);
 }
 
 async function pagar(tipoClase, precio) {
-    /* const res = await fetch("/api/crear-preferencia", {
+    const res = await fetch("/api/pago/crear-preferencia", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ tipo: tipoClase, cantidad:1, precio: precio })
+        body: JSON.stringify({ 
+            tipo: tipoClase, 
+            cantidad:1, 
+            precio: precio, 
+            idClase: elemento.dataset.id,
+            fechaEspecifica: header.dataset.fecha,
+        })
     });
 
     const resData = await res.json();
-    window.location.href = resData.init_point; */
-
-    const data = {
-        monto: 1,
-        idUsuario: req.session.user.id,
-        idClase: celda.dataset.id,
-        fecha: Date.now().toString(),
-    };
-
-    const res = await fetch("/api/guardarPago", {
-        method: "POST",
-        headers: {
-            "Content-Type" : "application/json"
-        },
-        body: data
-    })
-
-    const resData = res.json();
-    console.log(resData);
+    window.location.href = resData.init_point;
 }

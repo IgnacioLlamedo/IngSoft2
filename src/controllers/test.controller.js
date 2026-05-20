@@ -2,7 +2,7 @@ import { usuarioDao } from "../daos/index.js";
 
 export async function userAutoLoginController(req,res) {
     try {
-        const user = await usuarioDao.readOne("user@test.com");
+        const user = await usuarioDao.readOne({mail: "user@test.com"});
 
         req.session.user = {
             id: user._id,
@@ -27,7 +27,7 @@ export async function userAutoLoginController(req,res) {
 
 export async function employeeAutoLoginController(req,res) {
     try {
-        const user = await usuarioDao.readOne("employee@test.com");
+        const user = await usuarioDao.readOne({mail: "employee@test.com"});
 
         req.session.user = {
             id: user._id,
@@ -52,7 +52,7 @@ export async function employeeAutoLoginController(req,res) {
 
 export async function adminAutoLoginController(req,res) {
     try {
-        const user = await usuarioDao.readOne("admin@test.com");
+        const user = await usuarioDao.readOne({mail: "admin@test.com"});
 
         req.session.user = {
             id: user._id,

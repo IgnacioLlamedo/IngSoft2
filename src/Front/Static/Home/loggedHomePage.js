@@ -23,11 +23,11 @@ if(statusPago == "approved") {
     }
     
     const pagoDataString = JSON.stringify(pagoData);
-    guardarPago(pagoDataString)
+    guardarPago(pagoDataString, ext)
 }
 
-async function guardarPago(data) {
-    const res = await fetch("/api/guardarPago", {
+async function guardarPago(data, ext) {
+    const res = await fetch("/api/pago/guardarPago", {
         method: "POST",
         headers: {
             "Content-Type" : "application/json"
@@ -37,18 +37,39 @@ async function guardarPago(data) {
 
     const resData = res.json();
     if(resData.success)
-        guardarReserva(resData);
+        guardarReserva(resData, ext);
 }
 
 
-async function guardarReserva(pagoData) {
-    const res = await fetch("/api/clases/post-reserva", {
-        method: "POST",
-        headers: {
-            "Content-Type" : "application/json"
-        },
-        body: data
-    })
+async function guardarReserva(pagoData, ext) {
+    if(ext.tipoClase === "unica"){
+        const data  = {
+            idClase: pagoData.idClase,
+            pagos: [pagoData._id],
+            señada: false,
+            idUsuario: pagoData.idUsuario,
+            cancelada: false,
+            fechaEspecifica: ext.fechaEspecifica,
+        };
+
+        const res = await fetch("/api/clases/post-reserva-unica", {
+            method: "POST",
+            headers: {
+                "Content-Type" : "application/json"
+            },
+            body: data
+        })
+    }
+
+    else {
+        const res = await fetch("/api/clases/post-reserva-mensual", {
+            method: "POST",
+            headers: {
+                "Content-Type" : "application/json"
+            },
+            body: data
+        })
+    }
 }
 
 

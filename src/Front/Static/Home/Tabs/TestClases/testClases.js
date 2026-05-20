@@ -24,7 +24,7 @@ async function clases() {
 
         buttonUnica.classList.add("buttonUnica");
         buttonUnica.addEventListener('click', async () => {
-            /* const res = await fetch("/api/crear-preferencia", {
+            /* const res = await fetch("/api/pago/crear-preferencia", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ tipo: clase.actividad.nombre, cantidad:1, monto: 1, id_Clase: clase.clase._id })
@@ -34,7 +34,7 @@ async function clases() {
             console.log(resData);
             window.location.href = resData.init_point; */
 
-            const res = await fetch("/api/guardarPago", {
+            const res = await fetch("/api/pago/guardarPago", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ tipo: clase.actividad.nombre, cantidad:1, monto: 1, id_Clase: clase.clase._id })
@@ -43,7 +43,7 @@ async function clases() {
 
         /* buttonMes.classList.add("buttonMes");
         buttonMes.addEventListener('click', async () => {
-            const res = await fetch("/api/crear-preferencia", {
+            const res = await fetch("/api/pago/crear-preferencia", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ tipo: clase.actividad.nombre, cantidad:1, monto: 1, id_Clase: clase.clase._id })

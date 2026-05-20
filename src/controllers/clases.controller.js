@@ -1,4 +1,4 @@
-import { actividadDao } from "../daos/index.js";
+import { actividadDao, reservaDao } from "../daos/index.js";
 import { profesorDao } from "../daos/index.js";
 import { salaDao } from "../daos/index.js";
 import { claseDao } from "../daos/index.js";
@@ -44,11 +44,36 @@ export async function getAllClases(req, res) {
 
 
 
-export async function postReserva(req, res) {
+export async function postReservaUnica(req, res) {
     try {
-        
+        const reservaData = req.body.reservaData;
+        await reservaDao.createUnica(reservaData);
+
+        res.json({
+            success: true
+        });
     }
     catch(error) {
+        res.json({
+            success: false,
+            message: error,
+        });
+    }
+}
 
+export async function postReservaMensual(req, res) {
+    try {
+        const reservaData = req.body.reservaData;
+        await reservaDao.createMensual(reservaData);
+
+        res.json({
+            success: true,
+        });
+    }
+    catch(error) {
+        res.json({
+            success: false,
+            message: error,
+        });
     }
 }

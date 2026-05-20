@@ -167,25 +167,7 @@ export async function crearCodigo(req, res){
 }
 
 
-export async function almacenarPagoController(req, res){
-    try {
-        const dataPago = req.body;
-        console.log(dataPago);
 
-        const pagoData = await pagoDao.create(dataPago);   //Crea el nuevo pago y lo almacena en DB
-
-        res.json({
-            success: true,
-            data: pagoData,
-        })
-    }
-    catch(error) {
-        res.json({
-            success: false,
-            message: "Error al almacenar datos de pago en DB."
-        })
-    }
-}
 
 export async function authPass(req, res){
     try { 
