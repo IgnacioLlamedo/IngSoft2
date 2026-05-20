@@ -55,6 +55,7 @@ app.get("/access/login", (req,res) => res.sendFile(path.join(__dirname, "Front/A
 app.get("/access/authentication", (req,res) => res.sendFile(path.join(__dirname, "Front/Access/twoFactorAuthentication.html")));
 app.get("/access/recover-password", (req,res) => res.sendFile(path.join(__dirname, "Front/Access/recoverPassword.html")));
 app.get("/access/reset-password", (req,res) => res.sendFile(path.join(__dirname, "Front/Access/resetPassword.html")));
+app.get("/access/auth-pass", (req,res) => res.sendFile(path.join(__dirname, "Front/Access/authPass.html")));
 
 app.get("/home", (req, res) => {
     if(!req.session.user) return res.redirect("/access/login");

@@ -1,5 +1,5 @@
 import express from "express";
-import { postController, loginController, logoutController, authenticationController, crearCodigo } from "../../controllers/usuario.controller.js";
+import { postController, loginController, logoutController, authenticationController, crearCodigo, authPass, resetPass } from "../../controllers/usuario.controller.js";
 
 export const usuarioRouter = express.Router()
 
@@ -12,6 +12,12 @@ usuarioRouter.post('/authentication', authenticationController);
 usuarioRouter.put('/authentication', crearCodigo)
 
 usuarioRouter.post('/logout', logoutController)
+
+usuarioRouter.post('/resetpass', crearCodigo)
+
+usuarioRouter.post('/authPass', authPass)
+
+usuarioRouter.put('/resetpass', resetPass)
 
 /* usuarioRouter.post('/', postController)
 

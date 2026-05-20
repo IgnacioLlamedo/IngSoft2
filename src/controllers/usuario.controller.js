@@ -81,7 +81,6 @@ export async function loginController(req,res) {
 
 export async function authenticationController(req, res) {
     try { 
-
         const mail = req.body.mail;
         //Vuelvo a buscar los datos del usuario, esta vez con el código
         const usuario = await usuarioDao.readOne({ mail: mail });
@@ -148,11 +147,77 @@ export async function crearCodigo(req, res){
         })
         console.log("reenviando codigo: " + usuario.codigo)
         await mailer.auth(usuario.mail, otp)
+        
+        const redirect = `/access/auth-pass?email=${req.body.mail}`;
+        res.json({
+            success: true,
+            redirect
+        });
     } 
     catch(error) {
         res.json({
             success: false,
             message: "Error al crear código de autenticación. Inténtelo más tarde."
+        });
+    }
+}
+
+export async function authPass(req, res){
+    try { 
+        const mail = req.body.mail;
+        //Vuelvo a buscar los datos del usuario, esta vez con el código
+        const usuario = await usuarioDao.readOne({ mail: mail });
+
+        //si se encontró el usuario y el código ingresado es igual al guardado en DB
+       if(usuario.codigo != req.body.codigo){
+            return res.json({
+                success: false,
+                message: "Error al ingresar el código de validación."
+            });
+        }
+        if(usuario.limiteCodigo.getTime() < new Date(Date.now()).getTime()){
+            return res.json({
+                success: false,
+                message: "Error al ingresar el código de validación. El código ya expiró"
+            });
+        }
+        
+        const redirect = `/access/reset-password?email=${req.body.mail}`;
+        res.json({
+            success: true,
+            redirect
+        });
+    } 
+    catch(error) {
+        res.json({
+            success: false,
+            message: "Error al validar el código. Inténtelo más tarde."
+        });
+    }
+}
+
+export async function resetPass(req, res){
+    try {
+        const usuario = await usuarioDao.updateOne(req.body.mail, {
+            contraseña: hash(req.body.contraseña)
+        })
+
+        req.session.user = {
+            id: usuario._id,
+            mail: usuario.mail,
+            rol: usuario.rol,
+        };
+
+        const redirect = homeRoutes[usuario.rol];
+        res.json({
+            success: true,
+            redirect
+        });
+    } 
+    catch(error) {
+        res.json({
+            success: false,
+            message: "Error al cambiar contraseña. Inténtelo más tarde."
         });
     }
 }

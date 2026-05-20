@@ -10,26 +10,27 @@
 <body>
     <main>
         <div class="form-container">
-            <form id="login-form">
+            <form id="two-factor-authenticator-form">
                 <section>
 
-                    <h1>Reiniciar contraseña</h1>
+                    <h1>Autenticación de doble factor</h1>
 
                     <div class="input-section">
 
-                        <input type="password" name="contraseña" required placeholder="Nueva contraseña"> 
-                        <input type="password" required placeholder="Confirmar nueva contraseña">                    
-                    
+                        <span>Ingresá el código recibido por email:</span>
+                        <input type="number" name="codigo" required placeholder="Código recibido por email">                    
                     </div>
 
+                    <a href="#" id="reenviar-codigo">Enviar código otra vez</a>
                 </section>
 
                 <section>
-                    <button>REINICIAR CONTRASEÑA</button>
+                    <p id="verificationError" class="errorMsg hidden"></p>
+                    <button>VALIDAR CÓDIGO</button>
                 </section>
             </form>
         </div>
     </main>
 </body>
-<script src="/Access/resetPassword.js"></script>
+<script src="/Access/authPass.js"></script>
 </html>
