@@ -3,6 +3,7 @@ import { planillaDao } from "../daos/index.js";
 import { generateOtp } from '@mx7/otp';
 import { homeRoutes } from "../app.js";
 import { mailer } from "../servicios/mailer.servicio.js";
+import { hash, compareHash } from "../servicios/crypt.servicio.js";
 
 const errorMessages = {
     11000: "Error al crear la cuenta, el email ya está registrado.",
@@ -12,7 +13,8 @@ export async function postController(req, res) {
     try {
         const planilla = await planillaDao.create(req.body.planillaData);
 
-        const userData = req.body.userData;
+        let userData = req.body.userData;
+        userData.contraseña = hash(userData.contraseña)
         userData.planilla = planilla._id;
 
         await usuarioDao.create(userData);
@@ -45,7 +47,7 @@ export async function loginController(req,res) {
             });
         }
         // Contraseña incorrecta
-        if(user.contraseña !== password) {
+        if(compareHash(user.contraseña, password)) {
             return res.json({
                 success: false,
                 message: "Error al Iniciar Sesión en la cuenta. La contraseña ingresada es incorrecta."
