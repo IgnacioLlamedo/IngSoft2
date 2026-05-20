@@ -5,7 +5,7 @@ export class salaDao {
         return await Sala.create(datos)
     }
     async readOne(query){
-        const sala = await Sala.findOne({ _id: query }).lean()
+        const sala = await Sala.findOne(query).lean()
         if(!sala){
             //provisional, desarrollar luego
             console.log("error")
@@ -16,7 +16,7 @@ export class salaDao {
         return await Sala.find(query).lean()
     }
     async updateOne(query, datos){
-        const updated = await Sala.findOneAndUpdate({ _id: query }, datos, { returnDocument: 'after' }).lean()
+        const updated = await Sala.findOneAndUpdate(query, datos, { returnDocument: 'after' }).lean()
         if(!updated){
             //provisional, desarrollar luego
             console.log("error")
@@ -24,7 +24,7 @@ export class salaDao {
         return updated
     }
     async deleteOne(query){
-        const deleted = await Sala.findOneAndDelete({ _id: query }).lean()
+        const deleted = await Sala.findOneAndDelete(query).lean()
         if(!deleted){
             //provisional, desarrollar luego
             console.log("error")

@@ -5,7 +5,7 @@ export class profesorDao {
         return await Profesor.create(datos)
     }
     async readOne(query){
-        const profesor = await Profesor.findOne({ _id: query }).lean()
+        const profesor = await Profesor.findOne(query).lean()
         if(!profesor){
             //provisional, desarrollar luego
             console.log("error")
@@ -16,7 +16,7 @@ export class profesorDao {
         return await Profesor.find(query).lean()
     }
     async updateOne(query, datos){
-        const updated = await Profesor.findOneAndUpdate({ _id: query }, datos, { returnDocument: 'after' }).lean()
+        const updated = await Profesor.findOneAndUpdate(query, datos, { returnDocument: 'after' }).lean()
         if(!updated){
             //provisional, desarrollar luego
             console.log("error")
@@ -24,7 +24,7 @@ export class profesorDao {
         return updated
     }
     async deleteOne(query){
-        const deleted = await Profesor.findOneAndDelete({ _id: query }).lean()
+        const deleted = await Profesor.findOneAndDelete(query).lean()
         if(!deleted){
             //provisional, desarrollar luego
             console.log("error")
