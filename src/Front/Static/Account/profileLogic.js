@@ -33,9 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // Load user profile data
 async function loadUserProfile() {
     try {        
-        // TODO: Fetch user data from the backend
-        /*
-        const response = await fetch('/api/usuario/profile', {
+        const response = await fetch('/api/account', {
             method: 'GET',
             credentials: 'include' // Include session cookies
         });
@@ -44,10 +42,8 @@ async function loadUserProfile() {
             throw new Error('Error al cargar el perfil');
         }
         const userData = await response.json();
-        */
 
-        // Mocked user data for testing
-        const userData = {
+        /* const userData = {
             nombre: 'Juan Pérez',
             mail: 'juan@123.com',
             dni: '12345678',
@@ -55,7 +51,7 @@ async function loadUserProfile() {
             nacimiento: '1990-05-15',
             telefono: '123456789',
             genero: 'masculino'
-        };
+        }; */
            
         populateProfileForm(userData);
         storeOriginalValues();

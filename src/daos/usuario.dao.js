@@ -16,7 +16,7 @@ export class usuarioDao {
     async readMany(query){
         return await Usuario.find(query).lean()
     }
-    async updateOne(query, datos){
+    async updateOne(query, newData){
         const updated = await Usuario.findOneAndUpdate({ mail: query }, newData, { new: true }).lean()
         if(!updated){
             //provisional, desarrollar luego
