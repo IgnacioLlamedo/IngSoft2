@@ -38,8 +38,6 @@ export async function loginController(req, res) {
 		const mail = req.body.mail;
 		const password = req.body.contraseña;
 
-		const user = await usuarioDao.readOne(mail);
-
         const user = await usuarioDao.readOne({ mail: mail });
         // usuario no encontrado
         if(!user) {
@@ -242,7 +240,7 @@ export async function loadProfileController(req, res) {
 			return res.status(401).json({ success: false, message: 'Usuario no autenticado' });
 		}
 
-		const user = await usuarioDao.readOne(mail);
+		const user = await usuarioDao.readOne({mail: mail});
 
 		if (!user) {
 			return res.status(404).json({ success: false, message: 'Usuario no encontrado' });
@@ -294,16 +292,17 @@ export async function checkPasswordController(req, res) {
 		if (!sessionUser || !mail) {
 			return res.status(401).json({ success: false, message: 'Usuario no autenticado' });
 		}
-		const user = await usuarioDao.readOne(mail);
+		const user = await usuarioDao.readOne({mail: mail});
 
 		if (!user) {
 			return res.status(404).json({ success: false, message: 'Usuario no encontrado' });
 		}
 		
-		const isPasswordCorrect = req.body.contraseña === user.contraseña;
+		const isPasswordCorrect = compareHash(req.body.contraseña, user.contraseña);
 		
-		console.log('checkPasswordController received password:', req.body.contraseña);
-		console.log('User password in DB:', user.contraseña);
+		//las contraseñas no son iguales debido al hasheo
+		/* console.log('checkPasswordController received password:', req.body.contraseña);
+		console.log('User password in DB:', user.contraseña); */
 
 		return res.json({ success: isPasswordCorrect });
 	} catch (error) {
@@ -328,7 +327,7 @@ export async function setPasswordController(req, res) {
 			return res.status(400).json({ success: false, message: 'Contraseña no proporcionada' });
 		}
 
-		const updatedUser = await usuarioDao.updateOne(mail, { contraseña: req.body.contraseña });
+		const updatedUser = await usuarioDao.updateOne(mail, { contraseña: hash(req.body.contraseña) });
 		if (!updatedUser) {
 			return res.status(404).json({ success: false, message: 'Usuario no encontrado' });
 		}
