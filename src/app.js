@@ -61,8 +61,4 @@ app.use(express.static(path.join(__dirname, "Front/Static"), {
 // Access USE
 app.use('/api', apiRouter);
 
-
-// Account
-app.get("/account/user", (req,res) => res.sendFile(path.join(__dirname, "Front/Account/profile.html")));
-
 export default app;
