@@ -61,4 +61,7 @@ app.use(express.static(path.join(__dirname, "Front/Static"), {
 // Access USE
 app.use('/api', apiRouter);
 
+//sino no puedo acceder a las rutas xd
+app.use(webRouter);
+
 export default app;
