@@ -6,7 +6,7 @@ getSessionData();
 async function getSessionData() {
     const sessionDataRes = await fetch("/session-data");
     const sessionData = await sessionDataRes.json();
-    console.log(sessionData);
+    //console.log(sessionData);
 
     if(sessionData.logged && (sessionData.session.rol === "cliente")) {
         const buttons = document.getElementsByClassName("paymentButtons");
