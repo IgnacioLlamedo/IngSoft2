@@ -16,28 +16,27 @@ if(statusPago == "approved") {
     console.log(externo);
     
     const pagoData = {
-        _id: id_pago,           //abria que decidir si el id que se deja en base de datos es este o el automáticos
+        _id: id_pago,
         monto: externo.precio,
         idUsuario: externo.idUsuario,
         idClase: externo.idClase //Este id clase debe modificarse ->>> en payPanel (pagar debe recibirlo desde el slothClase)
     }
     
-    const pagoDataString = JSON.stringify(pagoData);
-    guardarPago(pagoDataString, ext)
+    guardarPago(pagoData);
 }
 
 async function guardarPago(data, ext) {
-    const res = await fetch("/api/pago/guardarPago", {
+    const res = await fetch("/api/guardarPago", {
         method: "POST",
         headers: {
             "Content-Type" : "application/json"
         },
-        body: data
+        body: JSON.stringify(data)
     })
 
-    const resData = res.json();
+    const resData = await res.json();
     if(resData.success)
-        guardarReserva(resData, ext);
+        guardarReserva(resData.data, ext);
 }
 
 
@@ -57,8 +56,15 @@ async function guardarReserva(pagoData, ext) {
             headers: {
                 "Content-Type" : "application/json"
             },
-            body: data
+            body: JSON.stringify(data)
         })
+
+        const resData = await res.json();
+        if (resData.success){
+            console.log("Reserva unica creada");
+        }
+
+        
     }
 
     else {
