@@ -47,6 +47,51 @@ async function guardarReserva(pagoData, ext) {
 
     if(ext.tipoClase === "unica"){
         const data  = {
+            /*ValidationError: ReservaUnica validation failed: idUsuario: Path `idUsuario` is required., idClase: Path `idClase` is required.
+    at model.validate (/opt/render/project/src/node_modules/mongoose/lib/document.js:2864:36)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async model.$__save (/opt/render/project/src/node_modules/mongoose/lib/model.js:393:7)
+    at async model.save (/opt/render/project/src/node_modules/mongoose/lib/model.js:667:5)
+Menu
+    at async model.create (/opt/render/project/src/node_modules/mongoose/lib/model.js:2747:5)
+    at async reservaDao.createUnica (file:///opt/render/project/src/src/daos/reserva.dao.js:5:16)
+    at async postReservaUnica (file:///opt/render/project/src/src/controllers/clases.controller.js:50:9) {
+  errors: {
+    idUsuario: ValidatorError: Path `idUsuario` is required.
+        at SchemaString.doValidate (/opt/render/project/src/node_modules/mongoose/lib/schemaType.js:1517:13)
+        at model.validate (/opt/render/project/src/node_modules/mongoose/lib/document.js:2842:20)
+        at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+        at async model.$__save (/opt/render/project/src/node_modules/mongoose/lib/model.js:393:7)
+        at async model.save (/opt/render/project/src/node_modules/mongoose/lib/model.js:667:5)
+        at async model.create (/opt/render/project/src/node_modules/mongoose/lib/model.js:2747:5)
+        at async reservaDao.createUnica (file:///opt/render/project/src/src/daos/reserva.dao.js:5:16)
+        at async postReservaUnica (file:///opt/render/project/src/src/controllers/clases.controller.js:50:9) {
+      properties: [Object],
+      kind: 'required',
+      path: 'idUsuario',
+      value: undefined,
+      reason: undefined,
+      Symbol(mongoose#validatorError): true
+    },
+    idClase: ValidatorError: Path `idClase` is required.
+        at SchemaString.doValidate (/opt/render/project/src/node_modules/mongoose/lib/schemaType.js:1517:13)
+        at model.validate (/opt/render/project/src/node_modules/mongoose/lib/document.js:2842:20)
+        at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+        at async model.$__save (/opt/render/project/src/node_modules/mongoose/lib/model.js:393:7)
+        at async model.save (/opt/render/project/src/node_modules/mongoose/lib/model.js:667:5)
+        at async model.create (/opt/render/project/src/node_modules/mongoose/lib/model.js:2747:5)
+        at async reservaDao.createUnica (file:///opt/render/project/src/src/daos/reserva.dao.js:5:16)
+        at async postReservaUnica (file:///opt/render/project/src/src/controllers/clases.controller.js:50:9) {
+      properties: [Object],
+      kind: 'required',
+      path: 'idClase',
+      value: undefined,
+      reason: undefined,
+      Symbol(mongoose#validatorError): true
+    }
+  },
+  _message: 'ReservaUnica validation failed'
+}    */
             idClase: pagoData.idClase,
             pagos: [pagoData._id],
             señada: false,
