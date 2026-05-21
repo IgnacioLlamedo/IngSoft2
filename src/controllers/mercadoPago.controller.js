@@ -13,7 +13,6 @@ export async function crearPreferencia(req, res) {
         const urlRetorno = req.body.url;
         const url = `${urlRetorno}/home`;
 
-        console.log(url)
 
         const preference = new Preference(client);
 

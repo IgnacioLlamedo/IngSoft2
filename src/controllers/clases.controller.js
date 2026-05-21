@@ -46,7 +46,11 @@ export async function getAllClases(req, res) {
 
 export async function postReservaUnica(req, res) {
     try {
-        const reservaData = req.body.reservaData;
+        const reservaData = req.body;
+
+        console.log("Datos recibidos (Back) en postReservaUnica : ");
+        console.log(reservaData);
+
         await reservaDao.createUnica(reservaData);
 
         res.json({

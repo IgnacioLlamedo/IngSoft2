@@ -6,14 +6,13 @@ const statusPago = parametersURL.get('status');
 
 
 if(statusPago == "approved") {
-    alert("Pago aprobado.");
     
     const id_pago = parametersURL.get('payment_id')
     const ext = parametersURL.get('external_reference')
     const externo = JSON.parse(ext);
     
-    console.log("Valores de retorno desde Mercado Pago: ");
-    console.log(externo);
+/*     console.log("Valores de retorno desde Mercado Pago: ");
+    console.log(externo); */
     
     const pagoData = {
         _id: id_pago,
@@ -36,8 +35,8 @@ async function guardarPago(data, ext) {
     })
 
     const resData = await res.json();
-    console.log("El guardado del pago en DB fue " + resData.success);
-    console.log(resData);
+    /* console.log("El guardado del pago en DB fue " + resData.success);
+    console.log(resData); */
     if(resData.success)
         guardarReserva(resData.data, ext);
 }
@@ -99,6 +98,9 @@ Menu
             cancelada: false,
             fechaEspecifica: ext.fechaEspecifica,
         };
+
+        console.log("En guardar reserva (FRONT) -> los valores recibidos antes de intentar guardar reserva en DB son: ");
+        console.log(data);
 
         const res = await fetch("/api/clases/post-reserva-unica", {
             method: "POST",
