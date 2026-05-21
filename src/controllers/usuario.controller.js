@@ -1,7 +1,7 @@
 import { usuarioDao } from "../daos/index.js";
 import { planillaDao } from "../daos/index.js";
 import { generateOtp } from '@mx7/otp';
-import { homeRoutes } from "../app.js";
+import { homeRoutes } from "../constantes/routes.js";
 import { mailer } from "../servicios/mailer.servicio.js";
 import { hash, compareHash } from "../servicios/crypt.servicio.js";
 
