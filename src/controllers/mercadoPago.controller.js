@@ -76,6 +76,7 @@ export async function almacenarPagoController(req, res){
         })
     }
     catch(error) {
+        console.log(error);
         res.json({
             success: false,
             message: "Error al almacenar datos de pago en DB."

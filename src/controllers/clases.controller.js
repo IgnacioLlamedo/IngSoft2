@@ -54,6 +54,7 @@ export async function postReservaUnica(req, res) {
         });
     }
     catch(error) {
+        console.log(error)
         res.json({
             success: false,
             message: error,
@@ -71,6 +72,7 @@ export async function postReservaMensual(req, res) {
         });
     }
     catch(error) {
+        console.log(error)
         res.json({
             success: false,
             message: error,
