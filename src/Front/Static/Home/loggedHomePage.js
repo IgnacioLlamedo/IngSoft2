@@ -36,7 +36,7 @@ async function guardarPago(data, ext) {
 
     const resData = await res.json();
     /* console.log("El guardado del pago en DB fue " + resData.success);*/
-    console.log(resData.data.pagos);
+    console.log(resData.data._id);
     if(resData.success)
         guardarReserva(resData.data, ext);
 }
@@ -47,7 +47,7 @@ async function guardarReserva(pagoData, ext) {
     if(ext.tipoClase === "unica"){
         const data  = {
             idClase: pagoData.idClase,
-            pagos: pagoData.pagos,
+            pagos: pagoData._id,
             señada: false,
             idUsuario: pagoData.idUsuario,
             cancelada: false,
