@@ -21,11 +21,7 @@ app.listen(config.port, () => {
 
 app.use(express.json());
 
-// Access USE
-app.use('/api', apiRouter);
 
-//sino no puedo acceder a las rutas xd
-app.use(webRouter);
 
 //sesion de usuario
 const isProduction = process.env.NODE_ENV === "production";
@@ -64,5 +60,9 @@ app.use(express.static(path.join(__dirname, "Front/Static"), {
   }
 }));
 
+// Access USE
+app.use('/api', apiRouter);
 
+//sino no puedo acceder a las rutas xd
+app.use(webRouter);
 
