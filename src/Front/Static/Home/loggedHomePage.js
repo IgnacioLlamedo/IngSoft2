@@ -35,8 +35,7 @@ async function guardarPago(data, ext) {
     })
 
     const resData = await res.json();
-    /* console.log("El guardado del pago en DB fue " + resData.success);*/
-    console.log("id de pago de clase unica guardado: " + resData.data._id);
+    
     if(resData.success)
         guardarReserva(resData.data, ext);
 }
@@ -44,11 +43,10 @@ async function guardarPago(data, ext) {
 
 async function guardarReserva(pagoData, ext) {
 
-    const pagos = [{ pago1: pagoData._id }];    //una vez que se modifique el schema de reserva unica eliminar esto 
     if(ext.tipoClase === "unica"){
         const data  = {
             idClase: pagoData.idClase,
-            pagos: pagos,    //y acá asignar pagoData._id
+            pagos: pagoData._id,
             señada: false,
             idUsuario: pagoData.idUsuario,
             cancelada: false,

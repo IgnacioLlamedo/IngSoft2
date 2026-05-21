@@ -43,10 +43,6 @@ export async function getAllClases(req, res) {
  */
 
 
-/**
- * ReservaUnica no debería tener en schema más de un pago -> eliminar
- * con solo dejar el id de pago es suficiente 
- */
 export async function postReservaUnica(req, res) {
     try {
         const reservaData = req.body;
