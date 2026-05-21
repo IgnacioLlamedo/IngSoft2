@@ -21,6 +21,12 @@ app.listen(config.port, () => {
 
 app.use(express.json());
 
+// Access USE
+app.use('/api', apiRouter);
+
+//sino no puedo acceder a las rutas xd
+app.use(webRouter);
+
 //sesion de usuario
 const isProduction = process.env.NODE_ENV === "production";
 
@@ -45,7 +51,7 @@ app.use(session({
         secure: isProduction,
         sameSite: "none",
         httpOnly: true,
-        maxAge: 1000 * 60 * 60 * 24
+        maxAge: 1000 * 60 * 60 * 12
     }
 }));
 
@@ -58,10 +64,5 @@ app.use(express.static(path.join(__dirname, "Front/Static"), {
   }
 }));
 
-// Access USE
-app.use('/api', apiRouter);
 
-//sino no puedo acceder a las rutas xd
-app.use(webRouter);
 
-export default app;

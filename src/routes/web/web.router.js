@@ -170,7 +170,36 @@ webRouter.get("/access/auth-pass", (req,res) => {
 
 
 // Account
-webRouter.get("/account/user", (req,res) => {
+
+/* webRouter.get("/account/user", (req,res) => {
 
     res.sendFile(path.join(__dirname, "../../Front/Account/profile.html"));
+}); */
+
+/* app.get("/account/user", (req,res) => {
+    if(req.session.user) return res.redirect(profileRoutes[req.session.user.rol]);
+    res.sendFile(path.join(__dirname, "Front/Home/visitorHomePage.html"));
+}); */
+
+webRouter.get("/account/client", (req, res) => {
+    if(!req.session.user) return res.redirect("/access/login");
+    if(req.session.user.rol !== "cliente") return res.redirect(profileRoutes[req.session.user.rol]);
+    res.sendFile(path.join(__dirname, "Front/Account/userProfile.html"));
 });
+
+webRouter.get("/account/employee", (req, res) => {
+    if(!req.session.user) return res.redirect("/access/login");
+    if(req.session.user.rol !== "empleado") return res.redirect(profileRoutes[req.session.user.rol]);
+    res.sendFile(path.join(__dirname, "Front/Account/employeeProfile.html"));
+});
+
+webRouter.get("/account/admin", (req, res) => {
+    if(!req.session.user) return res.redirect("/access/login");
+    if(req.session.user.rol !== "administrador") return res.redirect(profileRoutes[req.session.user.rol]);
+    res.sendFile(path.join(__dirname, "Front/Account/adminProfile.html"));
+});
+
+// Navbars
+webRouter.get('/userNav', (req, res) => res.sendFile(path.join(__dirname, 'Front/Navbar/userNav.html')));
+webRouter.get('/visitorNav', (req, res) => res.sendFile(path.join(__dirname, 'Front/Navbar/visitorNav.html')));
+webRouter.get('/footer', (req, res) => res.sendFile(path.join(__dirname, 'Front/Navbar/footer.html')));

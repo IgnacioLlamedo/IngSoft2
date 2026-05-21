@@ -34,6 +34,21 @@ export async function getAllClases(req, res) {
     }
 }
 
+export async function crearClase(req, res){
+    try {
+        let data = req.body
+        
+        await claseDao.create(data)
+    }
+    catch(error) {
+        console.log(error);
+        res.json({
+            success: false,
+            message: error
+        });
+    }
+}
+
 /**
  * Consultas:
  * ¿los precios son de cada clase o hay precios generales?
@@ -41,7 +56,6 @@ export async function getAllClases(req, res) {
  * En base a eso, cuando se realiza un aumento,¿se hace un aumento general o un aumento individual por clase?
  * Si se puede general, ¿también se puede individual?
  */
-
 
 export async function postReservaUnica(req, res) {
     try {
