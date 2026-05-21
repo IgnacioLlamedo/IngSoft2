@@ -23,7 +23,7 @@ if(statusPago == "approved") {
         fecha: externo.fechaEspecifica
     }
     
-    guardarPago(pagoData);
+    guardarPago(pagoData, externo);
 }
 
 async function guardarPago(data, ext) {
