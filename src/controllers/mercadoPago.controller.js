@@ -62,7 +62,6 @@ export async function almacenarPagoController(req, res){
     try {
         let dataPago = req.body;
 
-        //revisar schema de pago, no permite monto duplicado(?)
         const pagoData = await pagoDao.create(dataPago);   //Crea el nuevo pago y lo almacena en DB
 
         if(!pagoData){
