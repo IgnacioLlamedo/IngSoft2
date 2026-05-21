@@ -43,7 +43,10 @@ export async function getAllClases(req, res) {
  */
 
 
-
+/**
+ * ReservaUnica no debería tener en schema más de un pago -> eliminar
+ * con solo dejar el id de pago es suficiente 
+ */
 export async function postReservaUnica(req, res) {
     try {
         const reservaData = req.body;
@@ -66,6 +69,12 @@ export async function postReservaUnica(req, res) {
     }
 }
 
+/**
+ * El postReservaMensual debe consultar primero si el usuario ya tiene esa clase reservada
+ * en caso de tener una reserva a esa clase ya hecha, solo se debe hacer update de pagos 
+ * (agregando el pago hecho), fecha (agregando la fecha específica del pago supongo) y 
+ * fecha de vencimiento aumentando 1 mes la fecha de vencimiento.
+ */
 export async function postReservaMensual(req, res) {
     try {
         const reservaData = req.body.reservaData;
