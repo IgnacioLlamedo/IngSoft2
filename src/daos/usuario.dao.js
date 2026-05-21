@@ -9,7 +9,8 @@ export class usuarioDao {
         const usuario = await Usuario.findOne(query).lean()
         if(!usuario){
             //provisional, desarrollar luego
-            console.log("error usuario con mail " + query + " no encontrado")
+            console.log("error con: ")
+            console.log(query);
         }
         return usuario
     }

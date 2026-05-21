@@ -12,13 +12,31 @@ const errorMessages = {
 
 export async function postController(req, res) {
     try {
+        const userData = req.body.userData;
+
+        const mailExiste = await usuarioDao.readOne({mail:userData.mail});
+        if (mailExiste) {
+            return res.json({
+                success:false,
+                message: "mail ya registrado"
+            })
+        }
+
+        const dniExiste = await usuarioDao.readOne({dni:userData.dni, rol:"cliente"});
+        if (dniExiste) {
+            return res.json({
+                success:false,
+                message: "dni ya registrado"
+            })
+        }
+        
         const planilla = await planillaDao.create(req.body.planillaData);
 
-        let userData = req.body.userData;
-        userData.contraseña = hash(userData.contraseña)
-        userData.planilla = planilla._id;
+        let dataACrear = userData;
+        dataACrear.contraseña = hash(userData.contraseña)
+        dataACrear.planilla = planilla._id;
 
-        await usuarioDao.create(userData);
+        await usuarioDao.create(dataACrear);
 
         res.json({
             success: true
