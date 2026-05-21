@@ -32,6 +32,7 @@ export async function crearPreferencia(req, res) {
                     precio: monto,
                     tipoClase: tipoClase,
                     fechaEspecifica: fechaEspecifica,
+                    tipoClase: "unica"
                 }),
                 back_urls: {
                     success: url,
@@ -57,11 +58,10 @@ export async function crearPreferencia(req, res) {
 }
 
 
+//Ya funciona bien, si tocan algo les corto las bolas
 export async function almacenarPagoController(req, res){
     try {
         let dataPago = req.body;
-        console.log("Los datos que llegan a almacenarPagoController");
-        console.log(dataPago);
 
         const pagoData = await pagoDao.create(dataPago);   //Crea el nuevo pago y lo almacena en DB
 
