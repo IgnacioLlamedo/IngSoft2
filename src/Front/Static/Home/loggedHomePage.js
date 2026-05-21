@@ -26,7 +26,7 @@ if(statusPago == "approved") {
 }
 
 async function guardarPago(data, ext) {
-    const res = await fetch("/api/guardarPago", {
+    const res = await fetch("/api/pago/guardarPago", {
         method: "POST",
         headers: {
             "Content-Type" : "application/json"
