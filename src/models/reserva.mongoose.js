@@ -53,7 +53,7 @@ const Reserva = model(collection, reservaSchema)
 export const ReservaUnica = Reserva.discriminator("ReservaUnica", new Schema({
     _id: { type: String, default: randomUUID },
     idClase: { type: String, required: true, ref: 'clases' },
-    pagos: [{ idPago: {type: String, required: true, ref: 'pagos' }}],
+    pagos: { idPago: {type: String, required: true, ref: 'pagos' }},
     señada: {type: Boolean},
     idUsuario: { type: String, required: true, ref: 'usuarios' },
     cancelada: { type: Boolean },
@@ -64,7 +64,7 @@ export const ReservaUnica = Reserva.discriminator("ReservaUnica", new Schema({
 export const ReservaMensual = Reserva.discriminator("ReservaMensual", new Schema({
     _id: { type: String, default: randomUUID },
     idClase: { type: String, required: true, ref: 'clases' },
-    pagos: { idPago: {type: String, required: true, ref: 'pagos'}},
+    pagos: [{ idPago: {type: String, required: true, ref: 'pagos'}}],
     idUsuario: { type: String, required: true, ref: 'usuarios' },
     cancelada: { type: Boolean },
     fechas: [{fechaEspecifica: { type: Date }}],
