@@ -59,10 +59,17 @@ export async function crearPreferencia(req, res) {
 export async function almacenarPagoController(req, res){
     try {
         const dataPago = req.body;
+        console.log("Los datos que llegan a almacenarPagoController");
         console.log(dataPago);
 
         const pagoData = await pagoDao.create(dataPago);   //Crea el nuevo pago y lo almacena en DB
 
+        if(!pagoData){
+            return res.json({
+                success: false,
+                message: "Error al crear el nuevo pago en DB."
+            })
+        }
         res.json({
             success: true,
             data: pagoData,
