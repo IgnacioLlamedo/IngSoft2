@@ -1,6 +1,7 @@
 import { Preference } from "mercadopago";
 import { client } from "../servicios/mercado.servicio.js";
 import { now } from "mongoose";
+import { pagoDao } from "../daos/index.js";
 
 export async function crearPreferencia(req, res) {
 
