@@ -57,7 +57,7 @@ function pagarMensual() {
 }
 
 async function pagar(tipoClase, precio, elemento) {
-    const res = await fetch('/api/crear-preferencia', {
+    const res = await fetch('/api/pago/crear-preferencia', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
