@@ -4,8 +4,6 @@ import nodemailer from 'nodemailer';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import session from 'express-session';
-import MongoStore from "connect-mongo";
-/* import { conectarMongo } from "./db/mongoose.js"; */
 
 
 // Imports Routers /api/..

@@ -19,7 +19,8 @@ if(statusPago == "approved") {
         _id: id_pago,
         monto: externo.precio,
         idUsuario: externo.idUsuario,
-        idClase: externo.idClase //Este id clase debe modificarse ->>> en payPanel (pagar debe recibirlo desde el slothClase)
+        idClase: externo.idClase, //Este id clase debe modificarse ->>> en payPanel (pagar debe recibirlo desde el slothClase)
+        
     }
     
     guardarPago(pagoData);
@@ -35,12 +36,15 @@ async function guardarPago(data, ext) {
     })
 
     const resData = await res.json();
+    console.log("El guardado del pago en DB fue " + resData.success);
+    console.log(resData);
     if(resData.success)
         guardarReserva(resData.data, ext);
 }
 
 
 async function guardarReserva(pagoData, ext) {
+
     if(ext.tipoClase === "unica"){
         const data  = {
             idClase: pagoData.idClase,

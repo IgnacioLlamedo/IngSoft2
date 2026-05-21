@@ -13,8 +13,15 @@ import { reservaDao as reserva } from "./reserva.dao.js";
 import dns from 'node:dns'
 dns.setServers(['8.8.8.8', '8.8.4.4'])
 
-await mongoose.connect(config.cnxStr)
-console.log("Base de datos conectada")
+try{
+    await mongoose.connect(config.cnxStr)
+    console.log("Base de datos conectada")
+}
+catch (error)
+{
+    console.error(error);
+}
+
 
 export const usuarioDao = new usuario()
 export const actividadDao = new actividad()
