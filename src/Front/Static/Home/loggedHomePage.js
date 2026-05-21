@@ -20,7 +20,7 @@ if(statusPago == "approved") {
         monto: externo.precio,
         idUsuario: externo.idUsuario,
         idClase: externo.idClase, //Este id clase debe modificarse ->>> en payPanel (pagar debe recibirlo desde el slothClase)
-        
+        fecha: externo.fechaEspecifica
     }
     
     guardarPago(pagoData);
@@ -64,6 +64,8 @@ async function guardarReserva(pagoData, ext) {
         })
 
         const resData = await res.json();
+        console.log("Al volver de post-reserva-unica el resultado es: ")
+        console.log(resData);
         if (resData.success){
             console.log("Reserva unica creada");
         }

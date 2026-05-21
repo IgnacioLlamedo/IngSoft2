@@ -58,7 +58,7 @@ export async function crearPreferencia(req, res) {
 
 export async function almacenarPagoController(req, res){
     try {
-        const dataPago = req.body;
+        let dataPago = req.body;
         console.log("Los datos que llegan a almacenarPagoController");
         console.log(dataPago);
 
