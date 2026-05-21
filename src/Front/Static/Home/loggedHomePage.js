@@ -51,7 +51,7 @@ async function guardarReserva(pagoData, ext) {
         };
 
     if(ext.tipoClase === "unica"){
-        data.pagos = pagoData._id;
+        data.idPago = pagoData._id;
 
         console.log("En guardar reserva (FRONT) -> los valores recibidos antes de intentar guardar reserva en DB son: ");
         console.log(data);
@@ -76,7 +76,7 @@ async function guardarReserva(pagoData, ext) {
 
     else {
         //Ver como modificar, creo que habria que enviar solo el objeto, sin el array
-        data.pagos = [ {idPago: pagoData._id} ];
+        data.pagos = [ { idPago: pagoData._id } ];
         const res = await fetch("/api/clases/post-reserva-mensual", {
             method: "POST",
             headers: {
@@ -89,7 +89,9 @@ async function guardarReserva(pagoData, ext) {
         console.log("Al volver de post-reserva-mensual el resultado es: ")
         console.log(resData);
         /**
-         * habria que retornar un mensaje que especifique si es un nuevo pago de una reserva mensual o
+         * habria que retornar un mensaje que especifique si es un nuevo pago de una reserva mensual y
+         * en ese caso, el controlador debería actualizar la reserva, no crearla.
+         * o
          * es una reserva mensual recien creada.
          */  
         if (resData.success){
