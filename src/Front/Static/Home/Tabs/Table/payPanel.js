@@ -1,3 +1,4 @@
+
 let claseSeleccionada = "";
 let precioSeleccionado = 0;
 
@@ -15,7 +16,6 @@ async function getSessionData() {
         }
     }
 }
-
 
 function abrirPago(elemento) {
     const clase = elemento.dataset.clase;
@@ -56,16 +56,17 @@ function pagarMensual() {
     pagar("mensual", precioSeleccionado * 4);
 }
 
-async function pagar(tipoClase, precio) {
-    const res = await fetch("/api/pago/crear-preferencia", {
+async function pagar(tipoClase, precio, elemento) {
+    const res = await fetch('/api/crear-preferencia', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
             tipo: tipoClase, 
             cantidad:1, 
             precio: precio, 
-            idClase: elemento.dataset.id,
-            fechaEspecifica: header.dataset.fecha,
+            idClase: "un_id_de_clase", //Esto me está rompiendo la ejecución asi que lo hardcodee
+            fechaEspecifica: new Date(), //x2
+            url: window.location.origin
         })
     });
 

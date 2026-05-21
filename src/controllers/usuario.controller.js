@@ -166,7 +166,34 @@ export async function crearCodigo(req, res){
     }
 }
 
+export async function almacenarPagoController(req, res){
+    try {
+        const dataPago = req.body;
+        console.log(dataPago);
 
+        //const nuevoPago = await pagoDao.create(dataPago);   //Crea el nuevo pago y lo almacena en DB
+        const nuevoPago = "Pago creado (simulando)"
+
+        const redirect = '/my-activities';
+        if (nuevoPago){
+            console.log("El pago fue creado exitosamente.");
+            res.json({
+                success: true,
+                redirect
+            })
+        }
+        else{
+            console.log("Error al crear Pago.");
+        }
+
+    }
+    catch(error) {
+        res.json({
+            success: false,
+            message: "Error al almacenar datos de pago en DB."
+        })
+    }
+}
 
 
 export async function authPass(req, res){

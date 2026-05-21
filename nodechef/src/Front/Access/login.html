@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/Images/Common/favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href="/Home/headerStyle.css">
+    <link rel="stylesheet" href="/Access/accessCommon.css">
+    <link rel="stylesheet" href="/Access/loginStyle.css">
+    
+    <title>CEF - Iniciar sesión</title>
+</head>
+<body>
+
+    <header>
+ 
+        <nav class="header-nav">
+
+            <a href="/">
+              <img class="logo-img" src="/Images/HomeImages/logo.png" alt="Logo">
+            </a>
+            
+            <ul>
+              <li><a href="/access/login">Iniciar Sesión</a></li>
+              <li><a href="/access/register">Registrarse</a></li>
+            </ul>
+
+        </nav>
+
+    </header>
+
+    <main>
+        <div class="form-container">
+            <form id="login-form">
+                <section>
+
+                    <h1>Iniciar sesión</h1>
+
+                    <div class="input-section">
+
+                        <input type="email" name="email" required placeholder="Email registrado">
+                        <input type="password" name="contraseña" required placeholder="Contraseña">                        
+
+                    </div>
+
+                    <a href="/access/recover-password">¿Olvidaste tu contraseña?</a>
+
+                </section>
+
+                <section>
+                    <p id="loginError" class="errorMsg hidden"></p>
+                    <button>INICIAR SESIÓN</button>
+                </section>
+            </form>
+        </div>
+    </main>
+
+    <script src="/Access/login.js"></script>
+</body>
+</html>

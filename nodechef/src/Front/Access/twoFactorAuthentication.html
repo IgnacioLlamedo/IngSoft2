@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/Images/Common/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/Access/accessCommon.css">
+    <link rel="stylesheet" href="/Access/loginStyle.css">
+    <title>CEF - Autenticación</title>
+</head>
+<body>
+    <main>
+        <div class="form-container">
+            <form id="two-factor-authenticator-form">
+                <section>
+
+                    <h1>Autenticación de doble factor</h1>
+
+                    <div class="input-section">
+
+                        <span>Ingresá el código recibido por email:</span>
+                        <input type="number" name="codigo" required placeholder="Código recibido por email">                    
+                    </div>
+
+                    <a href="#" id="reenviar-codigo">Enviar código otra vez</a>
+                </section>
+
+                <section>
+                    <p id="verificationError" class="errorMsg hidden"></p>
+                    <button>VALIDAR CÓDIGO</button>
+                </section>
+            </form>
+            
+        </div>
+    </main>
+
+    <script src="/Access/twoFactorAuthentication.js"></script>
+</body>
+<script src="/Access/twoFactorAuthentication.js"></script>
+</html>

@@ -1,21 +1,18 @@
 import { Preference } from "mercadopago";
 import { client } from "../servicios/mercado.servicio.js";
+import { now } from "mongoose";
 
 export async function crearPreferencia(req, res) {
 
     try {
-        //body: JSON.stringify({ tipo: tipoClase, cantidad:1, monto: precio, id_Clase: idClase })
-        const tipo = req.body.tipo;
-        const monto = req.body.monto;
-        const id_clase = req.body.id_Clase;
+        const monto = req.body.precio;
+        const id_clase = req.body.idClase;
         const tipoClase = req.body.tipoClase;
         const fechaEspecifica = req.body.fechaEspecifica;
-        console.log("Desde crear Preferencia!")
-        console.log(tipo)
-        console.log(id_clase)
-        console.log(monto)
-        console.log(tipoClase)
-        console.log("finalizado el log desde crear preferencia!");
+        const urlRetorno = req.body.url;
+        const url = `${urlRetorno}/home`;
+
+        console.log(url)
 
         const preference = new Preference(client);
 
@@ -23,7 +20,7 @@ export async function crearPreferencia(req, res) {
             body: {
                 items: [
                     {
-                        title: tipo,
+                        title: req.body.tipo,
                         quantity: 1,
                         unit_price: Number(monto)
                     }
@@ -36,9 +33,9 @@ export async function crearPreferencia(req, res) {
                     fechaEspecifica: fechaEspecifica,
                 }),
                 back_urls: {
-                    success: "https://ingsoft2front.vercel.app/home",
-                    failure: "https://ingsoft2front.vercel.app/home",
-                    pending: "https://ingsoft2front.vercel.app/home"
+                    success: url,
+                    failure: url,
+                    pending: url
                 },
                 auto_return: "approved"
             }
