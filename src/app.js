@@ -40,9 +40,9 @@ app.use(express.static(path.join(__dirname, "Front/Static"), {
 
 // Routes
 export const homeRoutes = { 
-    cliente: "/home", 
-    empleado: "/home-employee", 
-    administrador: "/home-admin",
+    cliente: "/", 
+    empleado: "/", 
+    administrador: "/",
 };
 
 export const profileRoutes = { 
@@ -68,11 +68,11 @@ app.get("/session-data", (req, res) => {
 
 // Home
 app.get("/", (req,res) => {
-    if(req.session.user) return res.redirect(homeRoutes[req.session.user.rol]);
-    res.sendFile(path.join(__dirname, "Front/Home/visitorHomePage.html"));
+    //if(req.session.user) return res.redirect(homeRoutes[req.session.user.rol]);
+    res.sendFile(path.join(__dirname, "Front/Home/homePage.html"));
 });
 
-app.get("/home", (req, res) => {
+/* app.get("/home", (req, res) => {
     if(!req.session.user) return res.redirect("/access/login");
     if(req.session.user.rol !== "cliente") return res.redirect(homeRoutes[req.session.user.rol]);
     res.sendFile(path.join(__dirname, "Front/Home/userHomePage.html"));
@@ -88,7 +88,7 @@ app.get("/home-admin", (req, res) => {
     if(!req.session.user) return res.redirect("/access/login");
     if(req.session.user.rol !== "administrador") return res.redirect(homeRoutes[req.session.user.rol]);
     res.sendFile(path.join(__dirname, "Front/Home/adminHomePage.html"));
-});
+}); */
 
 app.get("/home/table", (req, res) => {
     // Solución temporal para que no puedan poner la ruta en el navegador.
@@ -177,7 +177,12 @@ app.get("/account/admin", (req, res) => {
 });
 
 // Navbars
+app.get('/userHomeNav', (req, res) => res.sendFile(path.join(__dirname, 'Front/Navbar/userHomeNav.html')));
+
+app.get('/adminNav', (req, res) => res.sendFile(path.join(__dirname, 'Front/Navbar/adminNav.html')));
+app.get('/employeeNav', (req, res) => res.sendFile(path.join(__dirname, 'Front/Navbar/employeeNav.html')));
 app.get('/userNav', (req, res) => res.sendFile(path.join(__dirname, 'Front/Navbar/userNav.html')));
 app.get('/visitorNav', (req, res) => res.sendFile(path.join(__dirname, 'Front/Navbar/visitorNav.html')));
+
 app.get('/footer', (req, res) => res.sendFile(path.join(__dirname, 'Front/Navbar/footer.html')));
 

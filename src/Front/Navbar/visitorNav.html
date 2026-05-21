@@ -5,10 +5,20 @@
     </a>
 
     <ul>
+        <li><a href="#" id="classesLink">Clases</a></li>
         <li><a href="/access/login">Iniciar Sesión</a></li>
         <li><a href="/access/register">Registrarse</a></li>
     </ul>
 
 </nav>
 
-<script></script>
+<!-- Modal oculto -->
+<div class="modal" id="tablaModal">
+    <div class="modal-content">
+        <span class="close" id="closeModal">&times;</span>
+        <iframe src="/home/table" class="tabla-iframe"></iframe>
+    </div>
+</div>
+
+<!-- Script para manejar el modal -->
+<script src="/Home/classesModal.js"></script>

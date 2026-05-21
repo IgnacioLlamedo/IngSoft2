@@ -211,12 +211,3 @@ main {
   border: none;
   display: block;
 }
-
-footer {
-  background-color: rgba(0, 0, 0, 0.5);
-  height: 80px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-}

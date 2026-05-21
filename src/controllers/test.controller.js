@@ -11,9 +11,9 @@ export async function userAutoLoginController(req,res) {
         };
         //await req.session.save();
 
-        return res.json({
+        res.json({
             success: true,
-            redirect: "/home",
+            redirect: "/",
         });
     } 
     catch(error) {
@@ -36,9 +36,9 @@ export async function employeeAutoLoginController(req,res) {
         };
         //await req.session.save();
 
-        return res.json({
+        res.json({
             success: true,
-            redirect: "/home-employee",
+            redirect: "/",
         });
     } 
     catch(error) {
@@ -61,9 +61,9 @@ export async function adminAutoLoginController(req,res) {
         };
         //await req.session.save();
 
-        return res.json({
+        res.json({
             success: true,
-            redirect: "/home-admin",
+            redirect: "/",
         });
     } 
     catch(error) {
