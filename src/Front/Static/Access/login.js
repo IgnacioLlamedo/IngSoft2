@@ -30,6 +30,10 @@ document.getElementById("login-form").addEventListener("submit", async (event) =
 
     const resData = await res.json();
 
+    console.log("Los datos recibidos en login.js al volver de loginController: ");
+    console.log(resData.success);
+    console.log(resData.redirect);
+
     if(resData.success)
         window.location.href = resData.redirect;
     else 

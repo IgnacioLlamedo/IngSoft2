@@ -89,6 +89,7 @@ export async function loginController(req, res) {
         })
     } 
     catch(error){
+        console.error(error);
         res.json({
             success: false,
             message: "Error al iniciar sesión. Inténtelo más tarde."
