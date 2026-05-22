@@ -35,6 +35,10 @@ document.getElementById("two-factor-authenticator-form").addEventListener("submi
     });
     const resData = await res.json();
 
+    console.log("Los datos recibidos en tFA.js son: ");
+    console.log(resData.success);
+    console.log(resData.redirect);
+
     if(resData.success) {
         console.log("La dirección conseguida de retorno es: " + resData.redirect);
         window.location.href = resData.redirect;

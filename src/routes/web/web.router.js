@@ -35,7 +35,7 @@ webRouter.get("/", (req,res) => {
 });
 
 webRouter.get("/home", (req, res) => {
-    console.log(req.session.user);
+
 
     if(!req.session.user) {
         return res.redirect("/access/login");

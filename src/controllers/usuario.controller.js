@@ -124,6 +124,8 @@ export async function authenticationController(req, res) {
         //Await donde? xd
 
         const redirect = homeRoutes[usuario.rol];
+        console.log("El usuario será redirigido desde authenticationController: ");
+        console.log(redirect)
 
         res.json({
             success: true,
