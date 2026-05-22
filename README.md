@@ -3,6 +3,27 @@
 ![Badge en desarrollo](https://img.shields.io/badge/Status-In_Progress-orange) ![Badge nota](https://img.shields.io/badge/Nota_PREDEMO_obtenida-Indef-purple) ![Badge nota](https://img.shields.io/badge/Nota_DEMO_obtenida-Indef-purple)
 
 &nbsp;
+### Credenciales para testing:
+
+- Cuenta Comprador: TESTUSER2796893861660132777    (Avisenme si se queda sin plata)
+- Contraseña: 3RlzT2mo9M
+- Código de verificación: 866242
+
+&nbsp;
+### Detalles a la hora de testear:
+
+- En Render:
+    - https://www.youtube.com/watch?v=tR-e9r0gYvI
+    - Si seleccionan una Branch para el deploy puede que tengan que dejar Root Directory vacio, sino les da error. Caso contrario pongan solo src
+    - En build command dejen el npm install.
+    - Y si quieren que Render actualice el deploy al ustedes pushear a su rama activen la opcion Auto-Deploy en Settings
+    - No se olviden de añadir el archivo .env
+
+- En app.js: 
+    - Si se testea en localhost: const isProduction = false;
+    - Si se testea en Render: const isProduction = process.env.NODE_ENV === "production";
+
+&nbsp;
 ### Temas a cubrir:
 
 - Navegación básica.
