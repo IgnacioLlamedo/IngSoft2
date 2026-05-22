@@ -35,6 +35,7 @@ webRouter.get("/", (req,res) => {
 });
 
 webRouter.get("/home", (req, res) => {
+    console.log(req.session.user);
 
     if(!req.session.user) {
         return res.redirect("/access/login");
@@ -200,6 +201,6 @@ webRouter.get("/account/admin", (req, res) => {
 });
 
 // Navbars
-webRouter.get('/userNav', (req, res) => res.sendFile(path.join(__dirname, 'Front/Navbar/userNav.html')));
-webRouter.get('/visitorNav', (req, res) => res.sendFile(path.join(__dirname, 'Front/Navbar/visitorNav.html')));
-webRouter.get('/footer', (req, res) => res.sendFile(path.join(__dirname, 'Front/Navbar/footer.html')));
+webRouter.get('/userNav', (req, res) => res.sendFile(path.join(__dirname, "../../Front/Navbar/userNav.html")));
+webRouter.get('/visitorNav', (req, res) => res.sendFile(path.join(__dirname, "../../Front/Navbar/visitorNav.html")));
+webRouter.get('/footer', (req, res) => res.sendFile(path.join(__dirname, "../../Front/Navbar/footer.html")));

@@ -102,15 +102,7 @@ export async function authenticationController(req, res) {
         //Vuelvo a buscar los datos del usuario, esta vez con el código
         const usuario = await usuarioDao.readOne({ mail: mail });
 
-		if (usuario.codigo == req.body.codigo) {
-			//Creo la sesion del usuario
-			req.session.user = {
-				id: usuario._id,
-				mail: usuario.mail,
-				rol: usuario.rol,
-			};
-		}
-       if(usuario.codigo != req.body.codigo){
+       if(usuario.codigo !== req.body.codigo){
             return res.json({
                 success: false,
                 message: "Error al ingresar el código de validación."
@@ -129,9 +121,10 @@ export async function authenticationController(req, res) {
             mail: usuario.mail,
             rol: usuario.rol,
         };
-        // AWAIT FACU POR FAVOOR
-        
+        //Await donde? xd
+
         const redirect = homeRoutes[usuario.rol];
+
         res.json({
             success: true,
             redirect
