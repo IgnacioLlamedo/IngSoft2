@@ -12,16 +12,9 @@
 &nbsp;
 ### Detalles a la hora de testear:
 
-- En Render:
-    - https://www.youtube.com/watch?v=tR-e9r0gYvI
-    - Si seleccionan una Branch para el deploy puede que tengan que dejar Root Directory vacio, sino les da error. Caso contrario pongan solo src
-    - En build command dejen el npm install.
-    - Y si quieren que Render actualice el deploy al ustedes pushear a su rama activen la opcion Auto-Deploy en Settings
-    - No se olviden de añadir el archivo .env
+- Pueden testear la creación de pagos si van a la terminal, puertos -> <img width="178" height="42" alt="image" src="https://github.com/user-attachments/assets/497d6a31-4aa6-4cdf-bb0d-30022e771773" /> -> añaden un puerto cualquiera -> modifican el PORT dentro de el archivo .env para que coincida con el nuevo puerto y entran a la forwarded address que les da el puerto.
+- Gracias Faku por salvarme de mi sufrimiento
 
-- En app.js: 
-    - Si se testea en localhost: const isProduction = false;
-    - Si se testea en Render: const isProduction = process.env.NODE_ENV === "production";
 
 &nbsp;
 ### Temas a cubrir:
