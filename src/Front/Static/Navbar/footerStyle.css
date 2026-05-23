@@ -1,8 +1,7 @@
 .footer {
     background-color: rgb(54, 54, 54);
     color: #fff;
-    padding: 40px 20px;
-    margin-top: auto;
+    padding: 80px 20px;
     border-top: 3px solid #D01F25;
 }
 
@@ -16,11 +15,11 @@
 }
 
 .footer-section h3 {
-    color: #D01F25;
+    color: #c72121;
     font-weight: bold;
+    text-transform: uppercase;
     margin-bottom: 15px;
-    font-size: 18px;
-    text-decoration: underline;
+    font-size: 20px;
 }
 
 .footer-section p {
@@ -46,11 +45,26 @@
 }
 
 .footer-section a:hover {
-    color: #D01F25;
+    color: #de2423;
+}
+
+.social-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: left;
+    align-items: center;
+    gap: 15px;
+    margin: 15px auto;
+}
+
+.social-logo {
+    max-height: 64px;
+    width: auto;
+    display: inline-block;
 }
 
 .footer-logo {
-    max-height: 90px;
+    max-height: 75px;
     display: block;
     margin: 15px auto;
 }

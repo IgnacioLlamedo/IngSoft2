@@ -1,72 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="/Images/Common/favicon.ico" type="image/x-icon">
-    <link rel="stylesheet" href="/Home/headerStyle.css">
+    <link rel="stylesheet" href="/Navbar/navStyle.css">
     <link rel="stylesheet" href="/Home/Tabs/MyActivities/tabMyActivities.css">
+    <link rel="stylesheet" href="/Navbar/footerStyle.css">
     <title>CEF - Mis Actividades</title>
 </head>
+
 <body>
     <header>
- 
-        <nav class="header-nav">
-            <div class="logo">
-              <a href="/home">
-                <img class="logo-img" src="/Images/HomeImages/logo.png" alt="Logo">
-              </a>
-            </div>
-            <ul class="nav-links">
-                <li><a href="#" id="classesLink">Clases</a></li>
-                <li><a href="/my-activities">Mis Actividades</a></li>
-                <li>
-                  <img class="user-ico" id="userIcon" src="/Images/HomeImages/user_ico.webp" alt="Opciones de usuario">
-
-                  <div class="user-options-menu" id="userOptions">
-
-                    <div class="user-options-wrapper">
-
-                      <div class="user-options-list">
-
-                        <a href="/account/user">
-                          <img src="/Images/UserDropbox/account_ico.webp" alt="Cuenta">
-                          <p>Cuenta</p>
-                        </a>
-
-                        <a>
-                          <img src="/Images/UserDropbox/assistance.webp" alt="Asistencias">
-                          <p>Asistencia</p>
-                        </a>
-
-                        <a href="#" id="logout">
-                          <img src="/Images/UserDropbox/logout_ico.webp" alt="Cerrar sesión">
-                          <p>Cerrar sesión</p>
-                        </a>
-
-                      </div>
-
-                    </div>
-
-                  </div>
-                </li>
-              </ul>
-            
-
-            <script src="/Home/loggedHomePage.js"></script>
-        </nav>
-
-      <!-- Modal oculto -->
-      <div class="modal" id="tablaModal">
-        <div class="modal-content">
-          <span class="close" id="closeModal">&times;</span>
-          <iframe src="/home/table" class="tabla-iframe"></iframe>
-        </div>
-      </div>
-
-      <!-- Script para manejar el modal -->
-      <script src="/Home/classesModal.js"></script>
-
+        <%- include('../../Navbar/navbarSelector.ejs') %>
     </header>
 
     <main>
@@ -74,7 +21,7 @@
 
         <div class="filters-container">
 
-          <div class="filter-conteiner">
+          <div class="filter-container">
             <label for="activityFilter">Actividad:</label>
             <select id="activityFilter">
                 <option value="Todas">Todas</option>
@@ -84,7 +31,7 @@
             </select>
           </div>
           
-          <div class="filter-conteiner">
+          <div class="filter-container">
             <label for="tipeFilter">Tipo de reserva:</label>
             <select id="tipeFilter">
                 <option value="Todas">Todas</option>
@@ -93,7 +40,7 @@
             </select>
           </div>
 
-          <div class="filter-conteiner">
+          <div class="filter-container">
             <label for="dayOfTheWeekFilter">Día de la semana:</label>
             <select id="dayOfTheWeekFilter">
                 <option value="Todas">Todas</option>
@@ -151,5 +98,8 @@
     </footer>
 
     <script src="/Home/Tabs/MyActivities/tabMyActivities.js"></script>
+    
+    <%- include('../../Navbar/footer.html') %>
 </body>
+
 </html>

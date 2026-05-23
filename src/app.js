@@ -20,6 +20,13 @@ app.listen(config.port, () => {
 
 app.use(express.json());
 
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'Front'));
+
+//Conexión con DB
+/* await conectarMongo(); */
+
+
 //sesion de usuario
 /* app.use(session({
     secret: "secreto",
@@ -73,17 +80,16 @@ app.use(express.static(path.join(__dirname, "Front/Static"), {
 
 
 // Routes
-export const homeRoutes = { 
-    cliente: "/", 
-    empleado: "/", 
-    administrador: "/",
+export const homeRoute = "/home";
+export const profileRoute = "/account";
+
+// Pages
+export const profilePages = { 
+    cliente: "Front/Account/clientProfile.ejs", 
+    empleado: "Front/Account/employeeProfile.ejs", 
+    administrador: "Front/Account/adminProfile.ejs",
 };
 
-export const profileRoutes = { 
-    cliente: "/account/client", 
-    empleado: "/account/employee", 
-    administrador: "/account/admin",
-};
 
 // Req de Datos
 app.get("/session-data", (req, res) => {
@@ -102,27 +108,15 @@ app.get("/session-data", (req, res) => {
 
 // Home
 app.get("/", (req,res) => {
-    //if(req.session.user) return res.redirect(homeRoutes[req.session.user.rol]);
-    res.sendFile(path.join(__dirname, "Front/Home/homePage.html"));
+    if(req.session.user) return res.redirect("/home");
+    res.render(path.join(__dirname, "Front/Home/homePage.ejs"), { userRole: "visitor"});
+    // res.render(path.join(__dirname, "Front/Home/homePage.ejs"), { param1: "value1" });
 });
 
-/* app.get("/home", (req, res) => {
-    if(!req.session.user) return res.redirect("/access/login");
-    if(req.session.user.rol !== "cliente") return res.redirect(homeRoutes[req.session.user.rol]);
-    res.sendFile(path.join(__dirname, "Front/Home/userHomePage.html"));
+app.get(homeRoute, (req, res) => {
+    if(!req.session.user) return res.redirect("/");
+    res.render(path.join(__dirname, "Front/Home/homePage.ejs"), { userRole: req.session.user.rol });
 });
-
-app.get("/home-employee", (req, res) => {
-    if(!req.session.user) return res.redirect("/access/login");
-    if(req.session.user.rol !== "empleado") return res.redirect(homeRoutes[req.session.user.rol]);
-    res.sendFile(path.join(__dirname, "Front/Home/employeeHomePage.html"));
-});
-
-app.get("/home-admin", (req, res) => {
-    if(!req.session.user) return res.redirect("/access/login");
-    if(req.session.user.rol !== "administrador") return res.redirect(homeRoutes[req.session.user.rol]);
-    res.sendFile(path.join(__dirname, "Front/Home/adminHomePage.html"));
-}); */
 
 app.get("/home/table", (req, res) => {
     // Solución temporal para que no puedan poner la ruta en el navegador.
@@ -138,8 +132,8 @@ app.get("/home/table", (req, res) => {
 // Tabs
 app.get("/my-activities", (req, res) => {
     if(!req.session.user) return res.redirect("/access/login");
-    if(req.session.user.rol !== "cliente") return res.redirect(homeRoutes[req.session.user.rol]);
-    res.sendFile(path.join(__dirname, "Front/Home/HomeTabs/tabMyActivities.html"));
+    if(req.session.user.rol !== "cliente") return res.redirect(homeRoute);
+    res.render(path.join(__dirname, "Front/Home/HomeTabs/tabMyActivities.ejs"), { userRole: req.session.user.rol });
 });
 
 
@@ -152,22 +146,22 @@ app.get("/test-clases", (req, res) => {
 
 // Access GET
 app.get("/access/register", (req,res) => {
-    if(req.session.user) return res.redirect(homeRoutes[req.session.user.rol]);
+    if(req.session.user) return res.redirect(homeRoute);
     res.sendFile(path.join(__dirname, "Front/Access/signUp.html"));
 });
 
 app.get("/access/login", (req,res) => {
-    if(req.session.user) return res.redirect(homeRoutes[req.session.user.rol]); 
+    if(req.session.user) return res.redirect(homeRoute); 
     res.sendFile(path.join(__dirname, "Front/Access/login.html"))
 });
 
 app.get("/access/authentication", (req,res) => {
-    if(req.session.user) return res.redirect(homeRoutes[req.session.user.rol]);
+    if(req.session.user) return res.redirect(homeRoute);
     res.sendFile(path.join(__dirname, "Front/Access/twoFactorAuthentication.html"))
 });
 
 app.get("/access/recover-password", (req,res) => {
-    if(req.session.user) return res.redirect(homeRoutes[req.session.user.rol]); 
+    if(req.session.user) return res.redirect(homeRoute); 
     res.sendFile(path.join(__dirname, "Front/Access/recoverPassword.html"))
 });
 
@@ -187,36 +181,13 @@ app.use('/api', apiRouter);
 
 
 // Profile
-app.get("/account/user", (req,res) => {
-    if(req.session.user) return res.redirect(profileRoutes[req.session.user.rol]);
-    res.sendFile(path.join(__dirname, "Front/Home/visitorHomePage.html"));
-});
-
-app.get("/account/client", (req, res) => {
+app.get("/account", (req,res) => {
     if(!req.session.user) return res.redirect("/access/login");
-    if(req.session.user.rol !== "cliente") return res.redirect(profileRoutes[req.session.user.rol]);
-    res.sendFile(path.join(__dirname, "Front/Account/userProfile.html"));
-});
-
-app.get("/account/employee", (req, res) => {
-    if(!req.session.user) return res.redirect("/access/login");
-    if(req.session.user.rol !== "empleado") return res.redirect(profileRoutes[req.session.user.rol]);
-    res.sendFile(path.join(__dirname, "Front/Account/employeeProfile.html"));
-});
-
-app.get("/account/admin", (req, res) => {
-    if(!req.session.user) return res.redirect("/access/login");
-    if(req.session.user.rol !== "administrador") return res.redirect(profileRoutes[req.session.user.rol]);
-    res.sendFile(path.join(__dirname, "Front/Account/adminProfile.html"));
+    if(req.session.user) res.render(path.join(__dirname, profilePages[req.session.user.rol]), { userRole: req.session.user.rol });
 });
 
 // Navbars
-app.get('/userHomeNav', (req, res) => res.sendFile(path.join(__dirname, 'Front/Navbar/userHomeNav.html')));
-
-app.get('/adminNav', (req, res) => res.sendFile(path.join(__dirname, 'Front/Navbar/adminNav.html')));
-app.get('/employeeNav', (req, res) => res.sendFile(path.join(__dirname, 'Front/Navbar/employeeNav.html')));
-app.get('/userNav', (req, res) => res.sendFile(path.join(__dirname, 'Front/Navbar/userNav.html')));
-app.get('/visitorNav', (req, res) => res.sendFile(path.join(__dirname, 'Front/Navbar/visitorNav.html')));
-
-app.get('/footer', (req, res) => res.sendFile(path.join(__dirname, 'Front/Navbar/footer.html')));
+// app.get('/userNav', (req, res) => res.sendFile(path.join(__dirname, 'Front/Navbar/clientNav.html')));
+// app.get('/visitorNav', (req, res) => res.sendFile(path.join(__dirname, 'Front/Navbar/visitorNav.html')));
+// app.get('/footer', (req, res) => res.sendFile(path.join(__dirname, 'Front/Navbar/footer.html')));
 

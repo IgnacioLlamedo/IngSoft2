@@ -1,9 +1,10 @@
 import { usuarioDao } from "../daos/index.js";
 import { planillaDao } from "../daos/index.js";
 import { generateOtp } from "@mx7/otp";
-import { homeRoutes } from "../app.js";
 import { mailer } from "../servicios/mailer.servicio.js";
 import { hash, compareHash } from "../servicios/crypt.servicio.js";
+import { homeRoute } from "../app.js";
+import { Usuario } from "../models/usuario.mongoose.js";
 
 const errorMessages = {
 	11000: "Error al crear la cuenta, el email ya está registrado.",
@@ -125,7 +126,7 @@ export async function authenticationController(req, res) {
         };
         await req.session.save();
         
-        const redirect = homeRoutes[usuario.rol];
+        const redirect = homeRoute;
         res.json({
             success: true,
             redirect
@@ -227,7 +228,7 @@ export async function resetPass(req, res){
             rol: usuario.rol,
         };
 
-        const redirect = homeRoutes[usuario.rol];
+        const redirect = homeRoute;
     
         res.json({
             success: true,

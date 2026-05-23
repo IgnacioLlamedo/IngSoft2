@@ -9,11 +9,11 @@ export async function userAutoLoginController(req,res) {
             mail: user.mail,
             rol: user.rol,
         };
-        //await req.session.save();
+        await req.session.save();
 
         res.json({
             success: true,
-            redirect: "/",
+            redirect: "/home",
         });
     } 
     catch(error) {
@@ -34,11 +34,11 @@ export async function employeeAutoLoginController(req,res) {
             mail: user.mail,
             rol: user.rol,
         };
-        //await req.session.save();
+        await req.session.save();
 
         res.json({
             success: true,
-            redirect: "/",
+            redirect: "/home",
         });
     } 
     catch(error) {
@@ -59,11 +59,11 @@ export async function adminAutoLoginController(req,res) {
             mail: user.mail,
             rol: user.rol,
         };
-        //await req.session.save();
+        await req.session.save();
 
         res.json({
             success: true,
-            redirect: "/",
+            redirect: "/home",
         });
     } 
     catch(error) {
