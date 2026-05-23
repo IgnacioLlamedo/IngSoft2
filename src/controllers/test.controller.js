@@ -36,7 +36,7 @@ export async function employeeAutoLoginController(req,res) {
 
         return res.json({
             success: true,
-            redirect: "/home-employee",
+            redirect: "/home",
         });
     } 
     catch(error) {
@@ -60,7 +60,7 @@ export async function adminAutoLoginController(req,res) {
 
         return res.json({
             success: true,
-            redirect: "/home-admin",
+            redirect: "/home",
         });
     } 
     catch(error) {

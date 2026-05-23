@@ -1,7 +1,7 @@
 import { usuarioDao } from "../daos/index.js";
 import { planillaDao } from "../daos/index.js";
 import { generateOtp } from "@mx7/otp";
-import { homeRoutes } from "../app.js";
+import { homeRoute } from "../app.js";
 import { Usuario } from "../models/usuario.mongoose.js";
 
 const errorMessages = {
@@ -98,7 +98,7 @@ export async function authenticationController(req, res) {
 
 			//Elijo a donde se redirige
 
-			const redirect = homeRoutes[usuario.rol];
+			const redirect = homeRoute;
 			res.json({
 				success: true,
 				redirect,
