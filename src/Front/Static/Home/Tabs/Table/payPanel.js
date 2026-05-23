@@ -64,8 +64,8 @@ async function pagar(tipoClase, precio) {
             tipo: tipoClase, 
             cantidad:1, 
             precio: precio, 
-            idClase: elemento.dataset.id,
-            fechaEspecifica: header.dataset.fecha,
+            //idClase: 1,//elemento.dataset.id,
+            //fechaEspecifica: "21-2-2022"//header.dataset.fecha,
         })
     });
 

@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         console.log(sessionData)
         switch(sessionData.session.rol) {
             case "cliente":
-                route = window.location.pathname === "/home"
+                route = window.location.pathname === "/"
                     ? "/userHomeNav"
                     : "/userNav";
                 break;

@@ -11,18 +11,36 @@ const errorMessages = {
 
 export async function postController(req, res) {
 	try {
-		const planilla = await planillaDao.create(req.body.planillaData);
-
         const userData = req.body.userData;
-        userData.contraseña = hash(userData.contraseña)
+        
+        const emailExist = await usuarioDao.readOne({mail: userData.mail});
+        if(emailExist) {
+            return res.json({
+                success: false,
+                message: "Error al registrarse. El email ya se encuentra registrado."
+            });
+        }
+
+        const dniExist = await usuarioDao.readOne({mail: userData.mail, rol:"cliente"});
+        if(dniExist) {
+            return res.json({
+                success: false,
+                message: "Error al registrarse. El DNI ya se encuentra registrado."
+            });
+        }
+
+		const planilla = await planillaDao.create(req.body.planillaData);
         userData.planilla = planilla._id;
+
+        userData.contraseña = hash(userData.contraseña)
 
 		await usuarioDao.create(userData);
 
 		res.json({
 			success: true,
 		});
-	} catch (error) {
+	} 
+    catch (error) {
 		console.log("ERROR: " + error);
 		res.json({
 			success: false,
@@ -53,6 +71,7 @@ export async function loginController(req, res) {
                 message: "Error al Iniciar Sesión en la cuenta. La contraseña ingresada es incorrecta."
             });
         }
+        
         //Genero el código de acceso y lo cargo en la DB ---> No sé si esto era lo que queria hacer Nacho (?)
         const limite = new Date(Date.now() + 600000)
         const otp = generateOtp()
@@ -85,34 +104,26 @@ export async function authenticationController(req, res) {
         //Vuelvo a buscar los datos del usuario, esta vez con el código
         const usuario = await usuarioDao.readOne({ mail: mail });
 
-		if (usuario.codigo == req.body.codigo) {
-			//Creo la sesion del usuario
-			req.session.user = {
-				id: usuario._id,
-				mail: usuario.mail,
-				rol: usuario.rol,
-			};
-		}
-       if(usuario.codigo != req.body.codigo){
-            return res.json({
-                success: false,
-                message: "Error al ingresar el código de validación."
-            });
-        }
-
         if(usuario.limiteCodigo.getTime() < new Date(Date.now()).getTime()){
             return res.json({
                 success: false,
-                message: "Error al ingresar el código de validación. El código ya expiró"
+                message: "Error al ingresar el código de validación. El código ya expiró."
             });
         }
+
+		if(usuario.codigo !== req.body.codigo) {
+            return res.json({
+                success: false,
+                message: "Error al ingresar el código de validación. El código introducido es incorrecto."
+            });
+		}
 
         req.session.user = {
             id: usuario._id,
             mail: usuario.mail,
             rol: usuario.rol,
         };
-        // AWAIT FACU POR FAVOOR
+        await req.session.save();
         
         const redirect = homeRoutes[usuario.rol];
         res.json({

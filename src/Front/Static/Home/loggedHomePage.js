@@ -23,7 +23,8 @@ if(statusPago == "approved") {
     }
     
     const pagoDataString = JSON.stringify(pagoData);
-    guardarPago(pagoDataString, ext)
+    console.log(pagoDataString);
+    //guardarPago(pagoDataString, ext)
 }
 
 async function guardarPago(data, ext) {

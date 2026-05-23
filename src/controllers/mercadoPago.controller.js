@@ -6,15 +6,15 @@ export async function crearPreferencia(req, res) {
     try {
         //body: JSON.stringify({ tipo: tipoClase, cantidad:1, monto: precio, id_Clase: idClase })
         const tipo = req.body.tipo;
-        const monto = req.body.monto;
+        const precio = req.body.precio;
         const id_clase = req.body.id_Clase;
-        const tipoClase = req.body.tipoClase;
-        const fechaEspecifica = req.body.fechaEspecifica;
+        //const tipoClase = req.body.tipoClase;
+        //const fechaEspecifica = req.body.fechaEspecifica;
         console.log("Desde crear Preferencia!")
         console.log(tipo)
         console.log(id_clase)
-        console.log(monto)
-        console.log(tipoClase)
+        console.log(precio)
+        //console.log(tipoClase)
         console.log("finalizado el log desde crear preferencia!");
 
         const preference = new Preference(client);
@@ -25,20 +25,20 @@ export async function crearPreferencia(req, res) {
                     {
                         title: tipo,
                         quantity: 1,
-                        unit_price: Number(monto)
+                        unit_price: Number(precio)
                     }
                 ],
                 external_reference: JSON.stringify({    //Todo esto termina en la url una vez que se retorna a /home
                     idUsuario: req.session.user.id,        //Este es asignado al usuario cuando se logea (en autenticaión doble controller)
                     idClase: id_clase,         //Este se guarda al llamar a /crear-preferencia (en payPanel.js)
-                    precio: monto,
-                    tipoClase: tipoClase,
-                    fechaEspecifica: fechaEspecifica,
+                    precio: precio,
+                    //tipoClase: tipoClase,
+                    //fechaEspecifica: fechaEspecifica,
                 }),
                 back_urls: {
-                    success: "https://ingsoft2front.vercel.app/home",
-                    failure: "https://ingsoft2front.vercel.app/home",
-                    pending: "https://ingsoft2front.vercel.app/home"
+                    success: "https://wn5lpz4t-8080.brs.devtunnels.ms/",
+                    failure: "https://wn5lpz4t-8080.brs.devtunnels.ms/",
+                    pending: "https://wn5lpz4t-8080.brs.devtunnels.ms/"
                 },
                 auto_return: "approved"
             }
@@ -48,7 +48,8 @@ export async function crearPreferencia(req, res) {
             init_point: response.init_point
         });
 
-    } catch(error) {
+    } 
+    catch(error) {
 
         console.error(error);
 

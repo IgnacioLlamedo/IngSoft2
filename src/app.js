@@ -21,11 +21,45 @@ app.listen(config.port, () => {
 app.use(express.json());
 
 //sesion de usuario
-app.use(session({
+/* app.use(session({
     secret: "secreto",
     resave: false,
     saveUninitialized: false
+})); */
+
+const isProduction = process.env.NODE_ENV === "production";
+
+app.set("trust proxy", true);
+
+app.use(session({
+    name: "cef.sid",
+
+    secret: config.secretoSesion,
+
+    proxy: true,
+
+    resave: false,
+    saveUninitialized: false,
+
+    store: MongoStore.create({
+        mongoUrl: config.cnxStr,
+        ttl: 24 * 60 * 60
+    }),
+
+    cookie: {
+        secure: isProduction,
+        sameSite: "none",
+        httpOnly: true,
+        maxAge: 1000 * 60 * 60 * 24
+    }
 }));
+
+/* app.use((req,res,next)=>{
+    console.log(req.method, req.url);
+    console.log("COOKIE:", req.headers.cookie);
+    console.log("SESSION:", req.session);
+    next();
+}); */
 
 
 // Statics
@@ -92,9 +126,9 @@ app.get("/home-admin", (req, res) => {
 
 app.get("/home/table", (req, res) => {
     // Solución temporal para que no puedan poner la ruta en el navegador.
-    const isIframe = req.headers["sec-fetch-dest"] === "iframe";
+    /* const isIframe = req.headers["sec-fetch-dest"] === "iframe";
     if(!isIframe)
-        return res.status(403).send("Acceso denegado");
+        return res.status(403).send("Acceso denegado"); */
     //
 
     res.sendFile(path.join(__dirname, "Front/Home/HomeTabs/table.html"));

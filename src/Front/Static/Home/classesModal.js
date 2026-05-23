@@ -14,6 +14,6 @@ closeModal.addEventListener("click", () => {
 // Cerrar si se hace clic fuera del contenido
 window.addEventListener("click", (e) => {
     if (e.target === tablaModal) {
-    tablaModal.style.display = "none";
+        tablaModal.style.display = "none";
     }
 });
