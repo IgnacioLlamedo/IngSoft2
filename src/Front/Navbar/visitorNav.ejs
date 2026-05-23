@@ -6,12 +6,13 @@
         <img class="logo-img" src="/Images/HomeImages/Logo.png" alt="Logo">
     </a>
 
-    <ul>
-        <li><a href="#" id="classesLink">Clases</a></li>
+    <ul class="nav-links">
+        <% if (path === "/" || path === "/home/") { %>
+            <li><a href="#" id="classesLink">Clases</a></li>
+        <% } %>
         <li><a href="/access/login">Iniciar Sesión</a></li>
         <li><a href="/access/register">Registrarse</a></li>
     </ul>
-
 </nav>
 <!-- <script src="/Navbar/navLogic.js"></script> --> 
 
