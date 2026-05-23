@@ -37,11 +37,13 @@
 </nav>
 <script src="/Navbar/navLogic.js"></script>
 
-<!-- Modal oculto -->
-<div class="modal" id="tablaModal">
-    <div class="modal-content">
-        <span class="close" id="closeModal">&times;</span>
-        <iframe src="/home/table" class="tabla-iframe"></iframe>
+<% if (path === "/" || path === "/home/") { %>
+    <!-- Modal oculto -->
+    <div class="modal" id="tablaModal">
+        <div class="modal-content">
+            <span class="close" id="closeModal">&times;</span>
+            <iframe src="/home/table" class="tabla-iframe"></iframe>
+        </div>
     </div>
-</div>
-<script src="/Home/classesModal.js"></script>
+    <script src="/Home/classesModal.js"></script>
+<% } %>
