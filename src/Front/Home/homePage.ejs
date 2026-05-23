@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/Images/Common/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/Home/homePageStyle.css">
+    <title>CEF</title>
+</head>
+
+<body>
+    <header>
+        <%- include('../Navbar/navbarSelector.ejs') %>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="slider">
+                <div class="slide active"><img src="/Images/HomeImages/SliderImages/spinning.jpeg" alt="Slide 1"></div>
+                <div class="slide"><img src="/Images/HomeImages/SliderImages/clases-de-spinning.png" alt="Slide 2"></div>
+                <div class="slide"><img src="/Images/HomeImages/SliderImages/clase-yoga-h.jpg" alt="Slide 3"></div>
+                <div class="slide"><img src="/Images/HomeImages/SliderImages/clase-yoga-t.jpeg" alt="Slide 4"></div>
+                <div class="slide"><img src="/Images/HomeImages/SliderImages/clase-funcional-barra.jpg" alt="Slide 5"></div>
+                <div class="slide"><img src="/Images/HomeImages/SliderImages/clase-funcional-plancha.jpg" alt="Slide 6"></div>
+            </div>
+            <div class="welcoming-container">
+                <div class="welcoming-card">
+                    <div class="welcoming-content">
+                        <h1>¡Bienvenidos a CEF!</h1>
+                        <p>Somos un centro pensado para que disfrutes del movimiento y el bienestar en comunidad.
+                            Creemos que cada persona puede encontrar su espacio para entrenar, divertirse y sentirse
+                            mejor día a día.</p>
+
+                        <p>Sumate y viví la energía de un lugar donde el ejercicio se convierte en una experiencia
+                            compartida.</p>
+                    </div>
+                    <div class="welcoming-image">
+                        <img src="/Images/HomeImages/Logo-banner.png" alt="Bienvenido a CEF">
+                    </div>
+                </div>
+            </div>
+        </section>
+        <script src="/Home/homeSlider.js"></script>
+
+        <div class="activities-section">
+            <h2>ESTAS SON NUESTRAS ACTIVIDADES</h2>
+            <div class="activities-container">
+                <div class="activity-card">
+                    <img src="/Images/HomeImages/spinning-trio.jpg" alt="Spinning">
+                    <h3>Clases de Spinning</h3>
+                    <p>Quema calorías y mejora tu resistencia con nuestras clases de spinning.</p>
+                </div>
+                <div class="activity-card">
+                    <img src="/Images/HomeImages/clase-entrenamiento-funcional.jpg" alt="Entrenamiento Funcional">
+                    <h3>Entrenamiento Funcional</h3>
+                    <p>Mejora tu fuerza y movilidad con nuestro entrenamiento funcional.</p>
+                </div>
+                <div class="activity-card">
+                    <img src="/Images/HomeImages/clase-de-yoga.jpg" alt="Yoga">
+                    <h3>Clases de Yoga</h3>
+                    <p>Encuentra equilibrio y flexibilidad con nuestras clases de yoga.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="ubication-container">
+            <h2>📍Ubicación</h2>
+            <p>C. 3 812, B1900TCO La Plata, Provincia de Buenos Aires</p>
+            <div class="map-container">
+                <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d578.4335146158542!2d-57.93749531604141!3d-34.903586403430396!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95a2e66a8fcdf951%3A0x9191a5ff1fbbe5d5!2sFacultad%20de%20Inform%C3%A1tica%20-%20UNLP!5e0!3m2!1ses-419!2sar!4v1778804536608!5m2!1ses-419!2sar"
+                    width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+            </div>
+        </div>
+    </main>
+
+    <script src="/Test/test.js"></script>
+
+    <%- include('../Navbar/footer.html') %>
+</body>
+
+</html>

@@ -1,0 +1,10 @@
+<!-- Navbar based on User Role -->
+<% if (userRole === 'administrador') { %>
+  <%- include('adminNav.html') %>
+<% } else if (userRole === 'empleado') { %>
+  <%- include('employeeNav.html') %>
+<% } else if (userRole === 'cliente') { %>
+  <%- include('clientNav.html') %>
+<% } else { %>
+  <%- include('visitorNav.html') %>
+<% } %>
