@@ -204,3 +204,19 @@ webRouter.get("/account/admin", (req, res) => {
 webRouter.get('/userNav', (req, res) => res.sendFile(path.join(__dirname, "../../Front/Navbar/userNav.html")));
 webRouter.get('/visitorNav', (req, res) => res.sendFile(path.join(__dirname, "../../Front/Navbar/visitorNav.html")));
 webRouter.get('/footer', (req, res) => res.sendFile(path.join(__dirname, "../../Front/Navbar/footer.html")));
+
+// Payment
+webRouter.get("/payment/approved", (req,res) => {
+    if(!req.session.user) return res.redirect("/access/login");
+    res.render(path.join(__dirname, "Front/Payment/paymentApproved.ejs"), { userRole: req.session.user.rol });
+});
+
+webRouter.get("/payment/failure", (req,res) => {
+    if(!req.session.user) return res.redirect("/access/login");
+    res.render(path.join(__dirname, "Front/Payment/paymentFailure.ejs"), { userRole: req.session.user.rol });
+});
+
+webRouter.get("/payment/pending", (req,res) => {
+    if(!req.session.user) return res.redirect("/access/login");
+    res.render(path.join(__dirname, "Front/Payment/paymentPending.ejs"), { userRole: req.session.user.rol });
+});

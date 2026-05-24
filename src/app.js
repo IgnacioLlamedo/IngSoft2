@@ -51,6 +51,25 @@ app.listen(config.port, () => {
 
 app.use(express.json());
 
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'Front'));
+
+/* app.use((req,res,next)=>{
+    console.log(req.method, req.url);
+    console.log("COOKIE:", req.headers.cookie);
+    console.log("SESSION:", req.session);
+    next();
+}); */
+
+
+// Middleware to expose request data globally to all templates
+app.use((req, res, next) => {
+	res.locals.path = req.path || {};
+	// res.locals.requestData = req.body || {};
+	// res.locals.user = req.session.user || null;
+	next();
+});
+
 // Statics
 app.use(express.static(path.join(__dirname, "Front/Static"), {
   setHeaders: (res, path) => {
@@ -65,4 +84,5 @@ app.use('/api', apiRouter);
 
 //sino no puedo acceder a las rutas xd
 app.use(webRouter);
+
 

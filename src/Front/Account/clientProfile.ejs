@@ -5,22 +5,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="/Images/Common/favicon.ico" type="image/x-icon">
-    <link rel="stylesheet" href="/Navbar/navStyle.css">
-    <link rel="stylesheet" href="/Navbar/footerStyle.css">
     <link rel="stylesheet" href="/Account/profileStyle.css">
     <title>CEF - Mi Perfil</title>
-    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
 </head>
 
 <body>
-    <div id="nav-placeholder"></div>
-    <script>
-        $(function () {
-            $("#nav-placeholder").load("/userNav");
-        });
-    </script>
+    <header>
+        <%- include('../Navbar/navbarSelector.ejs') %>
+    </header>
 
-    <h1 class="profile-title">Información de cuenta - Administrador</h1>
+    <h1 class="profile-title">Información de cuenta</h1>
     <main class="profile-container">
         <div class="profile-card">
             <h2>Mi Perfil</h2>
@@ -42,6 +36,27 @@
                         <label for="dni">DNI:</label>
                         <input type="text" id="dni" name="dni" disabled>
                     </div>
+
+                    <div class="form-group">
+                        <label for="nacimiento">Fecha de nacimiento:</label>
+                        <input type="date" id="nacimiento" name="nacimiento" disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="telefono">Teléfono:</label>
+                        <input type="tel" id="telefono" name="telefono" disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="genero">Género:</label>
+                        <select id="genero" name="genero" disabled>
+                            <option value="">Selecciona un género</option>
+                            <option value="femenino">Femenino</option>
+                            <option value="masculino">Masculino</option>
+                            <option value="otro">Otro</option>
+                        </select>
+                    </div>
+
                 </form>
             </div>
 
@@ -107,14 +122,9 @@
         </div>
     </main>
 
-    <script src="/Account/adminProfileLogic.js"></script>
+    <script src="/Account/clientProfileLogic.js"></script>
 
-    <div id="footer-placeholder"></div>
-    <script>
-        $(function () {
-            $("#footer-placeholder").load("/footer");
-        });
-    </script>
+    <%- include('../Navbar/footer.html') %>
 </body>
 
 </html>

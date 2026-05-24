@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/Images/Common/favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href="/Common/commonPageStyle.css">
+    <link rel="stylesheet" href="/Common/commonFormPageStyle.css">
+    
+    <title>CEF - Registrarse</title>
+</head>
+
+<body>    
+    <header>
+        <%- include('../Navbar/navbarSelector.ejs') %>
+    </header>
+
+    <h1 class="title">Registro</h1>
+    
+    <main class="main-container">
+
+        <form id="register-form" class="form">
+            
+            <div class="form-card">
+
+                <h1 class="form-card-title">Datos personales</h1>
+                
+                <section class="form-section">
+
+                    <div class="input-group">
+                        <label for="nombreCompleto">Nombre completo:</label>
+                        <input type="text" name="nombreCompleto" autocomplete="nombre" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="dni">DNI:</label>
+                        <input type="text" name="dni" autocomplete="dni" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="email">Email:</label>
+                        <input id="email" type="email" name="email" autocomplete="email" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="numeroTelefono">Número de teléfono:</label>
+                        <input type="tel" name="numeroTelefono" autocomplete="tel" required>
+                    </div>
+    
+    
+                    <div class="input-group">
+                        <label for="contraseña">Contraseña:</label>
+                        <div class="password-wrapper">
+                            <input id="password" type="password" name="contraseña" required>
+                            <button id="password-visibility-button" type="button" class="password-toggle-button" aria-label="Mostrar contraseña">
+                                <img id="password-visibility-icon" class="password-toggle-icon" src="/Images/Inputs/eye-icon-hidden-white.png">
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="confirmPassword">Confirmar contraseña:</label>
+                        <div class="password-wrapper">
+                            <input id="confirmPassword" type="password" name="confirmarContraseña" required>
+                            <button id="confirm-password-visibility-button" type="button" class="password-toggle-button" aria-label="Mostrar contraseña">
+                                <img id="confirm-passwordvisibility-icon" class="password-toggle-icon" src="/Images/Inputs/eye-icon-hidden-white.png">
+                            </button>
+                        </div>
+                    </div>
+
+
+                    <div class="input-group">
+                        <label for="fechaNacimiento">Fecha de nacimiento:</label>
+                        <input id="birthDate" type="date" name="fechaNacimiento" required placeholder="Fecha de nacimiento">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="genero">Género:</label>
+                        <select name="genero">
+                            <option value="masculino">Masculino</option>
+                            <option value="femenino">Femenino</option>
+                            <option value="otro">Otro</option>
+                        </select>
+                    </div>
+
+
+                </section>
+
+            </div>
+
+
+            <div class="form-card">
+
+                <h1 class="form-card-title">Planilla médica</h1>
+
+                
+
+                <div class="field-separation">
+                    <hr> <h2>Contacto de emergencia</h2><hr>
+                </div>
+
+                <div class="input-group">
+                    <label for="nombreCompletoContactoEmergencia">Nombre completo:</label>
+                    <input type="text" name="nombreCompletoContactoEmergencia" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="relacionContactoEmergencia">Relación con el contacto:</label>
+                    <input type="text" name="relacionContactoEmergencia" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="telefonoContactoEmergencia">Número de teléfono:</label>
+                    <input type="tel" name="telefonoContactoEmergencia" required>
+                </div>
+
+
+
+                <div class="field-separation">
+                    <hr> <h2>Antecedentes médicos</h2> <hr>
+                </div>
+
+
+                <div class="input-group">
+                    <div class="checkbox-container">
+                        <input type="checkbox" name="tieneHipertension">
+                        <label for="tieneHipertension">Hipertensión</label>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <div class="checkbox-container">
+                        <input type="checkbox" name="tieneDiabetes">
+                        <label for="tieneDiabetes">Diabetes</label>
+                    </div>
+                </div>
+
+
+                <div class="input-group">
+                    <div class="checkbox-container">
+                        <input type="checkbox" name="tieneAsma">
+                        <label for="tieneAsma">Asma</label>
+                    </div>
+                </div>
+
+
+                <div class="input-group">
+                    <div class="checkbox-container">
+                        <input type="checkbox" name="tieneCardiacos">
+                        <label for="tieneCardiacos">Cardiacos</label>
+                    </div>
+                </div>
+
+
+                <div class="input-group">
+                    <div class="checkbox-container">
+                        <input type="checkbox" name="tieneArtritis">
+                        <label for="tieneArtritis">Artritis</label>
+                    </div>
+                </div>
+
+
+                <div class="input-group">
+                    <div class="checkbox-container">
+                        <input type="checkbox" name="tieneEpilepsia">
+                        <label for="tieneEpilepsia">Epilepsia</label>
+                    </div>
+                </div>
+
+
+                <div class="input-group">
+                    <div class="checkbox-container">
+                        <input type="checkbox" name="tieneLesiones">
+                        <label for="tieneLesiones">Lesiones</label>
+                    </div>
+                </div>
+
+
+                <div class="input-group">
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="hasOtherHistory" name="haceActividadFisica">
+                        <label for="hasOtherHistory">¿Tiene algún otro antecedente médico?</label>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label class="otherHistoryFields" for="otrosAntecedentes" hidden>Otros antecedentes:</label>
+                    <input class="otherHistoryFields" type="text" name="otrosAntecedentes" hidden>
+                </div>
+
+
+
+                <div class="field-separation">
+                    <hr> <h2>Información adicional de salud</h2> <hr>
+                </div>
+
+
+                <div class="input-group">
+                    <div class="checkbox-container">
+                        <input type="checkbox" name="fuma">
+                        <label for="fuma">Fuma</label>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <div class="checkbox-container">
+                        <input type="checkbox" name="tomaAlcohol">
+                        <label for="tomaAlcohol">Consume alcohol</label>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <div class="checkbox-container">
+                        <input type="checkbox" name="sintomasRecientes">
+                        <label for="sintomasRecientes">Sintomas recientes</label>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <div class="checkbox-container">
+                        <input type="checkbox" name="tieneDificultadDormir">
+                        <label for="tieneDificultadDormir">Dificultad para dormir</label>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="horasSueño">Horas de sueño habituales:</label>
+                    <input type="number" name="horasSueño">
+                </div>
+
+                <div class="input-group">
+                    <label for="nutricion">Dieta habitual:</label>
+                    <input type="text" name="nutricion" required>
+                </div>
+
+                
+
+
+                <div class="field-separation">
+                    <hr> <h2>Historial de cirugias</h2> <hr>
+                </div>
+
+
+                <div class="input-group">
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="hasSurgeries">
+                        <label for="hasSurgeries">¿Le realizaron cirugías?</label>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label class="surgeriesFields" for="descripcionCirugia" hidden>Descripción de la cirugía:</label>
+                    <input class="surgeriesFields" type="text" name="descripcionCirugia" hidden>
+                </div>
+
+                <div class="input-group">
+                    <label class="surgeriesFields" for="fechaCirugia" hidden>Fecha de la cirugía:</label>
+                    <input class="surgeriesFields" type="date" name="fechaCirugia" hidden>
+                </div>
+
+                <div class="input-group">
+                    <label class="surgeriesFields" for="secuelasCirugia" hidden>Secuelas de la cirugía:</label>
+                    <input class="surgeriesFields" type="text" name="secuelasCirugia" hidden>
+                </div>
+
+                
+                
+                <div class="field-separation">
+                    <hr> <h2>Alergias</h2> <hr>
+                </div>
+                
+
+                <div class="input-group">
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="hasAllergies">
+                        <label for="hasAllergies">¿Tiene alguna alergia?</label>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label class="allergiesFields" for="alergias" hidden>Descripción de alergias:</label>
+                    <input class="allergiesFields" type="text" name="alergias" hidden>
+                </div>
+
+                <div class="input-group">
+                    <label class="allergiesFields" for="medicacionAlergias" hidden>Medicación tomada para las alergias:</label>
+                    <input class="allergiesFields" type="text" name="medicacionAlergias" hidden>
+                </div>
+
+
+
+                <div class="field-separation">
+                    <hr> <h2>Actividad física y objetivos</h2> <hr>
+                </div>
+                
+
+                <div class="input-group">
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="isPhysicallyActive" name="haceActividadFisica">
+                        <label for="isPhysicallyActive">¿Realiza actividad física?</label>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label class="physicallyActiveFields" for="frecuenciaActividadFisica" hidden>Frecuencia de actividad física:</label>
+                    <input class="physicallyActiveFields" type="text" name="frecuenciaActividadFisica" hidden>
+                </div>
+
+
+                <div class="input-group">
+                    <div class="selector">
+                        <label for="objetivo">Objetivo:</label>
+                        <select name="objetivo">
+                            <option value="0">Perdida de peso</option>
+                            <option value="1">Tonificación</option>
+                            <option value="2">Salud</option>
+                            <option value="3">Competencia</option>
+                        </select>
+                    </div>
+                </div>
+
+
+
+                <section class="form-section">
+                    <p id="registerError" class="errorMsg" hidden></p>
+                    <button class="submit">REGISTRARSE</button>
+                </section>
+
+            </div>
+
+        </form>
+    </main>
+
+
+    <%- include('../Navbar/footer.html') %>
+
+    <script src="/Access/signUp.js"></script>
+</body>
+</html>

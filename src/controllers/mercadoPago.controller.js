@@ -1,18 +1,23 @@
 import { Preference } from "mercadopago";
 import { client } from "../servicios/mercado.servicio.js";
-import { now } from "mongoose";
 import { pagoDao } from "../daos/index.js";
+import config from "../config.js";
 
 export async function crearPreferencia(req, res) {
 
     try {
-        const monto = req.body.precio;
-        const id_clase = req.body.idClase;
-        const tipoClase = req.body.tipoClase;
-        const fechaEspecifica = req.body.fechaEspecifica;
-        const urlRetorno = req.body.url;
-        const url = `${urlRetorno}/home`;
-
+        //body: JSON.stringify({ tipo: tipoClase, cantidad:1, monto: precio, id_Clase: idClase })
+        const tipo = req.body.tipo;
+        const precio = req.body.precio;
+        const id_clase = req.body.id_Clase;
+        //const tipoClase = req.body.tipoClase;
+        //const fechaEspecifica = req.body.fechaEspecifica;
+        console.log("Desde crear Preferencia!")
+        console.log(tipo)
+        console.log(id_clase)
+        console.log(precio)
+        //console.log(tipoClase)
+        console.log("finalizado el log desde crear preferencia!");
 
         const preference = new Preference(client);
 
@@ -22,21 +27,20 @@ export async function crearPreferencia(req, res) {
                     {
                         title: req.body.tipo,
                         quantity: 1,
-                        unit_price: Number(monto)
+                        unit_price: Number(precio)
                     }
                 ],
                 external_reference: JSON.stringify({    //Todo esto termina en la url una vez que se retorna a /home
                     idUsuario: req.session.user.id,        //Este es asignado al usuario cuando se logea (en autenticaión doble controller)
                     idClase: id_clase,         //Este se guarda al llamar a /crear-preferencia (en payPanel.js)
-                    precio: monto,
-                    tipoClase: tipoClase,
-                    fechaEspecifica: fechaEspecifica,
-                    tipoClase: "unica"
+                    precio: precio,
+                    //tipoClase: tipoClase,
+                    //fechaEspecifica: fechaEspecifica,
                 }),
                 back_urls: {
-                    success: url,
-                    failure: url,
-                    pending: url
+                    success: `${config.link}/payment/approved`,
+                    failure: `${config.link}/payment/failure`,
+                    pending: `${config.link}/payment/pending`,
                 },
                 auto_return: "approved"
             }
@@ -46,7 +50,8 @@ export async function crearPreferencia(req, res) {
             init_point: response.init_point
         });
 
-    } catch(error) {
+    } 
+    catch(error) {
 
         console.error(error);
 

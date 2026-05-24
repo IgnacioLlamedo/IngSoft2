@@ -8,9 +8,9 @@ userAutoLogin.textContent = "UserAutoLogin";
 employeeAutoLogin.textContent = "EmployeeAutoLogin";
 adminAutoLogin.textContent = "AdminAutoLogin";
 
-header.after(adminAutoLogin);
-header.after(employeeAutoLogin);
-header.after(userAutoLogin);
+header.before(userAutoLogin);
+header.before(employeeAutoLogin);
+header.before(adminAutoLogin);
 
 userAutoLogin.addEventListener("click", async (event) => {
     const res = await fetch("/api/test/user-autologin", {

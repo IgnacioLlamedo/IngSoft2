@@ -4,10 +4,10 @@ document.getElementById("recover-password-form").addEventListener("submit", asyn
 
     event.preventDefault()
 
-    const mail = event.target.mail.value
+    const email = event.target.email.value
 
     const dataString = JSON.stringify({
-        mail: mail
+        mail: email
     })
 
     const res = await fetch("/api/resetpass", {
@@ -27,6 +27,6 @@ document.getElementById("recover-password-form").addEventListener("submit", asyn
     else 
     {
         verificationErrorMsg.textContent = resData.message;
-        verificationErrorMsg.classList.remove("hidden");
+        verificationErrorMsg.removeAttribute("hidden");
     } 
 })

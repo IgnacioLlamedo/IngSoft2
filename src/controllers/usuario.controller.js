@@ -4,42 +4,49 @@ import { generateOtp } from '@mx7/otp';
 import { homeRoutes } from "../constantes/routes.js";
 import { mailer } from "../servicios/mailer.servicio.js";
 import { hash, compareHash } from "../servicios/crypt.servicio.js";
+import { homeRoute } from "../app.js";
+import { Usuario } from "../models/usuario.mongoose.js";
 
 const errorMessages = {
 	11000: "Error al crear la cuenta, el email ya está registrado.",
 };
 
 export async function postController(req, res) {
-    try {
+	try {
         const userData = req.body.userData;
-
-        const mailExiste = await usuarioDao.readOne({mail:userData.mail});
-        if (mailExiste) {
-            return res.json({
-                success:false,
-                message: "mail ya registrado"
-            })
-        }
-
-        const dniExiste = await usuarioDao.readOne({dni:userData.dni, rol:"cliente"});
-        if (dniExiste) {
-            return res.json({
-                success:false,
-                message: "dni ya registrado"
-            })
-        }
         
-        const planilla = await planillaDao.create(req.body.planillaData);
+        const emailExist = await usuarioDao.readOne({mail: userData.mail});
+        if(emailExist) {
+            return res.json({
+                success: false,
+                message: "Error al registrarse. El email ya se encuentra registrado."
+            });
+        }
 
-        let dataACrear = userData;
-        dataACrear.contraseña = hash(userData.contraseña)
-        dataACrear.planilla = planilla._id;
+        const dniExist = await usuarioDao.readOne({dni: userData.dni, rol:"cliente"});
+        if(dniExist) {
+            return res.json({
+                success: false,
+                message: "Error al registrarse. El DNI ya se encuentra registrado."
+            });
+        }
 
-        await usuarioDao.create(dataACrear);
+		const planilla = await planillaDao.create(req.body.planillaData);
+        userData.planilla = planilla._id;
+
+        userData.contraseña = hash(userData.contraseña)
+
+		const user = await usuarioDao.create(userData);
+
+        createSession(req, user);
+
+        const redirect = homeRoute;
 		res.json({
 			success: true,
+            redirect
 		});
-	} catch (error) {
+	} 
+    catch (error) {
 		console.log("ERROR: " + error);
 		res.json({
 			success: false,
@@ -63,20 +70,23 @@ export async function loginController(req, res) {
                 message: "Error al Iniciar Sesión en la cuenta. El email ingresado no está registrado."
             });
         }
+
         // Contraseña incorrecta
-        if(compareHash(user.contraseña, password)) {
+        if(!(compareHash(password, user.contraseña))) {
             return res.json({
                 success: false,
                 message: "Error al Iniciar Sesión en la cuenta. La contraseña ingresada es incorrecta."
             });
         }
+        
         //Genero el código de acceso y lo cargo en la DB ---> No sé si esto era lo que queria hacer Nacho (?)
         const limite = new Date(Date.now() + 600000)
         const otp = generateOtp()
         const usuario = await usuarioDao.updateOne(mail, {
-        codigo: otp,
-        limiteCodigo: limite
+            codigo: otp,
+            limiteCodigo: limite
         })
+
         console.log("enviando codigo: " + usuario.codigo)
 
         //Acá habria que mandar el mail con el código generado.
@@ -103,31 +113,23 @@ export async function authenticationController(req, res) {
         //Vuelvo a buscar los datos del usuario, esta vez con el código
         const usuario = await usuarioDao.readOne({ mail: mail });
 
-       if(usuario.codigo !== req.body.codigo){
-            return res.json({
-                success: false,
-                message: "Error al ingresar el código de validación."
-            });
-        }
-
         if(usuario.limiteCodigo.getTime() < new Date(Date.now()).getTime()){
             return res.json({
                 success: false,
-                message: "Error al ingresar el código de validación. El código ya expiró"
+                message: "Error al ingresar el código de validación. El código ya expiró."
             });
         }
 
-        req.session.user = {
-            id: usuario._id,
-            mail: usuario.mail,
-            rol: usuario.rol,
-        };
-        //Await donde? xd
+		if(usuario.codigo !== req.body.codigo) {
+            return res.json({
+                success: false,
+                message: "Error al ingresar el código de validación. El código introducido es incorrecto."
+            });
+		}
 
-        const redirect = homeRoutes[usuario.rol];
-        console.log("El usuario será redirigido desde authenticationController: ");
-        console.log(redirect)
-
+        createSession(req, usuario);
+        
+        const redirect = homeRoute;
         res.json({
             success: true,
             redirect
@@ -223,13 +225,9 @@ export async function resetPass(req, res){
             contraseña: hash(req.body.contraseña)
         })
         
-        req.session.user = {
-            id: usuario._id,
-            mail: usuario.mail,
-            rol: usuario.rol,
-        };
+        createSession(req, usuario);
 
-        const redirect = homeRoutes[usuario.rol];
+        const redirect = homeRoute;
     
         res.json({
             success: true,
@@ -350,4 +348,18 @@ export async function setPasswordController(req, res) {
 		console.error('savePasswordController error:', error);
 		res.status(500).json({ success: false, message: 'Error al actualizar contraseña. Inténtelo más tarde.' });
 	}
+}
+
+
+
+
+
+
+async function createSession(req, user) {
+    req.session.user = {
+        id: user._id,
+        mail: user.mail,
+        rol: user.rol,
+    };
+    await req.session.save(); 
 }

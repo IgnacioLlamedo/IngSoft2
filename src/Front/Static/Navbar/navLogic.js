@@ -1,6 +1,10 @@
 const userIcon = document.getElementById("userIcon");
 const userOptions = document.getElementById("userOptions");
 
+const parametersURL = new URLSearchParams(window.location.search);
+const statusPago = parametersURL.get('status');
+
+
 userIcon.addEventListener("click", () => {
     userOptions.classList.toggle("user-options-open")
 })
