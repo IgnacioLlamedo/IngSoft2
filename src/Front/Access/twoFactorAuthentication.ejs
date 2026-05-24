@@ -1,13 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="/Images/favicon.ico" type="image/x-icon">
+
+    <link rel="icon" href="/Images/Common/favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href="/Navbar/navStyle.css">
     <link rel="stylesheet" href="/Access/accessCommon.css">
+    <link rel="stylesheet" href="/Access/loginStyle.css">
+
     <title>CEF - Recuperar contraseña</title>
 </head>
+
 <body>
+    <header>
+        <%- include('../Navbar/navbarSelector.ejs') %>
+    </header>
+
     <main>
         <div class="form-container">
             <form id="two-factor-authenticator-form">
@@ -26,11 +37,16 @@
 
                 <section>
                     <p id="verificationError" class="errorMsg hidden"></p>
-                    <button>VALIDAR CÓDIGO</button>
+                    <button class="submit">VALIDAR CÓDIGO</button>
                 </section>
             </form>
+            
         </div>
     </main>
+
+    <%- include('../Navbar/footer.html') %>
+
+    <script src="/Access/twoFactorAuthentication.js"></script>
 </body>
-<script src="/Access/authPass.js"></script>
+
 </html>

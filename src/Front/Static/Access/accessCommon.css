@@ -1,17 +1,20 @@
 * {
-    margin: 0;
+    font-family: sans-serif;
+    margin: 0px;
+    padding: 0px;
 }
 
 main {    
     box-sizing: content-box;
-    border: 2px solid red;
+    /* border: 2px solid red; */
     display: flex;
     justify-content: center;
     align-items: center;
+    min-height: 80vh;
 }
 
 .form-container {
-    border: 2px solid blue;
+    /* border: 2px solid blue; */
     width: 800px;
     height: 100%;
     margin: 100px 0;
@@ -67,4 +70,22 @@ form section {
 .errorMsg {
     color: rgb(245, 45, 45);
     font-weight: bold;
+}
+
+
+.form-container a {
+    color: #163F7A;
+    text-decoration: none;
+}
+
+.form-container a:hover {
+    text-decoration: underline;
+}
+
+.submit {
+    padding: 5px 10px;
+    font-size: 20px;
+    font-weight: 500;
+    background-color: #163F7A;
+    color: white;
 }

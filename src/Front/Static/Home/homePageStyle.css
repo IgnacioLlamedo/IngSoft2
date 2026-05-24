@@ -2,7 +2,7 @@
   font-family: sans-serif;
 }
 
-html, body {
+body {
   /* height: 100%; Creo que no hace falta y rompe la barra de desplazamiento. */
   margin: 0;
   padding: 0;

@@ -1,24 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="/Images/Common/favicon.ico" type="image/x-icon">
-    <link rel="stylesheet" href="/Navbar/navStyle.css">
-    <link rel="stylesheet" href="/Access/accessCommon.css">
-    <link rel="stylesheet" href="/Access/loginStyle.css">
-    <title>CEF - Recuperar contraseña</title>
-    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
-</head>
 
+    <link rel="icon" href="/Images/favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href="/Access/accessCommon.css">
+    
+    <title>CEF - Recuperar contraseña</title>
+</head>
 <body>
-    <div id="nav-placeholder"></div>
-    <script>
-        $(function () {
-            $("#nav-placeholder").load("/visitorNav");
-        });
-    </script>
+
+    <header>
+        <%- include('../Navbar/navbarSelector.ejs') %>
+    </header>
 
     <main>
         <div class="form-container">
@@ -38,14 +34,15 @@
 
                 <section>
                     <p id="verificationError" class="errorMsg hidden"></p>
-                    <button>VALIDAR CÓDIGO</button>
+                    <button class="submit">VALIDAR CÓDIGO</button>
                 </section>
             </form>
-            
         </div>
     </main>
 
-    <script src="/Access/twoFactorAuthentication.js"></script>
+    <%- include('../Navbar/footer.html') %>
+    
+    <script src="/Access/authPass.js"></script>
 </body>
 
 </html>

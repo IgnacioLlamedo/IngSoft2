@@ -120,9 +120,9 @@ app.get(homeRoute, (req, res) => {
 
 app.get("/home/table", (req, res) => {
     // Solución temporal para que no puedan poner la ruta en el navegador.
-    /* const isIframe = req.headers["sec-fetch-dest"] === "iframe";
+    const isIframe = req.headers["sec-fetch-dest"] === "iframe";
     if(!isIframe)
-        return res.status(403).send("Acceso denegado"); */
+        return res.status(403).send("Acceso denegado");
     //
 
     res.sendFile(path.join(__dirname, "Front/Home/HomeTabs/table.html"));
@@ -140,39 +140,39 @@ app.get("/my-activities", (req, res) => {
 app.get("/test-clases", (req, res) => {
     if(!req.session.user) return res.redirect("/access/login");
     if(req.session.user.rol !== "cliente") return res.redirect(homeRoutes[req.session.user.rol]);
-    res.sendFile(path.join(__dirname, "Front/Home/HomeTabs/testClases.html"));
+    res.render(path.join(__dirname, "Front/Home/HomeTabs/testClases.ejs"), { userRole: req.session.user.rol });
 });
 
 
 // Access GET
 app.get("/access/register", (req,res) => {
     if(req.session.user) return res.redirect(homeRoute);
-    res.sendFile(path.join(__dirname, "Front/Access/signUp.html"));
+    res.render(path.join(__dirname, "Front/Access/signUp.ejs"), { userRole: "visitor" });
 });
 
 app.get("/access/login", (req,res) => {
     if(req.session.user) return res.redirect(homeRoute); 
-    res.sendFile(path.join(__dirname, "Front/Access/login.html"))
+    res.render(path.join(__dirname, "Front/Access/login.ejs"), { userRole: "visitor" })
 });
 
 app.get("/access/authentication", (req,res) => {
     if(req.session.user) return res.redirect(homeRoute);
-    res.sendFile(path.join(__dirname, "Front/Access/twoFactorAuthentication.html"))
+    res.render(path.join(__dirname, "Front/Access/twoFactorAuthentication.ejs"), { userRole: "visitor" })
 });
 
 app.get("/access/recover-password", (req,res) => {
     if(req.session.user) return res.redirect(homeRoute); 
-    res.sendFile(path.join(__dirname, "Front/Access/recoverPassword.html"))
+    res.render(path.join(__dirname, "Front/Access/recoverPassword.ejs"), { userRole: "visitor" })
 });
 
 app.get("/access/reset-password", (req,res) => {
-    if(req.session.user) return res.redirect(homeRoutes[req.session.user.rol]);
-    res.sendFile(path.join(__dirname, "Front/Access/resetPassword.html"));
+    if(req.session.user) return res.redirect(homeRoute);
+    res.render(path.join(__dirname, "Front/Access/resetPassword.ejs"), { userRole: "visitor" });
 });
 
 app.get("/access/auth-pass", (req,res) => {
-    if(req.session.user) return res.redirect(homeRoutes[req.session.user.rol]);
-    res.sendFile(path.join(__dirname, "Front/Access/authPass.html"));
+    if(req.session.user) return res.redirect(homeRoute);
+    res.render(path.join(__dirname, "Front/Access/authPass.ejs"), { userRole: "visitor" });
 });
 
 

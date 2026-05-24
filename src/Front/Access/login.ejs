@@ -4,21 +4,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <link rel="icon" href="/Images/Common/favicon.ico" type="image/x-icon">
+
     <link rel="stylesheet" href="/Navbar/navStyle.css">
     <link rel="stylesheet" href="/Access/accessCommon.css">
-    <link rel="stylesheet" href="/Access/loginStyle.css">
-    <title>CEF - Iniciar sesión</title>    
-    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+
+    <title>CEF - Iniciar sesión</title>
 </head>
 
 <body>
-    <div id="nav-placeholder"></div>
-    <script>
-        $(function () {
-            $("#nav-placeholder").load("/visitorNav");
-        });
-    </script>
+    <header>
+        <%- include('../Navbar/navbarSelector.ejs') %>
+    </header>
+
 
     <main>
         <div class="form-container">
@@ -40,11 +39,13 @@
 
                 <section>
                     <p id="loginError" class="errorMsg hidden"></p>
-                    <button>INICIAR SESIÓN</button>
+                    <button class="submit">INICIAR SESIÓN</button>
                 </section>
             </form>
         </div>
     </main>
+
+    <%- include('../Navbar/footer.html') %>
 
     <script src="/Access/login.js"></script>
 </body>

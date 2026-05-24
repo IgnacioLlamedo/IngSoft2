@@ -10,16 +10,12 @@
     <link rel="stylesheet" href="/Access/signUpStyle.css">
     
     <title>CEF - Registrarse</title>
-    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
 </head>
 
 <body>    
-    <div id="nav-placeholder"></div>
-    <script>
-        $(function () {
-            $("#nav-placeholder").load("/visitorNav");
-        });
-    </script>
+    <header>
+        <%- include('../Navbar/navbarSelector.ejs') %>
+    </header>
 
     <main>
         <div class="form-container">
@@ -211,11 +207,13 @@
 
                 <section>
                     <p id="registerError" class="errorMsg hidden"></p>
-                    <button>REGISTRARSE</button>
+                    <button class="submit">REGISTRARSE</button>
                 </section>
             </form>
         </div>
     </main>
+
+    <%- include('../Navbar/footer.html') %>
 
     <script src="/Access/signUp.js"></script>
 </body>
