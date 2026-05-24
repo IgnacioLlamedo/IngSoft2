@@ -283,8 +283,7 @@ document.getElementById("register-form").addEventListener("submit", async (event
     const resData = await res.json();
 
     if(resData.success)
-        // Mandar a login con campos completos.
-        window.location.href = "/access/login";
+        window.location.href = resData.redirect;
     else 
     {
         registerErrorMsg.textContent = resData.message;

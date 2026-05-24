@@ -42,6 +42,6 @@ document.getElementById("two-factor-authenticator-form").addEventListener("submi
     else 
     {
         verificationErrorMsg.textContent = resData.message;
-        verificationErrorMsg.classList.remove("hidden");
+        verificationErrorMsg.removeAttribute("hidden");
     }
 });

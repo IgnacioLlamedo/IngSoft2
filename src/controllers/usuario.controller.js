@@ -35,10 +35,14 @@ export async function postController(req, res) {
 
         userData.contraseña = hash(userData.contraseña)
 
-		await usuarioDao.create(userData);
+		const user = await usuarioDao.create(userData);
 
+        createSession(req, user);
+
+        const redirect = homeRoute;
 		res.json({
 			success: true,
+            redirect
 		});
 	} 
     catch (error) {
@@ -77,8 +81,8 @@ export async function loginController(req, res) {
         const limite = new Date(Date.now() + 600000)
         const otp = generateOtp()
         const usuario = await usuarioDao.updateOne(mail, {
-        codigo: otp,
-        limiteCodigo: limite
+            codigo: otp,
+            limiteCodigo: limite
         })
         console.log("enviando codigo: " + usuario.codigo)
 
@@ -119,12 +123,7 @@ export async function authenticationController(req, res) {
             });
 		}
 
-        req.session.user = {
-            id: usuario._id,
-            mail: usuario.mail,
-            rol: usuario.rol,
-        };
-        await req.session.save();
+        createSession(req, usuario);
         
         const redirect = homeRoute;
         res.json({
@@ -222,11 +221,7 @@ export async function resetPass(req, res){
             contraseña: hash(req.body.contraseña)
         })
         
-        req.session.user = {
-            id: usuario._id,
-            mail: usuario.mail,
-            rol: usuario.rol,
-        };
+        createSession(req, usuario);
 
         const redirect = homeRoute;
     
@@ -349,4 +344,18 @@ export async function setPasswordController(req, res) {
 		console.error('savePasswordController error:', error);
 		res.status(500).json({ success: false, message: 'Error al actualizar contraseña. Inténtelo más tarde.' });
 	}
+}
+
+
+
+
+
+
+async function createSession(req, user) {
+    req.session.user = {
+        id: user._id,
+        mail: user.mail,
+        rol: user.rol,
+    };
+    await req.session.save(); 
 }

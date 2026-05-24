@@ -1,51 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="icon" href="/Images/Common/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/Images/favicon.ico" type="image/x-icon">
 
-    <link rel="stylesheet" href="/Navbar/navStyle.css">
-    <link rel="stylesheet" href="/Access/accessCommon.css">
-    <link rel="stylesheet" href="/Access/loginStyle.css">
-
+    <link rel="stylesheet" href="/Common/commonPageStyle.css">
+    
     <title>CEF - Recuperar contraseña</title>
 </head>
-
 <body>
+
     <header>
         <%- include('../Navbar/navbarSelector.ejs') %>
     </header>
 
-    <main>
-        <div class="form-container">
+    <h1 class="title">Autenticación de doble factor</h1>
+    
+    <main class="main-container">
+        <div class="form-card">
+
             <form id="two-factor-authenticator-form">
-                <section>
 
-                    <h1>Autenticación de doble factor</h1>
+                <section class="form-section">
 
-                    <div class="input-section">
-
-                        <span>Ingresá el código recibido por email:</span>
-                        <input type="number" name="codigo" required placeholder="Código recibido por email">                    
+                    <div class="input-group">
+                        <label for="codigo">Ingresá el código recibido por email:</label>
+                        <input type="number" inputmode="numeric" name="codigo" autocomplete="email" required>
                     </div>
+                  
+                    <a href="#" id="reenviar-codigo" class="generic-anchor">Enviar código otra vez</a>
 
-                    <a href="#" id="reenviar-codigo">Enviar código otra vez</a>
                 </section>
 
-                <section>
-                    <p id="verificationError" class="errorMsg hidden"></p>
+                <section class="form-section">
+                    <p id="loginError" class="errorMsg" hidden></p>
                     <button class="submit">VALIDAR CÓDIGO</button>
                 </section>
-            </form>
             
+            </form>
+
         </div>
     </main>
 
     <%- include('../Navbar/footer.html') %>
-
+    
     <script src="/Access/twoFactorAuthentication.js"></script>
 </body>
 
