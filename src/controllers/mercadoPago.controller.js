@@ -1,5 +1,6 @@
 import { Preference } from "mercadopago";
 import { client } from "../servicios/mercado.servicio.js";
+import config from "../config.js";
 
 export async function crearPreferencia(req, res) {
 
@@ -36,9 +37,9 @@ export async function crearPreferencia(req, res) {
                     //fechaEspecifica: fechaEspecifica,
                 }),
                 back_urls: {
-                    success: "https://wn5lpz4t-8080.brs.devtunnels.ms/",
-                    failure: "https://wn5lpz4t-8080.brs.devtunnels.ms/",
-                    pending: "https://wn5lpz4t-8080.brs.devtunnels.ms/"
+                    success: `${config.link}/home`,
+                    failure: `${config.link}/home`,
+                    pending: `${config.link}/home`,
                 },
                 auto_return: "approved"
             }
