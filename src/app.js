@@ -69,6 +69,14 @@ app.use(session({
 }); */
 
 
+// Middleware to expose request data globally to all templates
+app.use((req, res, next) => {
+	res.locals.path = req.path || {};
+	// res.locals.requestData = req.body || {};
+	// res.locals.user = req.session.user || null;
+	next();
+});
+
 // Statics
 app.use(express.static(path.join(__dirname, "Front/Static"), {
   setHeaders: (res, path) => {
