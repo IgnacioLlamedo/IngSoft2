@@ -22,7 +22,7 @@ export async function postController(req, res) {
             });
         }
 
-        const dniExist = await usuarioDao.readOne({mail: userData.mail, rol:"cliente"});
+        const dniExist = await usuarioDao.readOne({dni: userData.dni, rol:"cliente"});
         if(dniExist) {
             return res.json({
                 success: false,
@@ -69,8 +69,9 @@ export async function loginController(req, res) {
                 message: "Error al Iniciar Sesión en la cuenta. El email ingresado no está registrado."
             });
         }
+
         // Contraseña incorrecta
-        if(compareHash(user.contraseña, password)) {
+        if(!(compareHash(password, user.contraseña))) {
             return res.json({
                 success: false,
                 message: "Error al Iniciar Sesión en la cuenta. La contraseña ingresada es incorrecta."
@@ -84,6 +85,7 @@ export async function loginController(req, res) {
             codigo: otp,
             limiteCodigo: limite
         })
+
         console.log("enviando codigo: " + usuario.codigo)
 
         //Acá habria que mandar el mail con el código generado.

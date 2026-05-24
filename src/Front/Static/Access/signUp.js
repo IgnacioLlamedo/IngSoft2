@@ -1,19 +1,13 @@
-
 const password = document.getElementById("password");
 const passwordRequirementErrorMsg = document.getElementById("passwordRequirementError");
 const passwordIsEmpty = () => password.value.trim() === "";
-let passwordRequirementError = false;
 
 const confirmPassword = document.getElementById("confirmPassword");
 const confirmPasswordErrorMsg = document.getElementById("confirmPasswordError");
 const confirmPasswordIsEmpty = () => confirmPassword.value.trim() === "";
-let confirmPasswordError = false;
 
 const birthDateInput = document.getElementById("birthDate");
 const birthDateErrorMsg = document.getElementById("birthDateError");
-let birthDateError = false;
-
-const errorInForm = () => passwordRequirementError || confirmPasswordError || birthDateError;
 
 const hasOtherHistory = document.getElementById("hasOtherHistory");
 const otherHistoryFields = document.getElementsByClassName("otherHistoryFields");
@@ -30,96 +24,32 @@ const activityFields = document.getElementsByClassName("physicallyActiveFields")
 const registerErrorMsg = document.getElementById("registerError");
 
 
-password.onchange = function() {
-    checkPasswordRequirement();
-    checkConfirmPassword();
-}
-
-confirmPassword.onchange = function() {
-    checkConfirmPassword();
-}
-
 function checkPasswordRequirement() {
-    if(!passwordIsEmpty() && password.value.trim().length < 6)
-        enablePasswordRequirementError();
-    else
-        disablePasswordRequirementError();
+    if(passwordIsEmpty())
+        return "Error al registrarse. Se debe especificar la contraseña.";
+
+    if(password.value.trim().length < 6)
+        return "Error al registrarse. La contraseña debe tener al menos 6 caracteres.";
 }
-
-function enablePasswordRequirementError() {
-    if(passwordRequirementError)
-        return;
-
-    password.classList.add("passwordRequirementError");
-
-    passwordRequirementErrorMsg.textContent = "Las contraseña debe tener al menos 6 caracteres."
-    passwordRequirementErrorMsg.classList.remove("hidden");
-
-    passwordRequirementError = true;
-}
-
-function disablePasswordRequirementError() {
-    if(!passwordRequirementError)
-        return;
-
-    password.classList.remove("passwordRequirementError");
-
-    passwordRequirementErrorMsg.textContent = ""
-    passwordRequirementErrorMsg.classList.add("hidden");
-
-    passwordRequirementError = false;
-}
-
-
 
 function checkConfirmPassword() {
-    if(confirmPasswordIsEmpty()) {
-        if(confirmPasswordError)
-            disableConfirmPasswordError();
-        return;
-    }
+    if(confirmPasswordIsEmpty())
+        return "Error al registrarse. Se debe confirmar la contraseña en el campo dado.";
 
-    if(confirmPassword.value !== password.value)
-        enableConfirmPasswordError();
-    else
-        disableConfirmPasswordError();
+    if(password.value.trim() !== confirmPassword.value.trim())
+        return "Error al registrarse. La contraseña especificada y su confirmación deben coincidir.";
 }
 
-function enableConfirmPasswordError() {
-    if(confirmPasswordError)
-        return;
-
-    password.classList.add("confirmPasswordError");
-    confirmPassword.classList.add("inputError");
-
-    confirmPasswordErrorMsg.textContent = "Las contraseñas no coinciden."
-    confirmPasswordErrorMsg.classList.remove("hidden");
-
-    confirmPasswordError = true;
-}
-
-function disableConfirmPasswordError() {
-    if(!confirmPasswordError)
-        return;
-
-    password.classList.remove("confirmPasswordError");
-    confirmPassword.classList.remove("inputError");
-
-    confirmPasswordErrorMsg.classList.add("hidden");
-    confirmPasswordErrorMsg.textContent = "";
-
-    confirmPasswordError = false;
-}
-
-
-
-birthDateInput.oninput = function() {
+function checkBirthDate() {
     const age = calculateAge();
-    if((age < 14) || (age > 100))
-        enableBirthDateError();
-    else
-        disableBirthError();
+    
+    if((age <= 0) || (age >= 90))
+        return "Error al registrarse. Ingrese una fecha de nacimiento válida.";
+
+    if(age < 14)
+        return "Error al registrarse. La edad mínima para registrarse son 14 años.";
 }
+
 
 function calculateAge() {
     const birthDate = new Date(birthDateInput.value);
@@ -134,74 +64,89 @@ function calculateAge() {
     return age;
 }
 
-function enableBirthDateError() {
-    if(birthDateError)
-        return;
 
-    birthDateInput.classList.add("inputError")
+hasOtherHistory.addEventListener("click", () => toggleFields(otherHistoryFields)); 
 
-    birthDateErrorMsg.innerHTML =
-    `<h3>Para crear una cuenta se necesita: </h3> <br>
-    - Tener edad mínima de 14 años.<br> <br>
-    - Ingresar una fecha de nacimiento con menos de 100 años.`;
-    
-    birthDateErrorMsg.classList.remove("hidden");
+hasSurgeries.addEventListener("click", () => toggleFields(surgeriesFields)); 
 
-    birthDateError = true;
-}
+hasAllergies.addEventListener("click", () => toggleFields(allergiesFields)); 
 
-function disableBirthError() {
-    if(!birthDateError)
-        return;
+activityCheckbox.addEventListener("click", () => toggleFields(activityFields)); 
 
-    birthDateInput.classList.remove("inputError")
+function toggleFields(fields) {
+    for(const field of fields) {
+        const isHidden = field.hasAttribute("hidden");
 
-    birthDateErrorMsg.textContent = "";
-    birthDateErrorMsg.classList.add("hidden");
-
-    birthDateError = false;
-}
-
-
-hasOtherHistory.onclick = function() {
-    for(const field of otherHistoryFields) {
-        if(!field.classList.contains("hidden"))
-            field.value = "";
-        field.classList.toggle("hidden");
+        field.hidden = !isHidden;
         field.toggleAttribute("required");
-    }
-}
 
-hasSurgeries.onclick = function() {
-    for(const field of surgeriesFields) {
-        if(!field.classList.contains("hidden"))
+        
+        if(!isHidden)
             field.value = "";
-        field.classList.toggle("hidden");
-        field.toggleAttribute("required");
-    }
-}
-
-hasAllergies.onclick = function() {
-    for(const field of allergiesFields) {
-        if(!field.classList.contains("hidden"))
-            field.value = "";
-        field.classList.toggle("hidden");
-        field.toggleAttribute("required");
-    }
-}
-
-activityCheckbox.onclick = function() {
-    for(const field of activityFields) {
-        if(!field.classList.contains("hidden"))
-            field.value = "";
-        field.classList.toggle("hidden");
-        field.toggleAttribute("required");
     }
 }
 
 
 
+function checkErrors() {
+    const passwordError = checkPasswordRequirement();
+    if(passwordError) {
+        return passwordError;
+    }
 
+    const confirmPasswordError = checkConfirmPassword();
+    if(confirmPasswordError) {
+        return confirmPasswordError;
+    }
+
+    const birthDateError = checkBirthDate();
+    if(birthDateError) {
+        return birthDateError;
+    }
+}
+
+
+
+// Password handler
+const passwordVisibilityButton = document.getElementById("password-visibility-button");
+const passwordVisibilityIcon = document.getElementById("password-visibility-icon");
+let passwordIsVisible = false;
+
+passwordVisibilityButton.addEventListener("click" ,async () => {
+    passwordIsVisible = !passwordIsVisible;
+
+    if(passwordIsVisible) 
+        showPassword(password, passwordVisibilityButton, passwordVisibilityIcon);
+    else
+        hidePassword(password, passwordVisibilityButton, passwordVisibilityIcon);
+});
+
+
+const confirmPasswordVisibilityButton = document.getElementById("confirm-password-visibility-button");
+const confirmPasswordVisibilityIcon = document.getElementById("confirm-password-visibility-icon");
+let confirmPasswordIsVisible = false;
+
+confirmPasswordVisibilityButton.addEventListener("click" ,async () => {
+    confirmPasswordIsVisible = !confirmPasswordIsVisible;
+
+    if(confirmPasswordIsVisible) 
+        showPassword(confirmPassword, confirmPasswordVisibilityButton, confirmPasswordVisibilityIcon);
+    else
+        hidePassword(confirmPassword, confirmPasswordVisibilityButton, confirmPasswordVisibilityIcon);
+});
+
+
+function showPassword(button, visibilityButton, visibilityIcon) {
+    button.type = "text";
+    visibilityIcon.src = "/Images/Inputs/eye-icon-visible-white.png";
+    visibilityButton.ariaLabel = "Ocultar contraseña";
+}
+
+function hidePassword(button, visibilityButton, visibilityIcon) {
+    button.type = "password";
+    visibilityIcon.src = "/Images/Inputs/eye-icon-hidden-white.png";
+    visibilityButton.ariaLabel = "Mostrar contraseña";
+}
 
 
 
@@ -210,12 +155,13 @@ activityCheckbox.onclick = function() {
 document.getElementById("register-form").addEventListener("submit", async (event) => {
     event.preventDefault();
 
-    if(errorInForm()) {
-        registerErrorMsg.textContent = "Corregí todos los errores antes de registrarte";
-        registerErrorMsg.classList.remove("hidden");
+    const error = checkErrors();
+    if(error) {
+        registerErrorMsg.textContent = error;
+        registerErrorMsg.hidden = false;
         return;
     }
-    registerErrorMsg.classList.add("hidden");
+    registerErrorMsg.hidden = true;
 
     const form = event.target;
 
@@ -287,6 +233,6 @@ document.getElementById("register-form").addEventListener("submit", async (event
     else 
     {
         registerErrorMsg.textContent = resData.message;
-        registerErrorMsg.classList.remove("hidden");
+        registerErrorMsg.hidden = false;
     }
 })
