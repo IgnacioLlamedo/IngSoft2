@@ -191,7 +191,7 @@ app.use('/api', apiRouter);
 // Profile
 app.get("/account", (req,res) => {
     if(!req.session.user) return res.redirect("/access/login");
-    if(req.session.user) res.render(path.join(__dirname, profilePages[req.session.user.rol]), { userRole: req.session.user.rol });
+    res.render(path.join(__dirname, profilePages[req.session.user.rol]), { userRole: req.session.user.rol });
 });
 
 // Navbars
@@ -199,3 +199,19 @@ app.get("/account", (req,res) => {
 // app.get('/visitorNav', (req, res) => res.sendFile(path.join(__dirname, 'Front/Navbar/visitorNav.html')));
 // app.get('/footer', (req, res) => res.sendFile(path.join(__dirname, 'Front/Navbar/footer.html')));
 
+
+// Payment
+app.get("/payment/approved", (req,res) => {
+    if(!req.session.user) return res.redirect("/access/login");
+    res.render(path.join(__dirname, "Front/Payment/paymentApproved.ejs"), { userRole: req.session.user.rol });
+});
+
+app.get("/payment/failure", (req,res) => {
+    if(!req.session.user) return res.redirect("/access/login");
+    res.render(path.join(__dirname, "Front/Payment/paymentFailure.ejs"), { userRole: req.session.user.rol });
+});
+
+app.get("/payment/pending", (req,res) => {
+    if(!req.session.user) return res.redirect("/access/login");
+    res.render(path.join(__dirname, "Front/Payment/paymentPending.ejs"), { userRole: req.session.user.rol });
+});

@@ -37,9 +37,9 @@ export async function crearPreferencia(req, res) {
                     //fechaEspecifica: fechaEspecifica,
                 }),
                 back_urls: {
-                    success: `${config.link}/home`,
-                    failure: `${config.link}/home`,
-                    pending: `${config.link}/home`,
+                    success: `${config.link}/payment/approved`,
+                    failure: `${config.link}/payment/failure`,
+                    pending: `${config.link}/payment/pending`,
                 },
                 auto_return: "approved"
             }

@@ -70,5 +70,5 @@ async function pagar(tipoClase, precio) {
     });
 
     const resData = await res.json();
-    window.location.href = resData.init_point;
+    window.open(resData.init_point, "_blank");
 }
