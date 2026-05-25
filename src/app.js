@@ -168,6 +168,11 @@ app.get("/access/authentication", (req,res) => {
     res.render(path.join(__dirname, "Front/Access/twoFactorAuthentication.ejs"), { userRole: "visitor" })
 });
 
+app.get("/access/auth-pass", (req,res) => {
+    if(req.session.user) return res.redirect(homeRoute);
+    res.render(path.join(__dirname, "Front/Access/authPass.ejs"), { userRole: "visitor" })
+});
+
 app.get("/access/recover-password", (req,res) => {
     if(req.session.user) return res.redirect(homeRoute); 
     res.render(path.join(__dirname, "Front/Access/recoverPassword.ejs"), { userRole: "visitor" })
@@ -176,11 +181,6 @@ app.get("/access/recover-password", (req,res) => {
 app.get("/access/reset-password", (req,res) => {
     if(req.session.user) return res.redirect(homeRoute);
     res.render(path.join(__dirname, "Front/Access/resetPassword.ejs"), { userRole: "visitor" });
-});
-
-app.get("/access/auth-pass", (req,res) => {
-    if(req.session.user) return res.redirect(homeRoute);
-    res.render(path.join(__dirname, "Front/Access/authPass.ejs"), { userRole: "visitor" });
 });
 
 

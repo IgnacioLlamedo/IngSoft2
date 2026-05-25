@@ -46,7 +46,7 @@ export async function postController(req, res) {
 		});
 	} 
     catch (error) {
-		console.log("ERROR: " + error);
+		console.error("postController ERROR: ", error);
 		res.json({
 			success: false,
 			message:
@@ -77,19 +77,7 @@ export async function loginController(req, res) {
                 message: "Error al Iniciar Sesión en la cuenta. La contraseña ingresada es incorrecta."
             });
         }
-        
-        //Genero el código de acceso y lo cargo en la DB ---> No sé si esto era lo que queria hacer Nacho (?)
-        const limite = new Date(Date.now() + 600000)
-        const otp = generateOtp()
-        const usuario = await usuarioDao.updateOne(mail, {
-            codigo: otp,
-            limiteCodigo: limite
-        })
 
-        console.log("enviando codigo: " + usuario.codigo)
-
-        //Acá habria que mandar el mail con el código generado.
-        await mailer.auth(mail, otp);
 
         let redirect = `/access/authentication?email=${mail}`;
         res.json({
@@ -98,6 +86,7 @@ export async function loginController(req, res) {
         })
     } 
     catch(error){
+        console.error("loginController ERROR: ", error);
         res.json({
             success: false,
             message: "Error al iniciar sesión. Inténtelo más tarde."
@@ -105,41 +94,6 @@ export async function loginController(req, res) {
     }
 }
 
-export async function authenticationController(req, res) {
-    try { 
-        const mail = req.body.mail;
-        //Vuelvo a buscar los datos del usuario, esta vez con el código
-        const usuario = await usuarioDao.readOne({ mail: mail });
-
-        if(usuario.limiteCodigo.getTime() < new Date(Date.now()).getTime()){
-            return res.json({
-                success: false,
-                message: "Error al ingresar el código de validación. El código ya expiró."
-            });
-        }
-
-		if(usuario.codigo !== req.body.codigo) {
-            return res.json({
-                success: false,
-                message: "Error al ingresar el código de validación. El código introducido es incorrecto."
-            });
-		}
-
-        createSession(req, usuario);
-        
-        const redirect = homeRoute;
-        res.json({
-            success: true,
-            redirect
-        });
-    } 
-    catch(error) {
-        res.json({
-            success: false,
-            message: "Error al validar el código. Inténtelo más tarde."
-        });
-    }
-}
 
 export async function logoutController(req, res) {
 	try {
@@ -151,6 +105,7 @@ export async function logoutController(req, res) {
 			});
 		});
 	} catch (error) {
+        console.error("logoutController ERROR: ", error);
 		res.json({
 			success: false,
 			message: "Error al cerrar sesión. Inténtelo más tarde.",
@@ -158,27 +113,38 @@ export async function logoutController(req, res) {
 	}
 }
 
-export async function crearCodigo(req, res){
-    try {
-        const limite = new Date(Date.now() + 600000)
-        const otp = generateOtp()
-        const usuario = await usuarioDao.updateOne(req.body.mail, {
-            codigo: otp,
-            limiteCodigo: limite
-        })
-        console.log("reenviando codigo: " + usuario.codigo)
-        await mailer.auth(usuario.mail, otp)
+export async function authenticationController(req, res) {
+    try { 
+        const mail = req.body.mail;
+        const usuario = await usuarioDao.readOne({ mail: mail });
+
+       if(usuario.codigo !== req.body.codigo){
+            return res.json({
+                success: false,
+                message: "Error al ingresar el código de validación. El código introducido es incorrecto."
+            });
+        }
+
+        if(usuario.limiteCodigo.getTime() < new Date(Date.now()).getTime()){
+            return res.json({
+                success: false,
+                message: "Error al ingresar el código de validación. El código ya expiró."
+            });
+        }
         
-        const redirect = `/access/auth-pass?email=${req.body.mail}`;
+        createSession(req, usuario);
+
+        const redirect = homeRoute;
         res.json({
             success: true,
             redirect
         });
     } 
     catch(error) {
+        console.error("authenticationController ERROR: ", error);
         res.json({
             success: false,
-            message: "Error al crear código de autenticación. Inténtelo más tarde."
+            message: "Error al validar el código. Inténtelo más tarde."
         });
     }
 }
@@ -186,20 +152,19 @@ export async function crearCodigo(req, res){
 export async function authPass(req, res){
     try { 
         const mail = req.body.mail;
-        //Vuelvo a buscar los datos del usuario, esta vez con el código
         const usuario = await usuarioDao.readOne({ mail: mail });
 
-        //si se encontró el usuario y el código ingresado es igual al guardado en DB
-       if(usuario.codigo != req.body.codigo){
+       if(usuario.codigo !== req.body.codigo){
             return res.json({
                 success: false,
-                message: "Error al ingresar el código de validación."
+                message: "Error al ingresar el código de validación. El código introducido es incorrecto."
             });
         }
+
         if(usuario.limiteCodigo.getTime() < new Date(Date.now()).getTime()){
             return res.json({
                 success: false,
-                message: "Error al ingresar el código de validación. El código ya expiró"
+                message: "Error al ingresar el código de validación. El código ya expiró."
             });
         }
         
@@ -210,6 +175,7 @@ export async function authPass(req, res){
         });
     } 
     catch(error) {
+        console.error("authPass ERROR: ", error);
         res.json({
             success: false,
             message: "Error al validar el código. Inténtelo más tarde."
@@ -217,28 +183,92 @@ export async function authPass(req, res){
     }
 }
 
+export async function crearCodigo(req, res){
+    try {
+        const expirationTime = 20000
+        const limite = new Date(Date.now() + expirationTime)
+        const otp = generateOtp()
+        const usuario = await usuarioDao.updateOne(req.body.mail, {
+            codigo: otp,
+            limiteCodigo: limite
+        })
+
+        console.log("nuevo codigo: " + usuario.codigo)
+
+        await mailer.auth(usuario.mail, otp)
+        
+        res.json({
+            success: true,
+            expirationTime,
+        });
+    } 
+    catch(error) {
+        console.error("crearCodigo ERROR: ", error);
+        res.json({
+            success: false,
+            message: "Error al crear código de autenticación. Inténtelo más tarde."
+        });
+    }
+}
+
+
+export async function recoverPassword(req, res) {
+    try {
+        const user = await usuarioDao.readOne({mail: req.body.mail})
+
+        if(!user) {
+            return res.json({
+                success: false,
+                message: "Error al recuperar contraseña. El email no existe."
+            });
+        }
+
+        const redirect = `/access/auth-pass?email=${req.body.mail}`;
+        res.json({
+            success: true,
+            redirect,
+        });
+    }
+    catch(error) {
+        console.error("recoverPass ERROR: ", error);
+        res.json({
+            success: false,
+            message: "Error al validar el email. Inténtelo más tarde."
+        });
+    }
+}
+
+
 export async function resetPass(req, res){
     try {
         const usuario = await usuarioDao.updateOne(req.body.mail, {
             contraseña: hash(req.body.contraseña)
         })
-        
+
+        if(!usuario) {
+            return res.json({
+                success: false,
+                message: "Error al restablecer la contraseña, el usuario no existe." // No debería pasar, pero para que no explote mientras no validemos accesos.
+            });
+        }
+
         createSession(req, usuario);
 
         const redirect = homeRoute;
-    
         res.json({
             success: true,
             redirect: redirect,
         });
     } 
     catch(error) {
+        console.error("resetPass ERROR: ", error);
         res.json({
             success: false,
             message: "Error al cambiar contraseña. Inténtelo más tarde."
         });
     }
 }
+
 export async function loadProfileController(req, res) {
 	try {
 		// Return the current logged-in user's profile
@@ -260,7 +290,7 @@ export async function loadProfileController(req, res) {
 
 		return res.json(publicUser);
 	} catch (error) {
-		console.error('accountController error:', error);
+		console.error('accountController ERROR: ', error);
 		res.status(500).json({ success: false, message: 'Error al obtener perfil. Inténtelo más tarde.' });
 	}
 }
@@ -286,7 +316,7 @@ export async function saveProfileController(req, res) {
 
 		return res.json(updatedUser);
 	} catch (error) {
-		console.error('saveProfileController error:', error);
+		console.error('saveProfileController ERROR: ', error);
 		res.status(500).json({ success: false, message: 'Error al actualizar perfil. Inténtelo más tarde.' });
 	}
 }
@@ -315,7 +345,7 @@ export async function checkPasswordController(req, res) {
 
 		return res.json({ success: isPasswordCorrect });
 	} catch (error) {
-		console.error('checkPasswordController error:', error);
+		console.error('checkPasswordController ERROR: ', error);
 		res.status(500).json({ success: false, message: 'Error al obtener contraseña. Inténtelo más tarde.' });
 	}
 }
@@ -343,7 +373,7 @@ export async function setPasswordController(req, res) {
 		return res.json(updatedUser);
 
 	} catch (error) {
-		console.error('savePasswordController error:', error);
+		console.error('savePasswordController ERROR: ', error);
 		res.status(500).json({ success: false, message: 'Error al actualizar contraseña. Inténtelo más tarde.' });
 	}
 }

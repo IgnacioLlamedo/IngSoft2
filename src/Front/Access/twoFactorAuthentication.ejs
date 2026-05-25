@@ -20,7 +20,7 @@
     <h1 class="title">Autenticación de doble factor</h1>
     
     <main class="main-container">
-        <form id="two-factor-authenticator-form" class="form">
+        <form id="authenticator-form" class="form">
             
             <div class="form-card">
 
@@ -31,12 +31,15 @@
                         <input type="number" inputmode="numeric" name="codigo" autocomplete="email" required>
                     </div>
                   
+                    <p id="timer" class="note">Tiempo restante para validar el código: Enviando código...</p>
+                    
                     <a href="#" id="reenviar-codigo" class="generic-anchor">Enviar código otra vez</a>
-
+                    
+                    
                 </section>
 
                 <section class="form-section">
-                    <p id="loginError" class="errorMsg" hidden></p>
+                    <p id="authenticationError" class="errorMsg" hidden></p>
                     <button class="submit">VALIDAR CÓDIGO</button>
                 </section>
             
@@ -47,7 +50,8 @@
 
     <%- include('../Navbar/footer.html') %>
     
-    <script src="/Access/twoFactorAuthentication.js"></script>
+    <script src="/Access/expirationTimer.js"></script>
+    <script src="/Access/authentication.js"></script>
 </body>
 
 </html>

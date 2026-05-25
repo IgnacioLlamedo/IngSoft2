@@ -1,10 +1,11 @@
 const parametrosURL = new URLSearchParams(window.location.search);
-const authenticationErrorMsg = document.getElementById("verificationError");
+const authenticationErrorMsg = document.getElementById("authenticationError");
 
 const email = parametrosURL.get('email');
 
-document.getElementById("two-factor-authenticator-form").addEventListener("submit", async (event) => {
-    
+
+
+document.getElementById("authenticator-form").addEventListener("submit", async (event) => {
     event.preventDefault();
 
     const codigo = event.target.codigo.value;
@@ -16,7 +17,7 @@ document.getElementById("two-factor-authenticator-form").addEventListener("submi
 
     const dataString = JSON.stringify(data);
 
-    const res = await fetch("/api/authPass", {
+    const res = await fetch("/api/authentication", {
         method: "POST",
         headers: {
             "Content-Type" : "application/json"
@@ -25,12 +26,13 @@ document.getElementById("two-factor-authenticator-form").addEventListener("submi
     });
 
     const resData = await res.json();
+    console.log(resData);
 
     if(resData.success)
         window.location.href = resData.redirect;
     else 
     {
-        verificationErrorMsg.textContent = resData.message;
-        verificationErrorMsg.removeAttribute("hidden");
-    } 
+        authenticationErrorMsg.textContent = resData.message;
+        authenticationErrorMsg.removeAttribute("hidden");
+    }
 });

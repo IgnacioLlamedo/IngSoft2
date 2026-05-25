@@ -277,9 +277,4 @@ input[type=number] {
 }
 
 
-.errorMsg {
-    color: rgb(255, 30, 30);
-    font-weight: bold;
-    font-size: 20px;
-    padding: 15px;
-}
+
