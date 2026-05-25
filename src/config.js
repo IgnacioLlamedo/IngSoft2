@@ -10,4 +10,5 @@ export default {
     mpAccessToken:process.env.MP_ACCESS_TOKEN,
     secretoSesion:process.env.SESSION_SECRET,
     varEntornoNode:process.env.NODE_ENV,
+    link:process.env.LINK,
 }

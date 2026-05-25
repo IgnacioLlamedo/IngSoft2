@@ -1,109 +1,109 @@
 const password = document.getElementById("password");
 const passwordRequirementErrorMsg = document.getElementById("passwordRequirementError");
 const passwordIsEmpty = () => password.value.trim() === "";
-let passwordRequirementError = false;
 
 const confirmPassword = document.getElementById("confirmPassword");
 const confirmPasswordErrorMsg = document.getElementById("confirmPasswordError");
 const confirmPasswordIsEmpty = () => confirmPassword.value.trim() === "";
-let confirmPasswordError = false;
 
-const errorInForm = () => passwordRequirementError || confirmPasswordError;
+const resetPasswordErrorMsg = document.getElementById("registerError");
 
-
-password.onchange = function() {
-    checkPasswordRequirement();
-    checkConfirmPassword();
-}
-
-confirmPassword.onchange = function() {
-    checkConfirmPassword();
-}
 
 function checkPasswordRequirement() {
-    if(!passwordIsEmpty() && password.value.trim().length < 6)
-        enablePasswordRequirementError();
-    else
-        disablePasswordRequirementError();
+    if(passwordIsEmpty())
+        return "Error al registrarse. Se debe especificar la contraseña.";
+
+    if(password.value.trim().length < 6)
+        return "Error al registrarse. La contraseña debe tener al menos 6 caracteres.";
 }
-
-function enablePasswordRequirementError() {
-    if(passwordRequirementError)
-        return;
-
-    password.classList.add("passwordRequirementError");
-
-    passwordRequirementErrorMsg.textContent = "Las contraseña debe tener al menos 6 caracteres."
-    passwordRequirementErrorMsg.classList.remove("hidden");
-
-    passwordRequirementError = true;
-}
-
-function disablePasswordRequirementError() {
-    if(!passwordRequirementError)
-        return;
-
-    password.classList.remove("passwordRequirementError");
-
-    passwordRequirementErrorMsg.textContent = ""
-    passwordRequirementErrorMsg.classList.add("hidden");
-
-    passwordRequirementError = false;
-}
-
-
 
 function checkConfirmPassword() {
-    if(confirmPasswordIsEmpty()) {
-        if(confirmPasswordError)
-            disableConfirmPasswordError();
-        return;
+    if(confirmPasswordIsEmpty())
+        return "Error al registrarse. Se debe confirmar la contraseña en el campo dado.";
+
+    if(password.value.trim() !== confirmPassword.value.trim())
+        return "Error al registrarse. La contraseña especificada y su confirmación deben coincidir.";
+}
+
+function checkErrors() {
+    const passwordError = checkPasswordRequirement();
+    if(passwordError) {
+        return passwordError;
     }
 
-    if(confirmPassword.value !== password.value)
-        enableConfirmPasswordError();
+    const confirmPasswordError = checkConfirmPassword();
+    if(confirmPasswordError) {
+        return confirmPasswordError;
+    }
+}
+
+
+
+
+
+// Password handler
+const passwordVisibilityButton = document.getElementById("password-visibility-button");
+const passwordVisibilityIcon = document.getElementById("password-visibility-icon");
+let passwordIsVisible = false;
+
+passwordVisibilityButton.addEventListener("click" ,async () => {
+    passwordIsVisible = !passwordIsVisible;
+
+    if(passwordIsVisible) 
+        showPassword(password, passwordVisibilityButton, passwordVisibilityIcon);
     else
-        disableConfirmPasswordError();
+        hidePassword(password, passwordVisibilityButton, passwordVisibilityIcon);
+});
+
+
+const confirmPasswordVisibilityButton = document.getElementById("confirm-password-visibility-button");
+const confirmPasswordVisibilityIcon = document.getElementById("confirm-password-visibility-icon");
+let confirmPasswordIsVisible = false;
+
+confirmPasswordVisibilityButton.addEventListener("click" ,async () => {
+    confirmPasswordIsVisible = !confirmPasswordIsVisible;
+
+    if(confirmPasswordIsVisible) 
+        showPassword(confirmPassword, confirmPasswordVisibilityButton, confirmPasswordVisibilityIcon);
+    else
+        hidePassword(confirmPassword, confirmPasswordVisibilityButton, confirmPasswordVisibilityIcon);
+});
+
+
+function showPassword(button, visibilityButton, visibilityIcon) {
+    button.type = "text";
+    visibilityIcon.src = "/Images/Inputs/eye-icon-visible-white.png";
+    visibilityButton.ariaLabel = "Ocultar contraseña";
 }
 
-function enableConfirmPasswordError() {
-    if(confirmPasswordError)
-        return;
-
-    password.classList.add("confirmPasswordError");
-    confirmPassword.classList.add("inputError");
-
-    confirmPasswordErrorMsg.textContent = "Las contraseñas no coinciden."
-    confirmPasswordErrorMsg.classList.remove("hidden");
-
-    confirmPasswordError = true;
+function hidePassword(button, visibilityButton, visibilityIcon) {
+    button.type = "password";
+    visibilityIcon.src = "/Images/Inputs/eye-icon-hidden-white.png";
+    visibilityButton.ariaLabel = "Mostrar contraseña";
 }
 
-function disableConfirmPasswordError() {
-    if(!confirmPasswordError)
-        return;
 
-    password.classList.remove("confirmPasswordError");
-    confirmPassword.classList.remove("inputError");
 
-    confirmPasswordErrorMsg.classList.add("hidden");
-    confirmPasswordErrorMsg.textContent = "";
 
-    confirmPasswordError = false;
-}
+
+
 
 
 
 const parametrosURL = new URLSearchParams(window.location.search);
-
 const email = parametrosURL.get('email');
 
 document.getElementById("reset-password-form").addEventListener("submit", async (event) => {
 
     event.preventDefault();
 
-    if(errorInForm())
+    const error = checkErrors();
+    if(error) {
+        resetPasswordErrorMsg.textContent = error;
+        resetPasswordErrorMsg.hidden = false;
         return;
+    }
+    resetPasswordErrorMsg.hidden = true;
 
     const data = {
         mail: email,
@@ -121,6 +121,12 @@ document.getElementById("reset-password-form").addEventListener("submit", async 
     });
 
     const resData = await res.json();
-    console.log(resData);
-    window.location.href = resData.redirect;
+    
+    if(resData.success)
+        window.location.href = resData.redirect;
+    else 
+    {
+        resetPasswordErrorMsg.textContent = resData.message;
+        resetPasswordErrorMsg.hidden = false;
+    }
 });

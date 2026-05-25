@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/Images/Common/favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href="/Home/Tabs/MyActivities/tabMyActivities.css">
+    <link rel="stylesheet" href="/Common/commonPageStyle.css">
+
+    <title>CEF - Mis Actividades</title>
+</head>
+
+<body>
+    <header>
+        <%- include('../../Navbar/navbarSelector.ejs') %>
+    </header>
+
+    <main class="main-container">
+        <h1>Mis Actividades</h1>
+
+        <div class="filters-container">
+
+          <div class="filter-container">
+            <label for="activityFilter">Actividad:</label>
+            <select id="activityFilter">
+                <option value="Todas">Todas</option>
+                <option value="yoga">Yoga</option>
+                <option value="spinning">Spinning</option>
+                <option value="funcional">Entrenamiento Funcional</option>
+            </select>
+          </div>
+          
+          <div class="filter-container">
+            <label for="tipeFilter">Tipo de reserva:</label>
+            <select id="tipeFilter">
+                <option value="Todas">Todas</option>
+                <option value="Mensualidad">Mensualidad</option>
+                <option value="Unica">Única</option>
+            </select>
+          </div>
+
+          <div class="filter-container">
+            <label for="dayOfTheWeekFilter">Día de la semana:</label>
+            <select id="dayOfTheWeekFilter">
+                <option value="Todas">Todas</option>
+                <option value="Lunes">Lunes</option>
+                <option value="Martes">Martes</option>
+                <option value="Miércoles">Miércoles</option>
+                <option value="Jueves">Jueves</option>
+                <option value="Viernes">Viernes</option>
+                <option value="Sábado">Sábado</option>
+            </select>
+          </div>
+
+
+        </div>
+        
+
+        <div class="box unica">
+          <h3>Yoga - Única</h3>
+          <hr>
+          <div class="box-content">
+            <div class="box-data unica">
+              <p>Horario: 18:00 - 19:00</p>
+              <p>Sala: S2</p>
+              <p>Fecha: Lunes 17/05</p>
+              <p>Precio por clase: $20</p>
+            </div>
+            <div class="box-buttons-container">
+              <button class="box-button cancel-reservation">Cancelar Reserva</button>
+              <button class="box-button pay-rest">Pagar resto</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="box mensualidad">
+          <h3>Spinning - Mensualidad</h3>
+          <hr>
+          <div class="box-content">
+            <div class="box-data mensualidad">
+              <p>Horario: 19:00 - 20:00</p>
+              <p>Sala: S1</p>
+              <p>Día: Martes</p>
+              <p>Precio mensual: $50</p>
+            </div>
+            <div class="box-buttons-container">
+              <button class="box-button cancel-reservation">Cancelar Reserva</button>
+              <button class="box-button cancel-next-class">Cancelar Siguiente Clase</button>
+              <button class="box-button pay-reservation">Pagar Mensualidad</button>
+            </div>
+          </div>
+        </div>
+    </main>
+
+    <script src="/Home/Tabs/MyActivities/tabMyActivities.js"></script>
+    
+    <%- include('../../Navbar/footer.html') %>
+</body>
+
+</html>

@@ -1,5 +1,5 @@
 // Datos de ejemplo hardcodeados para las actividades del usuario
-const actividadesUsuario = [
+/* const actividadesUsuario = [
   {
     actividad: "Yoga",
     tipo: "Unica",
@@ -32,7 +32,60 @@ const actividadesUsuario = [
     sala: "S2",
     precio: 45
   }
-];
+]; */
+
+let actividadesUsuario = [];
+
+getMyReservations();
+
+async function getMyReservations() {
+
+    const res = await fetch('/api/reservas/my-reservations', {
+      method: 'GET'
+    });
+
+    const resData = await res.json();
+
+    console.log(resData);
+
+    actividadesUsuario = resData.reservas.map(r => {
+
+        const horario = `${r.clase.hora}:00 - ${r.clase.hora + 1}:00`;
+
+        return {
+            actividad: r.actividad.nombre,
+
+            tipo:
+                r.reserva.tipo === "unica"
+                ? "Unica"
+                : "Mensualidad",
+
+            horario,
+
+            fecha:
+                r.reserva.__t === "ReservaUnica"
+                ? new Date(r.reserva.fechaEspecifica)
+                    .toLocaleDateString("es-AR")
+                : null,
+
+            dia:
+                r.reserva.tipo === "mensual"
+                ? r.clase.dia
+                : null,
+
+            sala: r.sala.nombre,
+
+            profesor: r.profesor.nombre,
+
+            precio:
+                r.reserva.tipo === "unica"
+                ? 20
+                : r.clase.precioMensual
+        };
+    });
+
+    renderActividades();
+}
 
 // Referencias a los filtros
 const activityFilter = document.getElementById("activityFilter");
@@ -46,6 +99,9 @@ const main = document.querySelector("main");
 function renderActividades() {
   // Primero borramos las cajas anteriores
   document.querySelectorAll(".box").forEach(box => box.remove());
+
+  //Elimino los mensajes de sin actividades por filtro.
+  document.querySelectorAll(".no-activities-message").forEach(msg => msg.remove());
 
   // Aplicamos filtros
   const filtradas = actividadesUsuario.filter(act => {
@@ -61,6 +117,7 @@ function renderActividades() {
   // Si no hay actividades, mostramos un mensaje
   if (filtradas.length === 0) {
     const msg = document.createElement("p");
+    msg.classList.add("no-activities-message"); //Le añado a la clase para poder eliminarlo
     msg.textContent = "No tienes actividades en este filtro.";
     msg.style.color = "white";
     main.appendChild(msg);
@@ -168,4 +225,4 @@ tipeFilter.addEventListener("change", renderActividades);
 dayFilter.addEventListener("change", renderActividades);
 
 // Render inicial
-renderActividades();
+//renderActividades();

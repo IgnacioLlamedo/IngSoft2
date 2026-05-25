@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/Images/Common/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/Account/profileStyle.css">
+    <title>CEF - Mi Perfil</title>
+</head>
+
+<body>
+    <header>
+        <%- include('../Navbar/navbarSelector.ejs') %>
+    </header>
+
+    <h1 class="profile-title">Información de cuenta - Administrador</h1>
+    <main class="profile-container">
+        <div class="profile-card">
+            <h2>Mi Perfil</h2>
+
+            <div class="profile-content">
+                <form id="profileForm" class="profile-form">
+
+                    <div class="form-group">
+                        <label for="nombre">Nombre:</label>
+                        <input type="text" id="nombre" name="nombre" disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="email" id="email" name="email" disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dni">DNI:</label>
+                        <input type="text" id="dni" name="dni" disabled>
+                    </div>
+                </form>
+            </div>
+
+            <div class="button-group">
+                <button id="editBtn1" class="btn btn-edit">Editar Perfil</button>
+                <button id="saveBtn1" class="btn btn-save" style="display: none;">Guardar Cambios</button>
+                <button id="cancelBtn1" class="btn btn-cancel" style="display: none;">Cancelar</button>
+            </div>
+
+            <div id="profileMessage" class="message"></div>
+
+        </div>
+
+        <div class="profile-card">
+            <h2>Cambiar contraseña</h2>
+
+            <div class="profile-content">
+                <form id="passwordForm" class="profile-form">
+
+                    <div class="form-group">
+                        <label for="contraseña-actual">Contraseña actual:</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="contraseña-actual" name="contraseña-actual" disabled>
+                            <button type="button" class="password-toggle-button" aria-label="Mostrar contraseña">
+                                <img class="password-toggle-icon" src="/Images/Inputs/eye-icon-hidden-white.png"
+                                    alt="Mostrar contraseña">
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contraseña-nueva">Contraseña nueva:</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="contraseña-nueva" name="contraseña-nueva" disabled>
+                            <button type="button" class="password-toggle-button" aria-label="Mostrar contraseña">
+                                <img class="password-toggle-icon" src="/Images/Inputs/eye-icon-hidden-white.png"
+                                     alt="Mostrar contraseña">
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contraseña-confirmar">Confirmar contraseña:</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="contraseña-confirmar" name="contraseña-confirmar" disabled>
+                            <button type="button" class="password-toggle-button" aria-label="Mostrar contraseña">
+                                <img class="password-toggle-icon" src="/Images/Inputs/eye-icon-hidden-white.png" alt="Mostrar contraseña">
+                            </button>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+
+            <div class="button-group">
+                <button id="editBtn2" class="btn btn-edit">Editar Contraseña</button>
+                <button id="saveBtn2" class="btn btn-save" style="display: none;">Guardar Cambios</button>
+                <button id="cancelBtn2" class="btn btn-cancel" style="display: none;">Cancelar</button>
+            </div>
+
+            <div id="passwordMessage" class="message"></div>
+
+        </div>
+    </main>
+
+    <script src="/Account/adminProfileLogic.js"></script>
+
+    <%- include('../Navbar/footer.html') %>
+</body>
+
+</html>

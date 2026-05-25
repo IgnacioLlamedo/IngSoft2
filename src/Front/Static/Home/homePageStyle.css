@@ -2,14 +2,14 @@
   font-family: sans-serif;
 }
 
-html, body {
+body {
   /* height: 100%; Creo que no hace falta y rompe la barra de desplazamiento. */
   margin: 0;
   padding: 0;
   overflow-x: hidden; /* bloquea scroll horizontal */
 }
 
-body {
+/* body { */
 
   /* min-height: 100vh; Para mí no es necesario */
 
@@ -20,60 +20,29 @@ body {
   background-position: center;   
   background-attachment: fixed;  
   */
-}
+/* } */
 
-
-
-
-
-
-
-/* Css modal */
-.modal {
-  display: none; /* oculto por defecto */
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0,0,0,0.6);
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  background: #fff;
-  width: 90%;
-  max-width: 1000px;
-  height: 90%;
-  border-radius: 8px;
+main {
   position: relative;
-  display: flex;
-  flex-direction: column;
+  background: #1b1b1b; /*#f4f4f4*/
 }
 
-.modal-content .close {
-  position: absolute;
-  top: 10px; right: 20px;
-  font-size: 28px;
-  cursor: pointer;
-}
-
-.tabla-iframe {
-  flex: 1;
-  border: none;
+.hero {
+  position: relative;
   width: 100%;
-  height: 100%;
+  min-height: 550px;
+  margin-bottom: 40px;
+  overflow: hidden;
 }
-
-
-
 
 .slider {
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
-  height: calc(100vh - 80px); /* ocupa toda la pantalla menos el header */
+  height: 100%;
   overflow: hidden;
-  z-index: -1; /* para que quede detrás del contenido */
+  z-index: 0; /* detrás del contenido */
 }
 
 .slide {
@@ -91,21 +60,18 @@ body {
 .slide img {
   width: 100%;
   height: 100%;
-  object-fit: fill;   /* mantiene proporción y llena el contenedor */
-  display: cover;
+  object-fit: cover;   /* mantiene proporción y llena el contenedor */
+  display: block;
 }
 
-main {
-  padding: 20px;
-  background: #272727; /*#f4f4f4*/
-}
-
-.welcoming-conteiner {
+.welcoming-container {
+  position: relative;
   height: 500px;
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 1; /* queda por encima del slider */
 }
 
 .welcoming-card {
@@ -142,13 +108,17 @@ main {
   width: 100%;
   text-align: center;
   margin-bottom: 20px;
-  margin-top: 40px;
+  margin-top: 80px;
+  color: #CCC;
 }
 
-.activities-conteiner {
+.activities-container {
+  margin-top: 20px;
+  margin-bottom: 50px;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  color: #000;
 }
 
 .activity-card {
@@ -157,13 +127,13 @@ main {
   margin: 20px;
   padding: 20px;
   border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 1px 1px 4px 8px rgba(255, 255, 255, 0.5);
   display: flex;
   flex-direction: column;
   gap: 15px;
 }
 
-.welcoming-conteiner img {
+.welcoming-container img {
   width: 100%;
   border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: 15px;
@@ -178,12 +148,13 @@ main {
 
 .ubication-container {
   width: 100%;
+  color: #CCC;
   display: flex;
   flex-direction: column;   /* título y dirección arriba, mapa debajo */
-  align-items: flex-start;  /* alineado a la izquierda */
+  align-items: center;
   margin-top: 40px;
   padding: 20px;
-  background-color: rgba(255, 255, 255, 0.8);
+  padding-bottom: 80px;
   box-sizing: border-box;   /* evita que el padding sume ancho extra */
   overflow-x: hidden;       /* bloquea scroll horizontal */
 }
@@ -195,12 +166,12 @@ main {
 
 .ubication-container p {
   margin: 5px 0 15px 0;
-  text-align: left;
+  text-align: center;
 }
 
 .map-container {
-  width: 100%;
-  height: 400px;            /* altura fija */
+  width: 35%;
+  height: 400px;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
@@ -210,13 +181,4 @@ main {
   height: 100%;
   border: none;
   display: block;
-}
-
-footer {
-  background-color: rgba(0, 0, 0, 0.5);
-  height: 80px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
 }

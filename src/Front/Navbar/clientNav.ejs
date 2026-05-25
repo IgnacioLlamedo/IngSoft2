@@ -1,0 +1,49 @@
+<link rel="stylesheet" href="/Navbar/navStyle.css">
+<link rel="stylesheet" href="/Home/Tabs/Table/tableStyle.css">
+
+<nav class="header-nav">
+    <a href="/home">
+        <img class="logo-img" src="/Images/HomeImages/Logo.png" alt="Logo">
+    </a>
+
+    <ul class="nav-links">
+        <% if (path === "/" || path === "/home/") { %>
+            <li><a href="#" id="classesLink">Clases</a></li>
+        <% } %>
+        <li><a href="/my-activities">Mis Actividades</a></li>
+        <li>
+            <img class="user-ico" id="userIcon" src="/Images/HomeImages/user_ico.webp" alt="Opciones de usuario">
+
+            <div class="user-options-menu" id="userOptions">
+                <div class="user-options-wrapper">
+                    <div class="user-options-list">
+                        <a href="/account/">
+                            <img src="/Images/UserDropbox/account_ico.webp" alt="Cuenta">
+                            <p>Cuenta</p>
+                        </a>
+                        <a>
+                            <img src="/Images/UserDropbox/assistance.webp" alt="Asistencias">
+                            <p>Asistencia</p>
+                        </a>
+                        <a href="#" id="logout">
+                            <img src="/Images/UserDropbox/logout_ico.webp" alt="Cerrar sesión">
+                            <p>Cerrar sesión</p>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </li>
+    </ul>
+</nav>
+<script src="/Navbar/navLogic.js"></script>
+
+<% if (path === "/" || path === "/home/") { %>
+    <!-- Modal oculto -->
+    <div class="modal" id="tablaModal">
+        <div class="modal-content">
+            <span class="close" id="closeModal">&times;</span>
+            <iframe src="/home/table" class="tabla-iframe"></iframe>
+        </div>
+    </div>
+    <script src="/Home/classesModal.js"></script>
+<% } %>

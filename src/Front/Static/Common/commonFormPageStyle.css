@@ -1,0 +1,280 @@
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+
+    width: 100%;
+    max-width: 700px;
+}
+
+.form-card {   
+    display: flex;
+    flex-direction: column;
+
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    background-color: #252525;
+
+    padding: 40px;
+    gap: 20px;
+}
+
+.form-card .form-card-title {
+    color: #ffffff;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+
+.form-card .form-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 25px;
+    width: 100%;
+}
+
+
+
+
+.field-separation {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin: 30px 0px;
+}
+
+.field-separation h2,
+.field-separation hr {
+    color: #cccccc;
+    text-align: center;
+}
+
+
+
+
+
+
+
+
+
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+}
+
+.input-group label {
+    color: #cccccc;
+    font-weight: 600;
+    font-size: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.input-group input,
+.input-group select {
+    padding: 12px 15px;
+    border: 2px solid #444444;
+    border-radius: 6px;
+    font-size: 20px;
+    transition: all 0.3s ease;
+    font-family: inherit;
+    background-color: #1f1f1f;
+    color: #ffffff;
+}
+
+.input-group input::placeholder,
+.input-group select::placeholder {
+    color: #888888;
+}
+
+.input-group input:focus,
+.input-group select:focus {
+    outline: none;
+    border-color: #D01F25;
+    background-color: #1b1b1b;
+    box-shadow: 0 0 0 3px rgba(208, 31, 37, 0.12);
+}
+
+.input-group input:disabled,
+.input-group select:disabled {
+    background-color: #2a2a2a;
+    color: #888888;
+    cursor: not-allowed;
+}
+
+.input-group input:not(:disabled),
+.input-group select:not(:disabled) {
+    background-color: #1f1f1f;
+    border-color: #444444;
+}
+
+
+
+
+
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+
+.checkbox-container input {
+    height: 40px;
+    width: 40px;
+}
+
+
+
+
+
+
+
+
+/* Estos dos putos de abajo son para sacar el icono feo de los input type numer */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Para Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+.password-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.password-wrapper input {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.password-toggle-button {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, background-color 0.2s ease;
+    z-index: 1;
+}
+
+.password-toggle-button .password-toggle-icon {
+    width: 18px;
+    height: 18px;
+}
+
+.password-wrapper:hover input:not(:disabled) + .password-toggle-button,
+.password-wrapper:focus-within input:not(:disabled) + .password-toggle-button {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.password-toggle-button:hover,
+.password-toggle-button:focus {
+    background-color: rgba(255, 255, 255, 0.08);
+    outline: none;
+}
+
+.password-toggle-button:hover,
+.password-toggle-button:focus {
+    background-color: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+    outline: none;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.generic-anchor {
+    color: #cccccc; /* Color tema claro: #163F7A */
+    text-decoration: none;
+    font-size: 18px;
+    padding: 10px;
+}
+
+.generic-anchor:hover {
+    text-decoration: underline;
+}
+
+
+
+
+
+
+.submit {
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    margin-top: 30px;
+    font-size: 30px;
+    font-weight: 500;
+    background-color: #D01F25;
+    color: white;
+    cursor: pointer;
+}
+
+
+
+
+
+
+
+
+
+
+
+.inputError, .passwordRequirementError, .confirmPasswordError {
+    border-style: solid;
+    border-color: rgb(255, 30, 30);
+    color: rgb(255, 30, 30);
+}
+
+.inputError:focus, .passwordRequirementError:focus, .confirmPasswordError:focus {
+    color: black;
+}
+
+
+

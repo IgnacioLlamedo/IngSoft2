@@ -1,0 +1,93 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #1b1b1b;
+    color: #ffffff;
+}
+
+
+.title {
+    width: 100%;
+    max-width: 1000px;
+    margin: 15px auto;
+    padding: 20px 0 10px;
+    text-align: center;
+    font-size: 35px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #ffffff;
+    position: relative;
+}
+
+.title::after {
+    content: '';
+    display: block;
+    width: 140px;
+    height: 4px;
+    margin: 18px auto 0;
+    border-radius: 999px;
+    background: #D01F25;
+    box-shadow: 0 0 20px rgba(208, 31, 37, 0.45);
+}
+
+.main-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 40px 20px;
+    margin-bottom: 150px;
+    gap: 30px;
+}
+
+
+
+
+.note {
+    color: #cccccc;
+}
+
+
+
+
+.errorMsg {
+    color: rgb(255, 30, 30);
+    font-weight: bold;
+    font-size: 20px;
+    padding: 15px;
+}
+
+
+.errorMsgJustRed {
+    color: rgb(255, 30, 30);
+}
+
+.payment-success{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:20px;
+
+    padding:40px;
+}
+
+.check-container{
+    font-size:80px;
+}
+
+.payment-title{
+    color:green;
+}
+
+.payment-info{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+
+    font-size:20px;
+
+}

@@ -1,0 +1,38 @@
+const parametrosURL = new URLSearchParams(window.location.search);
+const authenticationErrorMsg = document.getElementById("authenticationError");
+
+const email = parametrosURL.get('email');
+
+
+
+document.getElementById("authenticator-form").addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const codigo = event.target.codigo.value;
+
+    const data = {
+        mail: email,
+        codigo: codigo,
+    }
+
+    const dataString = JSON.stringify(data);
+
+    const res = await fetch("/api/authentication", {
+        method: "POST",
+        headers: {
+            "Content-Type" : "application/json"
+        },
+        body: dataString
+    });
+
+    const resData = await res.json();
+    console.log(resData);
+
+    if(resData.success)
+        window.location.href = resData.redirect;
+    else 
+    {
+        authenticationErrorMsg.textContent = resData.message;
+        authenticationErrorMsg.removeAttribute("hidden");
+    }
+});

@@ -1,16 +1,16 @@
-const verificationErrorMsg = document.getElementById("verificationError");
+const recoverErrorMsg = document.getElementById("recoverError");
 
 document.getElementById("recover-password-form").addEventListener("submit", async (event) => {
 
     event.preventDefault()
 
-    const mail = event.target.mail.value
+    const email = event.target.email.value
 
     const dataString = JSON.stringify({
-        mail: mail
+        mail: email
     })
 
-    const res = await fetch("/api/resetpass", {
+    const res = await fetch("/api/recover-password", {
         method: "POST",
         headers: {
             "Content-Type" : "application/json"
@@ -20,13 +20,11 @@ document.getElementById("recover-password-form").addEventListener("submit", asyn
 
     const resData = await res.json();
 
-    if(resData.success) {
-        console.log("La dirección conseguida de retorno es: " + resData.redirect);
+    if(resData.success)
         window.location.href = resData.redirect;
-    }
     else 
     {
-        verificationErrorMsg.textContent = resData.message;
-        verificationErrorMsg.classList.remove("hidden");
+        recoverErrorMsg.textContent = resData.message;
+        recoverErrorMsg.removeAttribute("hidden");
     } 
 })

@@ -5,7 +5,7 @@ const collection = 'pagos'
 
 const pagoSchema = new Schema({
     _id: { type: String, default: randomUUID },
-    monto: { type: Number, unique: true, required: true },
+    monto: { type: Number, required: true },
     idUsuario: { type: String, required: true, ref: 'usuarios' },
     idClase: { type: String, required: true, ref: 'clases' },
     fecha: { type: Date, required: true, default: Date.now() },

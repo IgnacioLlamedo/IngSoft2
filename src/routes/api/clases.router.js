@@ -1,6 +1,6 @@
 import express from "express";
-import { getAllClases, postReservaUnica, postReservaMensual } from "../../controllers/clases.controller.js";
-
+import { getAllClases } from "../../controllers/clases.controller.js";
+import { postReservaUnica, postReservaMensual } from "../../controllers/reservas.controller.js"
 
 export const clasesRouter = express.Router();
 

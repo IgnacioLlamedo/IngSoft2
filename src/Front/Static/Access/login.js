@@ -1,8 +1,3 @@
-const parametersURL = new URLSearchParams(window.location.search);
-
-const email = parametersURL.get('mail');
-const password = parametersURL.get('password'); // Cómo logeo sin pass? pasarla por url me parece una locura
-
 
 const loginErrorMsg = document.getElementById("loginError");
 
@@ -30,11 +25,47 @@ document.getElementById("login-form").addEventListener("submit", async (event) =
 
     const resData = await res.json();
 
+    console.log("Los datos recibidos en login.js al volver de loginController: ");
+    console.log(resData.success);
+    console.log(resData.redirect);
+
     if(resData.success)
         window.location.href = resData.redirect;
     else 
     {
         loginErrorMsg.textContent = resData.message;
-        loginErrorMsg.classList.remove("hidden");
+        loginErrorMsg.removeAttribute("hidden");
     } 
 })
+
+
+
+
+// Password handler
+
+const password = document.getElementById("password");
+const visibilityButton = document.getElementById("visibility-button");
+const visibilityIcon = document.getElementById("visibility-icon");
+let isVisible = false;
+
+visibilityButton.addEventListener("click" ,async () => {
+    isVisible = !isVisible;
+
+    if(isVisible) 
+        showPassword()
+    else
+        hidePassword();
+});
+
+
+function showPassword() {
+    password.type = "text";
+    visibilityIcon.src = "/Images/Inputs/eye-icon-visible-white.png";
+    visibilityButton.ariaLabel = "Ocultar contraseña";
+}
+
+function hidePassword() {
+    password.type = "password";
+    visibilityIcon.src = "/Images/Inputs/eye-icon-hidden-white.png";
+    visibilityButton.ariaLabel = "Mostrar contraseña";
+}
