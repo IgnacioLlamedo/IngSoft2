@@ -1,7 +1,9 @@
 
 let claseSeleccionada = "";
 let precioSeleccionado = 0;
+let horarioSeleccionado = "";
 
+console.log("Consiguiendo sessión data: ")
 getSessionData();
 
 async function getSessionData() {
@@ -10,6 +12,7 @@ async function getSessionData() {
     console.log(sessionData);
 
     if(sessionData.logged && (sessionData.session.rol === "cliente")) {
+        console.log("La sesión fue iniciada: " + sessionData.logged)
         const buttons = document.getElementsByClassName("paymentButtons");
         for(const button of buttons) {
             button.removeAttribute("hidden");
@@ -32,6 +35,7 @@ function abrirPago(elemento) {
 
     claseSeleccionada = clase;
     precioSeleccionado = precio;
+    horarioSeleccionado = horario;
 
     document.getElementById("tituloClase").innerText = clase + " (" + horario + ")";
     document.getElementById("precioClase").innerText = "$" + precio;
@@ -56,17 +60,22 @@ function pagarMensual() {
     pagar("mensual", precioSeleccionado * 4);
 }
 
-async function pagar(tipoClase, precio, elemento) {
+async function pagar(tipo, precio) {
+    const titulo = document.getElementById("tituloClase").innerText;
+    const fecha = document.getElementById("fechaClase").innerText;
+    const sala = document.getElementById("salaClase").innerText;
     const res = await fetch('/api/pago/crear-preferencia', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
-            tipo: tipoClase, 
+            titulo: titulo,
+            tipo: tipo, 
             cantidad:1, 
             precio: precio, 
             idClase: "un_id_de_clase", //Esto me está rompiendo la ejecución asi que lo hardcodee
-            fechaEspecifica: new Date(), //x2
-            url: window.location.origin
+            fechaEspecifica: fecha,
+            sala: sala,
+            horario: horarioSeleccionado
         })
     });
 

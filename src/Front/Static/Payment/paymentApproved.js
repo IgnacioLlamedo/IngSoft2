@@ -2,6 +2,34 @@
 const id_pago = parametersURL.get('payment_id')
 const ext = parametersURL.get('external_reference')
 const externo = JSON.parse(ext);
+const container = document.querySelector(".main-container");
+
+container.innerHTML =
+`<div class="payment-success">
+
+        <div class="check-container">
+            ✔️
+        </div>
+
+        <div class="payment-info">
+            <p>
+                <strong>Clase:</strong>
+                ${externo.nombre}
+            </p>
+            <p>
+                <strong>Tipo:</strong>
+                ${externo.tipo}
+            </p>
+            <p>
+                <strong>Fecha:</strong>
+                ${externo.fechaEspecifica}
+            </p>
+            <p>
+                <strong>Precio:</strong>
+                $${externo.precio}
+            </p>
+        </div>
+    </div>`;
 
 console.log("Valores de retorno desde Mercado Pago: ");
 console.log(externo);

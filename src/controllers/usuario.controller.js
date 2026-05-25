@@ -4,7 +4,6 @@ import { generateOtp } from '@mx7/otp';
 import { homeRoutes } from "../constantes/routes.js";
 import { mailer } from "../servicios/mailer.servicio.js";
 import { hash, compareHash } from "../servicios/crypt.servicio.js";
-import { homeRoute } from "../app.js";
 import { Usuario } from "../models/usuario.mongoose.js";
 
 const errorMessages = {

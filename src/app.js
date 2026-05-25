@@ -15,7 +15,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 
 //sesion de usuario
-const isProduction = false; //process.env.NODE_ENV === "production"; En localhost evita la creación de la sesión.
+const isProduction = false;
 
 app.set("trust proxy", true);
 
@@ -82,7 +82,4 @@ app.use(express.static(path.join(__dirname, "Front/Static"), {
 // Access USE
 app.use('/api', apiRouter);
 
-//sino no puedo acceder a las rutas xd
 app.use(webRouter);
-
-

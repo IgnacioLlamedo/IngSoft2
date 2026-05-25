@@ -7,17 +7,15 @@ export async function crearPreferencia(req, res) {
 
     try {
         //body: JSON.stringify({ tipo: tipoClase, cantidad:1, monto: precio, id_Clase: idClase })
-        const tipo = req.body.tipo;
-        const precio = req.body.precio;
-        const id_clase = req.body.id_Clase;
-        //const tipoClase = req.body.tipoClase;
-        //const fechaEspecifica = req.body.fechaEspecifica;
-        console.log("Desde crear Preferencia!")
-        console.log(tipo)
+        const nombre = req.body.nombre; //Yoga, Funcional o Spinning
+        const precio = req.body.precio; 
+        const id_clase = req.body.idClase; //No se muestra
+        const tipo = req.body.tipoClase; //Clase única o Mensual
+        const fechaEspecifica = req.body.fechaEspecifica;
+        console.log(nombre)
         console.log(id_clase)
         console.log(precio)
-        //console.log(tipoClase)
-        console.log("finalizado el log desde crear preferencia!");
+        console.log(tipo)
 
         const preference = new Preference(client);
 
@@ -25,22 +23,25 @@ export async function crearPreferencia(req, res) {
             body: {
                 items: [
                     {
-                        title: req.body.tipo,
+                        title: tipo,
                         quantity: 1,
                         unit_price: Number(precio)
                     }
                 ],
                 external_reference: JSON.stringify({    //Todo esto termina en la url una vez que se retorna a /home
-                    idUsuario: req.session.user.id,        //Este es asignado al usuario cuando se logea (en autenticaión doble controller)
+                    idUsuario: req.session.user.id ,        //Este es asignado al usuario cuando se logea (en autenticaión doble controller)
                     idClase: id_clase,         //Este se guarda al llamar a /crear-preferencia (en payPanel.js)
+                    
+                    //Se mostrarán una vez realizado el pago las siguientes:
+                    nombre: nombre,
                     precio: precio,
-                    //tipoClase: tipoClase,
-                    //fechaEspecifica: fechaEspecifica,
+                    tipo: tipo,
+                    fechaEspecifica: fechaEspecifica,
                 }),
                 back_urls: {
-                    success: `${config.link}/payment/approved`,
-                    failure: `${config.link}/payment/failure`,
-                    pending: `${config.link}/payment/pending`,
+                    success: `${config.link}payment/approved`,
+                    failure: `${config.link}payment/failure`,
+                    pending: `${config.link}payment/pending`,
                 },
                 auto_return: "approved"
             }
