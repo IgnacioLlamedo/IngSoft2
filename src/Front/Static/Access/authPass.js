@@ -1,5 +1,5 @@
 const parametrosURL = new URLSearchParams(window.location.search);
-const authenticationErrorMsg = document.getElementById("verificationError");
+const authenticationErrorMsg = document.getElementById("authenticationError");
 
 const email = parametrosURL.get('email');
 
@@ -30,7 +30,7 @@ document.getElementById("two-factor-authenticator-form").addEventListener("submi
         window.location.href = resData.redirect;
     else 
     {
-        verificationErrorMsg.textContent = resData.message;
-        verificationErrorMsg.removeAttribute("hidden");
+        authenticationError.textContent = resData.message;
+        authenticationError.removeAttribute("hidden");
     } 
 });

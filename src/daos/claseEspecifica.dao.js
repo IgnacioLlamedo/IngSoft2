@@ -1,24 +1,22 @@
-import { Usuario } from "../models/usuario.mongoose.js";
+import { ClaseEspecifica } from "../models/claseEspecifica.mongoose.js";
 
-export class usuarioDao {
+export class claseEspecificaDao {
     async create(datos){
-        return await Usuario.create(datos)
-        console.log(datos)
+        return await ClaseEspecifica.create(datos)
     }
     async readOne(query){
-        const usuario = await Usuario.findOne(query).lean()
-        if(!usuario){
+        const clase = await ClaseEspecifica.findOne({ _id: query }).lean()
+        if(!clase){
             //provisional, desarrollar luego
-            console.log("error con: ")
-            console.log(query);
+            console.log("error")
         }
-        return usuario
+        return clase
     }
     async readMany(query){
-        return await Usuario.find(query).lean()
+        return await ClaseEspecifica.find(query).lean()
     }
     async updateOne(query, datos){
-        const updated = await Usuario.findOneAndUpdate({ mail: query }, datos, { returnDocument: 'after' }).lean()
+        const updated = await ClaseEspecifica.findOneAndUpdate({ _id: query }, datos, { returnDocument: 'after' }).lean()
         if(!updated){
             //provisional, desarrollar luego
             console.log("error")
@@ -26,7 +24,7 @@ export class usuarioDao {
         return updated
     }
     async deleteOne(query){
-        const deleted = await Usuario.findOneAndDelete({ mail: query }).lean()
+        const deleted = await ClaseEspecifica.findOneAndDelete({ _id: query }).lean()
         if(!deleted){
             //provisional, desarrollar luego
             console.log("error")
@@ -34,7 +32,7 @@ export class usuarioDao {
         return deleted
     }
     async deleteMany(query){
-        const deleted = await Usuario.deleteMany(query).lean()
+        const deleted = await ClaseEspecifica.deleteMany(query).lean()
         if(!deleted){
             //provisional, desarrollar luego
             console.log("error")
@@ -42,4 +40,3 @@ export class usuarioDao {
         return deleted
     }
 }
-

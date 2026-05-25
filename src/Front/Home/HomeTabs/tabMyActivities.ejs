@@ -5,9 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="/Images/Common/favicon.ico" type="image/x-icon">
-    <link rel="stylesheet" href="/Navbar/navStyle.css">
+
     <link rel="stylesheet" href="/Home/Tabs/MyActivities/tabMyActivities.css">
-    <link rel="stylesheet" href="/Navbar/footerStyle.css">
+    <link rel="stylesheet" href="/Common/commonPageStyle.css">
+
     <title>CEF - Mis Actividades</title>
 </head>
 
@@ -16,7 +17,7 @@
         <%- include('../../Navbar/navbarSelector.ejs') %>
     </header>
 
-    <main>
+    <main class="main-container">
         <h1>Mis Actividades</h1>
 
         <div class="filters-container">
@@ -92,10 +93,6 @@
           </div>
         </div>
     </main>
-
-    <footer>
-        <p>Copyright © 2024 CEF. All rights reserved.</p> 
-    </footer>
 
     <script src="/Home/Tabs/MyActivities/tabMyActivities.js"></script>
     

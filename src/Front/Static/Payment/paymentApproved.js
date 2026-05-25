@@ -2,6 +2,34 @@
 const id_pago = parametersURL.get('payment_id')
 const ext = parametersURL.get('external_reference')
 const externo = JSON.parse(ext);
+const container = document.querySelector(".main-container");
+
+container.innerHTML =
+`<div class="payment-success">
+
+        <div class="check-container">
+            ✔️
+        </div>
+
+        <div class="payment-info">
+            <p>
+                <strong>Clase:</strong>
+                ${externo.nombre}
+            </p>
+            <p>
+                <strong>Tipo:</strong>
+                ${externo.tipoClase}
+            </p>
+            <p>
+                <strong>Fecha:</strong>
+                ${externo.fechaEspecifica}
+            </p>
+            <p>
+                <strong>Precio:</strong>
+                $${externo.precio}
+            </p>
+        </div>
+    </div>`;
 
 console.log("Valores de retorno desde Mercado Pago: ");
 console.log(externo);
@@ -15,7 +43,7 @@ const pagoData = {
 
 const pagoDataString = JSON.stringify(pagoData);
 console.log(pagoDataString);
-//guardarPago(pagoDataString, ext)
+guardarPago(pagoDataString, ext)
 
 
 async function guardarPago(data, ext) {
@@ -27,39 +55,67 @@ async function guardarPago(data, ext) {
         body: data
     })
 
-    const resData = res.json();
-    if(resData.success)
-        guardarReserva(resData, ext);
+    const resData = await res.json();
+    console.log("hola soy guardarPAgo este es mi res: ");
+    console.log(resData);
+    if(true)//resData.success)
+        await guardarReserva(resData, ext);
 }
 
 
 async function guardarReserva(pagoData, ext) {
-    if(ext.tipoClase === "unica"){
+    console.log("hola soy guardar reserva");
+
+    console.log("SOY PAGO DATA PRE PARSE");
+    console.log(typeof(pagoData));
+    console.log(pagoData);
+
+    const extParsed = JSON.parse(ext);
+
+    console.log("EXTERNOS PARSEADOS:");
+    console.log(extParsed);
+
+    if(extParsed.tipoClase == "unica") {
+        console.log("hola soy guardar reserva UNICA");
+
         const data  = {
-            idClase: pagoData.idClase,
-            pagos: [pagoData._id],
+            idClase: pagoData.data.idClase,
+            pagos: [{idPago: pagoData.data._id}],
             señada: false,
-            idUsuario: pagoData.idUsuario,
-            cancelada: false,
-            fechaEspecifica: ext.fechaEspecifica,
+            idUsuario: pagoData.data.idUsuario,
+            fechaEspecifica: new Date(Date.now()),
         };
+
+        const dataString = JSON.stringify(data);
 
         const res = await fetch("/api/clases/post-reserva-unica", {
             method: "POST",
             headers: {
                 "Content-Type" : "application/json"
             },
-            body: data
+            body: dataString
         })
     }
 
-    else {
+    else if(extParsed.tipoClase === "mensual") {
+        console.log("hola soy guardar reserva UNICA");
+
+        const data  = {
+            idClase: pagoData.data.idClase,
+            pagos: [{idPago: pagoData.data._id}],
+            idUsuario: pagoData.data.idUsuario,
+            fechaEspecifica: new Date(Date.now()),
+        };
+
+        const dataString = JSON.stringify(data);
+
         const res = await fetch("/api/clases/post-reserva-mensual", {
             method: "POST",
             headers: {
                 "Content-Type" : "application/json"
             },
-            body: data
+            body: dataString
         })
     }
+    console.log("TERMINEE FOTROO LA RESERVA DE MIERDA");
 }

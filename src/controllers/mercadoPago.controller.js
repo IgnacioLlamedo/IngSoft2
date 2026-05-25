@@ -1,22 +1,21 @@
 import { Preference } from "mercadopago";
 import { client } from "../servicios/mercado.servicio.js";
+import { pagoDao } from "../daos/index.js";
 import config from "../config.js";
 
 export async function crearPreferencia(req, res) {
 
     try {
         //body: JSON.stringify({ tipo: tipoClase, cantidad:1, monto: precio, id_Clase: idClase })
-        const tipo = req.body.tipo;
-        const precio = req.body.precio;
-        const id_clase = req.body.id_Clase;
-        //const tipoClase = req.body.tipoClase;
-        //const fechaEspecifica = req.body.fechaEspecifica;
-        console.log("Desde crear Preferencia!")
-        console.log(tipo)
+        const nombre = req.body.nombre; //Yoga, Funcional o Spinning
+        const precio = req.body.precio; 
+        const id_clase = req.body.idClase; //No se muestra
+        const tipoClase = req.body.tipoClase; //Clase única o Mensual
+        const fechaEspecifica = req.body.fechaEspecifica;
+        console.log(nombre)
         console.log(id_clase)
         console.log(precio)
-        //console.log(tipoClase)
-        console.log("finalizado el log desde crear preferencia!");
+        console.log(tipoClase)
 
         const preference = new Preference(client);
 
@@ -24,17 +23,20 @@ export async function crearPreferencia(req, res) {
             body: {
                 items: [
                     {
-                        title: tipo,
+                        title: nombre,
                         quantity: 1,
                         unit_price: Number(precio)
                     }
                 ],
                 external_reference: JSON.stringify({    //Todo esto termina en la url una vez que se retorna a /home
-                    idUsuario: req.session.user.id,        //Este es asignado al usuario cuando se logea (en autenticaión doble controller)
+                    idUsuario: req.session.user.id ,        //Este es asignado al usuario cuando se logea (en autenticaión doble controller)
                     idClase: id_clase,         //Este se guarda al llamar a /crear-preferencia (en payPanel.js)
+                    
+                    //Se mostrarán una vez realizado el pago las siguientes:
+                    nombre: nombre,
                     precio: precio,
-                    //tipoClase: tipoClase,
-                    //fechaEspecifica: fechaEspecifica,
+                    tipoClase: tipoClase,
+                    fechaEspecifica: fechaEspecifica,
                 }),
                 back_urls: {
                     success: `${config.link}/payment/approved`,
@@ -61,19 +63,26 @@ export async function crearPreferencia(req, res) {
 }
 
 
+//Ya funciona bien, si tocan algo les corto las bolas
 export async function almacenarPagoController(req, res){
     try {
-        const dataPago = req.body;
-        console.log(dataPago);
+        let dataPago = req.body;
 
         const pagoData = await pagoDao.create(dataPago);   //Crea el nuevo pago y lo almacena en DB
 
+        if(!pagoData){
+            return res.json({
+                success: false,
+                message: "Error al crear el nuevo pago en DB."
+            })
+        }
         res.json({
             success: true,
             data: pagoData,
         })
     }
     catch(error) {
+        console.log(error);
         res.json({
             success: false,
             message: "Error al almacenar datos de pago en DB."

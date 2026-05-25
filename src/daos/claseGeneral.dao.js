@@ -1,11 +1,11 @@
-import { Clase } from "../models/clase.mongoose.js";
+import { ClaseGeneral } from "../models/claseGeneral.mongoose.js";
 
-export class claseDao {
+export class claseGeneralDao {
     async create(datos){
-        return await Clase.create(datos)
+        return await ClaseGeneral.create(datos)
     }
     async readOne(query){
-        const clase = await Clase.findOne({ _id: query }).lean()
+        const clase = await ClaseGeneral.findOne({ _id: query }).lean()
         if(!clase){
             //provisional, desarrollar luego
             console.log("error")
@@ -13,10 +13,10 @@ export class claseDao {
         return clase
     }
     async readMany(query){
-        return await Clase.find(query).lean()
+        return await ClaseGeneral.find(query).lean()
     }
     async updateOne(query, datos){
-        const updated = await Clase.findOneAndUpdate({ _id: query }, datos, { returnDocument: 'after' }).lean()
+        const updated = await ClaseGeneral.findOneAndUpdate({ _id: query }, datos, { returnDocument: 'after' }).lean()
         if(!updated){
             //provisional, desarrollar luego
             console.log("error")
@@ -24,7 +24,7 @@ export class claseDao {
         return updated
     }
     async deleteOne(query){
-        const deleted = await Clase.findOneAndDelete({ _id: query }).lean()
+        const deleted = await ClaseGeneral.findOneAndDelete({ _id: query }).lean()
         if(!deleted){
             //provisional, desarrollar luego
             console.log("error")
@@ -32,7 +32,7 @@ export class claseDao {
         return deleted
     }
     async deleteMany(query){
-        const deleted = await Clase.deleteMany(query).lean()
+        const deleted = await ClaseGeneral.deleteMany(query).lean()
         if(!deleted){
             //provisional, desarrollar luego
             console.log("error")

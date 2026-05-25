@@ -197,6 +197,7 @@ async function saveProfile() {
             genero: document.getElementById('genero').value
         };
 
+
         const response = await fetch('/api/save-profile', {
             method: 'POST',
             headers: {

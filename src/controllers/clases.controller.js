@@ -1,11 +1,11 @@
 import { actividadDao, reservaDao } from "../daos/index.js";
 import { profesorDao } from "../daos/index.js";
 import { salaDao } from "../daos/index.js";
-import { claseDao } from "../daos/index.js";
+import { claseGeneralDao } from "../daos/index.js";
 
 export async function getAllClases(req, res) {
     try {
-        const clasesData = await claseDao.readMany({});
+        const clasesData = await claseGeneralDao.readMany({});
         const activitiesData = await actividadDao.readMany({});
         const salasData = await salaDao.readMany({});
         const profesoresData = await profesorDao.readMany({});
@@ -38,7 +38,7 @@ export async function crearClase(req, res){
     try {
         let data = req.body
         
-        await claseDao.create(data)
+        await claseGeneralDao.create(data)
     }
     catch(error) {
         console.log(error);
@@ -56,37 +56,3 @@ export async function crearClase(req, res){
  * En base a eso, cuando se realiza un aumento,¿se hace un aumento general o un aumento individual por clase?
  * Si se puede general, ¿también se puede individual?
  */
-
-export async function postReservaUnica(req, res) {
-    try {
-        const reservaData = req.body.reservaData;
-        await reservaDao.createUnica(reservaData);
-
-        res.json({
-            success: true
-        });
-    }
-    catch(error) {
-        res.json({
-            success: false,
-            message: error,
-        });
-    }
-}
-
-export async function postReservaMensual(req, res) {
-    try {
-        const reservaData = req.body.reservaData;
-        await reservaDao.createMensual(reservaData);
-
-        res.json({
-            success: true,
-        });
-    }
-    catch(error) {
-        res.json({
-            success: false,
-            message: error,
-        });
-    }
-}

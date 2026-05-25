@@ -1,10 +1,10 @@
 import { usuarioDao } from "../daos/index.js";
 import { planillaDao } from "../daos/index.js";
-import { generateOtp } from "@mx7/otp";
+import { generateOtp } from '@mx7/otp';
 import { mailer } from "../servicios/mailer.servicio.js";
 import { hash, compareHash } from "../servicios/crypt.servicio.js";
-import { homeRoute } from "../app.js";
 import { Usuario } from "../models/usuario.mongoose.js";
+import { homeRoute } from "../routes/web/web.router.js";
 
 const errorMessages = {
 	11000: "Error al crear la cuenta, el email ya está registrado.",
@@ -154,7 +154,7 @@ export async function authPass(req, res){
         const mail = req.body.mail;
         const usuario = await usuarioDao.readOne({ mail: mail });
 
-       if(usuario.codigo !== req.body.codigo){
+        if(usuario.codigo !== req.body.codigo){
             return res.json({
                 success: false,
                 message: "Error al ingresar el código de validación. El código introducido es incorrecto."
@@ -298,21 +298,47 @@ export async function loadProfileController(req, res) {
 
 export async function saveProfileController(req, res) {
 	try {
-		const sessionUser = req.session && req.session.user;		
+        const sessionUser = req.session && req.session.user;	
 		const mail = sessionUser.mail;
-
+        
 		if (!sessionUser || !mail) {
-			return res.status(401).json({ success: false, message: 'Usuario no autenticado' });
+            return res.status(401).json({ success: false, message: 'Usuario no autenticado' });
 		}
+        
+        const userData = req.body;
+       
+        const emailChanged = userData.mail !== mail
+        if(emailChanged) {
+            const emailExist = await usuarioDao.readOne({mail: userData.mail});
+            if(emailExist) {
+                return res.status(402).json({
+                    success: false,
+                    message: "Error al actualizar el perfil. El email ya se encuentra registrado."
+                });
+            }
+        }
 
-		const updatedData = req.body;
+        const dniChanged = (await usuarioDao.readOne({mail: mail})).dni !== userData.dni;
+        if(dniChanged) {
+            const dniExist = await usuarioDao.readOne({dni: userData.dni, rol:sessionUser.rol});
+            if(dniExist) {
+                return res.status(402).json({
+                    success: false,
+                    message: "Error al actualizar el perfil. El DNI ya se encuentra registrado."
+                });
+            }
+        }
+	
 		// Prevent updating password through this endpoint
-		delete updatedData.contraseña;
+		delete userData.contraseña;
 
-		const updatedUser = await usuarioDao.updateOne(mail, updatedData);
+		const updatedUser = await usuarioDao.updateOne(mail, userData);
 		if (!updatedUser) {
 			return res.status(404).json({ success: false, message: 'Usuario no encontrado' });
 		}
+
+        if(emailChanged)
+            changeEmailSession(req, userData.mail);
 
 		return res.json(updatedUser);
 	} catch (error) {
@@ -389,5 +415,11 @@ async function createSession(req, user) {
         mail: user.mail,
         rol: user.rol,
     };
+    await req.session.save(); 
+}
+
+
+async function changeEmailSession(req, email) {
+    req.session.user.mail = email;
     await req.session.save(); 
 }
