@@ -1,20 +1,47 @@
-<h1 align="center"> Demo 1 - 46 Puntos </h1>
-
-![Badge en desarrollo](https://img.shields.io/badge/Status-In_Progress-orange) ![Badge nota](https://img.shields.io/badge/Nota_PREDEMO_obtenida-Indef-purple) ![Badge nota](https://img.shields.io/badge/Nota_DEMO_obtenida-Indef-purple)
+<h1 align="center"> Proyecto - CEF </h1>
 
 &nbsp;
-### Credenciales para testing:
+### Manual de uso Mercado Pago:
 
-- Cuenta Comprador: TESTUSER2796893861660132777    (Avisenme si se queda sin plata)
+Para poder usar mercado pago se debe tener un URL https. Para ello podemos crearlo directamente desde VS Code:
+
+1. Accedemos a la pestaña puertos, la cual es un tab en la misma pestaña que está la terminal.
+   > Si no tenemos la pestaña, abrimos la paleta de comandos con <kbd> Ctrl + Shift + P </kbd> e introducimos el comando <kbd> Ports: Focus on Ports View </kbd>.
+
+2. Creamos un puerto pulsando "Reenviar puerto/Agregar puerto", se quedará esperando que ingresemos un puerto. Se debe ingresar estrictamente el puerto "8080".
+
+3. En el archivo ".env", agregamos/sobrescribimos la variable "link", asignándole como valor el link creado por VS Code en el puerto "8080" en el punto anterior. <strong>Al link que le asignen, borrenle la barrita ("/") final.</strong>
+
+4. Por último, revisen si tienen la línea de código <kbd> link:process.env.LINK </kbd> en el export del archivo "config.js", en caso de no tenerla, cópienla y peguenla.
+
+
+&nbsp;
+### Credenciales de testing, para usarlos inicien sesión en Mercado Pago con la siguiente cuenta:
+- Cuenta: TESTUSER2796893861660132777
 - Contraseña: 3RlzT2mo9M
 - Código de verificación: 866242
 
-&nbsp;
-### Detalles a la hora de testear:
+⚠️ Si se queda sin plata avísenle a Facu ⚠️
 
-- Pueden testear la creación de pagos si van a la terminal, puertos -> <img width="178" height="42" alt="image" src="https://github.com/user-attachments/assets/497d6a31-4aa6-4cdf-bb0d-30022e771773" /> -> añaden un puerto cualquiera -> modifican el PORT dentro de el archivo .env para que coincida con el nuevo puerto y entran a la forwarded address que les da el puerto.
-- Gracias Faku por salvarme de mi sufrimiento
+<br><br>
 
+> [!IMPORTANT]
+> Comentario destacado: Gracias Faku por salvarme de mi sufrimiento
+
+
+
+
+
+
+
+
+
+
+
+<br><br><br><br>
+<h1 align="center"> Demo 1 - 46 Puntos </h1>
+
+![Badge en desarrollo](https://img.shields.io/badge/Status-In_Progress-orange) ![Badge nota](https://img.shields.io/badge/Nota_PREDEMO_obtenida-Indef-purple) ![Badge nota](https://img.shields.io/badge/Nota_DEMO_obtenida-Indef-purple)
 
 &nbsp;
 ### Temas a cubrir:
