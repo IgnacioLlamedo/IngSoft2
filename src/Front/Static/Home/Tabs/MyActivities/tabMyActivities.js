@@ -50,37 +50,46 @@ async function getMyReservations() {
 
     actividadesUsuario = resData.reservas.map(r => {
 
-        const horario = `${r.clase.hora}:00 - ${r.clase.hora + 1}:00`;
+        const horario = `${r.idClaseEspecifica.idClaseGeneral.hora}:00 - ${r.idClaseEspecifica.idClaseGeneral.hora + 1}:00`;
 
         return {
-            actividad: r.actividad.nombre,
+            actividad: r.idClaseEspecifica.idClaseGeneral.idActividad.nombre,
 
             tipo:
-                r.reserva.tipo === "unica"
+            //Para entenderlo, esto es un if ->
+
+            /** if (r.tipo === "unica")
+             *     tipo = "Unica"
+             *  else 
+             *     tipo = "Mensual"
+            */ 
+                r.tipo === "unica"
                 ? "Unica"
-                : "Mensualidad",
+                : "Mensual",
 
             horario,
 
             fecha:
-                r.reserva.__t === "ReservaUnica"
+                r.__t === "ReservaUnica"
                 ? new Date(r.reserva.fechaEspecifica)
                     .toLocaleDateString("es-AR")
                 : null,
 
             dia:
-                r.reserva.tipo === "mensual"
-                ? r.clase.dia
+                r.tipo === "mensual"
+                ? r.idClaseEspecifica.idClaseGeneral.dia
                 : null,
 
-            sala: r.sala.nombre,
+            sala: r.idClaseEspecifica.idClaseGeneral.idSala.nombre,
 
-            profesor: r.profesor.nombre,
+            profesor: r.idClaseEspecifica.idClaseGeneral.idProfesor.nombre,
 
             precio:
-                r.reserva.tipo === "unica"
-                ? 20
-                : r.clase.precioMensual
+                r.tipo === "unica"
+                //Tendría que conseguir el precio desde el arreglo de pagos?
+                // r.pagos[0 o 1?].monto -> depende, si es única habria que revisar el pago completo?
+                ? (r.idClaseEspecifica.idClaseGeneral.precioMensual)/4
+                : r.idClaseEspecifica.idClaseGeneral.precioMensual
         };
     });
 

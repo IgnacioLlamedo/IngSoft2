@@ -114,17 +114,109 @@ export async function getMyReservations(req, res) {
     }
 }
 
+//Unir reservaUnica y mensual. separar por if
 export async function postReservaUnica(req, res) {
     try {
         const reservaData = req.body;
 
-        console.log("Datos recibidos (Back) en postReservaUnica : ");
+        console.log("(Back) - Datos recibidos en postReservaUnica -> desde paymentApproved.js: ");
         console.log(reservaData);
+        
+        /* Si existe una clase específica de la clase donde se van a guardar
+        Los datos del usuario a almacenar*/
+        const idClaseGeneral = reservaData.idClase;
+        const fecha = reservaData.fechaEspecifica;
+/*         console.log("La fecha recibida es: " + fecha);
+        console.log("La fecha es de typeOF -> " + typeof(fecha)); */
 
-        await reservaDao.createUnica(reservaData);
+        //Creo el objeto a anotar.
+        const usuarioData = {
+            idUsuario: reservaData.idUsuario,
+            tipo: "unico"
+        };
 
-        res.json({
-            success: true
+        //Tengo que crear una fecha y setear los segundos a 0 porque mongo los guarda con ese formato.
+        const fechaBuscada = new Date(fecha);
+
+        fechaBuscada.setSeconds(0, 0);
+        
+        const claseGeneral = await claseGeneralDao.readOne({ _id: idClaseGeneral })
+/*         console.log("la clase general encontrada con el id " + idClaseGeneral + " es: ");
+        console.log(claseGeneral); */
+        let claseEspecifica = await claseEspecificaDao.readOne({ idClaseGeneral: claseGeneral._id,
+            fechaEspecifica: fechaBuscada })
+        console.log("La clase especifica encontrada segun el idGeneral " + idClaseGeneral + " y la fecha especifica " + fecha + " es: ");
+        console.log(claseEspecifica);
+        if (!claseEspecifica) {
+            console.log("No existeclase especifica (desde postReservaUnica)");
+            //Creo la clase especifica con el usuario anotado.
+            const data = {
+                idClaseGeneral: claseGeneral._id,         
+                fechaEspecifica: fecha,
+                anotados: [usuarioData],
+                espera: [],
+            };
+
+            //Crea la clase especifica y asigna la nueva id, luego crea la reserva
+            claseEspecifica = await claseEspecificaDao.create(data);
+            reservaData.idClaseEspecifica = claseEspecifica._id;
+            await reservaDao.createUnica(reservaData);
+
+            return res.json({
+                success: true,
+                message: "Usuario anotado",
+                enEspera: false             //Para avisar
+            });
+        }
+        
+        console.log("Existe clase específica (desde postReservaUnica)");
+        //Verifico si el usuario está anotado o en espera
+        
+
+        console.log("Ya se checkeo que el usuario no este en lista de espera o anotados, ahora, a que lista se anotará? ");
+        //Si existe entonces -> Checkeo capacidad
+        const capacidadActual = claseEspecifica.anotados.length;
+//En el caso de la mensual, hay que revisar que las 4 clases tengan espacio de reserva.
+
+
+        //Asigno el idClaseEspecifica
+        reservaData.idClaseEspecifica = claseEspecifica._id;
+
+        //Si hay lugar lo agrego al arreglo de anotados.
+        if (capacidadActual < claseGeneral.limiteClase) {
+            console.log("Hay lugar en la clase para anotarse -> pasa a lista de anotados.");
+            await claseEspecificaDao.updateOne(
+                { _id: claseEspecifica._id },
+                {
+                    $push: {    //No sabia que se podia hacer esto jsjs, igual hay que probarlo
+                        anotados: usuarioData
+                    }
+                }
+            );
+            await reservaDao.createUnica(reservaData);
+
+            return res.json({
+                success: true,
+                message: "Clase específica creada. Usuario anotado",
+                enEspera: false
+            });
+        }   
+
+        console.log("NO hay lugar en la clase para anotarse -> pasa a lista de ESPERA.");
+        // Si NO hay lugar -> agrego al arreglo de espera.
+        await claseEspecificaDao.updateOne(
+                { _id: claseEspecifica._id },
+                {
+                    $push: {
+                        espera: usuarioData
+                    }
+                }
+            );
+
+        return res.json({
+            success: true,
+            message: "Usuario agregado a lista de espera",
+            enEspera: true
         });
     }
     catch(error) {
