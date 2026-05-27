@@ -240,6 +240,12 @@ input[type=number] {
 }
 
 
+.disabled-anchor {
+    pointer-events: none;
+    color: #888888;
+}
+
+
 
 
 

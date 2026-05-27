@@ -1,0 +1,11 @@
+.payment-title{
+    color:green;
+}
+
+.payment-info{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+
+    font-size:20px;
+}
