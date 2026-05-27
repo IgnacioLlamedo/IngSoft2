@@ -7,6 +7,8 @@ document.getElementById("two-factor-authenticator-form").addEventListener("submi
     
     event.preventDefault();
 
+    authenticationErrorMsg.hidden = true;
+
     const codigo = event.target.codigo.value;
 
     const data = {
@@ -30,7 +32,7 @@ document.getElementById("two-factor-authenticator-form").addEventListener("submi
         window.location.href = resData.redirect;
     else 
     {
-        authenticationError.textContent = resData.message;
-        authenticationError.removeAttribute("hidden");
+        authenticationErrorMsg.textContent = resData.message;
+        authenticationErrorMsg.hidden = false;
     } 
 });

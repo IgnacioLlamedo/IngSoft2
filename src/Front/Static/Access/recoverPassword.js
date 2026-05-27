@@ -4,6 +4,8 @@ document.getElementById("recover-password-form").addEventListener("submit", asyn
 
     event.preventDefault()
 
+    recoverErrorMsg.hidden = true;
+
     const email = event.target.email.value
 
     const dataString = JSON.stringify({
@@ -25,6 +27,6 @@ document.getElementById("recover-password-form").addEventListener("submit", asyn
     else 
     {
         recoverErrorMsg.textContent = resData.message;
-        recoverErrorMsg.removeAttribute("hidden");
+        recoverErrorMsg.hidden = false;
     } 
 })

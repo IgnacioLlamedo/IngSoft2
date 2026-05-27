@@ -36,9 +36,10 @@ body {
 
 .main-container {
     display: flex;
+    flex-direction: column;
     justify-content: center;
-    align-items: flex-start;
-    padding: 40px 20px;
+    align-items: center;
+    padding: 40px 0px;
     margin-bottom: 150px;
     gap: 30px;
 }
@@ -55,7 +56,6 @@ body {
 
 .errorMsg {
     color: rgb(255, 30, 30);
-    font-weight: bold;
     font-size: 20px;
     padding: 15px;
 }
@@ -65,18 +65,9 @@ body {
     color: rgb(255, 30, 30);
 }
 
-.payment-success{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    gap:20px;
 
-    padding:40px;
-}
-
-.check-container{
-    display: flex;
-    justify-content: center;
-    font-size:80px;
+.successMsg {
+    color: rgb(58, 255, 84);
+    font-size: 20px;
+    padding: 15px;
 }
