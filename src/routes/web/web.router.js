@@ -205,3 +205,39 @@ webRouter.get("/payment/pending", (req,res) => {
     if(!req.session.user) return res.redirect("/access/login");
     res.render(path.join(__dirname, "Front/Payment/paymentPending.ejs"), { userRole: req.session.user.rol });
 });
+
+
+
+
+
+
+
+// Admin Dropbox
+
+webRouter.get("/management", (req,res) => {
+    if(!req.session.user) return res.redirect("/access/login");
+    res.render(path.join(__dirname, "Front/Management/management.ejs"), { userRole: req.session.user.rol });
+});
+
+
+
+// Management
+webRouter.get("/management/facilities", (req,res) => {
+    if(!req.session.user) return res.redirect("/access/login");
+    res.render(path.join(__dirname, "Front/Management/managementFacilities.ejs"), { userRole: req.session.user.rol });
+});
+
+webRouter.get("/management/rooms", (req,res) => {
+    if(!req.session.user) return res.redirect("/access/login");
+    res.render(path.join(__dirname, "Front/Management/managementRooms.ejs"), { userRole: req.session.user.rol });
+});
+
+webRouter.get("/management/activities", (req,res) => {
+    if(!req.session.user) return res.redirect("/access/login");
+    res.render(path.join(__dirname, "Front/Management/managementActivities.ejs"), { userRole: req.session.user.rol });
+});
+
+webRouter.get("/management/instructors", (req,res) => {
+    if(!req.session.user) return res.redirect("/access/login");
+    res.render(path.join(__dirname, "Front/Management/managementInstructors.ejs"), { userRole: req.session.user.rol });
+});
