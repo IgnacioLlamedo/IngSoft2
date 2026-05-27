@@ -83,7 +83,6 @@ export async function consultar(req, res) {
         );
         
         if (yaAnotado || yaEnEspera) {
-            console.log("El usuario ya se encuentra anotado en esta actividad.");
             return res.json({
                 success: false,
                 message: "Ya se encuentra anotado en esta actividad"

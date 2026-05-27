@@ -46,6 +46,7 @@ function abrirPago(elemento) {
     document.getElementById("precioClase").innerText = "$" + precio;
     document.getElementById("fechaClase").innerText = fecha;
     document.getElementById("salaClase").innerText = elemento.dataset.sala;
+    document.getElementById("capacidad").innerText = elemento.dataset.capacidad
 
     document.getElementById("panelPago").classList.add("panel-abierto");
 }
@@ -115,6 +116,7 @@ async function pagar(tipoClase, precio) {
         window.open(resPreferencia.init_point, "_blank");
         }
     else
+        //Cambiar -> document.getElementById("").appendChild() crear texto bajo el botón
         window.alert(resData.message);
     
 }

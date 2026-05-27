@@ -50,6 +50,7 @@ async function getMyReservations() {
 
     actividadesUsuario = resData.reservas.map(r => {
 
+      //idClaseGeneral undefined? .-.
         const horario = `${r.idClaseEspecifica.idClaseGeneral.hora}:00 - ${r.idClaseEspecifica.idClaseGeneral.hora + 1}:00`;
 
         return {
