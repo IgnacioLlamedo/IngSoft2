@@ -25,13 +25,13 @@ async function getAllClasses() {
             celda.onclick = () => abrirPago(celda);
 
             switch (claseObj.actividad.nombre) {
-                case "spinning":
+                case "Spinning":
                     celda.classList.add("spinning");
                     break;
-                case "yoga":
+                case "Yoga":
                     celda.classList.add("yoga");
                     break;
-                case "funcional":
+                case "Funcional":
                     celda.classList.add("funcional");
                     break;
                 default:

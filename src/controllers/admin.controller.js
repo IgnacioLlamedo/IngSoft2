@@ -47,8 +47,7 @@ export async function crearProfesor(req, res){
 
 export async function modificarProfesor(req, res){
     try {
-        let data = req.body
-        data.nombre = data.nombre.trim().charAt(0).toUpperCase() + data.nombre.trim().slice(1).toLowerCase();
+        let data = req.body;
 
         const currentInstructor = await profesorDao.readOne({_id: data.id});
 
@@ -158,7 +157,7 @@ export async function getInstructors(req, res){
 export async function crearSala(req, res){
     try {
         let data = req.body;
-        data.nombre = data.nombre.trim().charAt(0).toUpperCase() + data.nombre.trim().slice(1).toLowerCase();
+        data.nombre = nameConvention(data.nombre);
 
         const roomAlreadyExists = await salaDao.readOne({nombre: req.body.nombre});
         if(roomAlreadyExists) {
@@ -187,7 +186,7 @@ export async function crearSala(req, res){
 export async function modificarSala(req, res) {
     try {
         let data = req.body
-        data.nombre = data.nombre.trim().charAt(0).toUpperCase() + data.nombre.trim().slice(1).toLowerCase();
+        data.nombre = nameConvention(data.nombre);
 
         const currentRoom = await salaDao.readOne({_id: data.id});
 
@@ -287,7 +286,7 @@ export async function getRooms(req, res){
 export async function crearSede(req, res){
     try {
         let data = req.body
-        data.nombre = data.nombre.trim().charAt(0).toUpperCase() + data.nombre.trim().slice(1).toLowerCase();
+        data.nombre = nameConvention(data.nombre);
 
         const currentFacility = await sedeDao.readOne({_id: data.id});
 
@@ -327,7 +326,7 @@ export async function crearSede(req, res){
 export async function modificarSede(req, res){
     try {
         let data = req.body
-        data.nombre = data.nombre.trim().charAt(0).toUpperCase() + data.nombre.trim().slice(1).toLowerCase();
+        data.nombre = nameConvention(data.nombre);
 
         const currentFacility = await sedeDao.readOne({_id: data.id});
 
@@ -425,7 +424,7 @@ export async function getFacilities(req, res){
 export async function crearActividad(req, res){
     try {
         let data = req.body
-        data.nombre = data.nombre.trim().charAt(0).toUpperCase() + data.nombre.trim().slice(1).toLowerCase();
+        data.nombre = nameConvention(data.nombre);
 
         const activityAlreadyExists = await actividadDao.readOne({nombre: req.body.nombre});
         if(activityAlreadyExists) {
@@ -454,7 +453,7 @@ export async function crearActividad(req, res){
 export async function modificarActividad(req, res){
     try {
         let data = req.body
-        data.nombre = data.nombre.trim().charAt(0).toUpperCase() + data.nombre.trim().slice(1).toLowerCase();
+        data.nombre = nameConvention(data.nombre);
 
         const currentActivity = await actividadDao.readOne({_id: data.id});
 
@@ -533,4 +532,13 @@ export async function getActivities(req, res){
             message: "Error al recuperar las actividades. Inténtelo de nuevo más tarde."
         });
     }
+}
+
+
+
+
+
+
+function nameConvention(name) {
+    return name.trim().charAt(0).toUpperCase() + name.trim().slice(1).toLowerCase();
 }
