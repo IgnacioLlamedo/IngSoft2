@@ -1,3 +1,42 @@
+/*
+<div class="box unica">
+  <h3>Yoga - Única</h3>
+  <hr>
+  <div class="box-content">
+    <div class="box-data unica">
+      <p>Horario: 18:00 - 19:00</p>
+      <p>Sala: S2</p>
+      <p>Fecha: Lunes 17/05</p>
+      <p>Precio por clase: $20</p>
+    </div>
+    <div class="box-buttons-container">
+      <button class="box-button cancel-reservation">Cancelar Reserva</button>
+      <button class="box-button pay-rest">Pagar resto</button>
+    </div>
+  </div>
+</div>
+
+<div class="box mensualidad">
+  <h3>Spinning - Mensualidad</h3>
+  <hr>
+  <div class="box-content">
+    <div class="box-data mensualidad">
+      <p>Horario: 19:00 - 20:00</p>
+      <p>Sala: S1</p>
+      <p>Día: Martes</p>
+      <p>Precio mensual: $50</p>
+    </div>
+    <div class="box-buttons-container">
+      <button class="box-button cancel-reservation">Cancelar Reserva</button>
+      <button class="box-button cancel-next-class">Cancelar Siguiente Clase</button>
+      <button class="box-button pay-reservation">Pagar Mensualidad</button>
+    </div>
+  </div>
+</div> 
+*/
+
+
+
 // Datos de ejemplo hardcodeados para las actividades del usuario
 /* const actividadesUsuario = [
   {
@@ -104,6 +143,7 @@ const dayFilter = document.getElementById("dayOfTheWeekFilter");
 
 // Contenedor principal donde se insertan las cajas
 const main = document.querySelector("main");
+const reservasContainter = document.getElementById("reservasContainter");
 
 // Función para renderizar las actividades según filtros
 function renderActividades() {
@@ -225,7 +265,7 @@ function renderActividades() {
     boxContent.appendChild(buttonsContainer);
     box.appendChild(boxContent);
 
-    main.appendChild(box);
+    reservasContainter.appendChild(box);
   });
 }
 

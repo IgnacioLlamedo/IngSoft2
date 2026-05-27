@@ -6,6 +6,8 @@ document.getElementById("login-form").addEventListener("submit", async (event) =
 
     const form = event.target;
 
+    loginErrorMsg.hidden = true;
+
     const userData = {
         mail: form.email.value,
         contraseña: form.contraseña.value,
@@ -34,7 +36,7 @@ document.getElementById("login-form").addEventListener("submit", async (event) =
     else 
     {
         loginErrorMsg.textContent = resData.message;
-        loginErrorMsg.removeAttribute("hidden");
+        loginErrorMsg.hidden = false;
     } 
 })
 

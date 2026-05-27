@@ -8,6 +8,8 @@ const email = parametrosURL.get('email');
 document.getElementById("authenticator-form").addEventListener("submit", async (event) => {
     event.preventDefault();
 
+    authenticationErrorMsg.hidden = true;
+
     const codigo = event.target.codigo.value;
 
     const data = {
@@ -33,6 +35,6 @@ document.getElementById("authenticator-form").addEventListener("submit", async (
     else 
     {
         authenticationErrorMsg.textContent = resData.message;
-        authenticationErrorMsg.removeAttribute("hidden");
+        authenticationErrorMsg.hidden = false;
     }
 });

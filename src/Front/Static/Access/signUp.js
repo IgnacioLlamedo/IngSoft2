@@ -1,3 +1,5 @@
+const dni = document.getElementById("dni");
+
 const password = document.getElementById("password");
 const passwordRequirementErrorMsg = document.getElementById("passwordRequirementError");
 const passwordIsEmpty = () => password.value.trim() === "";
@@ -7,7 +9,6 @@ const confirmPasswordErrorMsg = document.getElementById("confirmPasswordError");
 const confirmPasswordIsEmpty = () => confirmPassword.value.trim() === "";
 
 const birthDateInput = document.getElementById("birthDate");
-const birthDateErrorMsg = document.getElementById("birthDateError");
 
 const hasOtherHistory = document.getElementById("hasOtherHistory");
 const otherHistoryFields = document.getElementsByClassName("otherHistoryFields");
@@ -22,6 +23,15 @@ const activityCheckbox = document.getElementById("isPhysicallyActive");
 const activityFields = document.getElementsByClassName("physicallyActiveFields");
 
 const registerErrorMsg = document.getElementById("registerError");
+
+
+function checkDniRequirement() {
+    if(dni.length !== 8)
+        return "Error al registrarse. El DNI debe tener 8 dígitos."
+
+    //if(dni < X000000) // No sé qué límites poner, aparte de que deberían ser dinámicos como hice con la edad.
+        //return "Error al registrarse. El DNI es inválido."
+}
 
 
 function checkPasswordRequirement() {
@@ -103,6 +113,11 @@ function checkErrors() {
     if(birthDateError) {
         return birthDateError;
     }
+
+    const dniError = checkDniRequirement();
+    if(dniError) {
+        return dniError;
+    }
 }
 
 
@@ -154,6 +169,8 @@ function hidePassword(button, visibilityButton, visibilityIcon) {
 
 document.getElementById("register-form").addEventListener("submit", async (event) => {
     event.preventDefault();
+    
+    registerErrorMsg.hidden = true;
 
     const error = checkErrors();
     if(error) {
@@ -161,7 +178,6 @@ document.getElementById("register-form").addEventListener("submit", async (event
         registerErrorMsg.hidden = false;
         return;
     }
-    registerErrorMsg.hidden = true;
 
     const form = event.target;
 

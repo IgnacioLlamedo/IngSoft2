@@ -96,6 +96,8 @@ const email = parametrosURL.get('email');
 document.getElementById("reset-password-form").addEventListener("submit", async (event) => {
 
     event.preventDefault();
+    
+    resetPasswordErrorMsg.hidden = true;
 
     const error = checkErrors();
     if(error) {
@@ -103,7 +105,6 @@ document.getElementById("reset-password-form").addEventListener("submit", async 
         resetPasswordErrorMsg.hidden = false;
         return;
     }
-    resetPasswordErrorMsg.hidden = true;
 
     const data = {
         mail: email,
