@@ -282,3 +282,17 @@ html {
   width: 100%;
   height: 100%;
 }
+
+.btn-volver{
+    background: transparent;
+    border: none;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.btn-volver:hover{
+    color: #1565c0;
+}

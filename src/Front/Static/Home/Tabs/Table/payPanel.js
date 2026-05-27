@@ -51,6 +51,21 @@ function abrirPago(elemento) {
     document.getElementById("panelPago").classList.add("panel-abierto");
 }
 
+function mostrarOpcionesClaseUnica() {
+
+    document.getElementById("btnMensual").hidden = true;
+    document.getElementById("btnClaseUnica").hidden = true;
+
+    document.getElementById("btnSeña").hidden = false;
+    document.getElementById("btnCompleta").hidden = false;
+
+    document.getElementById("btnVolver").hidden = false;
+
+    //Cambio los colores para distinguirlos de los anteriores.
+    document.getElementById("btnSeña").style.backgroundColor = "#2e8b57";
+    document.getElementById("btnCompleta").style.backgroundColor = "#2e8b57";
+}
+
 function convertirTextoADate(texto) {
 
     const [fechaParte, horarioParte] = texto.split(' ');
@@ -69,18 +84,41 @@ function convertirTextoADate(texto) {
 
     return fecha;
 }
-
+/* 
 function cerrarPanel() {
     document.getElementById("panelPago").classList.remove("panel-abierto");
+} */
+
+//Nuevo cerrar panel para resetear el estado a como estaba al inicio
+
+function cerrarPanel() {
+
+    document.getElementById("panelPago").classList.remove("panel-abierto");
+
+    volverOpcionesPago();
 }
 
-function pagarClaseUnica() {
-    pagar("unica", precioSeleccionado);
+function volverOpcionesPago() {
+
+    document.getElementById("btnClaseUnica").hidden = false;
+    document.getElementById("btnMensual").hidden = false;
+
+    document.getElementById("btnSeña").hidden = true;
+    document.getElementById("btnCompleta").hidden = true;
+    document.getElementById("btnVolver").hidden = true;
+}
+
+function pagarTotalidadClaseUnica() {
+    pagar("unica", precioSeleccionado/4);
+}
+
+function pagarSeñaClaseUnica() {
+    pagar("seña", (precioSeleccionado/4)/2);
 }
 
 function pagarMensual() {
     // Ajustá la lógica de precio mensual según tu necesidad
-    pagar("mensual", precioSeleccionado * 4);
+    pagar("mensual", precioSeleccionado);
 }
 
 async function pagar(tipoClase, precio) {
@@ -100,7 +138,7 @@ async function pagar(tipoClase, precio) {
     });
 
     const resData = await res.json();
-    if (resData.success) {
+    if ((resData.success) || (resData.message == "Error al consultar en db(?")) {
         const res = await fetch('/api/pago/crear-preferencia', {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -115,8 +153,9 @@ async function pagar(tipoClase, precio) {
         const resPreferencia = await res.json();
         window.open(resPreferencia.init_point, "_blank");
         }
-    else
+    else{
         //Cambiar -> document.getElementById("").appendChild() crear texto bajo el botón
-        window.alert(resData.message);
-    
+            window.alert(resData.message);
+
+    }
 }

@@ -52,8 +52,8 @@ async function guardarPago(data, ext) {
     })
 
     const resData = await res.json();
-    console.log("hola soy guardarPAgo este es mi res: ");
-    console.log(resData);
+    /* console.log("hola soy guardarPAgo este es mi res: ");
+    console.log(resData); */
     if(true)//resData.success)
         await guardarReserva(resData, ext);
 }
@@ -63,29 +63,31 @@ async function guardarReserva(pagoData, ext) {
 
     const extParsed = JSON.parse(ext);
 
-    console.log("EXTERNOS PARSEADOS:");
+    /* console.log("EXTERNOS PARSEADOS:");
     console.log(extParsed);
     console.log("La fecha recibida en extParsed (Externos de MP) es: ");
-    console.log(extParsed.fechaEspecifica);
+    console.log(extParsed.fechaEspecifica); */
 
     //ExtParsed NO tiene tipoClase.
-    if(extParsed.tipoClase == "unica") {
-        console.log("hola soy guardar reserva UNICA");
+    if ((extParsed.tipoClase == "unica") || (extParsed.tipoClase == "seña")) {
+        /* console.log("hola soy guardar reserva UNICA"); */
+
+        let señada = false;
+        if (extParsed.tipoClase == "seña")
+            señada = true;
 
         const data  = {
             idClase: pagoData.data.idClase,
             pagos: [{idPago: pagoData.data._id}],
-            señada: false,
+            señada: señada,
             idUsuario: pagoData.data.idUsuario,
             fechaEspecifica: extParsed.fechaEspecifica
         };
 
-        console.log("Estos son los datos que se usarán para cargar la clase especifica y para crear la reserva: ");
-        console.log(data)
+        /* console.log("Estos son los datos que se usarán para cargar la clase especifica y para crear la reserva: ");
+        console.log(data) */
 
         const dataString = JSON.stringify(data);
-        console.log("Lo mismo que antes pero en stringify: ");
-        console.log(dataString);
 
         const res = await fetch("/api/clases/post-reserva-unica", {
             method: "POST",
@@ -107,7 +109,7 @@ async function guardarReserva(pagoData, ext) {
             idClase: pagoData.data.idClase,
             pagos: [{idPago: pagoData.data._id}],
             idUsuario: pagoData.data.idUsuario,
-            fechaEspecifica: new Date(Date.now()),
+            fechaEspecifica: new Date(Date.now()), //Esto cambiarlo
         };
 
         const dataString = JSON.stringify(data);

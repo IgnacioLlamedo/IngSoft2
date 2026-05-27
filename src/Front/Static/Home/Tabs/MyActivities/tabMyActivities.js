@@ -72,7 +72,7 @@ async function getMyReservations() {
 
             fecha:
                 r.__t === "ReservaUnica"
-                ? new Date(r.reserva.fechaEspecifica)
+                ? new Date(r.fechaEspecifica)
                     .toLocaleDateString("es-AR")
                 : null,
 

@@ -10,10 +10,14 @@ async function getAllClasses() {
 
     const resData = await res.json();
     clasesData = resData.clases;
-    /* console.log("Desde classSlot.js -> estas son las clases conseguidas de db: ")
-    console.log(clasesData); */
+    console.log("Desde classSlot.js -> estas son las clases conseguidas de db: ")
+    console.log(clasesData);
 
     clasesData.forEach(claseObj => {
+
+        console.log(claseObj);
+        console.log(claseObj.sala);
+        console.log(claseObj.actividad);
 
         const tdId = `${claseObj.clase.dia}-${claseObj.clase.hora}`;
 
