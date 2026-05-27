@@ -39,4 +39,33 @@ export class claseEspecificaDao {
         }
         return deleted
     }
+    async populate(query){
+        const populated = await ClaseEspecifica.find(query).populate([
+            {
+                path: 'anotados',
+                populate: {
+                    path: 'idUsuario'
+                }
+            },
+            {
+                path: 'espera',
+                populate: {
+                    path: 'idUsuario'
+                }
+            },
+            {
+                path: 'idClaseGeneral',
+                populate: [
+                    { path: 'idActividad' },
+                    { path: 'idProfesor' },
+                    { path: 'idSala' }
+                ]
+            }
+        ])
+        if(!populated){
+            //provisional, desarrollar luego
+            console.log("error")
+        }
+        return populated
+    }
 }
