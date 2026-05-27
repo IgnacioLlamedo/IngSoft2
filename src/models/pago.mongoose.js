@@ -7,8 +7,8 @@ const pagoSchema = new Schema({
     _id: { type: String, default: randomUUID },
     monto: { type: Number, required: true },
     idUsuario: { type: String, required: true, ref: 'usuarios' },
-    idClase: { type: String, required: true, ref: 'clases' },
-    fecha: { type: Date, required: true, default: Date.now() },
+    idClase: { type: String, required: true, ref: 'clasesEspecificas' },
+    fecha: { type: Date, required: true },
 }, {
     strict: 'throw',
     versionKey: false,

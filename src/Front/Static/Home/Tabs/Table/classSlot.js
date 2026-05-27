@@ -10,6 +10,8 @@ async function getAllClasses() {
 
     const resData = await res.json();
     clasesData = resData.clases;
+    /* console.log("Desde classSlot.js -> estas son las clases conseguidas de db: ")
+    console.log(clasesData); */
 
     clasesData.forEach(claseObj => {
 
@@ -19,9 +21,33 @@ async function getAllClasses() {
 
         if (celda) {
             celda.innerText = claseObj.actividad.nombre;
-            celda.dataset.id = claseObj.clase._id;
+            celda.dataset.id = claseObj.clase._id; //Para mandar por crearPreferencia
             celda.dataset.clase = claseObj.actividad.nombre;
-            celda.dataset.precio = 1;
+            celda.dataset.precio = 1; //Esto está hardcodeado -> cambiar en prod. 
+/* 
+            //No es top-level moduel, no se puede hacer fetch -> eliminar.
+            const esp = await fetch("/api/clases/conseguir-especifica", {
+                method: 'GET',
+                body: JSON.stringify(claseObj.clase._id)
+            })
+            const resEsp = await res.json(); */
+            let capacidadActual;
+
+            //Si no tengo clase especifica, significa que no la creé y por lo tanto no tiene alumnos anotados.
+/*             console.log(claseObj.claseEsp);
+            console.log(claseObj.claseEsp.anotados); */
+            if (claseObj.claseEsp){
+                const cant = claseObj.claseEsp.anotados.length;
+                /* console.log("La capacidad de la clase actual conseguida es: " + cant); //resEsp.capacidad);
+                console.log(claseObj.claseEsp.anotados);
+                console.log(typeof(claseObj.claseEsp.anotados))
+                console.log(claseObj.claseEsp.anotados.length); */
+                capacidadActual = claseObj.claseEsp.anotados.length +"/"+ claseObj.clase.limiteClase; //Cambiar formato.
+            }
+            else
+                capacidadActual = "0/"+claseObj.clase.limiteClase;
+            celda.dataset.capacidad = capacidadActual;
+
             celda.onclick = () => abrirPago(celda);
 
             switch (claseObj.actividad.nombre) {

@@ -1,4 +1,4 @@
-import { profesorDao } from "../daos/index.js";
+import { claseGeneralDao, profesorDao } from "../daos/index.js";
 import { salaDao } from "../daos/index.js";
 import { sedeDao } from "../daos/index.js";
 import { actividadDao } from "../daos/index.js";
@@ -91,6 +91,15 @@ export async function modificarProfesor(req, res){
 export async function eliminarProfesor(req, res){
     try {
         let data = req.body
+
+        const clases = await claseGeneralDao.readMany({idProfesor: data.id})
+        if(clases.length > 0){
+            return res.json({
+                success: false,
+                message: "Error al eliminar profesor. Hay clases que corresponden a ese profesor, borre o edite primero las clases."
+            });
+        }
+
         await profesorDao.deleteOne({_id: data.id})
 
         res.json({
@@ -229,6 +238,15 @@ export async function modificarSala(req, res) {
 export async function eliminarSala(req, res){
     try {
         let data = req.body
+
+        const clases = await claseGeneralDao.readMany({idSala: data.id})
+        if(clases.length > 0){
+            return res.json({
+                success: false,
+                message: "Error al eliminar sala. Hay clases que corresponden a esa sala, borre o edite primero las clases."
+            });
+        }
+
         await salaDao.deleteOne({_id: data.id})
 
         res.json({
@@ -359,6 +377,16 @@ export async function modificarSede(req, res){
 export async function eliminarSede(req, res){
     try {
         let data = req.body
+
+        //Este no lo puedo probar porque no esta implementado lo de las sedes, pero da igual porque no lo vamos a usar, lo escribo solo por consistencia
+        const salas = await sedeDao.readMany({_id: data.id}).salas
+        if(salas.length > 0){
+            return res.json({
+                success: false,
+                message: "Error al eliminar sede. Hay salas que corresponden a esa sede, borre o edite primero las salas."
+            });
+        }
+
         await sedeDao.deleteOne({_id: data.id})
 
         res.json({
@@ -493,6 +521,15 @@ export async function modificarActividad(req, res){
 export async function eliminarActividad(req, res){
     try {
         let data = req.body
+
+        const clases = await claseGeneralDao.readMany({idActividad: data.id})
+        if(clases.length > 0){
+            return res.json({
+                success: false,
+                message: "Error al eliminar actividad. Hay clases que corresponden a esa actividad, borre o edite primero las clases."
+            });
+        }
+
         await actividadDao.deleteOne({_id: data.id})
 
         res.json({
