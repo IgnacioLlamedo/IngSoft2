@@ -38,7 +38,10 @@ function printSlots(slots) {
         const slotElem = document.createElement("div");
         slotElem.classList.add("slot");
 
-        slotElem.innerHTML =`
+        const slotData = document.createElement("div");
+        slotData.classList.add("slot-data");
+
+        slotData.innerHTML =`
             <p>Sala: ${slot.sala.nombre}</p>
             <p>Actividad: ${slot.actividad.nombre}</p>
             <p>Día: ${slot.clase.dia}</p>
@@ -47,6 +50,56 @@ function printSlots(slots) {
             <p>Profesor: ${slot.profesor.nombre}</p>
             <p>Precio: ${slot.clase.precioMensual}</p>
         `;
+
+        const slotError = document.createElement("div");
+        slotError.classList.add("slot-error");
+        slotError.classList.add("none");
+
+        const errorHr = document.createElement("hr");
+        const errorMsg = document.createElement("p");
+        errorMsg.classList.add("errorMsgWithOutPadding");
+
+        slotError.appendChild(errorHr);
+        slotError.appendChild(errorMsg);
+
+        const buttonsDiv = document.createElement("div");
+        buttonsDiv.classList.add("buttons-container");
+
+        const slotEditButton = document.createElement("button");
+        slotEditButton.classList.add("edit-button");
+        slotEditButton.textContent = "Editar";
+        /* slotEditButton.onclick = () => switchToEdit(slot.nombre, slot.dni, slot.genero, slot._id); */
+
+        const slotDeleteButton = document.createElement("button");
+        slotDeleteButton.classList.add("delete-button");
+        slotDeleteButton.type = "button";
+        slotDeleteButton.textContent = "Borrar";
+
+        /* slotDeleteButton.addEventListener('click', () => {
+            const dialog = document.getElementById('confirmPanel');
+            if (!dialog) {
+                // Fallback: no dialog present, delete immediately
+                deleteActivity(null, slot._id, slotError, errorMsg);
+                return;
+            }
+
+            dialog.showModal();
+
+            dialog.addEventListener('close', (closeEvent) => {
+                if (dialog.returnValue === 'default') {
+                    // pass the close event (may be null) — deleteActivity guards event usage
+                    deleteActivity(closeEvent, slot._id, slotError, errorMsg);
+                }
+            }, { once: true });
+        }); */
+
+
+        buttonsDiv.appendChild(slotEditButton);
+        buttonsDiv.appendChild(slotDeleteButton);
+        slotData.appendChild(buttonsDiv);
+
+        slotElem.appendChild(slotData);
+        slotElem.appendChild(slotError);
 
         slotsList.appendChild(slotElem);
 

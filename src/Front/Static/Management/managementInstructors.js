@@ -73,7 +73,25 @@ function printSlots(slots) {
         slotDeleteButton.classList.add("delete-button");
         slotDeleteButton.type = "button";
         slotDeleteButton.textContent = "Borrar";
-        slotDeleteButton.addEventListener("click", async (event) => deleteActivity(event, slot._id, slotError, errorMsg));
+
+        slotDeleteButton.addEventListener('click', () => {
+            const dialog = document.getElementById('confirmPanel');
+            if (!dialog) {
+                // Fallback: no dialog present, delete immediately
+                deleteActivity(null, slot._id, slotError, errorMsg);
+                return;
+            }
+
+            dialog.showModal();
+
+            dialog.addEventListener('close', (closeEvent) => {
+                if (dialog.returnValue === 'default') {
+                    // pass the close event (may be null) — deleteActivity guards event usage
+                    deleteActivity(closeEvent, slot._id, slotError, errorMsg);
+                }
+            }, { once: true });
+        });
+
 
         buttonsDiv.appendChild(slotEditButton);
         buttonsDiv.appendChild(slotDeleteButton);
@@ -169,7 +187,7 @@ function CleanMsgs() {
 
 
 async function deleteActivity(event, _id, slotError, errorMsg) {
-    event.preventDefault();
+    if (event && typeof event.preventDefault === 'function') event.preventDefault();
 
     slotError.classList.add("none");
 
