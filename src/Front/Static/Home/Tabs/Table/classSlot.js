@@ -15,9 +15,11 @@ async function getAllClasses() {
 
     clasesData.forEach(claseObj => {
 
-        console.log(claseObj);
+        /* console.log(claseObj); Si empieza a haber errores a la hora de mostrar las clases, usar esto
+        para debuggear, Por cada claseGeneral que haya te genera 3 objetos y podes ver cual es
+        el que le falta info.
         console.log(claseObj.sala);
-        console.log(claseObj.actividad);
+        console.log(claseObj.actividad); */
 
         const tdId = `${claseObj.clase.dia}-${claseObj.clase.hora}`;
 
@@ -28,24 +30,12 @@ async function getAllClasses() {
             celda.dataset.id = claseObj.clase._id; //Para mandar por crearPreferencia
             celda.dataset.clase = claseObj.actividad.nombre;
             celda.dataset.precio = 1; //Esto está hardcodeado -> cambiar en prod. 
-/* 
-            //No es top-level moduel, no se puede hacer fetch -> eliminar.
-            const esp = await fetch("/api/clases/conseguir-especifica", {
-                method: 'GET',
-                body: JSON.stringify(claseObj.clase._id)
-            })
-            const resEsp = await res.json(); */
-            let capacidadActual;
-
-            //Si no tengo clase especifica, significa que no la creé y por lo tanto no tiene alumnos anotados.
-/*             console.log(claseObj.claseEsp);
+            
+            /* //Si no tengo clase especifica, significa que no la creé y por lo tanto no tiene alumnos anotados.
+            console.log(claseObj.claseEsp);
             console.log(claseObj.claseEsp.anotados); */
             if (claseObj.claseEsp){
                 const cant = claseObj.claseEsp.anotados.length;
-                /* console.log("La capacidad de la clase actual conseguida es: " + cant); //resEsp.capacidad);
-                console.log(claseObj.claseEsp.anotados);
-                console.log(typeof(claseObj.claseEsp.anotados))
-                console.log(claseObj.claseEsp.anotados.length); */
                 capacidadActual = claseObj.claseEsp.anotados.length +"/"+ claseObj.clase.limiteClase; //Cambiar formato.
             }
             else

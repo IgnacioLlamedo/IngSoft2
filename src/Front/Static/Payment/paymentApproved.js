@@ -25,6 +25,20 @@ container.innerHTML =
                 <strong>Precio:</strong>
                 $${externo.precio}
             </p>
+
+            ${
+            externo.tipoClase === "seña"
+            ?
+            `
+            <div class="mensaje-seña">
+                Recuerde que para acceder a la clase debe completar el pago desde la pestaña 
+                <strong>Mis actividades → Pagar restante</strong>.
+            </div>
+            `
+            :
+            ""
+        }
+
         </div>
 </div>`;
 
@@ -52,8 +66,6 @@ async function guardarPago(data, ext) {
     })
 
     const resData = await res.json();
-    /* console.log("hola soy guardarPAgo este es mi res: ");
-    console.log(resData); */
     if(true)//resData.success)
         await guardarReserva(resData, ext);
 }
@@ -63,19 +75,13 @@ async function guardarReserva(pagoData, ext) {
 
     const extParsed = JSON.parse(ext);
 
-    /* console.log("EXTERNOS PARSEADOS:");
-    console.log(extParsed);
-    console.log("La fecha recibida en extParsed (Externos de MP) es: ");
-    console.log(extParsed.fechaEspecifica); */
-
-    //ExtParsed NO tiene tipoClase.
     if ((extParsed.tipoClase == "unica") || (extParsed.tipoClase == "seña")) {
-        /* console.log("hola soy guardar reserva UNICA"); */
 
         let señada = false;
-        if (extParsed.tipoClase == "seña")
+        if (extParsed.tipoClase == "seña"){
             señada = true;
 
+        }
         const data  = {
             idClase: pagoData.data.idClase,
             pagos: [{idPago: pagoData.data._id}],
