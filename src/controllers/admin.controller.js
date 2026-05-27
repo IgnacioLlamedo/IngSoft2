@@ -219,20 +219,17 @@ export async function modificarSala(req, res) {
             }
         }
 
+        console.log(data);
         if(data.limiteSala !== currentRoom.limiteSala){
             const clases = await claseGeneralDao.readMany({idSala: data.id})
-            let bool = false
-            for(const clase in clases) {
+
+            for(const clase of clases) {
                 if(clase.limiteClase > data.limiteSala){
-                    bool = true
-                    break
+                    return res.json({
+                        success: false,
+                        message: "Error al modificar la sala. El cupo ingresado es menor al asignado en alguna de las clases de esta sala."
+                    })
                 }
-            }
-            if(bool){
-                return res.json({
-                    success: false,
-                    message: "Error al modificar la sala. Modificación cancelada por clases con tope mayor a la modificación solicitada, por favor modifique las clases primero"
-                })
             }
         }
 

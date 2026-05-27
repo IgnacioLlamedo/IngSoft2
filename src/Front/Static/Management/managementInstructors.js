@@ -41,12 +41,25 @@ function printSlots(slots) {
         const slotElem = document.createElement("div");
         slotElem.classList.add("slot");
 
-        slotElem.innerHTML =`
+        const slotData = document.createElement("div");
+        slotData.classList.add("slot-data");
+
+        slotData.innerHTML =`
             <p>Nombre: ${slot.nombre}</p>
             <p>DNI: ${slot.dni}</p>
             <p>Género: ${slot.genero}</p>
         `;
 
+        const slotError = document.createElement("div");
+        slotError.classList.add("slot-error");
+        slotError.classList.add("none");
+
+        const errorHr = document.createElement("hr");
+        const errorMsg = document.createElement("p");
+        errorMsg.classList.add("errorMsgWithOutPadding");
+
+        slotError.appendChild(errorHr);
+        slotError.appendChild(errorMsg);
 
         const buttonsDiv = document.createElement("div");
         buttonsDiv.classList.add("buttons-container");
@@ -60,12 +73,14 @@ function printSlots(slots) {
         slotDeleteButton.classList.add("delete-button");
         slotDeleteButton.type = "button";
         slotDeleteButton.textContent = "Borrar";
-        slotDeleteButton.addEventListener("click", async (event) => deleteActivity(event, slot._id));
+        slotDeleteButton.addEventListener("click", async (event) => deleteActivity(event, slot._id, slotError, errorMsg));
 
         buttonsDiv.appendChild(slotEditButton);
         buttonsDiv.appendChild(slotDeleteButton);
-        slotElem.appendChild(buttonsDiv);
+        slotData.appendChild(buttonsDiv);
 
+        slotElem.appendChild(slotData);
+        slotElem.appendChild(slotError);
 
         slotsList.appendChild(slotElem);
 
@@ -153,8 +168,10 @@ function CleanMsgs() {
 
 
 
-async function deleteActivity(event, _id) {
+async function deleteActivity(event, _id, slotError, errorMsg) {
     event.preventDefault();
+
+    slotError.classList.add("none");
 
     const data = {
         id: _id,
@@ -174,6 +191,10 @@ async function deleteActivity(event, _id) {
 
     if(resData.success)
         getAllSlots();
+    else {
+        errorMsg.textContent = resData.message;
+        slotError.classList.remove("none");
+    }
 }
 
 

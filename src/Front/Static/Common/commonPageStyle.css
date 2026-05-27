@@ -60,6 +60,11 @@ body {
     padding: 15px;
 }
 
+.errorMsgWithOutPadding {
+    color: rgb(255, 30, 30);
+    font-size: 20px;
+}
+
 
 .errorMsgJustRed {
     color: rgb(255, 30, 30);
