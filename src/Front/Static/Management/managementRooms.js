@@ -59,7 +59,25 @@ function printSlots(slots) {
         slotDeleteButton.classList.add("delete-button");
         slotDeleteButton.type = "button";
         slotDeleteButton.textContent = "Borrar";
-        slotDeleteButton.addEventListener("click", async (event) => deleteActivity(event, slot._id));
+
+        // Show confirmation dialog and delete only on confirm
+        slotDeleteButton.addEventListener('click', () => {
+            const dialog = document.getElementById('confirmPanel');
+            if (!dialog) {
+                // Fallback: no dialog present, delete immediately
+                deleteActivity(null, slot._id);
+                return;
+            }
+
+            dialog.showModal();
+
+            dialog.addEventListener('close', (closeEvent) => {
+                if (dialog.returnValue === 'default') {
+                    // pass the close event (may be null) — deleteActivity guards event usage
+                    deleteActivity(closeEvent, slot._id);
+                }
+            }, { once: true });
+        });
 
         buttonsDiv.appendChild(slotEditButton);
         buttonsDiv.appendChild(slotDeleteButton);
@@ -154,7 +172,7 @@ function CleanMsgs() {
 
 
 async function deleteActivity(event, _id) {
-    event.preventDefault();
+    if (event && typeof event.preventDefault === 'function') event.preventDefault();
 
     const data = {
         id: _id,
