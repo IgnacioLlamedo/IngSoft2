@@ -220,6 +220,23 @@ export async function modificarSala(req, res) {
             }
         }
 
+        if(data.limiteSala !== currentRoom.limiteSala){
+            const clases = await claseGeneralDao.readMany({idSala: data.id})
+            let bool = false
+            for(const clase in clases) {
+                if(clase.limiteClase > data.limiteSala){
+                    bool = true
+                    break
+                }
+            }
+            if(bool){
+                return res.json({
+                    success: false,
+                    message: "Error al modificar la sala. Modificación cancelada por clases con tope mayor a la modificación solicitada, por favor modifique las clases primero"
+                })
+            }
+        }
+
         await salaDao.updateOne({_id: data.id}, data)
 
         res.json({
