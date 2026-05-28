@@ -302,6 +302,3 @@ input[type=number] {
 .inputError:focus, .passwordRequirementError:focus, .confirmPasswordError:focus {
     color: black;
 }
-
-
-

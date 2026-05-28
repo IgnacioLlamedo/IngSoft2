@@ -154,13 +154,9 @@ export async function consultar(req, res) {
 
 export async function confirmarPagoController(req, res){
     try {
-<<<<<<< HEAD
         const dataPago = req.body;
         console.log("Los datos que llegan a almacenarPagoController");
         console.log(dataPago);
-=======
-        let dataPago = req.body;
->>>>>>> f092f67859a42ccb0807fa58ba85a79113d7fa18
 
         console.log("El contenido de body dentro de confirmarPagoController es: ");
         console.log(dataPago);
