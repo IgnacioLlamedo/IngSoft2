@@ -39,4 +39,16 @@ export class claseGeneralDao {
         }
         return deleted
     }
+    async populate(query){
+        const populated = await ClaseGeneral.find(query).populate([
+            { path: 'idActividad' },
+            { path: 'idProfesor' },
+            { path: 'idSala' }
+        ])
+        if(!populated){
+            //provisional, desarrollar luego
+            console.log("error")
+        }
+        return populated
+    }
 }

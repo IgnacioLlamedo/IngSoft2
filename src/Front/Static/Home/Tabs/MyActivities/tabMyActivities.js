@@ -118,6 +118,7 @@ const dayFilter = document.getElementById("dayOfTheWeekFilter");
 
 // Contenedor principal donde se insertan las cajas
 const main = document.querySelector("main");
+const reservasContainter = document.getElementById("reservasContainter");
 
 // Función para renderizar las actividades según filtros
 function renderActividades() {
@@ -239,7 +240,7 @@ function renderActividades() {
     boxContent.appendChild(buttonsContainer);
     box.appendChild(boxContent);
 
-    main.appendChild(box);
+    reservasContainter.appendChild(box);
   });
 }
 

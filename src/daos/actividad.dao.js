@@ -4,6 +4,7 @@ export class actividadDao {
     async create(datos){
         return await Actividad.create(datos)
     }
+
     async readOne(query){
         const actividad = await Actividad.findOne(query).lean()
         if(!actividad){
@@ -12,9 +13,11 @@ export class actividadDao {
         }
         return actividad
     }
+
     async readMany(query){
         return await Actividad.find(query).lean()
     }
+
     async updateOne(query, datos){
         const updated = await Actividad.findOneAndUpdate(query, datos, { returnDocument: 'after' }).lean()
         if(!updated){
@@ -23,6 +26,7 @@ export class actividadDao {
         }
         return updated
     }
+
     async deleteOne(query){
         const deleted = await Actividad.findOneAndDelete(query).lean()
         if(!deleted){
@@ -31,6 +35,7 @@ export class actividadDao {
         }
         return deleted
     }
+    
     async deleteMany(query){
         const deleted = await Actividad.deleteMany(query).lean()
         if(!deleted){

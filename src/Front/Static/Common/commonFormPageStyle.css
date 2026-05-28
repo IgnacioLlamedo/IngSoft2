@@ -15,7 +15,8 @@
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
     background-color: #252525;
 
-    padding: 40px;
+    padding-inline: 40px;
+    padding-block: 40px 55px;
     gap: 20px;
 }
 
@@ -127,6 +128,7 @@
 .checkbox-container input {
     height: 40px;
     width: 40px;
+    accent-color: #163F7A;
 }
 
 
@@ -240,6 +242,12 @@ input[type=number] {
 }
 
 
+.disabled-anchor {
+    pointer-events: none;
+    color: #888888;
+}
+
+
 
 
 
@@ -256,6 +264,25 @@ input[type=number] {
     cursor: pointer;
 }
 
+.submit-blue {
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    margin-top: 30px;
+    font-size: 30px;
+    font-weight: 500;
+    background-color: #163F7A;
+    color: white;
+    cursor: pointer;
+}
+
+
+.options {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+}
 
 
 

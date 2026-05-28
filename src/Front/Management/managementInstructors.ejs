@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="icon" href="/Images/Common/favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href="/Common/commonPageStyle.css">
+    <link rel="stylesheet" href="/Common/commonFormPageStyle.css">
+    <link rel="stylesheet" href="/Management/managementStyle.css">
+
+
+    <title>CEF - Gestión</title>
+</head>
+
+<body>
+    <header>
+        <%- include('../Navbar/navbarSelector.ejs') %>
+    </header>
+
+    <h1 class="title">Gestión</h1>
+
+    <%- include('../Management/managementNav.html') %>
+
+    <main class="main-container">
+
+        <form id="new-instructor-form" class="form">
+            
+            <div class="form-card">
+
+                <h1 class="form-card-title">Crear nuevo profesor</h1>
+                
+                <section class="form-section">
+
+                    <div class="input-group">
+                        <label for="name">Nombre completo:</label>
+                        <input type="text" name="name" required pattern=".*\S+.*">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="dni">DNI:</label>
+                        <input type="number" name="dni" required pattern=".*\S+.*">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="gender">Género:</label>
+                        <select name="gender">
+                            <option value="masculino">Masculino</option>
+                            <option value="femenino">Femenino</option>
+                            <option value="otro">Otro</option>
+                        </select>
+                    </div>
+
+                </section>
+
+                <section class="form-section">
+                    <p id="createError" class="errorMsg" hidden></p>
+                    <p id="createSuccess" class="successMsg" hidden></p>
+                    <button class="submit-blue">Crear Profesor</button>
+                </section>
+
+            </div>
+        </form>
+
+
+        <template id="edit-instructor-form">
+            <form class="form">
+            
+                <div class="form-card">
+
+                    <h1 class="form-card-title">Modificar Profesor</h1>
+                    
+                    <section class="form-section">
+
+                        <div class="input-group">
+                        <label for="name">Nombre completo:</label>
+                        <input id="nameField" type="text" name="name" required pattern=".*\S+.*">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="dni">DNI:</label>
+                        <input id="dniField" type="number" name="dni" required pattern=".*\S+.*">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="gender">Género:</label>
+                        <select id="genderField" name="gender">
+                            <option value="masculino">Masculino</option>
+                            <option value="femenino">Femenino</option>
+                            <option value="otro">Otro</option>
+                        </select>
+                    </div>
+
+                    </section>
+
+                    <section class="form-section">
+                        <p id="editError" class="errorMsg" hidden></p>
+                        <p id="editSuccess" class="successMsg" hidden></p>
+                        <div class="options">
+                            <button class="submit-blue">Modificar Profesor</button>
+                            <button id="editCancel" class="submit">Cancelar</button>
+                        </div>
+                    </section>
+
+                </div>
+            </form>
+        </template>
+
+
+
+        <section class="list-card">
+            <h1> Lista de Profesores: </h1>
+
+            <div id="slotsList" class="list">
+
+            </div>
+
+            <p id="notDataAvailableMsg" hidden> ¡No existen profesores todavía! </p>
+            
+        </section>
+
+    </main>
+
+    <%- include('../Navbar/footer.html') %>
+
+    <script src="/Management/managementInstructors.js"></script>
+
+    <dialog id="confirmPanel">
+        <p>¿Está seguro que desea borrar el Profesor?</p>
+        <form method="dialog">
+            <button value="cancel">Cancelar</button>
+            <button id="confirmBtn" value="default">Borrar Profesor</button>
+        </form>
+    </dialog>
+
+</body>
+
+</html>

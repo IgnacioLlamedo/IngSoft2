@@ -1,19 +1,7 @@
-* {
-  font-family: sans-serif Arial, Helvetica;
-}
 
-html, body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  overflow-x: hidden; /* bloquea scroll horizontal */
+.main-container {
+  flex-direction: column;
 }
-
-body {
-  min-height: 100vh;
-  background-color: rgb(94, 94, 94);
-}
-
 
 
 /* Css modal */
@@ -53,13 +41,6 @@ body {
   height: 100%;
 }
 
-main {
-  padding: 20px;
-  font-family: sans-serif;
-  margin-left: 40px;
-  margin-right: 40px;
-}
-
 .filters-container {
   display: flex;
   flex-direction: row;
@@ -73,40 +54,52 @@ main {
 
 
 
+
+.reservas-containter {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+
+
+
+
+
 .box {
-    display: flex;
-    flex-direction: column;
-    background-color: rgba(255, 255, 255, 0.8);
-    padding: 20px;
-    margin: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  background-color: rgba(114, 114, 114, 0.8);
+  padding: 20px;
+  margin: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .box h3 {
-    margin-top: 5px;
-    color: #333;
+  margin-top: 5px;
+  color: #ffffff;
 }
 
 .box-content {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    gap: 10px;
-    margin-top: 10px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 10px;
 }
 
 .box-buttons-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    gap: 20px;
-    margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 20px;
+  margin-top: 20px;
 }
 
 hr {
-    border: none;
-    border-top: 2px solid #000000;
-    margin: 0px 10px;
+  border: none;
+  border-top: 2px solid #000000;
+  margin: 0px 10px;
 }
 
