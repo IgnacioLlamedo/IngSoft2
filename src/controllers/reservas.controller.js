@@ -125,8 +125,8 @@ export async function getMyReservations(req, res) {
         }
 
         const idUsuario = req.session.user.id;
-        console.log("Id de usuario desde reservas.controller: ");
-        console.log(idUsuario);
+        /* console.log("Id de usuario desde reservas.controller: ");
+        console.log(idUsuario); */
 
         //Obtengo las reservas de clases únicas y mensuales del usuario
         const reservasUnicas = await reservaDao.readManyUnica({
@@ -152,8 +152,8 @@ export async function getMyReservations(req, res) {
             ...reservasUnicas,
             ...reservasMensuales
         ];
-        console.log("Las reservas unicas y mensuales del usuario son: ")
-        console.log(reservas);
+        /* console.log("Las reservas unicas y mensuales del usuario son: ")
+        console.log(reservas); */
 
         /* Esto estaria bueno modificarlo porque se traen todas las clases,
         actividades, salas y profesores.
@@ -212,8 +212,8 @@ export async function getMyReservations(req, res) {
         reservasTotal = reservasTotal.concat(reservasUnicasTotal)
         reservasTotal = reservasTotal.concat(reservasMensualesTotal)
 
-        console.log("Las reservas TOTALES del usuario son: ")
-        console.log(reservasTotal);
+        /* console.log("Las reservas TOTALES del usuario son: ")
+        console.log(reservasTotal); */
         
         res.json({
             success: true,
@@ -236,8 +236,8 @@ export async function postReservaUnica(req, res) {
     try {
         const reservaData = req.body;
 
-        console.log("(Back) - Datos recibidos en postReservaUnica -> desde paymentApproved.js: ");
-        console.log(reservaData);
+        /* console.log("(Back) - Datos recibidos en postReservaUnica -> desde paymentApproved.js: ");
+        console.log(reservaData); */
         
         const idClaseGeneral = reservaData.clases[0].idClase;
         const fecha = reservaData.clases[0].fecha;
@@ -260,8 +260,8 @@ export async function postReservaUnica(req, res) {
         console.log(claseGeneral); */
         let claseEspecifica = await claseEspecificaDao.readOne({ idClaseGeneral: claseGeneral._id,
             fechaEspecifica: fechaBuscada })
-        console.log("La clase especifica encontrada segun el idGeneral " + idClaseGeneral + " y la fecha especifica " + fecha + " es: ");
-        console.log(claseEspecifica);
+        /* console.log("La clase especifica encontrada segun el idGeneral " + idClaseGeneral + " y la fecha especifica " + fecha + " es: ");
+        console.log(claseEspecifica); */
         if (!claseEspecifica) {
             console.log("No existeclase especifica (desde postReservaUnica)");
             //Creo la clase especifica con el usuario anotado.
@@ -284,11 +284,11 @@ export async function postReservaUnica(req, res) {
             });
         }
         
-        console.log("Existe clase específica (desde postReservaUnica)");
+        //console.log("Existe clase específica (desde postReservaUnica)");
         //Verifico si el usuario está anotado o en espera
         
 
-        console.log("Ya se checkeo que el usuario no este en lista de espera o anotados, ahora, a que lista se anotará? ");
+        //console.log("Ya se checkeo que el usuario no este en lista de espera o anotados, ahora, a que lista se anotará? ");
         //Si existe entonces -> Checkeo capacidad
         const capacidadActual = claseEspecifica.anotados.length;
 //En el caso de la mensual, hay que revisar que las 4 clases tengan espacio de reserva.
@@ -317,7 +317,7 @@ export async function postReservaUnica(req, res) {
             });
         }   
 
-        console.log("NO hay lugar en la clase para anotarse -> pasa a lista de ESPERA.");
+       //console.log("NO hay lugar en la clase para anotarse -> pasa a lista de ESPERA.");
         // Si NO hay lugar -> agrego al arreglo de espera.
         await claseEspecificaDao.updateOne(
                 { _id: claseEspecifica._id },
@@ -359,8 +359,8 @@ export async function postReservaMensual(req, res) {
             tipoClase: "mensualidad" */
         const reservaData = req.body;
 
-        console.log("(Back) - Datos recibidos en postReservaUnica:");
-        console.log(reservaData);
+        /* console.log("(Back) - Datos recibidos en postReservaUnica:");
+        console.log(reservaData); */
 
         const usuarioData = {
             idUsuario: reservaData.idUsuario,
@@ -386,8 +386,8 @@ export async function postReservaMensual(req, res) {
                 fechaEspecifica: fechaBuscada
             });
 
-            console.log("Clase específica encontrada con el idGeneral " + idClaseGeneral + " y fechaEspecifica " + fechaBuscada + " es: ");
-            console.log(claseEspecifica);
+            /* console.log("Clase específica encontrada con el idGeneral " + idClaseGeneral + " y fechaEspecifica " + fechaBuscada + " es: ");
+            console.log(claseEspecifica); */
 
             if (!claseEspecifica) {
 
@@ -433,7 +433,7 @@ export async function postReservaMensual(req, res) {
                 continue;
             }
 
-            console.log("Sin lugar por lo tanto a la cola de espera");
+            //console.log("Sin lugar por lo tanto a la cola de espera");
 
             await claseEspecificaDao.updateOne(
                 { _id: claseEspecifica._id },
