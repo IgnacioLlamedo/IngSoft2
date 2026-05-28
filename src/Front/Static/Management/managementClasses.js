@@ -57,7 +57,7 @@ function printSlots(slots) {
 
         const errorHr = document.createElement("hr");
         const errorMsg = document.createElement("p");
-        errorMsg.classList.add("errorMsgWithOutPadding");
+        errorMsg.classList.add("errorMsg");
 
         slotError.appendChild(errorHr);
         slotError.appendChild(errorMsg);

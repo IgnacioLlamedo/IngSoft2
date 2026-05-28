@@ -54,8 +54,8 @@ header {
 }
 
 .logo-img {
-    height: 90px;
-    overflow: hidden;
+  height: 90px;
+  overflow: hidden;
 }
 
 .user-ico {
@@ -97,11 +97,11 @@ header {
 }
 
 .user-options-list a * {
-    transition: color 0.3s ease;
+  transition: color 0.3s ease;
 }
 
 .user-options-list a:hover * {
-    color: #de2423;
+  color: #de2423;
 }
 
 .user-options-list img {
