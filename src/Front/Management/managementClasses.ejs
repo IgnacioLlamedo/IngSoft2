@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="icon" href="/Images/Common/favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href="/Common/commonPageStyle.css">
+    <link rel="stylesheet" href="/Common/commonFormPageStyle.css">
+    <link rel="stylesheet" href="/Management/managementStyle.css">
+
+
+    <title>CEF - Gestión</title>
+</head>
+
+<body>
+    <header>
+        <%- include('../Navbar/navbarSelector.ejs') %>
+    </header>
+
+    <h1 class="title">Gestión</h1>
+
+    <%- include('../Management/managementNav.html') %>
+
+    <main class="main-container">
+
+        <form id="new-class-form" class="form">
+            
+            <div class="form-card">
+
+                <h1 class="form-card-title">Crear nueva clase</h1>
+                
+                <section class="form-section">
+
+                    <p>No disponible todavía.</p>
+
+                </section>
+
+                <section class="form-section">
+                    <p id="createError" class="errorMsg" hidden></p>
+                    <p id="createSuccess" class="successMsg" hidden></p>
+                    <button hidden class="submit-blue">Crear Clase</button>
+                </section>
+
+            </div>
+        </form>
+
+        <section class="list-card">
+            <h1> Lista de Clases: </h1>
+
+            <div id="slotsList" class="list">
+
+            </div>
+
+            <p id="notDataAvailableMsg" hidden> ¡No existen clases todavía! </p>
+            
+        </section>
+
+    </main>
+
+    <%- include('../Navbar/footer.html') %>
+
+    <script src="/Management/managementClasses.js"></script>
+
+    <dialog id="confirmPanel">
+        <p>¿Está seguro que desea borrar la Clase?</p>
+        <form method="dialog">
+            <button value="cancel">Cancelar</button>
+            <button id="confirmBtn" value="default">Borrar Clase</button>
+        </form>
+    </dialog>
+
+</body>
+
+</html>

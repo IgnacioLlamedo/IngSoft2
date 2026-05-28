@@ -39,5 +39,18 @@ export class sedeDao {
         }
         return deleted
     }
+    async populate(query){
+        const populated = await Sede.find(query).populate({
+            path: 'salas',
+            populate: {
+                path: 'idSala'
+            }
+        })
+        if(!populated){
+            //provisional, desarrollar luego
+            console.log("error")
+        }
+        return populated
+    }
 }
 

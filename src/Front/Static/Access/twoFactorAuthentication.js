@@ -17,6 +17,8 @@ document.getElementById("reenviar-codigo").addEventListener("click", async (even
 document.getElementById("two-factor-authenticator-form").addEventListener("submit", async (event) => {
     event.preventDefault();
 
+    verificationErrorMsg.hidden = true;
+
     const codigo = event.target.codigo.value;
 
     const data = {
@@ -46,6 +48,6 @@ document.getElementById("two-factor-authenticator-form").addEventListener("submi
     else 
     {
         verificationErrorMsg.textContent = resData.message;
-        verificationErrorMsg.removeAttribute("hidden");
+        verificationErrorMsg.hidden = false;
     }
 });

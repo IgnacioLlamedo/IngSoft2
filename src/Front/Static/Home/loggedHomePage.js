@@ -1,7 +1,7 @@
 const userIcon = document.getElementById("userIcon");
 const userOptions = document.getElementById("userOptions");
 
-const parametersURL = new URLSearchParams(window.location.search);
+/* const parametersURL = new URLSearchParams(window.location.search);
 const statusPago = parametersURL.get('status');
 
 
@@ -45,7 +45,10 @@ async function guardarReserva(pagoData, ext) {
             idUsuario: pagoData.idUsuario,
             cancelada: false,
             fechaEspecifica: ext.fechaEspecifica,
-        };
+    };
+    
+    console.log("El id de clase general obtenido en front es: ");
+    console.log (data.idClase);
 
     if(ext.tipoClase === "unica"){
         data.idPago = pagoData._id;
@@ -79,18 +82,12 @@ async function guardarReserva(pagoData, ext) {
 
         const resData = await res.json();
         console.log("Al volver de post-reserva-mensual el resultado es: ")
-        console.log(resData);
-        /**
-         * habria que retornar un mensaje que especifique si es un nuevo pago de una reserva mensual y
-         * en ese caso, el controlador debería actualizar la reserva, no crearla.
-         * o
-         * es una reserva mensual recien creada.
-         */  
+        console.log(resData); 
         if (resData.success){
             console.log("Reserva mensual exitosa");
         }
     }
-}
+} */
 
 
 

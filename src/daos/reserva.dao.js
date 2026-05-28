@@ -41,7 +41,24 @@ export class reservaDao {
         return deleted
     }
 
-
+    async populateUnica(query){
+        const populated = await ReservaUnica.find(query).populate({
+            path: 'idClaseEspecifica',
+            populate: {
+                path: 'idClaseGeneral',
+                populate: [
+                    { path: 'idActividad' },
+                    { path: 'idProfesor' },
+                    { path: 'idSala' }
+                ]
+            }
+        })
+        if(!populated){
+            //provisional, desarrollar luego
+            console.log("error en populate unica")
+        }
+        return populated
+    }
 
 
 
@@ -83,5 +100,28 @@ export class reservaDao {
             console.log("error")
         }
         return deleted
+    }
+
+    async populateMensual(query){
+        const populated = await ReservaMensual.find(query).populate({
+            path: 'clases',
+            populate: {
+                path: 'idClase',
+                populate: {
+                    path: 'idClaseGeneral',
+                    populate: [
+                        { path: 'idActividad' },
+                        { path: 'idProfesor' },
+                        { path: 'idSala' }
+                    ]
+                }
+            }
+            
+        })
+        if(!populated){
+            //provisional, desarrollar luego
+            console.log("error en populate mensual")
+        }
+        return populated
     }
 }

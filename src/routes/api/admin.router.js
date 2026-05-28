@@ -1,20 +1,24 @@
 import express from "express";
-import { crearActividad, crearProfesor, crearSala, crearSede, modificarActividad, modificarProfesor, modificarSala, modificarSede, eliminarActividad, eliminarProfesor, eliminarSala, eliminarSede } from "../../controllers/admin.controller.js";
+import { crearActividad, crearProfesor, crearSala, crearSede, modificarActividad, modificarProfesor, modificarSala, modificarSede, eliminarActividad, eliminarProfesor, eliminarSala, eliminarSede, getActivities, getInstructors, getRooms, getFacilities } from "../../controllers/admin.controller.js";
 
 export const adminRouter = express.Router();
 
 adminRouter.post("/actividad", crearActividad)
 adminRouter.put("/actividad", modificarActividad)
 adminRouter.delete("/actividad", eliminarActividad)
+adminRouter.get("/actividad", getActivities)
 
 adminRouter.post("/profesor", crearProfesor)
 adminRouter.put("/profesor", modificarProfesor)
 adminRouter.delete("/profesor", eliminarProfesor)
+adminRouter.get("/profesor", getInstructors)
 
 adminRouter.post("/sala", crearSala)
 adminRouter.put("/sala", modificarSala)
 adminRouter.delete("/sala", eliminarSala)
+adminRouter.get("/sala", getRooms)
 
 adminRouter.post("/sede", crearSede)
 adminRouter.put("/sede", modificarSede)
 adminRouter.delete("/sede", eliminarSede)
+adminRouter.get("/sede", getFacilities)

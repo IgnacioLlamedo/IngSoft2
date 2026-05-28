@@ -222,9 +222,9 @@ webRouter.get("/management", (req,res) => {
 
 
 // Management
-webRouter.get("/management/facilities", (req,res) => {
+webRouter.get("/management/classes", (req,res) => {
     if(!req.session.user) return res.redirect("/access/login");
-    res.render(path.join(__dirname, "Front/Management/managementFacilities.ejs"), { userRole: req.session.user.rol });
+    res.render(path.join(__dirname, "Front/Management/managementClasses.ejs"), { userRole: req.session.user.rol });
 });
 
 webRouter.get("/management/rooms", (req,res) => {

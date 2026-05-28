@@ -1,21 +1,22 @@
 import { Preference } from "mercadopago";
 import { client } from "../servicios/mercado.servicio.js";
-import { pagoDao } from "../daos/index.js";
+import { pagoDao, claseEspecificaDao } from "../daos/index.js";
 import config from "../config.js";
 
 export async function crearPreferencia(req, res) {
 
     try {
-        //body: JSON.stringify({ tipo: tipoClase, cantidad:1, monto: precio, id_Clase: idClase })
         const nombre = req.body.nombre; //Yoga, Funcional o Spinning
         const precio = req.body.precio; 
-        const id_clase = req.body.idClase; //No se muestra
+        const id_clase = req.body.idClase;
         const tipoClase = req.body.tipoClase; //Clase única o Mensual
         const fechaEspecifica = req.body.fechaEspecifica;
-        console.log(nombre)
-        console.log(id_clase)
-        console.log(precio)
-        console.log(tipoClase)
+
+        /* console.log("Datos desde CrearPreferencia: ")
+        console.log("Nombre de la clase: " + nombre)
+        console.log("Id de la Clase: " + id_clase)
+        console.log("Precio de la clase: " + precio)
+        console.log("Tipo de reserva (Mensual o Unica): " + tipoClase) */
 
         const preference = new Preference(client);
 
@@ -28,15 +29,15 @@ export async function crearPreferencia(req, res) {
                         unit_price: Number(precio)
                     }
                 ],
-                external_reference: JSON.stringify({    //Todo esto termina en la url una vez que se retorna a /home
-                    idUsuario: req.session.user.id ,        //Este es asignado al usuario cuando se logea (en autenticaión doble controller)
-                    idClase: id_clase,         //Este se guarda al llamar a /crear-preferencia (en payPanel.js)
-                    
-                    //Se mostrarán una vez realizado el pago las siguientes:
-                    nombre: nombre,
-                    precio: precio,
-                    tipoClase: tipoClase,
+                external_reference: JSON.stringify({
+                    idUsuario: req.session.user.id, //Necesario para el pago.
+                    idClase: id_clase, //Necesario para crear la reserva.
+                    precio: precio, //Por ahora lo dejo para testear.
+
+                    //Estos los requiere paymentApproved.js temporalmente, se puede recuperar despues veo como
                     fechaEspecifica: fechaEspecifica,
+                    tipoClase: tipoClase,
+                    nombre: nombre
                 }),
                 back_urls: {
                     success: `${config.link}/payment/approved`,
@@ -62,8 +63,46 @@ export async function crearPreferencia(req, res) {
     }
 }
 
+/* Función para consultar si el usuario ya está anotado en la clase
+específica */
+export async function consultar(req, res) {
+    try {
 
-//Ya funciona bien, si tocan algo les corto las bolas
+        const claseData = req.body;
+
+        //consigo la clase especifica
+        const claseEspecifica = await claseEspecificaDao.readOne({ idClaseGeneral: claseData.idClase, fechaEspecifica: claseData.fechaEspecifica });
+
+        //usando los arrays de anotados y espera consulto si el idUSuario ya está en ellos
+        const yaAnotado = claseEspecifica.anotados.some(
+            u => u.idUsuario === req.session.user.id
+        );
+
+        const yaEnEspera = claseEspecifica.espera.some(
+            u => u.idUsuario === req.session.user.id
+        );
+        
+        if (yaAnotado || yaEnEspera) {
+            return res.json({
+                success: false,
+                message: "Ya se encuentra anotado en esta actividad"
+            });
+        }  
+        
+        return res.json({
+                success: true
+            });
+
+    }
+    catch(error) {
+        console.log(error);
+        res.json({
+            success: false,
+            message: "Error al consultar en db(?"
+        })
+    }
+}
+
 export async function almacenarPagoController(req, res){
     try {
 <<<<<<< HEAD
