@@ -1,6 +1,5 @@
 
-const id_pago = parametersURL.get('payment_id')
-console.log("El id de pago que está en la URL es: " + id_pago);
+const id_pago = parametersURL.get('payment_id');
 const ext = parametersURL.get('external_reference')
 const externo = JSON.parse(ext);
 const container = document.querySelector(".main-container");
@@ -47,29 +46,34 @@ const pagoData = {
     _id: id_pago,
     monto: externo.precio,
     idUsuario: externo.idUsuario,
-    idClase: externo.idClase,
-    fecha: externo.fechaEspecifica
+    idPagoPendiente: externo.idPagoPendiente
 }
 
-const pagoDataString = JSON.stringify(pagoData);
-guardarPago(pagoDataString, ext)
+console.log("Pero la concha de mi madre. este es el pagoData recibido por external_reference en paymentApproved: ");
+console.log(pagoData);
+
+console.log("El importante es el id de pago pendiente: ")
+console.log(pagoData.idPagoPendiente);
+
+//guardarPago(pagoData, ext)
 
 
-async function guardarPago(data, ext) {
-    console.log("Dentro de guardarPago (paymentApproved.js.)");
-    const res = await fetch("/api/pago/guardarPago", {
+async function confirmarPago(data, ext) {
+    console.log("Dentro de confirmarPago (paymentApproved.js.)");
+    const res = await fetch("/api/pago/confirmarPago", {
         method: "POST",
         headers: {
             "Content-Type" : "application/json"
         }, 
-        body: data
-    })
+        body: JSON.stringify(data.idPagoPendiente)
+    });
 
     const resData = await res.json();
-    if(true)//resData.success)
-        await guardarReserva(resData, ext);
+    if(resData.success){
+        console.log("Me llegaron los datos del pago pendiente");
+        //await guardarReserva(resData, ext);
+    }
 }
-
 
 async function guardarReserva(pagoData, ext) {
 

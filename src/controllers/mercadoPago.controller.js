@@ -8,15 +8,34 @@ export async function crearPreferencia(req, res) {
     try {
         const nombre = req.body.nombre; //Yoga, Funcional o Spinning
         const precio = req.body.precio; 
-        const id_clase = req.body.idClase;
-        const tipoClase = req.body.tipoClase; //Clase única o Mensual
-        const fechaEspecifica = req.body.fechaEspecifica;
+        const tipoClase = req.body.tipoClase; //seña, unica o mensual
+        const clases = req.body.clases;
 
-        /* console.log("Datos desde CrearPreferencia: ")
-        console.log("Nombre de la clase: " + nombre)
-        console.log("Id de la Clase: " + id_clase)
-        console.log("Precio de la clase: " + precio)
-        console.log("Tipo de reserva (Mensual o Unica): " + tipoClase) */
+        console.log("Desde crearPreferencia. Los tipos de clases y fechas son: ")
+/*         const clases = [];
+        const fechas = []; */
+
+        /* for (const c of clasesObtenidas.clases) {
+
+            clases.push(c.idClaseGeneral);
+
+            fechas.push(c.fechaEspecifica);
+
+            console.log(c.idClaseGeneral);
+            console.log(c.fechaEspecifica);
+        } */
+
+        const clasesFormateadas = clases.map(c => ({
+            idClase: c.idClaseGeneral,
+            fecha: c.fechaEspecifica
+        }));
+
+        const pagoPendiente = await pagoDao.create({
+            monto: precio,
+            idUsuario: req.session.user.id,
+            clases: clasesFormateadas, //Contiene los id de clases y fechas especificas (en el caso de Mensual, contiene 4 de c/u)
+            pendiente: true //Lo uso previo al pago, al entrar en paymentApproved.js, se cambia a false.
+        });
 
         const preference = new Preference(client);
 
@@ -30,14 +49,11 @@ export async function crearPreferencia(req, res) {
                     }
                 ],
                 external_reference: JSON.stringify({
-                    idUsuario: req.session.user.id, //Necesario para el pago.
-                    idClase: id_clase, //Necesario para crear la reserva.
-                    precio: precio, //Por ahora lo dejo para testear.
-
-                    //Estos los requiere paymentApproved.js temporalmente, se puede recuperar despues veo como
-                    fechaEspecifica: fechaEspecifica,
+                    idUsuario: req.session.user.id,
+                    precio: precio,
                     tipoClase: tipoClase,
-                    nombre: nombre
+                    nombre: nombre,
+                    idPagoPendiente: pagoPendiente._id
                 }),
                 back_urls: {
                     success: `${config.link}/payment/approved`,
@@ -63,61 +79,78 @@ export async function crearPreferencia(req, res) {
     }
 }
 
-/* Función para consultar si el usuario ya está anotado en la clase
-específica */
+/* Función para consultar si el usuario ya está anotado en la/las clase
+específica/s (en caso de que sea mensual) */
 export async function consultar(req, res) {
     try {
 
-        const claseData = req.body;
+        const { clases } = req.body;
 
-        //consigo la clase especifica
-        const claseEspecifica = await claseEspecificaDao.readOne({ idClaseGeneral: claseData.idClase, fechaEspecifica: claseData.fechaEspecifica });
+        for (const claseData of clases) {
 
-        //usando los arrays de anotados y espera consulto si el idUSuario ya está en ellos
-        const yaAnotado = claseEspecifica.anotados.some(
-            u => u.idUsuario === req.session.user.id
-        );
+            console.log("La idClase General " + claseData.idClaseGeneral + " en la fecha " + claseData.fechaEspecifica);
 
-        const yaEnEspera = claseEspecifica.espera.some(
-            u => u.idUsuario === req.session.user.id
-        );
-        
-        if (yaAnotado || yaEnEspera) {
-            return res.json({
-                success: false,
-                message: "Ya se encuentra anotado en esta actividad"
-            });
-        }  
-        
+            //Consigo la clase especifica
+            const claseEspecifica = await claseEspecificaDao.readOne({idClaseGeneral: claseData.idClaseGeneral, fechaEspecifica: claseData.fechaEspecifica}); //Si existe la primera del día 1/7, las del 8/7, 15/7 y 22/7 si o si
+
+            console.log("La idClase General " + claseData.idClaseGeneral + " en la fecha " + claseData.fechaEspecifica + ". Encontró la siguiente clase especifica: ");
+            console.log(claseEspecifica);
+            //Revisar listado de anotados y de esprea
+
+            /**
+             * Si no encuentra clase especifica, significa que la clase en la fecha claseData.fechaEspecifica (actual del for)
+             * No fue creada y por lo tanto no tiene anotados, Por lo tanto, al pagar, se debe crear la claseEspecifica.
+             */
+            if (!claseEspecifica) 
+                continue; //Saltea el resto del código y vuelve a entrar al for.
+
+            const yaAnotado = claseEspecifica.anotados.some(
+                u => u.idUsuario === req.session.user.id
+            );
+            const yaEnEspera = claseEspecifica.espera.some(
+                u => u.idUsuario === req.session.user.id
+            );
+
+            //Si está en lista de anotados o de espera corta el bucle
+            if (yaAnotado || yaEnEspera) {
+                return res.json({
+                    success: false,
+                    message: ("Ya se encuentra anotado en la actividad del día " + claseData.fechaEspecifica)
+                });
+            }
+        }
+
         return res.json({
-                success: true
-            });
+            success: true
+        });
 
     }
     catch(error) {
+
         console.log(error);
+
         res.json({
             success: false,
-            message: "Error al consultar en db(?"
-        })
+            message: "NO se encontró la clase Especifica buscada. -> en teoría no puede suceder xd"
+        });
     }
 }
 
-export async function almacenarPagoController(req, res){
+export async function confirmarPagoController(req, res){
     try {
         let dataPago = req.body;
 
-        const pagoData = await pagoDao.create(dataPago);   //Crea el nuevo pago y lo almacena en DB
+        const pagoData = await pagoDao.readOne(dataPago.id);   //Crea el nuevo pago y lo almacena en DB
 
         if(!pagoData){
             return res.json({
                 success: false,
-                message: "Error al crear el nuevo pago en DB."
+                message: "No se encontró el pago pendiente."
             })
         }
         res.json({
             success: true,
-            data: pagoData,
+            data: pagoData,  //Devuelve un objeto que es un array, cada celda con: idClaseGeneral y fechaEspecifica (creoxd)
         })
     }
     catch(error) {

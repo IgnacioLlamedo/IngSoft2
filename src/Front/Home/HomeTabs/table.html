@@ -227,11 +227,15 @@
             </p>
 
             <div class="botones-pago">
-                <button id="btnClaseUnica" class="paymentButtons" hidden onclick="mostrarOpcionesClaseUnica()">Señar clase única</button>
-                <button id="btnMensual" class="paymentButtons" hidden onclick="pagarMensual()">Pagar clase única</button>
-                <button id="btnSeña" class="unica-opciones" hidden onclick="pagarSeñaClaseUnica()">Señar clase única</button>
-                <button id="btnCompleta"class="unica-opciones" hidden onclick="pagarTotalidadClaseUnica()">Pagar completa</button>
-                <button id="btnVolver" class="btn-volver" hidden onclick="volverOpcionesPago()">← Volver</button>
+                <button id="btnClaseUnica" class="paymentButtons" hidden onclick="mostrarOpcionesClaseUnica()">Pagar clase única</button>
+                <button id="btnMensual" class="paymentButtons" hidden onclick="pagarMensual()">Pagar Mensualidad</button>
+                <div class="contenedor-opciones-unica">
+                    <button id="btnSeña" class="unica-opciones" hidden onclick="pagarSeñaClaseUnica()">Señar clase única</button>
+                    <button id="btnCompleta"class="unica-opciones" hidden onclick="pagarTotalidadClaseUnica()">Pagar total clase única</button>
+                </div>
+                <div class="contenedor-volver">
+                    <button id="btnVolver" class="btn-volver" hidden onclick="volverOpcionesPago()">← Volver</button>
+                </div>
             </div>
     </div>
 

@@ -283,6 +283,23 @@ html {
   height: 100%;
 }
 
+.contenedor-volver{
+    margin-top: 10px;
+}
+
+.btn-volver{
+    padding: 6px 10px;
+    font-size: 14px;
+    border: none;
+    background: transparent;
+    color: #333;
+    cursor: pointer;
+}
+
+.btn-volver:hover{
+    color: #1565c0;
+}
+
 .btnVolver{
     background: transparent;
     border: none;

@@ -1,5 +1,5 @@
 
-let claseSeleccionada = "";
+let clasesSeleccionadas = [];
 let precioSeleccionado = 0;
 let horarioSeleccionado = "";
 let idClaseSeleccionada = "";
@@ -39,8 +39,27 @@ function abrirPago(elemento) {
     claseSeleccionada = clase;
     precioSeleccionado = precio;
     horarioSeleccionado = horario;
-    idClaseSeleccionada = idClase;
-    fechaEspecifica = convertirTextoADate(`${fecha} ${horario}`);
+    const fechaBase = convertirTextoADate(`${fecha} ${horario}`);
+
+    //Gracias chatgpt
+    // Reinicio arreglo
+    clasesSeleccionadas = [];
+
+    // Agrego clase seleccionada + próximas 3 semanas
+    for(let i = 0; i < 4; i++) {
+
+        const nuevaFecha = new Date(fechaBase);
+
+        // suma 7 dias por iteración
+        nuevaFecha.setDate(nuevaFecha.getDate() + (7 * i));
+
+        clasesSeleccionadas.push({
+            idClaseGeneral: idClase,
+            fechaEspecifica: nuevaFecha
+        });
+    }
+
+    console.log(clasesSeleccionadas);
 
     document.getElementById("tituloClase").innerText = clase + " (" + horario + ")";
     document.getElementById("precioClase").innerText = "$" + precio;
@@ -60,10 +79,6 @@ function mostrarOpcionesClaseUnica() {
     document.getElementById("btnCompleta").hidden = false;
 
     document.getElementById("btnVolver").hidden = false;
-
-    //Cambio los colores para distinguirlos de los anteriores.
-    document.getElementById("btnSeña").style.backgroundColor = "#2e8b57";
-    document.getElementById("btnCompleta").style.backgroundColor = "#2e8b57";
 }
 
 function convertirTextoADate(texto) {
@@ -109,19 +124,19 @@ function volverOpcionesPago() {
 }
 
 function pagarTotalidadClaseUnica() {
-    pagar("unica", precioSeleccionado/4);
+    pagar("unica", precioSeleccionado/4, [clasesSeleccionadas[0]]);
 }
 
 function pagarSeñaClaseUnica() {
-    pagar("seña", (precioSeleccionado/4)/2);
+    pagar("seña", (precioSeleccionado/4)/2, [clasesSeleccionadas[0]]);
 }
 
 function pagarMensual() {
     // Ajustá la lógica de precio mensual según tu necesidad
-    pagar("mensual", precioSeleccionado);
+    pagar("mensual", precioSeleccionado, clasesSeleccionadas); //Mando el arreglo con las 4 id y fechas especificas
 }
 
-async function pagar(tipoClase, precio) {
+async function pagar(tipoClase, precio, clasesPago) {
     const nombre = document.getElementById("tituloClase").innerText;
     const fecha = document.getElementById("fechaClase").innerText;
     const sala = document.getElementById("salaClase").innerText;
@@ -132,13 +147,12 @@ async function pagar(tipoClase, precio) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
-            idClase: idClaseSeleccionada, //Revisar que sea la id correcta.
-            fechaEspecifica: fechaEspecifica
-        })
+            clases: clasesPago// --->>> Acá en caso de que sea Mensual, manda un arreglo con 4 ids y Fechas especificas
+        })                             //Y si es pago de seña o unica completa, se manda un objeto con idClase y FechaEspecifica
     });
 
     const resData = await res.json();
-    if ((resData.success) || (resData.message == "Error al consultar en db(?")) {
+    if (resData.success) {
         const res = await fetch('/api/pago/crear-preferencia', {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -146,16 +160,15 @@ async function pagar(tipoClase, precio) {
                 nombre: nombre,
                 tipoClase: tipoClase, 
                 precio: precio, 
-                idClase: idClaseSeleccionada, //Revisar que sea la id correcta.
-                fechaEspecifica: fechaEspecifica
-            })
+                clases: clasesPago// -->> Acá en caso de que sea Mensual, manda un arreglo con 4 ids y Fechas especificas
+            })                          //Y si es pago de seña o unica completa, se manda un objeto con idClase y FechaEspecifica
         });
         const resPreferencia = await res.json();
         window.open(resPreferencia.init_point, "_blank");
         }
     else{
         //Cambiar -> document.getElementById("").appendChild() crear texto bajo el botón
-            window.alert(resData.message);
+        window.alert(resData.message);
 
     }
 }

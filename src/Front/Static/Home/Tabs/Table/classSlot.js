@@ -29,7 +29,7 @@ async function getAllClasses() {
             celda.innerText = claseObj.actividad.nombre;
             celda.dataset.id = claseObj.clase._id; //Para mandar por crearPreferencia
             celda.dataset.clase = claseObj.actividad.nombre;
-            celda.dataset.precio = 1; //Esto está hardcodeado -> cambiar en prod. 
+            celda.dataset.precio = 4; //Esto está hardcodeado -> cambiar en prod. 
             
             /* //Si no tengo clase especifica, significa que no la creé y por lo tanto no tiene alumnos anotados.
             console.log(claseObj.claseEsp);
