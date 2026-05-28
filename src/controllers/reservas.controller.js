@@ -239,10 +239,8 @@ export async function postReservaUnica(req, res) {
         console.log("(Back) - Datos recibidos en postReservaUnica -> desde paymentApproved.js: ");
         console.log(reservaData);
         
-        /* Si existe una clase específica de la clase donde se van a guardar
-        Los datos del usuario a almacenar*/
-        const idClaseGeneral = reservaData.idClase;
-        const fecha = reservaData.fechaEspecifica;
+        const idClaseGeneral = reservaData.clases[0].idClase;
+        const fecha = reservaData.clases[0].fechaEspecifica;
 /*         console.log("La fecha recibida es: " + fecha);
         console.log("La fecha es de typeOF -> " + typeof(fecha)); */
 
@@ -353,12 +351,104 @@ export async function postReservaUnica(req, res) {
  */
 export async function postReservaMensual(req, res) {
     try {
-        const reservaData = req.body;
-        await reservaDao.createMensual(reservaData);
 
-        res.json({
-            success: true,
-        });
+        const reservaData = req.body;
+
+        console.log("(Back) - Datos recibidos en postReservaUnica:");
+        console.log(reservaData);
+
+        const usuarioData = {
+            idUsuario: reservaData.idUsuario,
+            tipo: reservaData.tipoClase
+        };
+
+        //Itero sobre las 4 clases buscando si la claseEspecifica existe, creandola si no es el caso 
+        for (const claseData of reservaData.clases) {
+
+            const idClaseGeneral = claseData.idClase;
+            const fecha = claseData.fecha;
+
+            const fechaBuscada = new Date(fecha);
+            fechaBuscada.setSeconds(0, 0);
+
+            const claseGeneral = await claseGeneralDao.readOne({
+                _id: idClaseGeneral
+            });
+
+            let claseEspecifica = await claseEspecificaDao.readOne({
+                idClaseGeneral: claseGeneral._id,
+                fechaEspecifica: fechaBuscada
+            });
+
+            console.log("Clase específica encontrada:");
+            console.log(claseEspecifica);
+
+            if (!claseEspecifica) {
+
+                console.log("No existe clase específica -> creando");
+
+                const data = {
+                    idClaseGeneral: claseGeneral._id,
+                    fechaEspecifica: fecha,
+                    anotados: [usuarioData],
+                    espera: []
+                };
+
+                claseEspecifica = await claseEspecificaDao.create(data);
+
+                // Crear reserva
+                await reservaDao.createUnica({
+                    ...reservaData,
+                    idClaseEspecifica: claseEspecifica._id
+                });
+
+                continue;
+            }
+
+            const capacidadActual = claseEspecifica.anotados.length;
+
+            if (capacidadActual < claseGeneral.limiteClase) {
+
+                console.log("Hay lugar -> anotado");
+
+                await claseEspecificaDao.updateOne(
+                    { _id: claseEspecifica._id },
+                    {
+                        $push: {
+                            anotados: usuarioData
+                        }
+                    }
+                );
+
+                await reservaDao.createUnica({
+                    ...reservaData,
+                    idClaseEspecifica: claseEspecifica._id
+                });
+
+                continue;
+            }
+
+            console.log("Sin lugar-> a la cola de espera");
+
+            await claseEspecificaDao.updateOne(
+                { _id: claseEspecifica._id },
+                {
+                    $push: {
+                        espera: usuarioData
+                    }
+                }
+            );
+
+            await reservaDao.createUnica({
+                ...reservaData,
+                idClaseEspecifica: claseEspecifica._id
+            });
+
+            return res.json({
+                success: true,
+                message: "Reserva mensual procesada"
+            });
+        }
     }
     catch(error) {
         console.log(error)

@@ -5,10 +5,10 @@ export class pagoDao {
         return await Pago.create(datos)
     }
     async readOne(query){
-        const pago = await Pago.findOne({ _id: query }).lean()
+        const pago = await Pago.findOne(query).lean()
         if(!pago){
             //provisional, desarrollar luego
-            console.log("error")
+            console.log("No se encontró ningún pago con id " + query)
         }
         return pago
     }

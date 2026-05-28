@@ -29,6 +29,8 @@ export async function crearPreferencia(req, res) {
             idClase: c.idClaseGeneral,
             fecha: c.fechaEspecifica
         }));
+        
+        const clasesFormateadasString = JSON.stringify(clasesFormateadas);
 
         const pagoPendiente = await pagoDao.create({
             monto: precio,
@@ -49,10 +51,10 @@ export async function crearPreferencia(req, res) {
                     }
                 ],
                 external_reference: JSON.stringify({
-                    idUsuario: req.session.user.id,
-                    precio: precio,
+                    /*idUsuario: req.session.user.id,
+                     precio: precio,
                     tipoClase: tipoClase,
-                    nombre: nombre,
+                    nombre: nombre, */
                     idPagoPendiente: pagoPendiente._id
                 }),
                 back_urls: {
@@ -140,7 +142,7 @@ export async function confirmarPagoController(req, res){
     try {
         let dataPago = req.body;
 
-        const pagoData = await pagoDao.readOne(dataPago.id);   //Crea el nuevo pago y lo almacena en DB
+        const pagoData = await pagoDao.readOne(dataPago.id);
 
         if(!pagoData){
             return res.json({
