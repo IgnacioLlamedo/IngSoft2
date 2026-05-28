@@ -67,6 +67,7 @@ async function getAllClasses() {
         }
     });
 
+    // Bauti posta recorreres toda la tabla para poner en sin clase?
     document.querySelectorAll('.slotDeClase').forEach(div => {
         if (div.innerText.trim() === "Sin Clase") {
             div.classList.add("sinclase");
