@@ -1,39 +1,3 @@
-// Datos de ejemplo hardcodeados para las actividades del usuario
-/* const actividadesUsuario = [
-  {
-    actividad: "Yoga",
-    tipo: "Unica",
-    horario: "18:00 - 19:00",
-    fecha: "Lunes 17/05",
-    sala: "S2",
-    precio: 20
-  },
-  {
-    actividad: "Spinning",
-    tipo: "Mensualidad",
-    horario: "19:00 - 20:00",
-    dia: "Martes",
-    sala: "S1",
-    precio: 50
-  },
-  {
-    actividad: "Funcional",
-    tipo: "Unica",
-    horario: "10:00 - 11:00",
-    fecha: "Jueves 21/05",
-    sala: "S3",
-    precio: 30
-  },
-  {
-    actividad: "Pilates",
-    tipo: "Mensualidad",
-    horario: "17:00 - 18:00",
-    dia: "Miércoles",
-    sala: "S2",
-    precio: 45
-  }
-]; */
-
 let actividadesUsuario = [];
 
 getMyReservations();
@@ -41,7 +5,7 @@ getMyReservations();
 async function getMyReservations() {
 
     const res = await fetch('/api/reservas/my-reservations', {
-      method: 'GET'
+        method: 'GET'
     });
 
     const resData = await res.json();
@@ -50,49 +14,99 @@ async function getMyReservations() {
 
     actividadesUsuario = resData.reservas.map(r => {
 
-      //idClaseGeneral undefined? .-.
-        const horario = `${r.idClaseEspecifica.idClaseGeneral.hora}:00 - ${r.idClaseEspecifica.idClaseGeneral.hora + 1}:00`;
+        // =========================================
+        // RESERVA ÚNICA
+        // =========================================
+        if ((r.tipo === "unica") || (r.tipo === "seña")) {
 
-        return {
-            actividad: r.idClaseEspecifica.idClaseGeneral.idActividad.nombre,
+            const claseGeneral =
+                r.idClaseEspecifica.idClaseGeneral;
 
-            tipo:
-            //Para entenderlo, esto es un if ->
+            const horario =
+                `${claseGeneral.hora}:00 - ${claseGeneral.hora + 1}:00`;
 
-            /** if (r.tipo === "unica")
-             *     tipo = "Unica"
-             *  else 
-             *     tipo = "Mensual"
-            */ 
-                r.tipo === "unica"
-                ? "Unica"
-                : "Mensual",
+            return {
 
-            horario,
+                actividad:
+                    claseGeneral.idActividad.nombre,
 
-            fecha:
-                r.__t === "ReservaUnica"
-                ? new Date(r.fechaEspecifica)
-                    .toLocaleDateString("es-AR")
-                : null,
+                tipo: "Unica",
 
-            dia:
-                r.tipo === "mensual"
-                ? r.idClaseEspecifica.idClaseGeneral.dia
-                : null,
+                horario,
 
-            sala: r.idClaseEspecifica.idClaseGeneral.idSala.nombre,
+                fecha:
+                    new Date(r.idClaseEspecifica.fechaEspecifica)
+                        .toLocaleDateString("es-AR"),
 
-            profesor: r.idClaseEspecifica.idClaseGeneral.idProfesor.nombre,
+                dia: null,
 
-            precio:
-                r.tipo === "unica"
-                //Tendría que conseguir el precio desde el arreglo de pagos?
-                // r.pagos[0 o 1?].monto -> depende, si es única habria que revisar el pago completo?
-                ? (r.idClaseEspecifica.idClaseGeneral.precioMensual)/4
-                : r.idClaseEspecifica.idClaseGeneral.precioMensual
-        };
+                sala:
+                    claseGeneral.idSala.nombre,
+
+                profesor:
+                    claseGeneral.idProfesor.nombre,
+
+                precio:
+                    claseGeneral.precioMensual / 4
+            };
+        }
+
+        // =========================================
+        // RESERVA MENSUAL
+        // =========================================
+        else {
+
+            // Uso la primera clase para info común
+            const primeraClase =
+                r.clases[0].idClase;
+
+            const claseGeneral =
+                primeraClase.idClaseGeneral;
+
+            const horario =
+                `${claseGeneral.hora}:00 - ${claseGeneral.hora + 1}:00`;
+
+            const fechas = r.clases
+                .map(c => {
+
+                    const fecha =
+                        new Date(c.idClase.fechaEspecifica);
+
+                    return fecha.toLocaleDateString("es-AR", {
+                        day: "2-digit",
+                        month: "2-digit"
+                    });
+
+                })
+                .join(" - ");
+
+            return {
+
+                actividad:
+                    claseGeneral.idActividad.nombre,
+
+                tipo: "Mensual",
+
+                horario,
+
+                fecha: fechas,
+
+                dia:
+                    claseGeneral.dia,
+
+                sala:
+                    claseGeneral.idSala.nombre,
+
+                profesor:
+                    claseGeneral.idProfesor.nombre,
+
+                precio:
+                    claseGeneral.precioMensual
+            };
+        }
     });
+
+    console.log(actividadesUsuario);
 
     renderActividades();
 }

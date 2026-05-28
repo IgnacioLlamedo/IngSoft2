@@ -9,7 +9,7 @@ const pagoData = {
     idPagoPendiente: externo.idPagoPendiente
 }
 
-console.log("Pero la concha de mi madre. este es el pagoData recibido por external_reference en paymentApproved: ");
+console.log("pagoData recibido por external_reference en paymentApproved: ");
 console.log(pagoData);
 
 console.log("El importante es el id de pago pendiente: ")
@@ -32,22 +32,52 @@ async function confirmarPago(data, ext) {
 
     const resData = await res.json();
     if(resData.success){
-        console.log("Me llegaron los datos del pago pendiente");
-        //Ya llega hasta acá!
-        console.log(resData.data);
-
-
-        /** Devuelve un objeto pago con por ejemplo:
-         * fecha: "2026-05-25T13:00:00.000Z"
-         * idClase: "3"
+        /** 
+         * resData.data devuelve un objeto pago con por ejemplo:
+         * clases: [
+                {
+                    "idClase": "1",
+                    "fecha": "2026-05-26T13:00:00.000Z",
+                    "_id": "6a18641d792f32b71138fd89"
+                },
+                {
+                    "idClase": "1",
+                    "fecha": "2026-06-02T13:00:00.000Z",
+                    "_id": "6a18641d792f32b71138fd8a"
+                },
+                {
+                    "idClase": "1",
+                    "fecha": "2026-06-09T13:00:00.000Z",
+                    "_id": "6a18641d792f32b71138fd8b"
+                },
+                {
+                    "idClase": "1",
+                    "fecha": "2026-06-16T13:00:00.000Z",
+                    "_id": "6a18641d792f32b71138fd8c"
+                }
+            ]
          * idUsuario: "665d19bb-7eb8-44ea-8d53-efe9bcea09bd"
-         * monto: 1
+         * monto: 4
+         * pendiente: false
          * _id: "161257194162"    -->> id de pago.
-         *
-         * 
-         * Habria que hacer otro fetch para traer el nombre de la clase usando idClaseGeneral -> idActividad
-         * y traer el tipoClase usando idClaseGeneral precioMensual? (Si resData.data.monto === claseGeneral.precioMensual) -> "Mensual"
          * */
+
+        /**
+         * 
+         * idUsuario: req.session.user.id,
+                    tipoClase: tipoClase,
+                    nombre: nombre, //Nombre clase (yoga, spinning o funcional)
+                    idPagoPendiente: pagoPendiente._id
+         */
+
+        const fechas = resData.data.clases.map(c => {
+                const fecha = new Date(c.fecha);
+
+                const dia = String(fecha.getDate()).padStart(2, '0');
+                const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+
+                return `${dia}/${mes}`;
+        }).join(" - ");
 
         container.innerHTML =
             `<div class="payment-success">
@@ -62,12 +92,12 @@ async function confirmarPago(data, ext) {
                         ${externo.tipoClase}
                     </p>
                     <p>
-                        <strong>Fecha:</strong>
-                        ${externo.fechaEspecifica}
+                        <strong>Fecha/s:</strong>
+                        ${fechas}
                     </p>
                     <p>
                         <strong>Precio:</strong>
-                        $${externo.precio}
+                        $${resData.data.monto}
                     </p>
 
                     ${
@@ -95,20 +125,88 @@ async function confirmarPago(data, ext) {
 
 async function guardarReserva(pagoData, ext) {
 
+    /** pagoData tiene esta información -->
+         * clases: [
+                {
+                    "idClase": "1",
+                    "fecha": "2026-05-26T13:00:00.000Z",
+                    "_id": "6a18641d792f32b71138fd89"
+                },
+                {
+                    "idClase": "1",
+                    "fecha": "2026-06-02T13:00:00.000Z",
+                    "_id": "6a18641d792f32b71138fd8a"
+                },
+                {
+                    "idClase": "1",
+                    "fecha": "2026-06-09T13:00:00.000Z",
+                    "_id": "6a18641d792f32b71138fd8b"
+                },
+                {
+                    "idClase": "1",
+                    "fecha": "2026-06-16T13:00:00.000Z",
+                    "_id": "6a18641d792f32b71138fd8c"
+                }
+            ]
+
+            extParsed tiene la siguiente información:
+
+         *  idUsuario: req.session.user.id,
+         *  tipoClase: tipoClase,
+         *  nombre: nombre,
+         *  idPagoPendiente: pagoPendiente._id
+
+         **/
+
     const extParsed = JSON.parse(ext);
 
-    if ((extParsed.tipoClase == "unica") || (extParsed.tipoClase == "seña")) {
+    if(extParsed.tipoClase === "mensual") { 
+        console.log("hola soy guardar reserva Mensual");
 
+        /* const data  = {
+            idClase: pagoData.data.idClase, //Esto cambiarlo
+            pagos: [{idPago: pagoData.data._id}],
+            idUsuario: pagoData.data.idUsuario,
+            fechaEspecifica: new Date(Date.now()), //Esto cambiarlo
+        }; */
+
+        const data = {
+            clases: pagoData.clases, //Contiene la idClaseGeneral y FechasEspecificas
+            pagos: [{ idPago: pagoData._id }],
+            idUsuario: pagoData.idUsuario,
+            tipoClase: "mensualidad"
+        };
+        console.log("Esta es la data que se mandará a post-reserva-mensual: ");
+        console.log(data);
+
+        const dataString = JSON.stringify(data);
+
+        const res = await fetch("/api/clases/post-reserva-mensual", {
+            method: "POST",
+            headers: {
+                "Content-Type" : "application/json"
+            },
+            body: dataString
+        })
+    }
+    else{
         let señada = false;
         if (extParsed.tipoClase == "seña"){
+            console.log("Hola soy una seña de clase hecha reserva.")
             señada = true;
-
         }
+        else
+            console.log("Hola soy una reserva de clase única!!!");
+        
+        console.log(pagoData);
+        
         const data  = {
-            idClase: pagoData.data.idClase,
-            pagos: [{idPago: pagoData.data._id}],
+            clases: pagoData.clases,
+            pagos: [{idPago: pagoData._id}],
             señada: señada,
-            idUsuario: pagoData.data.idUsuario,
+            idUsuario: pagoData.idUsuario,
+
+            //No sé si hay que mandar algo más
             fechaEspecifica: extParsed.fechaEspecifica
         };
 
@@ -128,27 +226,8 @@ async function guardarReserva(pagoData, ext) {
         const resData = await res.json();
         console.log("Volviendo a paymentApproved desde postReservaUnica, el resultado fue "+resData.success);
         console.log(resData.message);
+
     }
 
-    else if(extParsed.tipoClase === "mensual") {
-        console.log("hola soy guardar reserva UNICA");
-
-        const data  = {
-            idClase: pagoData.data.idClase,
-            pagos: [{idPago: pagoData.data._id}],
-            idUsuario: pagoData.data.idUsuario,
-            fechaEspecifica: new Date(Date.now()), //Esto cambiarlo
-        };
-
-        const dataString = JSON.stringify(data);
-
-        const res = await fetch("/api/clases/post-reserva-mensual", {
-            method: "POST",
-            headers: {
-                "Content-Type" : "application/json"
-            },
-            body: dataString
-        })
-    }
-    console.log("TERMINEE FOTROO LA RESERVA DE MIERDA");
+    console.log("RESERVA COMPLETADA");
 }

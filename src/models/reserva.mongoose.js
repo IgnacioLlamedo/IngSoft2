@@ -35,7 +35,7 @@ const reservaMensualSchema = new Schema({
 
 const reservaSchema = new Schema({
     _id: { type: String, default: randomUUID },
-    idClase: { type: String, required: true, ref: 'clases' }, //Eliminado pagos, para evitar que la reserva unica lo cree.
+    //idClase: { type: String, required: true, ref: 'clases' }, //Eliminado pagos, para evitar que la reserva unica lo cree.
     idUsuario: { type: String, required: true, ref: 'usuarios' },
     cancelada: { type: Boolean, default: false },
 }, {

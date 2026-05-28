@@ -16,10 +16,10 @@ export class pagoDao {
         return await Pago.find(query).lean()
     }
     async updateOne(query, datos){
-        const updated = await Pago.findOneAndUpdate({ _id: query }, datos, { returnDocument: 'after' }).lean()
+        const updated = await Pago.findOneAndUpdate(query, datos, { returnDocument: 'after' }).lean()
         if(!updated){
             //provisional, desarrollar luego
-            console.log("error")
+            console.log("error al actualizar el pago. -> no se encontró el pago con id: " + query);
         }
         return updated
     }

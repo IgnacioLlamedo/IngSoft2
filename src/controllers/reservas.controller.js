@@ -240,7 +240,7 @@ export async function postReservaUnica(req, res) {
         console.log(reservaData);
         
         const idClaseGeneral = reservaData.clases[0].idClase;
-        const fecha = reservaData.clases[0].fechaEspecifica;
+        const fecha = reservaData.clases[0].fecha;
 /*         console.log("La fecha recibida es: " + fecha);
         console.log("La fecha es de typeOF -> " + typeof(fecha)); */
 
@@ -352,6 +352,11 @@ export async function postReservaUnica(req, res) {
 export async function postReservaMensual(req, res) {
     try {
 
+        /* Esto contiene el req.body: 
+            clases: pagoData.clases, //Contiene la idClaseGeneral y FechasEspecificas
+            pagos: [{ idPago: pagoData._id }],
+            idUsuario: pagoData.idUsuario,
+            tipoClase: "mensualidad" */
         const reservaData = req.body;
 
         console.log("(Back) - Datos recibidos en postReservaUnica:");
@@ -362,6 +367,7 @@ export async function postReservaMensual(req, res) {
             tipo: reservaData.tipoClase
         };
 
+        const clasesReserva = [];
         //Itero sobre las 4 clases buscando si la claseEspecifica existe, creandola si no es el caso 
         for (const claseData of reservaData.clases) {
 
@@ -380,12 +386,12 @@ export async function postReservaMensual(req, res) {
                 fechaEspecifica: fechaBuscada
             });
 
-            console.log("Clase específica encontrada:");
+            console.log("Clase específica encontrada con el idGeneral " + idClaseGeneral + " y fechaEspecifica " + fechaBuscada + " es: ");
             console.log(claseEspecifica);
 
             if (!claseEspecifica) {
 
-                console.log("No existe clase específica -> creando");
+                console.log("No existe clase específica se crea");
 
                 const data = {
                     idClaseGeneral: claseGeneral._id,
@@ -397,19 +403,19 @@ export async function postReservaMensual(req, res) {
                 claseEspecifica = await claseEspecificaDao.create(data);
 
                 // Crear reserva
-                await reservaDao.createUnica({
-                    ...reservaData,
-                    idClaseEspecifica: claseEspecifica._id
+                clasesReserva.push({
+                    idClase: claseEspecifica._id
                 });
 
                 continue;
             }
 
+            //Existe la clase específica, controlar donde se guardará el usuario (anotados o espera)
             const capacidadActual = claseEspecifica.anotados.length;
 
             if (capacidadActual < claseGeneral.limiteClase) {
 
-                console.log("Hay lugar -> anotado");
+                console.log("Hay lugar, por lo tanto se carga en anotados");
 
                 await claseEspecificaDao.updateOne(
                     { _id: claseEspecifica._id },
@@ -419,16 +425,15 @@ export async function postReservaMensual(req, res) {
                         }
                     }
                 );
-
-                await reservaDao.createUnica({
-                    ...reservaData,
-                    idClaseEspecifica: claseEspecifica._id
+   
+                clasesReserva.push({
+                    idClase: claseEspecifica._id
                 });
 
                 continue;
             }
 
-            console.log("Sin lugar-> a la cola de espera");
+            console.log("Sin lugar por lo tanto a la cola de espera");
 
             await claseEspecificaDao.updateOne(
                 { _id: claseEspecifica._id },
@@ -439,16 +444,17 @@ export async function postReservaMensual(req, res) {
                 }
             );
 
-            await reservaDao.createUnica({
-                ...reservaData,
-                idClaseEspecifica: claseEspecifica._id
-            });
-
             return res.json({
                 success: true,
                 message: "Reserva mensual procesada"
             });
         }
+        await reservaDao.createMensual({
+            clases: clasesReserva,
+            pagos: reservaData.pagos,
+            idUsuario: reservaData.idUsuario,
+            cancelada: false
+        });
     }
     catch(error) {
         console.log(error)

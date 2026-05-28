@@ -51,10 +51,9 @@ export async function crearPreferencia(req, res) {
                     }
                 ],
                 external_reference: JSON.stringify({
-                    /*idUsuario: req.session.user.id,
-                     precio: precio,
+                    idUsuario: req.session.user.id,
                     tipoClase: tipoClase,
-                    nombre: nombre, */
+                    nombre: nombre, //Nombre clase (yoga, spinning o funcional)
                     idPagoPendiente: pagoPendiente._id
                 }),
                 back_urls: {
@@ -138,11 +137,29 @@ export async function consultar(req, res) {
     }
 }
 
+/* export async function obtenerClaseGeneral(req, res){
+    try{
+        const claseGeneral = await claseGeneralDao.readOne
+
+
+    }
+    catch(error) {
+        console.log(error);
+        return res.json({
+            success: false,
+            message: "Error al conseguir clase General (obtenerClaseGeneral)"
+        })
+    }
+} */
+
 export async function confirmarPagoController(req, res){
     try {
         let dataPago = req.body;
 
-        const pagoData = await pagoDao.readOne(dataPago.id);
+        console.log("El contenido de body dentro de confirmarPagoController es: ");
+        console.log(dataPago);
+        console.log(dataPago.idPagoPendiente);
+        const pagoData = await pagoDao.readOne({_id: dataPago.idPagoPendiente});
 
         if(!pagoData){
             return res.json({
@@ -150,9 +167,13 @@ export async function confirmarPagoController(req, res){
                 message: "No se encontró el pago pendiente."
             })
         }
+
+        const updateado = await pagoDao.updateOne({_id: dataPago.idPagoPendiente}, {pendiente: false})
+        //Actualizo el estado pendiente a false -> porque ya se confirmó el pago.
+
         res.json({
             success: true,
-            data: pagoData,  //Devuelve un objeto que es un array, cada celda con: idClaseGeneral y fechaEspecifica (creoxd)
+            data: updateado,  //Devuelve Pago con un objeto que es un array, cada celda con: idClaseGeneral y fechaEspecifica
         })
     }
     catch(error) {
