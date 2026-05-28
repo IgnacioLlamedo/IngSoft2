@@ -13,8 +13,10 @@ class Timer {
     }
 
     createTimer() {
-        let seconds = this.timeMS / 1000;
-        let minutes = Math.floor(this.timeMS / 1000 / 60);
+        let totalSeconds = Math.floor(this.timeMS / 1000);
+
+        let minutes = Math.floor(totalSeconds / 60);
+        let seconds = totalSeconds % 60;
 
         this.onChange(this.#remainingTimeFormatted(minutes, seconds));
 
