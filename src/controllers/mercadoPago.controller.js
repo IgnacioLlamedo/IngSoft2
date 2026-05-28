@@ -116,7 +116,7 @@ export async function consultar(req, res) {
             if (yaAnotado || yaEnEspera) {
                 return res.json({
                     success: false,
-                    message: ("Ya se encuentra anotado en la actividad del día " + claseData.fechaEspecifica)
+                    message: ("Ya se encuentra anotado en la actividad")
                 });
             }
         }

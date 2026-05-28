@@ -41,6 +41,9 @@ function abrirPago(elemento) {
     horarioSeleccionado = horario;
     const fechaBase = convertirTextoADate(`${fecha} ${horario}`);
 
+    console.log("Esta es la fecha base para crear las fechasEspecificas: ");
+    console.log(fechaBase);
+
     //Gracias chatgpt
     // Reinicio arreglo
     clasesSeleccionadas = [];
@@ -52,6 +55,8 @@ function abrirPago(elemento) {
 
         // suma 7 dias por iteración
         nuevaFecha.setDate(nuevaFecha.getDate() + (7 * i));
+        console.log("Esta es la nueva fecha que se va a guardar desde payPanel: ");
+        console.log(nuevaFecha);
 
         clasesSeleccionadas.push({
             idClaseGeneral: idClase,
@@ -115,6 +120,8 @@ function cerrarPanel() {
 
 function volverOpcionesPago() {
 
+    document.getElementById("mensajePago").innerText = "";
+
     document.getElementById("btnClaseUnica").hidden = false;
     document.getElementById("btnMensual").hidden = false;
 
@@ -153,6 +160,8 @@ async function pagar(tipoClase, precio, clasesPago) {
 
     const resData = await res.json();
     if (resData.success) {
+        document.getElementById("mensajePago").innerText = "";
+
         const res = await fetch('/api/pago/crear-preferencia', {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -168,7 +177,7 @@ async function pagar(tipoClase, precio, clasesPago) {
         }
     else{
         //Cambiar -> document.getElementById("").appendChild() crear texto bajo el botón
-        window.alert(resData.message);
+        document.getElementById("mensajePago").innerText = resData.message;
 
     }
 }

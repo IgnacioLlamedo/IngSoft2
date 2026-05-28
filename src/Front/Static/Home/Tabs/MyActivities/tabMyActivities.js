@@ -38,7 +38,7 @@ async function getMyReservations() {
                     new Date(r.idClaseEspecifica.fechaEspecifica)
                         .toLocaleDateString("es-AR"),
 
-                dia: null,
+                dia: claseGeneral.dia,
 
                 sala:
                     claseGeneral.idSala.nombre,
@@ -134,7 +134,7 @@ function renderActividades() {
     const filtroTipo = tipeFilter.value === "Todas" || act.tipo.toLowerCase() === tipeFilter.value.toLowerCase();
     const filtroDia = dayFilter.value === "Todas" ||
       (act.fecha && act.fecha.includes(dayFilter.value)) ||
-      (act.dia && act.dia === dayFilter.value);
+      (act.dia && act.dia === dayFilter.value.toLowerCase());
 
     return filtroActividad && filtroTipo && filtroDia;
   });

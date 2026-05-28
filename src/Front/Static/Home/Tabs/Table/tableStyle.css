@@ -313,3 +313,11 @@ html {
 .btnVolver:hover{
     color: #1565c0;
 }
+
+.mensaje-pago {
+    margin-top: 12px;
+    color: red;
+    font-size: 14px;
+    text-align: center;
+    min-height: 20px;
+}
