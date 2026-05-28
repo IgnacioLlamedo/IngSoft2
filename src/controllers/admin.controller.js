@@ -504,7 +504,7 @@ export async function modificarActividad(req, res){
         ) {
             return res.json({
                 success: false,
-                message: "Error al modificar la sala. No se han modificado datos."
+                message: "Error al modificar la actividad. No se han modificado datos."
             })
         }
 

@@ -70,6 +70,7 @@ function abrirPago(elemento) {
     document.getElementById("precioClase").innerText = "$" + precio;
     document.getElementById("fechaClase").innerText = fecha;
     document.getElementById("salaClase").innerText = elemento.dataset.sala;
+    document.getElementById("panelPago").dataset.llena = elemento.dataset.llena;
     document.getElementById("capacidad").innerText = elemento.dataset.capacidad
 
     document.getElementById("panelPago").classList.add("panel-abierto");
@@ -147,6 +148,7 @@ async function pagar(tipoClase, precio, clasesPago) {
     const nombre = document.getElementById("tituloClase").innerText;
     const fecha = document.getElementById("fechaClase").innerText;
     const sala = document.getElementById("salaClase").innerText;
+    const claseLlena = document.getElementById("panelPago").dataset.llena === "true";
     
     //Modificando, antes de dejar pagar, hay que consultar si el usuario
     //ya está inscripto a la clase, despues dejar pagar. lpm
@@ -159,25 +161,41 @@ async function pagar(tipoClase, precio, clasesPago) {
     });
 
     const resData = await res.json();
-    if (resData.success) {
-        document.getElementById("mensajePago").innerText = "";
 
-        const res = await fetch('/api/pago/crear-preferencia', {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ 
-                nombre: nombre,
-                tipoClase: tipoClase, 
-                precio: precio, 
-                clases: clasesPago// -->> Acá en caso de que sea Mensual, manda un arreglo con 4 ids y Fechas especificas
-            })                          //Y si es pago de seña o unica completa, se manda un objeto con idClase y FechaEspecifica
-        });
-        const resPreferencia = await res.json();
-        window.open(resPreferencia.init_point, "_blank");
-        }
-    else{
-        //Cambiar -> document.getElementById("").appendChild() crear texto bajo el botón
+    if (!resData.success) {
         document.getElementById("mensajePago").innerText = resData.message;
-
+        return;
     }
+
+    // Clase llena -> confirmar lista espera
+    let ingresarEspera = false;
+
+    if (claseLlena) {
+
+        const confirmar = confirm(
+            "La clase está llena. ¿Desea ingresar en lista de espera?"
+        );
+
+        if (!confirmar) {
+            return;
+        }
+
+        ingresarEspera = true;
+    }
+
+    document.getElementById("mensajePago").innerText = "";
+    document.getElementById("mensajePago").innerText = "";
+
+    const resPref = await fetch('/api/pago/crear-preferencia', {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+            nombre: nombre,
+            tipoClase: tipoClase, 
+            precio: precio, 
+            clases: clasesPago// -->> Acá en caso de que sea Mensual, manda un arreglo con 4 ids y Fechas especificas
+        })                          //Y si es pago de seña o unica completa, se manda un objeto con idClase y FechaEspecifica
+    });
+    const resPreferencia = await resPref.json();
+    window.open(resPreferencia.init_point, "_blank");
 }

@@ -34,13 +34,19 @@ async function getAllClasses() {
             /* //Si no tengo clase especifica, significa que no la creé y por lo tanto no tiene alumnos anotados.
             console.log(claseObj.claseEsp);
             console.log(claseObj.claseEsp.anotados); */
-            if (claseObj.claseEsp){
-                const cant = claseObj.claseEsp.anotados.length;
-                capacidadActual = claseObj.claseEsp.anotados.length +"/"+ claseObj.clase.limiteClase; //Cambiar formato.
+
+            let cantidadAnotados = 0;
+
+            if (claseObj.claseEsp) {
+                cantidadAnotados = claseObj.claseEsp.anotados.length;
             }
-            else
-                capacidadActual = "0/"+claseObj.clase.limiteClase;
+
+            capacidadActual = `${cantidadAnotados}/${claseObj.clase.limiteClase}`;
+
             celda.dataset.capacidad = capacidadActual;
+
+            //Para informar pedir confirmación si quiere entrar en lista de espera.
+            celda.dataset.llena = cantidadAnotados >= claseObj.clase.limiteClase;
 
             celda.onclick = () => abrirPago(celda);
 

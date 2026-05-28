@@ -26,11 +26,9 @@ const registerErrorMsg = document.getElementById("registerError");
 
 
 function checkDniRequirement() {
-    if(dni.length !== 8)
-        return "Error al registrarse. El DNI debe tener 8 dígitos."
 
-    //if(dni < X000000) // No sé qué límites poner, aparte de que deberían ser dinámicos como hice con la edad.
-        //return "Error al registrarse. El DNI es inválido."
+    if(dni.value.trim().length !== 8)
+        return "Error al registrarse. El DNI debe tener 8 dígitos."
 }
 
 
