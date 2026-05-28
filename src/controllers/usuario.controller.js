@@ -185,7 +185,7 @@ export async function authPass(req, res){
 
 export async function crearCodigo(req, res){
     try {
-        const expirationTime = 20000
+        const expirationTime = 100000
         const limite = new Date(Date.now() + expirationTime)
         const otp = generateOtp()
         const usuario = await usuarioDao.updateOne(req.body.mail, {
