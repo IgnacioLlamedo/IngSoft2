@@ -15,21 +15,29 @@ async function getAllClasses() {
 
     clasesData.forEach(claseObj => {
 
-        /* console.log(claseObj); Si empieza a haber errores a la hora de mostrar las clases, usar esto
+        console.log(claseObj); /*Si empieza a haber errores a la hora de mostrar las clases, usar esto
         para debuggear, Por cada claseGeneral que haya te genera 3 objetos y podes ver cual es
-        el que le falta info.
-        console.log(claseObj.sala);
-        console.log(claseObj.actividad); */
+        el que le falta info.*/
+        /* console.log(claseObj.sala);
+        console.log(claseObj.actividad);
+        console.log(claseObj.profesor);
+        console.log(claseObj.claseEsp); */
 
         const tdId = `${claseObj.clase.dia}-${claseObj.clase.hora}`;
 
         const celda = document.querySelector(`#${tdId} [data-sala="${claseObj.sala.nombre}"]`);
+        
+        console.log("El tdId que busca el query actual es: ")
+        console.log(tdId);
+        console.log("La data sala que busca el query actual es: ");
+        console.log(claseObj.sala.nombre);
 
         if (celda) {
+            console.log(celda)
             celda.innerText = claseObj.actividad.nombre;
             celda.dataset.id = claseObj.clase._id; //Para mandar por crearPreferencia
             celda.dataset.clase = claseObj.actividad.nombre;
-            celda.dataset.precio = 4; //Esto está hardcodeado -> cambiar en prod. 
+            celda.dataset.precio = claseObj.clase.precioMensual; //Esto está hardcodeado -> cambiar en prod. 
             
             /* //Si no tengo clase especifica, significa que no la creé y por lo tanto no tiene alumnos anotados.
             console.log(claseObj.claseEsp);
