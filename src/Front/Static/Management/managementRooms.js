@@ -49,14 +49,13 @@ function printSlots(slots) {
             <p>Cupo máximo: ${slot.limiteSala}</p>
         `;
 
-
         const slotError = document.createElement("div");
         slotError.classList.add("slot-error");
         slotError.classList.add("none");
 
         const errorHr = document.createElement("hr");
         const errorMsg = document.createElement("p");
-        errorMsg.classList.add("errorMsgW");
+        errorMsg.classList.add("errorMsg");
 
         slotError.appendChild(errorHr);
         slotError.appendChild(errorMsg);
