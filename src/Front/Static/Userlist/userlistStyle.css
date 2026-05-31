@@ -1,7 +1,7 @@
 .user-table {
     width: 100%;
     max-width: 750px;
-    margin: 20px auto;
+    margin: 0px auto;
     border-collapse: collapse;
     background: #252525;
     border-radius: 8px;
@@ -83,11 +83,54 @@
     border: 1px solid #b71c1c;
 }
 
-/* @media (max-width: 720px) {
+.filter-panel {
+    width: 100%;
+    max-width: 750px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    background: #1f1f1f;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+}
 
-    .user-table th,
-    .user-table td {
-        font-size: 12px;
-        padding: 10px;
-    }
-} */
+.filter-panel label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #eaeaea;
+    font-weight: 600;
+    min-width: 160px;
+}
+
+.filter-panel select,
+.filter-panel input {
+    border: 1px solid #444;
+    background: #111;
+    color: #f1f1f1;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font: inherit;
+}
+
+.filter-panel input {
+    flex: 1;
+    min-width: 280px;
+}
+
+.filter-panel button {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 8px;
+    background: #d01f25;
+    color: #fff;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.filter-panel button:hover {
+    filter: brightness(1.05);
+}

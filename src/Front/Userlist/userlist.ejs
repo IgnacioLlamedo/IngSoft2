@@ -19,6 +19,21 @@
     
     <h1 class="title">Lista de Usuarios</h1>
     <main class="main-container">
+        <section class="filter-panel" aria-label="Filtrar lista de usuarios">
+            <label for="filterColumnSelect" style="margin-left: 10px; margin-right: 20px;">
+                Columna:
+                <select id="filterColumnSelect" aria-label="Seleccionar columna a filtrar">
+                    <option value="nombre">Nombre</option>
+                    <option value="mail">Correo</option>
+                    <option value="rol">Rol</option>
+                </select>
+            </label>
+            <label for="filterInput">
+                Buscar:
+                <input id="filterInput" type="search" placeholder="Buscar en la columna seleccionada" aria-label="Texto de búsqueda" />
+            </label>
+            <button type="button" id="clearFilterButton">Limpiar filtro</button>
+        </section>
         <table class="user-table" role="table" id="userlistTable">
             <thead>
                 <tr>

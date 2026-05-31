@@ -1,14 +1,59 @@
 ﻿const tableBody = document.getElementById('userlistTableBody');
 const messageDiv = document.getElementById('userlistMessage');
 const table = document.getElementById('userlistTable');
+const filterSelect = document.getElementById('filterColumnSelect');
+const filterInput = document.getElementById('filterInput');
+const clearFilterButton = document.getElementById('clearFilterButton');
 
 let currentUsers = [];
 const currentSort = { key: null, direction: 'asc' };
 
 window.addEventListener('DOMContentLoaded', () => {
     bindSortButtons();
+    bindFilterControls();
     loadUsers();
 });
+
+function bindFilterControls() {
+    if (filterSelect) {
+        filterSelect.addEventListener('change', applyFiltersAndRender);
+    }
+
+    if (filterInput) {
+        filterInput.addEventListener('input', applyFiltersAndRender);
+    }
+
+    if (clearFilterButton) {
+        clearFilterButton.addEventListener('click', () => {
+            if (filterInput) filterInput.value = '';
+            if (filterSelect) filterSelect.value = 'nombre';
+            applyFiltersAndRender();
+        });
+    }
+}
+
+function getFilteredUsers() {
+    if (!filterInput || !filterSelect) {
+        return currentUsers;
+    }
+
+    const searchValue = filterInput.value.trim().toLowerCase();
+    const searchKey = filterSelect.value;
+
+    if (!searchValue) {
+        return currentUsers;
+    }
+
+    return currentUsers.filter((user) => {
+        const fieldValue = String(user[searchKey] || '').toLowerCase();
+        return fieldValue.includes(searchValue);
+    });
+}
+
+function applyFiltersAndRender() {
+    renderUserTable(getFilteredUsers());
+}
+
 
 document.addEventListener('click', (event) => {
     const viewBtn = event.target.closest('.btn-view');
@@ -35,7 +80,7 @@ async function loadUsers() {
 
         const users = await response.json();
         currentUsers = Array.isArray(users) ? users : [];
-        renderUserTable(currentUsers);
+        renderUserTable(getFilteredUsers());
     } catch (error) {
         showMessage(error.message, 'error');
         console.error(error);
@@ -93,7 +138,7 @@ function bindSortButtons() {
                 currentSort.key = key;
                 currentSort.direction = 'asc';
             }
-            renderUserTable(currentUsers);
+            renderUserTable(getFilteredUsers());
         });
     });
 }
