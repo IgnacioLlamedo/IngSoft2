@@ -1,4 +1,4 @@
-import { usuarioDao } from "../daos/index.js";
+﻿import { usuarioDao } from "../daos/index.js";
 import { planillaDao } from "../daos/index.js";
 import { generateOtp } from '@mx7/otp';
 import { mailer } from "../servicios/mailer.servicio.js";
@@ -405,10 +405,6 @@ export async function setPasswordController(req, res) {
 }
 
 
-
-
-
-
 async function createSession(req, user) {
     req.session.user = {
         id: user._id,
@@ -418,8 +414,26 @@ async function createSession(req, user) {
     await req.session.save(); 
 }
 
-
 async function changeEmailSession(req, email) {
     req.session.user.mail = email;
     await req.session.save(); 
+}
+
+
+export async function getUserlistController(req, res) {
+    try {
+        const sessionUser = req.session && req.session.user;
+
+        if (!sessionUser || sessionUser.rol !== 'administrador') {
+            return res.status(403).json({ success: false, message: 'Acceso denegado' });
+        }
+
+        const query = req.query || {};
+
+        return res.json(await usuarioDao.readMany(query));
+
+    } catch (error) {
+        console.error('getUserlistController ERROR: ', error);
+        return res.status(500).json({ success: false, message: 'Error al obtener la lista de usuarios. Inténtelo más tarde.' });
+    }
 }

@@ -1,0 +1,70 @@
+.user-table {
+    width: 100%;
+    max-width: 750px;
+    margin: 20px auto;
+    border-collapse: collapse;
+    background: #252525;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 7px 16px rgba(0, 0, 0, 0.4);
+}
+
+.user-table th {
+    background: rgba(208, 31, 37);
+}
+
+.user-table td {
+    border: 1px solid #333;
+}
+
+.user-table tr:last-child td:first-child {
+    border-bottom-left-radius: 8px;
+}
+
+.user-table tr:last-child td:last-child {
+    border-bottom-right-radius: 8px;
+}
+
+.user-table th,
+.user-table td {
+    padding: 12px 14px;
+    text-align: left;
+    color: #eaeaea;
+}
+
+.actions-cell {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    padding: 10px 5px;
+    border: 0px;
+}
+
+.action-btn {
+    padding: 0px 3px 2px;
+    border-radius: 4px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+}
+
+.btn-view {
+    background: #2b442d;
+    color: #d4f3d7;
+    border: 1px solid #4f7f55;
+}
+
+.btn-delete {
+    background: #5f1a1a;
+    color: #ffd6d6;
+    border: 1px solid #b71c1c;
+}
+
+/* @media (max-width: 720px) {
+
+    .user-table th,
+    .user-table td {
+        font-size: 12px;
+        padding: 10px;
+    }
+} */
