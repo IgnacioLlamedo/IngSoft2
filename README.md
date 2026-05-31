@@ -41,11 +41,10 @@ Para poder usar mercado pago se debe tener un URL https. Para ello podemos crear
 <br><br><br><br>
 <h1 align="center"> Demo 1 - 46 Puntos </h1>
 
-![Badge en desarrollo](https://img.shields.io/badge/Status-In_Progress-orange) ![Badge nota](https://img.shields.io/badge/Nota_PREDEMO_obtenida-Indef-purple) ![Badge nota](https://img.shields.io/badge/Nota_DEMO_obtenida-Indef-purple)
+![Badge en desarrollo](https://img.shields.io/badge/Status-Terminada-green) ![Badge nota](https://img.shields.io/badge/Nota_PREDEMO_obtenida-Regular-purple) ![Badge nota](https://img.shields.io/badge/Nota_DEMO_obtenida-Regular-purple)
 
 &nbsp;
 ### Temas a cubrir:
-
 - Navegación básica.
 - Registrarse/Iniciar sesión/Cerrar sesión como cliente, utilizando doble factor y pudiendo recuperar contraseña.
 - Poder modificar sus datos y contraseña.
@@ -54,7 +53,6 @@ Para poder usar mercado pago se debe tener un URL https. Para ello podemos crear
 
 &nbsp;
 ### Temas opcionales:
-
 - Crear clase.
 - Lista de espera.
 
@@ -87,4 +85,58 @@ Para poder usar mercado pago se debe tener un URL https. Para ello podemos crear
 - Salir de lista de espera - [ 2 Pts. ]
 - Aceptar cupo liberado - [ 4 Pts. ]
 - Rechazar cupo liberado - [ 4 Pts. ]
+
+
+<br><br><br><br>
+<h1 align="center"> Demo 2 - 90 Puntos </h1>
+
+![Badge en desarrollo](https://img.shields.io/badge/Status-En_Progreso-orange) ![Badge nota](https://img.shields.io/badge/Nota_PREDEMO_obtenida-Indef-purple) ![Badge nota](https://img.shields.io/badge/Nota_DEMO_obtenida-Indef-purple)
+
+&nbsp;
+### Temas a cubrir:
+- Creación/Modificación/Eliminación de clases. Pueden ponerse inactivas y deberán avisar a todos sus inscriptos.
+- Tabla de clases dinámica en cuanto a salas.
+- Profesores ligados a actividad, estados de inactividad ligados a fechas y motivos.
+- Estadísticas de administrador.
+- Asistencias con QR o DNI.
+- Avisos de cupos liberados, junto con su aceptación y rechazo.
+- Pagar resto de lo señado.
+- Cancelaciones, créditos y devoluciones.
+- Renovar mensualidades de 30 días cada una.
+- Crear funcionalidad de recordatorio de renovación.
+- Historiales del usuario.
+- Registrar empleados.
+
+&nbsp;
+### Historias que incluye:
+- Crear clase - [ 3 Pts. ]
+- Modificar clase - [ 3 Pts. ]
+- Eliminar clase - [ 2 Pts. ]
+- Desplegar opciones de clase - [ 1 Pts. ]
+- Registrar asistencia DNI - [ 5 Pts. ]
+- Registrar asistencia QR - [ 10 Pts. ]
+- Escanear QR asistencia - [ 5 Pts. ]
+- Salir de lista de espera - [ 2 Pts. ]
+- Aceptar cupo liberado - [ 4 Pts. ]
+- Rechazar cupo liberado - [ 4 Pts. ]
+- Cancelar reserva - [ 3 Pts. ]
+- Cancelar mensualidad - [ 4 Pts. ]
+- Pagar resto - [ 2 Pts. ]
+- Renovar mensualidad - [ 4 Pts. ]
+- Configurar notificación de recordatorio de pago - [ 2 Pts. ]
+- Ver historial de pagos - [ 7 Pts. ]
+- Ver mis presentes - [ 3 Pts. ]
+- Registrar profesor - [ 2 Pts. ]
+- Modificar profesor - [ 2 Pts. ]
+- Eliminar profesor - [ 2 Pts. ]
+- Registrar empleado - [ 3 Pts. ]
+- Modificar empleado - [ 2 Pts. ]
+- Eliminar empleado - [ 2 Pts. ]
+- Ver usuarios registrados - [ 3 Pts. ]
+- Ver facturación por período - [ 3 Pts. ]
+- Ver facturación por tipo de clase - [ 4 Pts. ]
+- Ver cancelaciones por clase - [ 3 Pts. ]
+  
+### Faltan crear las HU nuevas que surgieron en la Demo 1
+
 
