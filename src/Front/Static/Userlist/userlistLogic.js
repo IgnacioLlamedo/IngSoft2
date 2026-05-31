@@ -115,6 +115,7 @@ function renderUserTable(users) {
                 <tr>
                     <td>${escapeHtml(user.nombre)}</td>
                     <td>${escapeHtml(user.mail)}</td>
+                    <td>${escapeHtml(user.dni)}</td>
                     <td>${escapeHtml(user.rol)}</td>
                     <td class="actions-cell">
                         <button class="btn-action btn-view" data-id="${escapeHtml(user._id)}">Ver/Editar Perfil</button>

@@ -25,12 +25,14 @@
                 <select id="filterColumnSelect" aria-label="Seleccionar columna a filtrar">
                     <option value="nombre">Nombre</option>
                     <option value="mail">Correo</option>
+                    <option value="mail">DNI</option>
                     <option value="rol">Rol</option>
                 </select>
             </label>
             <label for="filterInput">
                 Buscar:
-                <input id="filterInput" type="search" placeholder="Buscar en la columna seleccionada" aria-label="Texto de búsqueda" />
+                <input id="filterInput" type="search" placeholder="Buscar en la columna seleccionada" aria-label="Texto de búsqueda"
+                    style="font-weight: 400;" />
             </label>
             <button type="button" id="clearFilterButton">Limpiar filtro</button>
         </section>
@@ -45,6 +47,11 @@
                     <th>
                         <button type="button" class="btn-sort" data-sort-key="mail">
                             Correo <span class="sort-indicator"></span>
+                        </button>
+                    </th>
+                    <th>
+                        <button type="button" class="btn-sort" data-sort-key="dni">
+                            DNI <span class="sort-indicator"></span>
                         </button>
                     </th>
                     <th>

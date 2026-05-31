@@ -17,19 +17,12 @@
     border: 1px solid #333;
 }
 
-.user-table tr:last-child td:first-child {
-    border-bottom-left-radius: 8px;
-}
-
-.user-table tr:last-child td:last-child {
-    border-bottom-right-radius: 8px;
-}
-
 .user-table th,
 .user-table td {
     padding: 12px 14px;
     text-align: left;
     color: #eaeaea;
+    white-space: nowrap;
 }
 
 .btn-sort {
@@ -56,15 +49,16 @@
 }
 
 .actions-cell {
-    display: flex;
     gap: 10px;
     justify-content: flex-end;
     padding: 10px 5px;
     border: 0px;
+    min-width: 180px;
+    white-space: nowrap;
 }
 
 .btn-action {
-    padding: 0px 3px 2px;
+    padding: 5px 6px 6px 6px;
     border-radius: 4px;
     font-weight: 600;
     cursor: pointer;
