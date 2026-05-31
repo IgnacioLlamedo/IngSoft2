@@ -1,4 +1,4 @@
-import express from "express";
+﻿import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -240,4 +240,12 @@ webRouter.get("/management/activities", (req,res) => {
 webRouter.get("/management/instructors", (req,res) => {
     if(!req.session.user) return res.redirect("/access/login");
     res.render(path.join(__dirname, "Front/Management/managementInstructors.ejs"), { userRole: req.session.user.rol });
+});
+
+
+// Userlist
+webRouter.get("/userlist", (req,res) => {
+    if(!req.session.user) return res.redirect("/access/login");    
+    if(req.session.user.rol !== "administrador") return res.redirect(homeRoute);
+    res.render(path.join(__dirname, "Front/Userlist/userlist.ejs"), { userRole: req.session.user.rol });
 });

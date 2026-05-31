@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/Images/Common/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/Common/commonPageStyle.css">
+    <link rel="stylesheet" href="/Common/commonFormPageStyle.css">
+    <link rel="stylesheet" href="/Account/profileStyle.css">
+    <link rel="stylesheet" href="/Userlist/userlistStyle.css">
+    <title>CEF - Lista de Usuarios</title>
+</head>
+
+<body>
+    <header>
+        <%- include('../Navbar/navbarSelector.ejs') %>
+    </header>
+    
+    <h1 class="title">Lista de Usuarios</h1>
+    <main class="main-container">
+        <table class="user-table" role="table" id="userlistTable">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Correo</th>
+                    <th>Rol</th>
+                    <th style="text-align: center">Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="userlistTableBody">
+            </tbody>
+        </table>
+        <div id="userlistMessage" class="message info">Cargando usuarios…</div>
+    </main>
+
+    <script src="/Userlist/userlistLogic.js" defer></script>
+
+    <%- include('../Navbar/footer.html') %>
+</body>
+</html>
