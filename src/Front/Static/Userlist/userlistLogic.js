@@ -1,7 +1,14 @@
 ﻿const tableBody = document.getElementById('userlistTableBody');
 const messageDiv = document.getElementById('userlistMessage');
+const table = document.getElementById('userlistTable');
 
-window.addEventListener('DOMContentLoaded', loadUsers);
+let currentUsers = [];
+const currentSort = { key: null, direction: 'asc' };
+
+window.addEventListener('DOMContentLoaded', () => {
+    bindSortButtons();
+    loadUsers();
+});
 
 document.addEventListener('click', (event) => {
     const viewBtn = event.target.closest('.btn-view');
@@ -27,7 +34,8 @@ async function loadUsers() {
         }
 
         const users = await response.json();
-        renderUserTable(Array.isArray(users) ? users : []);
+        currentUsers = Array.isArray(users) ? users : [];
+        renderUserTable(currentUsers);
     } catch (error) {
         showMessage(error.message, 'error');
         console.error(error);
@@ -53,21 +61,63 @@ function renderUserTable(users) {
     // 2) El botón "Ver/editar perfil" sería solo "Ver perfil"
     // 3) No mostrar botón "Borrar"
 
-    tableBody.innerHTML = users
+    const sortedUsers = currentSort.key ? sortUsers(users, currentSort.key, currentSort.direction) : users;
+    updateSortIndicators();
+
+    tableBody.innerHTML = sortedUsers
         .map((user) => {
-            // const fechaNac = user.nacimiento ? new Date(user.nacimiento).toLocaleDateString() : '';
             return `
                 <tr>
                     <td>${escapeHtml(user.nombre)}</td>
                     <td>${escapeHtml(user.mail)}</td>
                     <td>${escapeHtml(user.rol)}</td>
                     <td class="actions-cell">
-                        <button class="action-btn btn-view" data-id="${escapeHtml(user._id)}">Ver/Editar Perfil</button>
-                        <button class="action-btn btn-delete" data-id="${escapeHtml(user._id)}">Dar de Baja</button>
+                        <button class="btn-action btn-view" data-id="${escapeHtml(user._id)}">Ver/Editar Perfil</button>
+                        <button class="btn-action btn-delete" data-id="${escapeHtml(user._id)}">Dar de Baja</button>
                     </td>
                 </tr>`;
         })
         .join('');
+}
+
+function bindSortButtons() {
+    const buttons = table.querySelectorAll('.btn-sort');
+    buttons.forEach((button) => {
+        button.addEventListener('click', () => {
+            const key = button.dataset.sortKey;
+            if (!key) return;
+
+            if (currentSort.key === key) {
+                currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+            } else {
+                currentSort.key = key;
+                currentSort.direction = 'asc';
+            }
+            renderUserTable(currentUsers);
+        });
+    });
+}
+
+function sortUsers(users, key, direction) {
+    return [...users].sort((a, b) => {
+        const left = String(a[key] || '').toLowerCase();
+        const right = String(b[key] || '').toLowerCase();
+        const comparison = left.localeCompare(right, 'es', { sensitivity: 'base' });
+        return direction === 'asc' ? comparison : -comparison;
+    });
+}
+
+function updateSortIndicators() {
+    const buttons = table.querySelectorAll('.btn-sort');
+    buttons.forEach((button) => {
+        const indicator = button.querySelector('.sort-indicator');
+        const key = button.dataset.sortKey;
+        const isActive = currentSort.key === key;
+
+        button.classList.toggle('active', isActive);
+        button.setAttribute('aria-sort', isActive ? (currentSort.direction === 'asc' ? 'ascending' : 'descending') : 'none');
+        indicator.textContent = isActive ? (currentSort.direction === 'asc' ? '▲' : '▼') : '';
+    });
 }
 
 function showMessage(message, type = 'info') {

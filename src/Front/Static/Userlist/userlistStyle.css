@@ -32,6 +32,29 @@
     color: #eaeaea;
 }
 
+.btn-sort {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    border: none;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.btn-sort:hover,
+.btn-sort.active {
+    color: #ffffff;
+    text-decoration: underline;
+}
+
+.sort-indicator {
+    font-size: 0.75em;
+}
+
 .actions-cell {
     display: flex;
     gap: 10px;
@@ -40,7 +63,7 @@
     border: 0px;
 }
 
-.action-btn {
+.btn-action {
     padding: 0px 3px 2px;
     border-radius: 4px;
     font-weight: 600;
