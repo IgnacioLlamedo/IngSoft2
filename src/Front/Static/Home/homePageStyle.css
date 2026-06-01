@@ -103,6 +103,10 @@ main {
   text-align: left;
 }
 
+.user-name {
+  color: #e63946; /* es distinto de los demás rojos usados */
+}
+
 
 .activities-section {
   width: 100%;

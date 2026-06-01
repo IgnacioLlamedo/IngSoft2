@@ -44,8 +44,12 @@ webRouter.get(rootRoute, (req,res) => {
 });
 
 webRouter.get(homeRoute, (req, res) => {
-    if (!req.session.user) return res.redirect(rootRoute);
-    res.render(path.join(__dirname, "Front/Home/homePage.ejs"), {userRole: req.session.user.rol, Role});
+	if (!req.session.user) return res.redirect(rootRoute);
+	res.render(path.join(__dirname, "Front/Home/homePage.ejs"), {
+		userRole: req.session.user.rol,
+		Role,
+		name: req.session.user.nombre,
+	});
 });
 
 webRouter.get("/home/table", (req, res) => {
