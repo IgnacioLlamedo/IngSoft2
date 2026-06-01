@@ -1,17 +1,62 @@
 
-const createForm = document.getElementById("new-instructor-form");
-const templateEditForm = document.getElementById("edit-instructor-form");
+
+
+// Estas son las únicas cosas que hay que cambiar de este código para adaptarlo // 
+// Al profesor le tuve que agregar un control del DNI al crear y modificar      //
+
+const endpoint = "/api/admin/profesor"; // Se usa el mismo fetch pero diferenciando entre GET | POST | PUT | DELETE
+
+
+const slotHtml = (slot) => { return `
+    <p>Nombre: ${slot.nombre}</p>
+    <p>DNI: ${slot.dni}</p>
+    <p>Género: ${slot.genero}</p>
+`};
+
+
+function getFormData(form) {
+    return {
+        nombre: form.name.value,
+        dni: form.dni.value,
+        genero: form.gender.value,
+    }
+}
+
+
+const fieldsToFillWithSlotData = (slot) => {
+    return [
+        {id: '#nameField', content: slot.nombre},
+        {id: '#dniField', content: slot.dni},
+        {id: '#genderField', content: slot.genero},
+    ];
+};
+
+//////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+const createForm = document.getElementById("create-form");
+const templateEditForm = document.getElementById("edit-form");
 
 const errorMsg = document.getElementById("createError");
 const successMsg = document.getElementById("createSuccess");
 
-const slotsList = document.getElementById("slotsList");
+const slotList = document.getElementById("slotList");
 const notDataAvailableMsg = document.getElementById("notDataAvailableMsg");
+
+const dialog = document.getElementById("confirmPanel");
+
 
 getAllSlots();
 
 async function getAllSlots() {
-    const res = await fetch("/api/admin/profesor", {
+    const res = await fetch(endpoint, {
         method: 'GET',
         headers: {
             "Content-Type" : "application/json",
@@ -21,111 +66,121 @@ async function getAllSlots() {
     const resData = await res.json();
 
     if(resData.success)
-        printSlots(resData.instructors);
+        printSlots(resData.data);
     else
         notDataAvailableMsg.hidden = false;
 }
 
 
-
-
 function printSlots(slots) {
     notDataAvailableMsg.hidden = true;
 
-    slotsList.innerHTML = "";
+    slotList.innerHTML = "";
 
     const lastIndex = slots.length - 1;
 
     slots.forEach((slot, index) => {
-        
-        const slotElem = document.createElement("div");
-        slotElem.classList.add("slot");
 
-        const slotData = document.createElement("div");
-        slotData.classList.add("slot-data");
-
-        slotData.innerHTML =`
-            <p>Nombre: ${slot.nombre}</p>
-            <p>DNI: ${slot.dni}</p>
-            <p>Género: ${slot.genero}</p>
-        `;
-
-        const slotError = document.createElement("div");
-        slotError.classList.add("slot-error");
-        slotError.classList.add("none");
-
-        const errorHr = document.createElement("hr");
-        const errorMsg = document.createElement("p");
-        errorMsg.classList.add("errorMsg");
-
-        slotError.appendChild(errorHr);
-        slotError.appendChild(errorMsg);
-
-        const buttonsDiv = document.createElement("div");
-        buttonsDiv.classList.add("buttons-container");
-
-        const slotEditButton = document.createElement("button");
-        slotEditButton.classList.add("edit-button");
-        slotEditButton.textContent = "Editar";
-        slotEditButton.onclick = () => switchToEdit(slot.nombre, slot.dni, slot.genero, slot._id);
-
-        const slotDeleteButton = document.createElement("button");
-        slotDeleteButton.classList.add("delete-button");
-        slotDeleteButton.type = "button";
-        slotDeleteButton.textContent = "Borrar";
-
-        slotDeleteButton.addEventListener('click', () => {
-            const dialog = document.getElementById('confirmPanel');
-            if (!dialog) {
-                // Fallback: no dialog present, delete immediately
-                deleteActivity(null, slot._id, slotError, errorMsg);
-                return;
-            }
-
-            dialog.showModal();
-
-            dialog.addEventListener('close', (closeEvent) => {
-                if (dialog.returnValue === 'default') {
-                    // pass the close event (may be null) — deleteActivity guards event usage
-                    deleteActivity(closeEvent, slot._id, slotError, errorMsg);
-                }
-            }, { once: true });
-        });
-
-
-        buttonsDiv.appendChild(slotEditButton);
-        buttonsDiv.appendChild(slotDeleteButton);
-        slotData.appendChild(buttonsDiv);
+        const slotElem = createSlotElem();
+        const slotData = createSlotData(slot);
+    
+        const [slotError, slotErrorMsg] = createSlotError(slotElem);
+        createEditAndDeleteButtons(slotData, slotError, slotErrorMsg, slot);
 
         slotElem.appendChild(slotData);
         slotElem.appendChild(slotError);
+        
+        slotList.appendChild(slotElem);
 
-        slotsList.appendChild(slotElem);
+        createSeparator(slotList, index, lastIndex);
 
-        if(index !== lastIndex) {
-            const separator = document.createElement("hr");
-            separator.classList.add("separator");
-            slotsList.appendChild(separator);
-        }
     });
+}
+
+
+function createSlotElem() {
+    const slotElem = document.createElement("div");
+    slotElem.classList.add("slot");
+
+    return slotElem;
+}
+
+
+function createSlotData(slot) {
+    const slotData = document.createElement("div");
+    slotData.classList.add("slot-data");
+
+    slotData.innerHTML = slotHtml(slot);
+
+    return slotData;
+}
+
+
+function createEditAndDeleteButtons(slotData, slotError, slotErrorMsg, slot) {
+    const buttonsDiv = document.createElement("div");
+    buttonsDiv.classList.add("buttons-container");
+
+    const slotEditButton = document.createElement("button");
+    slotEditButton.classList.add("edit-button");
+    slotEditButton.textContent = "Editar";
+    slotEditButton.onclick = () => switchToEdit(slot);
+
+    const slotDeleteButton = document.createElement("button");
+    slotDeleteButton.classList.add("delete-button");
+    slotDeleteButton.type = "button";
+    slotDeleteButton.textContent = "Borrar";
+
+    slotDeleteButton.addEventListener('click', () => {
+        dialog.showModal();
+
+        dialog.addEventListener('close', (closeEvent) => {
+            if (dialog.returnValue === 'default') {
+                deleteActivity(closeEvent, slot._id, slotError, slotErrorMsg);
+            }
+        }, { once: true });
+    });
+
+    buttonsDiv.appendChild(slotEditButton);
+    buttonsDiv.appendChild(slotDeleteButton);
+
+    slotData.appendChild(buttonsDiv);
+}
+
+
+function createSlotError(slotElem) {
+    const slotError = document.createElement("div");
+    slotError.classList.add("slot-error");
+    slotError.classList.add("none");
+
+    const slotErrorHr = document.createElement("hr");
+    const slotErrorMsg = document.createElement("p");
+    slotErrorMsg.classList.add("errorMsg");
+
+    slotError.appendChild(slotErrorHr);
+    slotError.appendChild(slotErrorMsg);
+
+    return [slotError, slotErrorMsg];
+}
+
+
+function createSeparator(slotList, index, lastIndex) {
+    if(index !== lastIndex) {
+        const separator = document.createElement("hr");
+        separator.classList.add("separator");
+        slotList.appendChild(separator);
+    }
 }
 
 
 
 
 
-document.getElementById("new-instructor-form").addEventListener("submit", async (event) => {
+createForm.addEventListener("submit", async (event) => {
 
     event.preventDefault();
     CleanMsgs();
 
-    const form = event.target;
-
-    const data = {
-        nombre: form.name.value, // Se puede poner "Yo ga" pero bueno. Haría replaceAll(" ", "") pero entonces no podría existir nada con dos plaabras
-        dni: form.dni.value,
-        genero: form.gender.value,
-    }
+    const data = getFormData(event.target);
 
     if(data.dni.length !== 8) {
         ErrorMsg("Error al crear el profesor. El DNI ingresado debe tener 8 caracteres");
@@ -134,7 +189,7 @@ document.getElementById("new-instructor-form").addEventListener("submit", async 
 
     const dataString = JSON.stringify(data);
 
-    const res = await fetch("/api/admin/profesor", {
+    const res = await fetch(endpoint, {
         method: 'POST',
         headers: {
             "Content-Type" : "application/json",
@@ -154,71 +209,77 @@ document.getElementById("new-instructor-form").addEventListener("submit", async 
 
 
 
+
+
 function SuccessMsg(message) {
-    errorMsg.hidden = true;
-    errorMsg.textContent = "";
+    hideErrorMsg();
 
     successMsg.textContent = message;
     successMsg.hidden = false;
 }
 
 function ErrorMsg(message) {
-    successMsg.hidden = true;
-    successMsg.textContent = "";
+    hideSuccessMsg();
 
     errorMsg.hidden = false;
     errorMsg.textContent = message;
 }
 
 function CleanMsgs() {
-    successMsg.hidden = true;
-    successMsg.textContent = "";
+    hideSuccessMsg();
+    hideErrorMsg();
+}
 
+function hideErrorMsg() {
     errorMsg.hidden = true;
     errorMsg.textContent = "";
+}
+
+function hideSuccessMsg() {
+    successMsg.hidden = true;
+    successMsg.textContent = "";
 }
 
 
 
 
+async function deleteActivity(event, _id, slotError, slotErrorMsg) {
+    event.preventDefault();
 
+    hideSlotError(slotError);
+    
+    const data = JSON.stringify({ id: _id });
 
-
-
-
-async function deleteActivity(event, _id, slotError, errorMsg) {
-    if (event && typeof event.preventDefault === 'function') event.preventDefault();
-
-    slotError.classList.add("none");
-
-    const data = {
-        id: _id,
-    }
-
-    const dataString = JSON.stringify(data);
-
-    const res = await fetch("/api/admin/profesor", {
+    const res = await fetch(endpoint, {
         method: 'DELETE',
         headers: {
             "Content-Type" : "application/json",
         },
-        body: dataString
+        body: data
     });
 
     const resData = await res.json();
 
     if(resData.success)
         getAllSlots();
-    else {
-        errorMsg.textContent = resData.message;
-        slotError.classList.remove("none");
-    }
+    else
+        showSlotError(slotError, slotErrorMsg, resData.message);
+}
+
+
+function hideSlotError(slotError) {
+    slotError.classList.add("none");
+}
+
+function showSlotError(slotError, slotErrorMsg, message) {
+    slotErrorMsg.textContent = message;
+    slotError.classList.remove("none");
 }
 
 
 
 
-// EDIT FORM
+// EDIT FORM //
 
 let currentForm = createForm;
 
@@ -228,20 +289,12 @@ let editFormSuccesMsg;
 let editId;
 
 
-async function switchToEdit(name, dni, gender, id) {
+async function switchToEdit(slot) {
     const templateClone = templateEditForm.content.cloneNode(true);
     
-    editForm = templateClone.querySelector("form");
-    editId = id;
+    const editForm = templateClone.querySelector("form");
 
-    const editNameField = editForm.querySelector("#nameField");
-    editNameField.value = name;
-
-    const editDniField = editForm.querySelector("#dniField");
-    editDniField.value = dni;
-
-    const editGenderField = editForm.querySelector("#genderField");
-    editGenderField.value = gender;
+    fillFormWithData(editForm, slot);
 
     editFormErrorMsg = editForm.querySelector("#editError");
     editFormSuccessMsg = editForm.querySelector("#editSuccess");
@@ -250,22 +303,17 @@ async function switchToEdit(name, dni, gender, id) {
         event.preventDefault();
         EditCleanMsgs();
 
-        const form = event.target;
-        const data = {
-            id: editId,
-            nombre: form.name.value,
-            dni: form.dni.value,
-            genero: form.gender.value,
-        }
+        let data =  getFormData(event.target);
+        data.id = slot._id;
 
         if(data.dni.length !== 8) {
-            EditErrorMsg("Error al crear el profesor. El DNI ingresado debe tener 8 caracteres");
+            EditErrorMsg("Error al modificar el profesor. El DNI ingresado debe tener 8 caracteres");
             return;
         }
 
         const dataString = JSON.stringify(data);
 
-        const res = await fetch("/api/admin/profesor", {
+        const res = await fetch(endpoint, {
             method: 'PUT',
             headers: {
                 "Content-Type" : "application/json",
@@ -277,6 +325,7 @@ async function switchToEdit(name, dni, gender, id) {
 
         if(resData.success) {
             EditSuccessMsg(resData.message);
+            //switchToCreateForm();
             getAllSlots();
         }
         else
@@ -297,6 +346,16 @@ async function switchToEdit(name, dni, gender, id) {
 function switchToCreateForm() {
     currentForm.replaceWith(createForm);
     currentForm = createForm;
+}
+
+
+
+function fillFormWithData(editForm, slot) {
+    const formFieldsContent = fieldsToFillWithSlotData(slot);
+
+    formFieldsContent.forEach(field => {
+        editForm.querySelector(field.id).value = field.content;
+    });
 }
 
 

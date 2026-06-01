@@ -128,7 +128,7 @@ export async function getInstructors(req, res){
 
         res.json({
             success: true,
-            instructors,
+            data: instructors,
         });
     }
     catch(error) {
@@ -198,7 +198,7 @@ export async function modificarSala(req, res) {
         data.nombre = nameConvention(data.nombre);
 
         const currentRoom = await salaDao.readOne({_id: data.id});
-
+        
         if(
             (data.nombre === currentRoom.nombre) &&
             (data.limiteSala === currentRoom.limiteSala)
@@ -289,7 +289,7 @@ export async function getRooms(req, res){
 
         res.json({
             success: true,
-            rooms,
+            data: rooms,
         });
     }
     catch(error) {
@@ -429,7 +429,7 @@ export async function getFacilities(req, res){
 
         res.json({
             success: true,
-            facilities,
+            data: facilities,
         });
     }
     catch(error) {
@@ -573,7 +573,7 @@ export async function getActivities(req, res){
 
         res.json({
             success: true,
-            activities,
+            data: activities,
         });
     }
     catch(error) {
