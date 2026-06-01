@@ -3,6 +3,8 @@ init();
 async function init() {
     await crearTabla(); /* Crea la tabla dinámicamente dependiendo de la cantidad de salas en DB
     De esta forma evitamos el problema que tuvimos en la Demo 1 xd*/
+    refrescarSemana();
+
     await getAllClasses(); //Toma todas las clases existentes y las asigna en la tabla.
 }
 
@@ -101,12 +103,12 @@ async function getAllClasses() {
 
     const resData = await res.json();
     clasesData = resData.clases;
-    console.log("Desde classSlot.js -> estas son las clases conseguidas de db: ")
-    console.log(clasesData);
+    /* console.log("Desde classSlot.js -> estas son las clases conseguidas de db: ")
+    console.log(clasesData); */
 
     clasesData.forEach(claseObj => {
 
-        console.log(claseObj); /*Si empieza a haber errores a la hora de mostrar las clases, usar esto
+        /* console.log(claseObj); */ /*Si empieza a haber errores a la hora de mostrar las clases, usar esto
         para debuggear, Por cada claseGeneral que haya te genera 3 objetos y podes ver cual es
         el que le falta info.*/
         /* console.log(claseObj.sala);
@@ -124,8 +126,8 @@ async function getAllClasses() {
             celda.innerText = claseObj.actividad.nombre;
             celda.dataset.id = claseObj.clase._id; //Para mandar por crearPreferencia
             celda.dataset.clase = claseObj.actividad.nombre;
-            celda.dataset.precio = claseObj.clase.precioMensual; //Esto está hardcodeado -> cambiar en prod. 
-            
+            celda.dataset.precio = claseObj.clase.precioMensual; //Esto está hardcodeado -> cambiar en prod.
+
             /* //Si no tengo clase especifica, significa que no la creé y por lo tanto no tiene alumnos anotados.
             console.log(claseObj.claseEsp);
             console.log(claseObj.claseEsp.anotados); */
@@ -169,3 +171,22 @@ async function getAllClasses() {
         }
     });
 }
+
+window.recargarClasesSemana = async function () {
+
+    document.querySelectorAll(".slotDeClase").forEach(div => {
+
+        div.innerText = "Sin Clase";
+
+        div.removeAttribute("data-id");
+        div.removeAttribute("data-clase");
+        div.removeAttribute("data-precio");
+        div.removeAttribute("data-fecha");
+        div.removeAttribute("data-capacidad");
+        div.removeAttribute("data-llena");
+
+        div.className = "slotDeClase";
+    });
+
+    await getAllClasses();
+};

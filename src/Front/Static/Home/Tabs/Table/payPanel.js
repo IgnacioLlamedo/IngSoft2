@@ -32,14 +32,48 @@ function abrirPago(elemento) {
     const horario = fila.querySelector("td").innerText;
 
     // Buscar fecha desde el header correspondiente
-    const colIndex = elemento.closest("td").cellIndex;
-    const header = document.querySelector(`#diasHeader th:nth-child(${colIndex+1})`);
+    const td = elemento.closest("td");
+
+    const colIndex = td.cellIndex;
+
+    const header = document.querySelectorAll(".slotHeader")[colIndex - 2];
+
     const fecha = header.dataset.fecha;
+    console.log(header.dataset);
+    console.log("fecha:", fecha);
+    console.log("horario:", horario);
 
     claseSeleccionada = clase;
     precioSeleccionado = precio;
     horarioSeleccionado = horario;
-    const fechaBase = convertirTextoADate(`${fecha} ${horario}`);
+
+    const [dia, mes, año] = fecha.split('/').map(Number);
+
+    const horaInicio = horario.split('-')[0].trim();
+
+    const [hora, minutos] = horaInicio.split(':').map(Number);
+
+
+    console.log("fecha:", fecha);
+    console.log("horario:", horario);
+
+    console.log({
+        dia,
+        mes,
+        año,
+        hora,
+        minutos
+    });
+
+    const fechaBase = new Date(
+        año,
+        mes - 1,
+        dia,
+        hora,
+        minutos
+    );
+
+    fechaBase.setSeconds(0, 0);
 
     console.log("Esta es la fecha base para crear las fechasEspecificas: ");
     console.log(fechaBase);
@@ -191,6 +225,11 @@ async function pagar(tipoClase, precio, clasesPago) {
                 clases: clasesPago
             })
         });
+
+        const resEsperaData = await resEspera.json();
+
+        document.getElementById("mensajePago").innerText = resEsperaData.message;
+        return;
     }
 
     document.getElementById("mensajePago").innerText = "";

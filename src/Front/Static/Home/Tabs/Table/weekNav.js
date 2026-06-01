@@ -27,23 +27,45 @@ function actualizarSemana() {
   const fin = new Date(inicio);
   fin.setDate(inicio.getDate() + 5);
 
-  const opciones = { day: '2-digit', month: '2-digit' };
-  const inicioStr = inicio.toLocaleDateString('es-AR', opciones);
-  const finStr = fin.toLocaleDateString('es-AR', opciones);
+  const opcionesHeader = {
+      day: '2-digit',
+      month: '2-digit'
+  };
+
+  const opcionesDataset = {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+  };
+  const inicioStr = inicio.toLocaleDateString('es-AR', opcionesDataset);
+  const finStr = fin.toLocaleDateString('es-AR', opcionesDataset);
 
   // Actualizamos el rango arriba
   weekDisplay.textContent = `${inicioStr} - ${finStr}`;
 
   // Actualizamos cada header con su fecha
-  const headers = document.querySelectorAll("#diasHeader .slotHeader");
+  const headers = document.querySelectorAll(".slotHeader");
   headers.forEach((th, i) => {
-    const fecha = new Date(inicio);
-    fecha.setDate(inicio.getDate() + i); // lunes + i días
-    const fechaStr = fecha.toLocaleDateString('es-AR', opciones);
 
-    th.textContent = `${th.dataset.dia} ${fechaStr}`;
-    th.dataset.fecha = fechaStr; // guardamos la fecha real
+    const fecha = new Date(inicio);
+    fecha.setDate(inicio.getDate() + i);
+
+    const fechaHeader = fecha.toLocaleDateString(
+        'es-AR',
+        opcionesHeader
+    );
+
+    const fechaCompleta = fecha.toLocaleDateString(
+        'es-AR',
+        opcionesDataset
+    );
+
+    th.innerHTML = `${th.dataset.dia} ${fechaHeader}`;
+
+    th.dataset.fecha = fechaCompleta;
   });
+
+  console.log("Headers encontrados:", headers.length);
 }
 
 
@@ -57,18 +79,18 @@ document.getElementById("prevWeek").addEventListener("click", () => {
   const mondayActual = getMonday(new Date(today));
   if (posibleAnterior >= mondayActual) {
     currentMonday = posibleAnterior;
-    actualizarSemana();
+    refrescarSemana();
   }
 });
 
 // Botón adelante: siempre avanza
 document.getElementById("nextWeek").addEventListener("click", () => {
   currentMonday.setDate(currentMonday.getDate() + 7);
-  actualizarSemana();
+  refrescarSemana();
 });
 
 // Inicializamos
-actualizarSemana();
+refrescarSemana();
 
 // Manejo de clic en clases
 document.querySelectorAll(".slotDeClase").forEach(div => {
@@ -86,3 +108,13 @@ document.querySelectorAll(".slotDeClase").forEach(div => {
 //    alert(`Clase: ${div.innerText}\nHorario: ${horario}\nFecha: ${fecha}\n${sala}`);
   });
 });
+
+async function refrescarSemana() {
+
+    actualizarSemana();
+
+    //Función de classSlot para recargar las clases de la semana actualizada
+    if(window.recargarClasesSemana){
+        await window.recargarClasesSemana();
+    }
+}
