@@ -78,3 +78,52 @@ export async function crearClase(req, res){
  * En base a eso, cuando se realiza un aumento,¿se hace un aumento general o un aumento individual por clase?
  * Si se puede general, ¿también se puede individual?
  */
+
+export async function ingresarAEspera(req, res) {
+    try {
+        const clases = req.body.clases;
+        //Se supone que ya existe la clase especifica, porque la clase se encuentra llena.
+        const claseAnotado = await claseEspecificaDao.updateOne({_id: clases[0].idClaseEsp}, {$push: {anotados: req.session.userId}});
+
+        if (!claseAnotado) {
+            return res.json({
+                success: false,
+                message: "Error al ingresar a lista de espera"
+            });
+        }
+        return res.json({
+            success: true,
+            message: "Ingresado a lista de espera correctamente"
+        });
+    }
+    catch(error) {
+        console.log(error);
+        res.json({
+            success: false,
+            message: error
+        });
+    }
+}
+
+export async function getSalas(req, res) {
+    try {
+        const salas = await salaDao.readMany({});
+        if (!salas) {
+            return res.json({
+                success: false,
+                message: "Error al conseguir salas"
+            });
+        }
+        res.json({
+            success: true,
+            salas: salas
+        });
+    }
+    catch(error) {
+        console.log(error);
+        res.json({
+            success: false,
+            message: error
+        });
+    }
+}

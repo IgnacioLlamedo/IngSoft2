@@ -1,7 +1,98 @@
+init();
+
+async function init() {
+    await crearTabla(); /* Crea la tabla dinámicamente dependiendo de la cantidad de salas en DB
+    De esta forma evitamos el problema que tuvimos en la Demo 1 xd*/
+    await getAllClasses(); //Toma todas las clases existentes y las asigna en la tabla.
+}
+
+let salas;
+
+async function crearTabla() {
+
+    salas = await getAllSalas();
+
+    /**
+     * El problema es que si las salas se guardan en orden erroneo
+     * en la DB, se muestran en ese orden, ahora están guardadas ->
+     * Sala 1 -> Sala 3 -> Sala 2. 
+     * Habría que reasignarlas o eliminar la 3 y volver a crearla.
+     */
+
+    const tabla = document.getElementById("tablaHorarios");
+
+    const header = document.createElement("tr");
+
+    //No tiene que tener formato cammel porque los días se guardan así en db
+    const dias = [
+        "lunes",
+        "martes",
+        "miércoles",
+        "jueves",
+        "viernes",
+        "sábado"
+    ]; /* -> esto podría hacerse en una función que permita al admin
+    decididr que días mostrar (Pensando en lo que dijo la profe de "destacarse")*/
+
+    //x2
+    const horas = [];
+    for(let h = 7; h <= 21; h++) {
+        horas.push(h);
+    }
+
+    //Se crea el header (horarios + días de la semana)
+    header.innerHTML = `<th>Horarios</th> <th>Sala</th>
+        ${dias.map(dia => `<th class="slotHeader" data-dia="${dia}">${dia}</th>`
+        ).join("")}
+    `;
+
+    tabla.appendChild(header);
+
+    //Por cada horario se crea una fila.
+    horas.forEach(hora => {
+
+        const tr = document.createElement("tr");
+
+        //creo la hora y las salas que existen
+        let filaAct = `
+            <td>${hora}:00 - ${hora + 1}:00</td>
+            <td>
+                ${salas.map(s =>
+                    `<div class="slotDeSala">${s.nombre}</div>`
+                ).join("")}
+            </td>
+        `;
+        //Por cada día se crea la celda correspondiente con el horario
+        dias.forEach(dia => {
+
+            filaAct += `
+                <td id="${dia}-${hora}">
+                    ${salas.map(s =>
+                        `<div class="slotDeClase"
+                              data-sala="${s.nombre}">
+                            Sin Clase
+                        </div>`
+                    ).join("")}
+                </td>
+            `;
+        });
+
+        tr.innerHTML = filaAct;
+
+        tabla.appendChild(tr);
+    });
+}
+
+//Función para recuperar las salas de la db
+async function getAllSalas() {
+    const res = await fetch("/api/clases/getSalas");
+    const resData = await res.json();
+
+    return resData.salas;
+}
 
 let clasesData;
 
-getAllClasses();
 
 async function getAllClasses() {
     const res = await fetch("/api/clases/get-all", {
@@ -27,10 +118,6 @@ async function getAllClasses() {
 
         const celda = document.querySelector(`#${tdId} [data-sala="${claseObj.sala.nombre}"]`);
         
-        console.log("El tdId que busca el query actual es: ")
-        console.log(tdId);
-        console.log("La data sala que busca el query actual es: ");
-        console.log(claseObj.sala.nombre);
 
         if (celda) {
             console.log(celda)

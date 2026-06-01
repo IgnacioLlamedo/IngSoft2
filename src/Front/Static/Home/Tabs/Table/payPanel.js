@@ -150,14 +150,12 @@ async function pagar(tipoClase, precio, clasesPago) {
     const sala = document.getElementById("salaClase").innerText;
     const claseLlena = document.getElementById("panelPago").dataset.llena === "true";
     
-    //Modificando, antes de dejar pagar, hay que consultar si el usuario
-    //ya está inscripto a la clase, despues dejar pagar. lpm
     const res = await fetch('/api/pago/consultar-pago', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
-            clases: clasesPago// --->>> Acá en caso de que sea Mensual, manda un arreglo con 4 ids y Fechas especificas
-        })                             //Y si es pago de seña o unica completa, se manda un objeto con idClase y FechaEspecifica
+            clases: clasesPago
+        })
     });
 
     const resData = await res.json();
@@ -170,17 +168,29 @@ async function pagar(tipoClase, precio, clasesPago) {
     // Clase llena -> confirmar lista espera
     let ingresarEspera = false;
 
-    if (claseLlena) {
-
+    if (claseLlena) { 
+        
         const confirmar = confirm(
             "La clase está llena. ¿Desea ingresar en lista de espera?"
         );
 
+        //Modificar para que si acepta, no mande a crear-preferencia
         if (!confirmar) {
             return;
         }
 
         ingresarEspera = true;
+    }
+
+    //fetch a guardar en lista de espera
+    if (ingresarEspera){
+        const resEspera = await fetch('/api/clases/ingresarAEspera', {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ 
+                clases: clasesPago
+            })
+        });
     }
 
     document.getElementById("mensajePago").innerText = "";

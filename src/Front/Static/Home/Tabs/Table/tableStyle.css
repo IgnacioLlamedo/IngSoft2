@@ -56,11 +56,17 @@ td {
 }
 
 
+/* Para que entre "Sala n" en la tabla */
 .slotDeSala {
   color: #222;
   display: flex;
   justify-content: center;
-  margin: 33%;
+  align-items: center;
+
+  margin: 4px;
+  padding: 3px;
+
+  min-height: 24px;
 }
 
 /*.div-ejemplo {
@@ -261,7 +267,7 @@ html {
 .modal-content {
   background: #fff;
   width: 90%;
-  max-width: 1000px;
+  max-width: 1500px;
   height: 90%;
   border-radius: 8px;
   position: relative;
