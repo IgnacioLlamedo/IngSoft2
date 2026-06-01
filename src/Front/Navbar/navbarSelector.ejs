@@ -1,10 +1,10 @@
 <!-- Ruta: <%= path %> -->
 <!-- Navbar based on User Role -->
-<% if (userRole === "administrador") { %>
+<% if (userRole === Role.ADMIN) { %>
   <%- include("adminNav.html") %>
-<% } else if (userRole === "empleado") { %>
+<% } else if (userRole === Role.EMPLOYEE) { %>
   <%- include("employeeNav.html") %>
-<% } else if (userRole === "cliente") { %>
+<% } else if (userRole === Role.CLIENT) { %>
   <%- include("clientNav.ejs") %>
 <% } else { %>
   <%- include("visitorNav.ejs") %>
