@@ -424,7 +424,7 @@ export async function getUserlistController(req, res) {
     try {
         const sessionUser = req.session && req.session.user;
 
-        if (!sessionUser || sessionUser.rol !== 'administrador') {
+        if (!sessionUser || sessionUser.rol !== "administrador") {
             return res.status(403).json({ success: false, message: 'Acceso denegado' });
         }
 
