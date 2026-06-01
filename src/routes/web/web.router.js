@@ -1,7 +1,7 @@
 ﻿import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
-import { Role } from "../../constants/roles.js";
+import { Role } from "../../constants/constants.js";
 
 export const webRouter = express.Router();
 
