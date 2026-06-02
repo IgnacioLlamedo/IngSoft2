@@ -86,13 +86,15 @@ export async function consultar(req, res) {
     try {
 
         const { clases } = req.body;
+        let claseEspecifica;
 
         for (const claseData of clases) {
 
             console.log("La idClase General " + claseData.idClaseGeneral + " en la fecha " + claseData.fechaEspecifica);
+            console.log(claseData.fechaEspecifica);
 
             //Consigo la clase especifica
-            const claseEspecifica = await claseEspecificaDao.readOne({idClaseGeneral: claseData.idClaseGeneral, fechaEspecifica: claseData.fechaEspecifica}); //Si existe la primera del día 1/7, las del 8/7, 15/7 y 22/7 si o si
+            claseEspecifica = await claseEspecificaDao.readOne({idClaseGeneral: claseData.idClaseGeneral, fechaEspecifica: claseData.fechaEspecifica}); //Si existe la primera del día 1/7, las del 8/7, 15/7 y 22/7 si o si
 
             console.log("La idClase General " + claseData.idClaseGeneral + " en la fecha " + claseData.fechaEspecifica + ". Encontró la siguiente clase especifica: ");
             console.log(claseEspecifica);
@@ -122,7 +124,8 @@ export async function consultar(req, res) {
         }
 
         return res.json({
-            success: true
+            success: true,
+            claseEspecifica
         });
 
     }

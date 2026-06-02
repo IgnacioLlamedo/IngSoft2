@@ -3,9 +3,7 @@ init();
 async function init() {
     await crearTabla(); /* Crea la tabla dinámicamente dependiendo de la cantidad de salas en DB
     De esta forma evitamos el problema que tuvimos en la Demo 1 xd*/
-    refrescarSemana();
-
-    await getAllClasses(); //Toma todas las clases existentes y las asigna en la tabla.
+    refrescarSemana(); /* Carga las clases de la semana actual en la tabla, asignando a cada celda la clase que corresponda*/
 }
 
 let salas;
@@ -86,6 +84,7 @@ async function crearTabla() {
 }
 
 //Función para recuperar las salas de la db
+//Hay que modificarla para que recupere las clases de la semana actual.
 async function getAllSalas() {
     const res = await fetch("/api/clases/getSalas");
     const resData = await res.json();
@@ -96,9 +95,15 @@ async function getAllSalas() {
 let clasesData;
 
 
-async function getAllClasses() {
+async function getAllClasses(fechaSemana) {
     const res = await fetch("/api/clases/get-all", {
-        method: 'GET'
+        method: 'POST',
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            fechaSemana
+        })
     });
 
     const resData = await res.json();
@@ -107,8 +112,9 @@ async function getAllClasses() {
     console.log(clasesData); */
 
     clasesData.forEach(claseObj => {
-
-        /* console.log(claseObj); */ /*Si empieza a haber errores a la hora de mostrar las clases, usar esto
+        /* console.log("Esta es una clase encontrada en DB: ");
+        console.log(claseObj);*/
+        /*Si empieza a haber errores a la hora de mostrar las clases, usar esto
         para debuggear, Por cada claseGeneral que haya te genera 3 objetos y podes ver cual es
         el que le falta info.*/
         /* console.log(claseObj.sala);
@@ -122,15 +128,11 @@ async function getAllClasses() {
         
 
         if (celda) {
-            console.log(celda)
+            /* console.log(celda) */
             celda.innerText = claseObj.actividad.nombre;
             celda.dataset.id = claseObj.clase._id; //Para mandar por crearPreferencia
             celda.dataset.clase = claseObj.actividad.nombre;
-            celda.dataset.precio = claseObj.clase.precioMensual; //Esto está hardcodeado -> cambiar en prod.
-
-            /* //Si no tengo clase especifica, significa que no la creé y por lo tanto no tiene alumnos anotados.
-            console.log(claseObj.claseEsp);
-            console.log(claseObj.claseEsp.anotados); */
+            celda.dataset.precio = claseObj.clase.precioMensual;
 
             let cantidadAnotados = 0;
 
@@ -172,7 +174,7 @@ async function getAllClasses() {
     });
 }
 
-window.recargarClasesSemana = async function () {
+window.recargarClasesSemana = async function (fechaSemana) {
 
     document.querySelectorAll(".slotDeClase").forEach(div => {
 
@@ -188,5 +190,8 @@ window.recargarClasesSemana = async function () {
         div.className = "slotDeClase";
     });
 
-    await getAllClasses();
+    /* Como esto recupera literalmente todas las clases,
+        Borra el contenido y lo vuelve a cargar
+        Hay que modificarlo para que recupere por semana. */
+    await getAllClasses(fechaSemana);
 };

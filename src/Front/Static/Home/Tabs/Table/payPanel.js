@@ -5,16 +5,13 @@ let horarioSeleccionado = "";
 let idClaseSeleccionada = "";
 let fechaEspecífica;
 
-console.log("Consiguiendo sessión data: ")
 getSessionData();
 
 async function getSessionData() {
     const sessionDataRes = await fetch("/session-data");
     const sessionData = await sessionDataRes.json();
-    console.log(sessionData);
 
     if(sessionData.logged && (sessionData.session.rol === "cliente")) {
-        console.log("La sesión fue iniciada: " + sessionData.logged)
         const buttons = document.getElementsByClassName("paymentButtons");
         for(const button of buttons) {
             button.removeAttribute("hidden");
@@ -39,9 +36,8 @@ function abrirPago(elemento) {
     const header = document.querySelectorAll(".slotHeader")[colIndex - 2];
 
     const fecha = header.dataset.fecha;
-    console.log(header.dataset);
-    console.log("fecha:", fecha);
-    console.log("horario:", horario);
+    console.log("Fecha encontrada: ");
+    console.log(fecha);
 
     claseSeleccionada = clase;
     precioSeleccionado = precio;
@@ -53,18 +49,6 @@ function abrirPago(elemento) {
 
     const [hora, minutos] = horaInicio.split(':').map(Number);
 
-
-    console.log("fecha:", fecha);
-    console.log("horario:", horario);
-
-    console.log({
-        dia,
-        mes,
-        año,
-        hora,
-        minutos
-    });
-
     const fechaBase = new Date(
         año,
         mes - 1,
@@ -75,9 +59,6 @@ function abrirPago(elemento) {
 
     fechaBase.setSeconds(0, 0);
 
-    console.log("Esta es la fecha base para crear las fechasEspecificas: ");
-    console.log(fechaBase);
-
     //Gracias chatgpt
     // Reinicio arreglo
     clasesSeleccionadas = [];
@@ -86,11 +67,11 @@ function abrirPago(elemento) {
     for(let i = 0; i < 4; i++) {
 
         const nuevaFecha = new Date(fechaBase);
+        console.log("Fecha base: ");
+        console.log(nuevaFecha);
 
         // suma 7 dias por iteración
         nuevaFecha.setDate(nuevaFecha.getDate() + (7 * i));
-        console.log("Esta es la nueva fecha que se va a guardar desde payPanel: ");
-        console.log(nuevaFecha);
 
         clasesSeleccionadas.push({
             idClaseGeneral: idClase,
@@ -98,7 +79,6 @@ function abrirPago(elemento) {
         });
     }
 
-    console.log(clasesSeleccionadas);
 
     document.getElementById("tituloClase").innerText = clase + " (" + horario + ")";
     document.getElementById("precioClase").innerText = "$" + precio;
@@ -120,29 +100,6 @@ function mostrarOpcionesClaseUnica() {
 
     document.getElementById("btnVolver").hidden = false;
 }
-
-function convertirTextoADate(texto) {
-
-    const [fechaParte, horarioParte] = texto.split(' ');
-
-    const [dia, mes] = fechaParte.split('/').map(Number);
-
-    const horaInicio = horarioParte.split('-')[0].trim();
-
-    const [hora, minutos] = horaInicio.split(':').map(Number);
-
-    const año = new Date().getFullYear();
-
-    const fecha = new Date(año, mes - 1, dia, hora, minutos);
-
-    fecha.setSeconds(0, 0);
-
-    return fecha;
-}
-/* 
-function cerrarPanel() {
-    document.getElementById("panelPago").classList.remove("panel-abierto");
-} */
 
 //Nuevo cerrar panel para resetear el estado a como estaba al inicio
 
@@ -174,8 +131,7 @@ function pagarSeñaClaseUnica() {
 }
 
 function pagarMensual() {
-    // Ajustá la lógica de precio mensual según tu necesidad
-    pagar("mensual", precioSeleccionado, clasesSeleccionadas); //Mando el arreglo con las 4 id y fechas especificas
+    pagar("mensual", precioSeleccionado, clasesSeleccionadas);
 }
 
 async function pagar(tipoClase, precio, clasesPago) {
@@ -183,7 +139,9 @@ async function pagar(tipoClase, precio, clasesPago) {
     const fecha = document.getElementById("fechaClase").innerText;
     const sala = document.getElementById("salaClase").innerText;
     const claseLlena = document.getElementById("panelPago").dataset.llena === "true";
-    
+    //console.log(clasesPago);
+
+    //
     const res = await fetch('/api/pago/consultar-pago', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -193,6 +151,7 @@ async function pagar(tipoClase, precio, clasesPago) {
     });
 
     const resData = await res.json();
+    console.log(resData);
 
     if (!resData.success) {
         document.getElementById("mensajePago").innerText = resData.message;
@@ -200,8 +159,6 @@ async function pagar(tipoClase, precio, clasesPago) {
     }
 
     // Clase llena -> confirmar lista espera
-    let ingresarEspera = false;
-
     if (claseLlena) { 
         
         const confirmar = confirm(
@@ -211,25 +168,22 @@ async function pagar(tipoClase, precio, clasesPago) {
         //Modificar para que si acepta, no mande a crear-preferencia
         if (!confirmar) {
             return;
+        } else {
+            //fetch a guardar en lista de espera
+            console.log(clasesPago);
+            const resEspera = await fetch('/api/clases/ingresarAEspera', {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ 
+                    clases: clasesPago
+                })
+            });
+
+            const resEsperaData = await resEspera.json();
+
+            document.getElementById("mensajePago").innerText = resEsperaData.message;
+            return;
         }
-
-        ingresarEspera = true;
-    }
-
-    //fetch a guardar en lista de espera
-    if (ingresarEspera){
-        const resEspera = await fetch('/api/clases/ingresarAEspera', {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ 
-                clases: clasesPago
-            })
-        });
-
-        const resEsperaData = await resEspera.json();
-
-        document.getElementById("mensajePago").innerText = resEsperaData.message;
-        return;
     }
 
     document.getElementById("mensajePago").innerText = "";
@@ -242,8 +196,8 @@ async function pagar(tipoClase, precio, clasesPago) {
             nombre: nombre,
             tipoClase: tipoClase, 
             precio: precio, 
-            clases: clasesPago// -->> Acá en caso de que sea Mensual, manda un arreglo con 4 ids y Fechas especificas
-        })                          //Y si es pago de seña o unica completa, se manda un objeto con idClase y FechaEspecifica
+            clases: clasesPago
+        })
     });
     const resPreferencia = await resPref.json();
     window.open(resPreferencia.init_point, "_blank");

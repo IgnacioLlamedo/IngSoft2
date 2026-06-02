@@ -5,8 +5,20 @@ import { claseGeneralDao, claseEspecificaDao } from "../daos/index.js";
 
 export async function getAllClases(req, res) {
     try {
+        const fechaSemana = new Date(req.body.fechaSemana);
+
+        const inicioSemana = new Date(fechaSemana);
+        const finSemana = new Date(fechaSemana);
+        finSemana.setDate(finSemana.getDate() + 6);
+
         const clasesData = await claseGeneralDao.readMany({});
-        const claseEspecificaData = await claseEspecificaDao.readMany({});
+        const claseEspecificaData = await claseEspecificaDao.readMany({
+            //Busco las clases especificas dentro del rango
+            fechaEspecifica: {
+                $gte: inicioSemana,
+                $lte: finSemana
+            }
+        });
         const activitiesData = await actividadDao.readMany({});
         const salasData = await salaDao.readMany({});
         const profesoresData = await profesorDao.readMany({});
@@ -25,7 +37,9 @@ export async function getAllClases(req, res) {
         
         res.json({
             success: true,
-            clases: clasesTotal,
+            clases: clasesTotal, //Devuelve clases generales, sin anotados ni espera, pero con la info de actividad, sala y profesor.
+            // Para conseguir los anotados y la espera, se fija si existe una clase específica con la idClaseGeneral de la clase general que se está iterando,
+            // y si existe, esa clase específica tiene el listado de anotados y de espera.
         });
     }
     catch(error) {
@@ -36,25 +50,6 @@ export async function getAllClases(req, res) {
         });
     }
 }
-
-/* export async function conseguirEspecifica(req, res) { No sirve jaja
-    try {
-        const idGeneral = req.body;
-
-        const claseEspecifica = await claseEspecificaDao.readOne({idCLaseGeneral: idGeneral})
-        return res.json({
-            success: true,
-            claseEspecifica: claseEspecifica
-        })
-    }
-    catch(error){
-        console.error(error);
-        return res.json({
-            success: false,
-            message: "Error al conseguir clase especifica "
-        })
-    }
-} */
 
 export async function crearClase(req, res){
     try {
@@ -82,13 +77,15 @@ export async function crearClase(req, res){
 export async function ingresarAEspera(req, res) {
     try {
         const clases = req.body.clases;
-        //Se supone que ya existe la clase especifica, porque la clase se encuentra llena.
         const claseAnotado = await claseEspecificaDao.updateOne({_id: clases[0].idClaseEsp}, {$push: {anotados: req.session.userId}});
 
         if (!claseAnotado) {
-            return res.json({
-                success: false,
-                message: "Error al ingresar a lista de espera"
+           //Crear clase especifica y agregar anotado
+           const nuevaClaseEsp = await claseEspecificaDao.create({
+                idClaseGeneral: clases[0].idClaseGeneral,
+                fechaEspecifica: clases[0].fechaEspecifica,
+                anotados: [req.session.userId],
+                espera: []
             });
         }
         return res.json({

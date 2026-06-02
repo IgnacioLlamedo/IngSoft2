@@ -45,6 +45,8 @@ function actualizarSemana() {
 
   // Actualizamos cada header con su fecha
   const headers = document.querySelectorAll(".slotHeader");
+  /* console.log("Estos son los headers a actualizar: ");
+  console.log(headers); */
   headers.forEach((th, i) => {
 
     const fecha = new Date(inicio);
@@ -63,9 +65,8 @@ function actualizarSemana() {
     th.innerHTML = `${th.dataset.dia} ${fechaHeader}`;
 
     th.dataset.fecha = fechaCompleta;
+    //console.log(th);
   });
-
-  console.log("Headers encontrados:", headers.length);
 }
 
 
@@ -115,6 +116,6 @@ async function refrescarSemana() {
 
     //Función de classSlot para recargar las clases de la semana actualizada
     if(window.recargarClasesSemana){
-        await window.recargarClasesSemana();
+        await window.recargarClasesSemana(currentMonday);
     }
 }

@@ -4,7 +4,7 @@ import { postReservaUnica, postReservaMensual } from "../../controllers/reservas
 
 export const clasesRouter = express.Router();
 
-clasesRouter.get('/get-all', getAllClases);
+clasesRouter.post('/get-all', getAllClases);
 clasesRouter.get('/getSalas', getSalas);
 //clasesRouter.get('/conseguir-especifica', conseguirEspecifica); no sirve
 
