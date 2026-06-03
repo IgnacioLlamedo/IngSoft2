@@ -26,7 +26,7 @@ const registerErrorMsg = document.getElementById("registerError");
 
 
 function checkDniRequirement() {
-    if(dni.length !== 8)
+    if(dni.value.length !== 8)
         return "Error al registrarse. El DNI debe tener 8 dígitos."
 
     //if(dni < X000000) // No sé qué límites poner, aparte de que deberían ser dinámicos como hice con la edad.
@@ -165,8 +165,6 @@ function hidePassword(button, visibilityButton, visibilityIcon) {
 
 
 
-
-
 document.getElementById("register-form").addEventListener("submit", async (event) => {
     event.preventDefault();
     
@@ -178,7 +176,6 @@ document.getElementById("register-form").addEventListener("submit", async (event
         registerErrorMsg.hidden = false;
         return;
     }
-
     const form = event.target;
 
     const planillaData = {
@@ -231,7 +228,6 @@ document.getElementById("register-form").addEventListener("submit", async (event
     }
 
     const dataString = JSON.stringify(data);
-    console.log("Front:" + JSON.stringify(planillaData));
 
     // autenticar req?
     const res = await fetch("/api/register", {
