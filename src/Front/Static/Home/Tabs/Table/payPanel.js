@@ -20,6 +20,7 @@ async function getSessionData() {
 }
 
 function abrirPago(elemento) {
+
     const clase = elemento.dataset.clase;
     const precio = elemento.dataset.precio;
     const idClase = elemento.dataset.id;
@@ -58,6 +59,24 @@ function abrirPago(elemento) {
     );
 
     fechaBase.setSeconds(0, 0);
+
+    const ahora = new Date();
+
+    if (fechaBase < ahora) {
+
+        document.getElementById("tituloClase").innerText = "Clase vencida";
+        document.getElementById("precioClase").innerText = "-";
+        document.getElementById("fechaClase").innerText = fecha;
+        document.getElementById("salaClase").innerText = elemento.dataset.sala;
+        document.getElementById("capacidad").innerText = elemento.dataset.capacidad
+
+        document.getElementById("btnClaseUnica").hidden = true;
+        document.getElementById("btnMensual").hidden = true;
+
+        document.getElementById("panelPago").classList.add("panel-abierto");
+
+        return;
+    }
 
     //Gracias chatgpt
     // Reinicio arreglo

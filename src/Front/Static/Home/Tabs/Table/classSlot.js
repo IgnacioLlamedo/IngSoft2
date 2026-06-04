@@ -110,17 +110,12 @@ async function getAllClasses(fechaSemana) {
     clasesData = resData.clases;
     /* console.log("Desde classSlot.js -> estas son las clases conseguidas de db: ")
     console.log(clasesData); */
+    
+    const ahora = new Date();
 
     clasesData.forEach(claseObj => {
-        /* console.log("Esta es una clase encontrada en DB: ");
-        console.log(claseObj);*/
-        /*Si empieza a haber errores a la hora de mostrar las clases, usar esto
-        para debuggear, Por cada claseGeneral que haya te genera 3 objetos y podes ver cual es
-        el que le falta info.*/
-        /* console.log(claseObj.sala);
-        console.log(claseObj.actividad);
-        console.log(claseObj.profesor);
-        console.log(claseObj.claseEsp); */
+        console.log("Esta es una clase encontrada en DB: ");
+        console.log(claseObj);
 
         const tdId = `${claseObj.clase.dia}-${claseObj.clase.hora}`;
 
@@ -128,7 +123,8 @@ async function getAllClasses(fechaSemana) {
         
 
         if (celda) {
-            /* console.log(celda) */
+            //console.log(celda)
+
             celda.innerText = claseObj.actividad.nombre;
             celda.dataset.id = claseObj.clase._id; //Para mandar por crearPreferencia
             celda.dataset.clase = claseObj.actividad.nombre;
