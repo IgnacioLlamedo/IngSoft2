@@ -90,9 +90,6 @@ document.getElementById("nextWeek").addEventListener("click", () => {
   refrescarSemana();
 });
 
-// Inicializamos
-refrescarSemana();
-
 // Manejo de clic en clases
 document.querySelectorAll(".slotDeClase").forEach(div => {
   div.addEventListener("click", () => {

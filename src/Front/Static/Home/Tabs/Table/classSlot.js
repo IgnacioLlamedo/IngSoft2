@@ -1,9 +1,10 @@
 init();
-
+debugger;
 async function init() {
     await crearTabla(); /* Crea la tabla dinámicamente dependiendo de la cantidad de salas en DB
     De esta forma evitamos el problema que tuvimos en la Demo 1 xd*/
-    refrescarSemana(); /* Carga las clases de la semana actual en la tabla, asignando a cada celda la clase que corresponda*/
+    await getAllClasses(new Date());
+    //refrescarSemana(); /* Carga las clases de la semana actual en la tabla, asignando a cada celda la clase que corresponda*/
 }
 
 let salas;
@@ -96,6 +97,7 @@ let clasesData;
 
 
 async function getAllClasses(fechaSemana) {
+    console.log("Recuperando clases para la semana del: " + fechaSemana);
     const res = await fetch("/api/clases/get-all", {
         method: 'POST',
         headers: {
@@ -169,8 +171,7 @@ async function getAllClasses(fechaSemana) {
         }
     });
 }
-
-window.recargarClasesSemana = async function (fechaSemana) {
+async function recargarClasesSemana(fechaSemana) {
 
     document.querySelectorAll(".slotDeClase").forEach(div => {
 
