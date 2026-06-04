@@ -1,0 +1,7 @@
+<% if (userRole === Role.ADMIN) { %>
+	<script src="/Account/adminProfileLogic.js"></script>
+<% } else if (userRole === Role.EMPLOYEE) { %>
+	<script src="/Account/employeeProfileLogic.js"></script>
+<% } else if (userRole === Role.CLIENT) { %>
+	<script src="/Account/clientProfileLogic.js"></script>
+<% } %>

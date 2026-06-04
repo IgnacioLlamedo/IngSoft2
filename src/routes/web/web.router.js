@@ -16,11 +16,10 @@ export const homeRoute = "/home";
 export const profileRoute = "/account";
 
 // Pages
-export const profilePages = { 
-    cliente: "Front/Account/clientProfile.ejs", 
-    empleado: "Front/Account/employeeProfile.ejs", 
-    administrador: "Front/Account/adminProfile.ejs",
-};
+// export const profilePages = [];
+// profilePages[Role.CLIENT] = "Front/Account/clientProfile.ejs";
+// profilePages[Role.EMPLOYEE] = "Front/Account/employeeProfile.ejs";
+// profilePages[Role.ADMIN] = "Front/Account/adminProfile.ejs";
 
 // Req de Datos
 webRouter.get("/session-data", (req, res) => {
@@ -107,13 +106,8 @@ webRouter.get("/access/auth-pass", (req,res) => {
 // Account
 webRouter.get("/account", (req,res) => {
     if (!req.session.user) return res.redirect("/access/login");
-    res.render(path.join(__dirname, profilePages[req.session.user.rol]), { userRole: req.session.user.rol, Role });
+    res.render(path.join(__dirname, "Front/Account/profilePage.ejs"), { userRole: req.session.user.rol, Role });
 });
-
-// Navbars
-/* webRouter.get('/userNav', (req, res) => res.sendFile(path.join(__dirname, "../../Front/Navbar/userNav.html")));
-webRouter.get('/visitorNav', (req, res) => res.sendFile(path.join(__dirname, "../../Front/Navbar/visitorNav.html")));
-webRouter.get('/footer', (req, res) => res.sendFile(path.join(__dirname, "../../Front/Navbar/footer.html"))); */
 
 // Payment
 webRouter.get("/payment/approved", (req,res) => {
@@ -178,10 +172,11 @@ webRouter.get("/userlist", (req,res) => {
 
 
 // Error 404 Landing page
+// Acá entra cuando no encuentra ninguna de las rutas de arriba
 webRouter.use((req, res, next) => {
-	// Acá entra cuando no encuentra ninguna de las rutas de arriba
+    const userRole = req.session.user ? req.session.user.rol : Role.VISITOR;
 	res.status(404).render(
 		path.join(__dirname, "Front/ErrorPages/errorPage.ejs"),
-		{ userRole: (req.session.user.rol || Role.VISITOR), Role },
+		{ userRole: userRole, Role },
 	);
 });
