@@ -60,7 +60,9 @@ document.addEventListener('click', (event) => {
     const deleteBtn = event.target.closest('.btn-delete');
 
     if (viewBtn) {
-        alert(`Ver usuario: ${viewBtn.dataset.id} (placeholder)`);
+        const userMail = viewBtn.dataset.mail;
+        const userRole = viewBtn.dataset.rol;
+        openUserProfile(userMail, userRole);
     }
 
     if (deleteBtn) {
@@ -118,8 +120,8 @@ function renderUserTable(users) {
                     <td>${escapeHtml(user.dni)}</td>
                     <td>${escapeHtml(user.rol)}</td>
                     <td class="actions-cell">
-                        <button class="btn-action btn-view" data-id="${escapeHtml(user._id)}">Ver/Editar Perfil</button>
-                        <button class="btn-action btn-delete" data-id="${escapeHtml(user._id)}">Dar de Baja</button>
+                        <button class="btn-action btn-view" data-rol="${escapeHtml(user.rol)}" data-mail="${escapeHtml(user.mail)}">Ver/Editar Perfil</button>
+                        <button class="btn-action btn-delete" data-rol="${escapeHtml(user.rol)}" data-mail="${escapeHtml(user.mail)}">Dar de Baja</button>
                     </td>
                 </tr>`;
         })
@@ -161,7 +163,6 @@ function updateSortIndicators() {
         const isActive = currentSort.key === key;
 
         button.classList.toggle('active', isActive);
-        button.setAttribute('aria-sort', isActive ? (currentSort.direction === 'asc' ? 'ascending' : 'descending') : 'none');
         indicator.textContent = isActive ? (currentSort.direction === 'asc' ? '▲' : '▼') : '';
     });
 }
@@ -179,4 +180,9 @@ function escapeHtml(value) {
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#39;');
+}
+
+async function openUserProfile(userMail, userRole) {
+	if (!userMail || !userRole) return;
+    window.location.href = `/profile/${encodeURIComponent(userRole)}/${encodeURIComponent(userMail)}`;
 }

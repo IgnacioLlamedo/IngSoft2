@@ -14,14 +14,19 @@ document.getElementById("nacimiento").max = fechaMax.toISOString().split('T')[0]
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
-    loadProfile();
+    const profileForm = document.getElementById('profileForm');
+    const userMail = profileForm.dataset.userMail;
+    loadProfile(userMail);
     setupProfileEventListeners();
 });
 
 // Load user profile data
-async function loadProfile() {
+async function loadProfile(userMail) {
+    console.log('Cargando perfil del email:', userMail);
     try {
-        const response = await fetch('/api/load-profile', {
+        const url = `/api/load-profile?mail=${encodeURIComponent(userMail)}`;
+
+        const response = await fetch(url, {
             method: 'GET',
             credentials: 'include' // Include session cookies
         });
@@ -120,7 +125,10 @@ async function saveProfile() {
                 'Content-Type': 'application/json'
             },
             credentials: 'include',
-            body: JSON.stringify(userData)
+            body: JSON.stringify({
+                userData: userData,
+                originalValues: originalValues
+            })
         });
 
         if (!response.ok) {
@@ -129,7 +137,6 @@ async function saveProfile() {
         }
 
         const updatedUser = await response.json();
-        // console.log('Perfil actualizado:', updatedUser);
 
         populateProfileForm(updatedUser);
         storeOriginalValues();

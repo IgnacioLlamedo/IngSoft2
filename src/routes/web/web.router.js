@@ -15,11 +15,6 @@ export const rootRoute = "/";
 export const homeRoute = "/home";
 export const profileRoute = "/account";
 
-// Pages
-// export const profilePages = [];
-// profilePages[Role.CLIENT] = "Front/Account/clientProfile.ejs";
-// profilePages[Role.EMPLOYEE] = "Front/Account/employeeProfile.ejs";
-// profilePages[Role.ADMIN] = "Front/Account/adminProfile.ejs";
 
 // Req de Datos
 webRouter.get("/session-data", (req, res) => {
@@ -103,11 +98,20 @@ webRouter.get("/access/auth-pass", (req,res) => {
     res.render(path.join(__dirname, "Front/Access/authPass.ejs"), { userRole: Role.VISITOR, Role });
 });
 
-// Account
+// Account & Profile
 webRouter.get("/account", (req,res) => {
     if (!req.session.user) return res.redirect("/access/login");
-    res.render(path.join(__dirname, "Front/Account/profilePage.ejs"), { userRole: req.session.user.rol, Role });
+    // Debería ser con el ID pero hay un bug con los IDs de los usuarios de prueba
+    res.render(path.join(__dirname, "Front/Account/accountPage.ejs"), { userRole: req.session.user.rol, userMail: req.session.user.mail, Role });
 });
+
+webRouter.get("/profile/:userRole/:userMail", (req,res) => {
+    if (!req.session.user) return res.redirect("/access/login");
+    if (req.session.user.rol !== Role.ADMIN) return res.redirect(homeRoute);
+    // Debería ser con el ID pero hay un bug con los IDs de los usuarios de prueba
+    res.render(path.join(__dirname, "Front/Account/userProfilePage.ejs"), { userRole: req.params.userRole, userMail: req.params.userMail, Role });
+});
+
 
 // Payment
 webRouter.get("/payment/approved", (req,res) => {

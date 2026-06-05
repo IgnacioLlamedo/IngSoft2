@@ -5,6 +5,7 @@ import { mailer } from "../servicios/mailer.servicio.js";
 import { hash, compareHash } from "../servicios/crypt.servicio.js";
 import { Usuario } from "../models/usuario.mongoose.js";
 import { homeRoute } from "../routes/web/web.router.js";
+import { Role } from "../constants/constants.js";
 
 const errorMessages = {
 	11000: "Error al crear la cuenta, el email ya está registrado.",
@@ -269,48 +270,58 @@ export async function resetPass(req, res){
     }
 }
 
+// obtener la información de un usuario a partr de su email
 export async function loadProfileController(req, res) {
 	try {
-		// Return the current logged-in user's profile
-		const sessionUser = req.session && req.session.user;		
-		const mail = sessionUser.mail;
-		
-		if (!sessionUser || !mail) {
+        const sessionUser = req.session && req.session.user;
+		if (!sessionUser) {
 			return res.status(401).json({ success: false, message: 'Usuario no autenticado' });
-		}
+		}        
 
-		const user = await usuarioDao.readOne({mail: mail});
+        const queryMail = req.query && req.query.mail;
+        // si no es admin, no puede acceder a perfiles que no sean el suyo
+        if (sessionUser.rol !== Role.ADMIN && sessionUser.mail !== queryMail) {
+            return res.status(403).json({ success: false, message: 'Acceso denegado' });
+        }
 
-		if (!user) {
-			return res.status(404).json({ success: false, message: 'Usuario no encontrado' });
-		}
+        const user = await usuarioDao.readOne({ mail: queryMail });        
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'Usuario no encontrado' });
+        }
 
-		// Remove sensitive fields before sending
+		// eliminar campos innecesarios
 		const { contraseña, codigo, limiteCodigo, ...publicUser } = user;
-
 		return res.json(publicUser);
+
 	} catch (error) {
 		console.error('accountController ERROR: ', error);
 		res.status(500).json({ success: false, message: 'Error al obtener perfil. Inténtelo más tarde.' });
 	}
 }
 
-
+// TODO: permitir guardar la información de cualquier usuario
 export async function saveProfileController(req, res) {
 	try {
+        console.log('saveProfileController llamado con body:', req.body);
         const sessionUser = req.session && req.session.user;	
-		const mail = sessionUser.mail;
         
-		if (!sessionUser || !mail) {
+		if (!sessionUser) {
             return res.status(401).json({ success: false, message: 'Usuario no autenticado' });
 		}
         
-        const userData = req.body;
-       
-        const emailChanged = userData.mail !== mail
-        if(emailChanged) {
-            const emailExist = await usuarioDao.readOne({mail: userData.mail});
-            if(emailExist) {
+        const newUserData = req.body.userData;
+        const oldUserData = req.body.originalValues;
+        const oldEmail = oldUserData.email;
+        const savingOwnData = sessionUser.mail === oldEmail;
+        // si no es admin, no puede modificar perfiles que no sean el suyo
+        if (sessionUser.rol !== Role.ADMIN && !savingOwnData) {
+            return res.status(403).json({ success: false, message: 'Acceso denegado' });
+        }
+
+        const emailChanged = newUserData.mail !== oldEmail;
+        if (emailChanged) {
+            const emailExists = await usuarioDao.readOne({ mail: newUserData.mail });
+            if (emailExists) {
                 return res.status(402).json({
                     success: false,
                     message: "Error al actualizar el perfil. El email ya se encuentra registrado."
@@ -318,27 +329,26 @@ export async function saveProfileController(req, res) {
             }
         }
 
-        const dniChanged = (await usuarioDao.readOne({mail: mail})).dni !== userData.dni;
-        if(dniChanged) {
-            const dniExist = await usuarioDao.readOne({dni: userData.dni, rol:sessionUser.rol});
-            if(dniExist) {
+        // no todos los roles poseen tienen dni (como el admin)
+        // const dniChanged = (await usuarioDao.readOne({mail: userMail})).dni !== newUserData.dni;
+        const dniChanged =  newUserData.dni != null && (newUserData.dni !== oldUserData.dni); // para el caso de que el usuario no tenga dni y quiera agregarlo, o lo quiera eliminar
+        if (dniChanged) {
+            const userRole = (await usuarioDao.readOne({ mail: oldEmail })).rol;
+            const dniExists = await usuarioDao.readOne({ dni: newUserData.dni, rol: userRole.rol });
+            if (dniExists) {
                 return res.status(402).json({
                     success: false,
                     message: "Error al actualizar el perfil. El DNI ya se encuentra registrado."
                 });
             }
         }
-	
-		// Prevent updating password through this endpoint
-		delete userData.contraseña;
-
-		const updatedUser = await usuarioDao.updateOne(mail, userData);
+		const updatedUser = await usuarioDao.updateOne(oldEmail, newUserData);
 		if (!updatedUser) {
 			return res.status(404).json({ success: false, message: 'Usuario no encontrado' });
 		}
 
-        if(emailChanged)
-            changeEmailSession(req, userData.mail);
+        if(emailChanged && savingOwnData)
+            changeEmailSession(req, newUserData.mail);
 
 		return res.json(updatedUser);
 	} catch (error) {
@@ -410,11 +420,13 @@ async function createSession(req, user) {
         id: user._id,
         mail: user.mail,
         rol: user.rol,
+        nombre: user.nombre,
     };
     await req.session.save(); 
 }
 
 async function changeEmailSession(req, email) {
+    console.log('Cambiando session email a:', email);
     req.session.user.mail = email;
     await req.session.save(); 
 }
@@ -424,7 +436,7 @@ export async function getUserlistController(req, res) {
     try {
         const sessionUser = req.session && req.session.user;
 
-        if (!sessionUser || sessionUser.rol !== "administrador") {
+        if (!sessionUser || sessionUser.rol !== Role.ADMIN) {
             return res.status(403).json({ success: false, message: 'Acceso denegado' });
         }
 
