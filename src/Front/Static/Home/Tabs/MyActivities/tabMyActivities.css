@@ -103,3 +103,6 @@ hr {
   margin: 0px 10px;
 }
 
+.vencida {
+  background-color: rgba(219, 70, 70, 0.8) !important;
+}

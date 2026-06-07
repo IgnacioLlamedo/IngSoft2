@@ -12,6 +12,8 @@ async function getMyReservations() {
 
     console.log(resData);
 
+    const fechaActual = new Date();
+
     actividadesUsuario = resData.reservas.map(r => {
 
         // =========================================
@@ -24,6 +26,10 @@ async function getMyReservations() {
 
             const horario =
                 `${claseGeneral.hora}:00 - ${claseGeneral.hora + 1}:00`;
+
+            const fechaClase = new Date(r.clases[0].fecha); //En clase única, no entre por idClase.
+            /* console.log("Fecha de la clase única: " );
+            console.log(fechaClase); */
 
             return {
 
@@ -47,7 +53,10 @@ async function getMyReservations() {
                     claseGeneral.idProfesor.nombre,
 
                 precio:
-                    claseGeneral.precioMensual / 4
+                    claseGeneral.precioMensual / 4,
+
+                vencida: 
+                    fechaClase < fechaActual
             };
         }
 
@@ -57,28 +66,31 @@ async function getMyReservations() {
         else {
 
             // Uso la primera clase para info común
-            const primeraClase =
-                r.clases[0].idClase;
+            const primeraClase = r.clases[0].idClase;
 
-            const claseGeneral =
-                primeraClase.idClaseGeneral;
+            const claseGeneral = primeraClase.idClaseGeneral;
 
-            const horario =
-                `${claseGeneral.hora}:00 - ${claseGeneral.hora + 1}:00`;
+            const horario = `${claseGeneral.hora}:00 - ${claseGeneral.hora + 1}:00`;
 
-            const fechas = r.clases
-                .map(c => {
-
-                    const fecha =
-                        new Date(c.idClase.fechaEspecifica);
+            const fechas = r.clases.map(c => {
+                    const fecha = new Date(c.idClase.fechaEspecifica);
 
                     return fecha.toLocaleDateString("es-AR", {
                         day: "2-digit",
                         month: "2-digit"
                     });
+                }).join(" - ");
 
-                })
-                .join(" - ");
+            const fechaClase = new Date(r.clases[r.clases.length - 1].idClase.fechaEspecifica);
+
+            /* console.log("Fecha de la última clase de la mensual: " );
+            console.log(fechaClase); */
+            
+            let vencida = false;
+
+            if (fechaClase < fechaActual) {
+                vencida = true;
+            }
 
             return {
 
@@ -101,11 +113,14 @@ async function getMyReservations() {
                     claseGeneral.idProfesor.nombre,
 
                 precio:
-                    claseGeneral.precioMensual
+                    claseGeneral.precioMensual,
+
+                vencida
             };
         }
     });
 
+    console.log("Estas son las actividades del usuario ya formateadas para mostrar: ");
     console.log(actividadesUsuario);
 
     renderActividades();
@@ -148,6 +163,8 @@ function renderActividades() {
     main.appendChild(msg);
     return;
   }
+
+  const boxesVencidas = [];
 
   // Creamos una caja por cada actividad filtrada
   filtradas.forEach(act => {
@@ -198,48 +215,64 @@ function renderActividades() {
 
     boxContent.appendChild(boxData);
 
-    // Botones con listeners
     const buttonsContainer = document.createElement("div");
     buttonsContainer.classList.add("box-buttons-container");
 
-    const btnCancelar = document.createElement("button");
-    btnCancelar.classList.add("box-button", "cancel-reservation");
-    btnCancelar.textContent = "Cancelar Reserva";
-    btnCancelar.addEventListener("click", () => {
-      console.log(`Cancelaste la reserva de ${act.actividad} - ${act.tipo}`);
-    });
-    buttonsContainer.appendChild(btnCancelar);
+    // Si la actividad no está vencida, muestro botones de acción
+    if (!act.vencida) {
+    // Botones con listeners
 
-    if (act.tipo === "Unica") {
-      const btnPagar = document.createElement("button");
-      btnPagar.classList.add("box-button", "pay-rest");
-      btnPagar.textContent = "Pagar resto";
-      btnPagar.addEventListener("click", () => {
-        console.log(`Pagaste el resto de la clase única de ${act.actividad}`);
-      });
-      buttonsContainer.appendChild(btnPagar);
-    } 
+        const btnCancelar = document.createElement("button");
+        btnCancelar.classList.add("box-button", "cancel-reservation");
+        btnCancelar.textContent = "Cancelar Reserva";
+        btnCancelar.addEventListener("click", () => {
+        console.log(`Cancelaste la reserva de ${act.actividad} - ${act.tipo}`);
+        });
+        buttonsContainer.appendChild(btnCancelar);
+
+    
+        if (act.tipo === "Unica") {
+            const btnPagar = document.createElement("button");
+            btnPagar.classList.add("box-button", "pay-rest");
+            btnPagar.textContent = "Pagar resto";
+            btnPagar.addEventListener("click", () => {
+                console.log(`Pagaste el resto de la clase única de ${act.actividad}`);
+            });
+            buttonsContainer.appendChild(btnPagar);
+        } 
+        else {
+            const btnCancelarClase = document.createElement("button");
+            btnCancelarClase.classList.add("box-button", "cancel-next-class");
+            btnCancelarClase.textContent = "Cancelar Siguiente Clase";
+            btnCancelarClase.addEventListener("click", () => {
+                console.log(`Cancelaste la próxima clase de ${act.actividad}`);
+            });
+            buttonsContainer.appendChild(btnCancelarClase);
+
+            const btnPagarMensual = document.createElement("button");
+            btnPagarMensual.classList.add("box-button", "pay-reservation");
+            btnPagarMensual.textContent = "Pagar Mensualidad";
+            btnPagarMensual.addEventListener("click", () => {
+                console.log(`Pagaste la mensualidad de ${act.actividad}`);
+            });
+            buttonsContainer.appendChild(btnPagarMensual);
+            boxContent.appendChild(buttonsContainer);
+            box.appendChild(boxContent);
+        }
+        
+    }
     else {
-      const btnCancelarClase = document.createElement("button");
-      btnCancelarClase.classList.add("box-button", "cancel-next-class");
-      btnCancelarClase.textContent = "Cancelar Siguiente Clase";
-      btnCancelarClase.addEventListener("click", () => {
-        console.log(`Cancelaste la próxima clase de ${act.actividad}`);
-      });
-      buttonsContainer.appendChild(btnCancelarClase);
-
-      const btnPagarMensual = document.createElement("button");
-      btnPagarMensual.classList.add("box-button", "pay-reservation");
-      btnPagarMensual.textContent = "Pagar Mensualidad";
-      btnPagarMensual.addEventListener("click", () => {
-        console.log(`Pagaste la mensualidad de ${act.actividad}`);
-      });
-      buttonsContainer.appendChild(btnPagarMensual);
+        box.classList.add("vencida");
+        boxContent.appendChild(buttonsContainer);
+        box.appendChild(boxContent);
+        boxesVencidas.push(box);
+        return;
     }
 
-    boxContent.appendChild(buttonsContainer);
-    box.appendChild(boxContent);
+    reservasContainter.appendChild(box);
+  });
 
+  boxesVencidas.forEach(box => {
     reservasContainter.appendChild(box);
   });
 }
