@@ -1,4 +1,5 @@
 function abrirAsistencia(elemento) {
+  console.log("Elemento clickeado:", elemento);
   const clase = elemento.dataset.clase;
   const sala = elemento.dataset.sala;
 

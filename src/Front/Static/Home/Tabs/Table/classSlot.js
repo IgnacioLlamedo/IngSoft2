@@ -1,5 +1,5 @@
 init();
-debugger;
+//debugger;
 async function init() {
     await crearTabla();
     // Usar el lunes actual de weekNav
@@ -121,6 +121,8 @@ async function getAllClasses(fechaSemana) {
     console.log(clasesData); */
     
     const ahora = new Date();
+    const result = await fetch("/session-data");
+    const sessionData = await result.json();
 
     clasesData.forEach(claseObj => {
         console.log("Esta es una clase encontrada en DB: ");
@@ -153,11 +155,12 @@ async function getAllClasses(fechaSemana) {
             celda.dataset.llena = cantidadAnotados >= claseObj.clase.limiteClase;
 
             //celda.onclick = () => abrirPago(celda);
-            //celda.onclick = () => abrirAsistencia(celda);
-            if (typeof abrirPago === "function") {
-            celda.onclick = () => abrirPago(celda);
-            } else if (typeof abrirAsistencia === "function") {
-            celda.onclick = () => abrirAsistencia(celda);
+            //celda.onclick = () => abrirAsistencia(celda)
+
+            if (sessionData.session.rol === "cliente") {
+                celda.onclick = () => abrirPago(celda);
+            } else {
+                celda.onclick = () => abrirAsistencia(celda);
             }
 
 
