@@ -1,11 +1,18 @@
 init();
-debugger;
+//debugger;
 async function init() {
-    await crearTabla(); /* Crea la tabla dinámicamente dependiendo de la cantidad de salas en DB
-    De esta forma evitamos el problema que tuvimos en la Demo 1 xd*/
-    await getAllClasses(new Date());
-    //refrescarSemana(); /* Carga las clases de la semana actual en la tabla, asignando a cada celda la clase que corresponda*/
+    await crearTabla();
+    // Usar el lunes actual de weekNav
+    if (window.currentMonday) {
+        await getAllClasses(window.currentMonday);
+    }
+    // Actualizar la semana para que se pinten fechas en headers
+    if (window.actualizarSemana) {
+        window.actualizarSemana();
+    }
 }
+refrescarSemana();
+
 
 let salas;
 
@@ -114,6 +121,8 @@ async function getAllClasses(fechaSemana) {
     console.log(clasesData); */
     
     const ahora = new Date();
+    const result = await fetch("/session-data");
+    const sessionData = await result.json();
 
     clasesData.forEach(claseObj => {
         console.log("Esta es una clase encontrada en DB: ");
@@ -145,7 +154,15 @@ async function getAllClasses(fechaSemana) {
             //Para informar pedir confirmación si quiere entrar en lista de espera.
             celda.dataset.llena = cantidadAnotados >= claseObj.clase.limiteClase;
 
-            celda.onclick = () => abrirPago(celda);
+            //celda.onclick = () => abrirPago(celda);
+            //celda.onclick = () => abrirAsistencia(celda)
+
+            if (sessionData.session.rol === "cliente") {
+                celda.onclick = () => abrirPago(celda);
+            } else {
+                celda.onclick = () => abrirAsistencia(celda);
+            }
+
 
             switch (claseObj.actividad.nombre) {
                 case "Spinning":
@@ -164,7 +181,6 @@ async function getAllClasses(fechaSemana) {
         }
     });
 
-    // Bauti posta recorreres toda la tabla para poner en sin clase?
     document.querySelectorAll('.slotDeClase').forEach(div => {
         if (div.innerText.trim() === "Sin Clase") {
             div.classList.add("sinclase");

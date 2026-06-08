@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <link rel="icon" href="/Images/Common/favicon.ico" type="image/x-icon">
   <link rel="stylesheet" href="/Home/Tabs/Table/tableStyle.css">
+  <!--<link rel="stylesheet" href="tStyle.css">-->
   <title>Tabla de Horarios</title> 
 </head>
 <body>
@@ -59,13 +60,50 @@
                 </div>
             </div>
             <div id="mensajePago" class="mensaje-pago"></div>
+        </div> <!--Te falto cerrar este div jaja-->
+    </div>
+
+    <!-- Modal de asistencia -->
+    <div class="modalAsistencia" id="asistenciaModal">
+        <div class="modalAsistencia-content">
+            <span class="close" id="closeAsistencia">&times;</span>
+            <div id="asistenciaBody">
+                <h3>${clase} (${horario})</h3>
+                <p>Fecha: ${fecha}</p>
+                <p>Sala: ${sala}</p>
+                <button id="btnQR">Tomar asistencia QR</button>
+                <div style="margin-top:10px;">
+                <input type="text" id="dniInput" placeholder="Ingrese DNI">
+                <button id="btnDNI">Tomar asistencia DNI</button>
+                </div>
+            </div>
+        </div>
     </div>
 
 
     
     <!-- Script para asignar data-clase y abrir el panel -->
-    <script src="/Home/Tabs/Table//payPanel.js"></script>
-    <script src="/Home/Tabs/Table/classSlot.js"></script>
     <script src="/Home/Tabs/Table/weekNav.js"></script>
+
+    <!-- 
+    Esto no estaría andando, trete de hacerlo como esta en navbarSelector pero no se bien como se hace...
+    pero creo que es la forma de hacerlo
+    
+    No funciona porque la tabla es de tipo HTML, para que lo de abajo funcione,
+    la tabla debería ser un EJS.
+    
+    <% if (userRole === 'cliente') { %>
+    <script src="/Home/Tabs/Table/payPanel.js"></script>
+    <% } else { %>
+    <script src="/Home/Tabs/Table/classOptions.js"></script>
+    <% } %> -->
+
+    <script src="/Home/Tabs/Table/classOptions.js"></script>
+    <script src="/Home/Tabs/Table/payPanel.js"></script>
+
+    <script src="/Home/Tabs/Table/classSlot.js"></script>
+
+
+
 </body>
 </html>

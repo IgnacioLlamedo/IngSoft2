@@ -130,6 +130,7 @@ async function getMyReservations() {
 const activityFilter = document.getElementById("activityFilter");
 const tipeFilter = document.getElementById("tipeFilter");
 const dayFilter = document.getElementById("dayOfTheWeekFilter");
+const statusFilter = document.getElementById("statusFilter");
 
 // Contenedor principal donde se insertan las cajas
 const main = document.querySelector("main");
@@ -151,7 +152,11 @@ function renderActividades() {
       (act.fecha && act.fecha.includes(dayFilter.value)) ||
       (act.dia && act.dia === dayFilter.value.toLowerCase());
 
-    return filtroActividad && filtroTipo && filtroDia;
+    const filtroEstado = statusFilter.value === "Todas" ||
+    (statusFilter.value === "NoVencidas" && !act.vencida) ||
+    (statusFilter.value === "Vencidas" && act.vencida); 
+
+    return filtroActividad && filtroTipo && filtroDia && filtroEstado;
   });
 
   // Si no hay actividades, mostramos un mensaje
@@ -281,6 +286,7 @@ function renderActividades() {
 activityFilter.addEventListener("change", renderActividades);
 tipeFilter.addEventListener("change", renderActividades);
 dayFilter.addEventListener("change", renderActividades);
+statusFilter.addEventListener("change", renderActividades);
 
 // Render inicial
 //renderActividades();

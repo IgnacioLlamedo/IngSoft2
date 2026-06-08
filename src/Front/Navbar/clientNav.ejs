@@ -1,5 +1,6 @@
 <link rel="stylesheet" href="/Navbar/navStyle.css">
 <link rel="stylesheet" href="/Home/Tabs/Table/tableStyle.css">
+<link rel="stylesheet" href="/Home/assistanceModalStyle.css">
 
 <nav class="header-nav">
     <a href="/home">
@@ -21,7 +22,7 @@
                             <img src="/Images/UserDropbox/account_ico.webp" alt="Cuenta">
                             <p>Cuenta</p>
                         </a>
-                        <a>
+                        <a href="#" if="asistenciaBtn">
                             <img src="/Images/UserDropbox/assistance.webp" alt="Asistencias">
                             <p>Asistencia</p>
                         </a>
@@ -36,6 +37,16 @@
     </ul>
 </nav>
 <script src="/Navbar/navLogic.js"></script>
+
+<div class="assistance-modal" id="assistanceModal">
+  <div class="assistance-modal-content">
+    <span class="assistance-close" id="closeAssistance">&times;</span>
+    <h3>Tomar asistencia</h3>
+    <button id="btnEscanearQR">Escanear QR</button>
+  </div>
+</div>
+<script src="/Home/assistanceModal.js"></script>
+
 
 <% if (path === "/" || path === "/home/") { %>
     <!-- Modal oculto -->
