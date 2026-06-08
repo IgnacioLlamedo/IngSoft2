@@ -194,7 +194,7 @@ function renderActividades() {
     pSala.textContent = `Sala: ${act.sala}`;
     boxData.appendChild(pSala);
 
-    if (act.tipo === "Unica") {
+    if ((act.tipo === "Unica") || (act.tipo === "Seña")) {  //Revisar si tipo puede ser seña
       const pFecha = document.createElement("p");
       pFecha.textContent = `Fecha: ${act.fecha}`;
       boxData.appendChild(pFecha);
