@@ -11,8 +11,8 @@ async function getSessionDataAsync() {
     const res = await fetch("/session-data")
     const sessionData = await res.json();
 
-    console.log("Datos de sesión obtenidos:");
-    console.log(sessionData);
+   /*  console.log("Datos de sesión obtenidos:");
+    console.log(sessionData); */
 
     if(sessionData.logged && (sessionData.session.rol === "cliente")) {
         const buttons = document.getElementsByClassName("paymentButtons");
