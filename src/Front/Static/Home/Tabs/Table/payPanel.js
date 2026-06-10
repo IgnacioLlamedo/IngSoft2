@@ -11,6 +11,7 @@ async function iniciar() {
     const res = await fetch("/session-data");
     sessionData = await res.json();
     console.log(sessionData);
+    actualizarBotones();
 }
 
 function abrirPago(elemento) {
@@ -132,25 +133,21 @@ function cerrarPanel() {
 function volverOpcionesPago() {
 
     document.getElementById("mensajePago").innerText = "";
-    const buttons = document.getElementsByClassName("paymentButtons");
 
+    actualizarBotones();
+
+    document.getElementById("btnSeña").hidden = true;
+    document.getElementById("btnCompleta").hidden = true;
+    document.getElementById("btnVolver").hidden = true;
+}
+
+function actualizarBotones() {
+    const buttons = document.getElementsByClassName("paymentButtons");
     if(sessionData.logged && (sessionData.session.rol === "cliente")) {
         for(const button of buttons) {
             button.removeAttribute("hidden");
         }
     }
-    else{
-        for(const button of buttons) {
-            button.setAttribute("hidden", true);
-        }
-    }
-
-    /* document.getElementById("btnClaseUnica").hidden = false;
-    document.getElementById("btnMensual").hidden = false; */
-
-    document.getElementById("btnSeña").hidden = true;
-    document.getElementById("btnCompleta").hidden = true;
-    document.getElementById("btnVolver").hidden = true;
 }
 
 function pagarTotalidadClaseUnica() {
