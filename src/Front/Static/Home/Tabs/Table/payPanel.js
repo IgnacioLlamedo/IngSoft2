@@ -1,29 +1,19 @@
-
 let clasesSeleccionadas = [];
 let precioSeleccionado = 0;
 let horarioSeleccionado = "";
 let idClaseSeleccionada = "";
 let fechaEspecífica;
+let sessionData;
 
-getSessionDataAsync();
+iniciar();
 
-async function getSessionDataAsync() {
-    const res = await fetch("/session-data")
-    const sessionData = await res.json();
-
-   /*  console.log("Datos de sesión obtenidos:");
-    console.log(sessionData); */
-
-    if(sessionData.logged && (sessionData.session.rol === "cliente")) {
-        const buttons = document.getElementsByClassName("paymentButtons");
-        for(const button of buttons) {
-            button.removeAttribute("hidden");
-        }
-    }
+async function iniciar() {
+    const res = await fetch("/session-data");
+    sessionData = await res.json();
+    console.log(sessionData);
 }
 
 function abrirPago(elemento) {
-
     const clase = elemento.dataset.clase;
     const precio = elemento.dataset.precio;
     const idClase = elemento.dataset.id;
@@ -40,8 +30,8 @@ function abrirPago(elemento) {
     const header = document.querySelectorAll(".slotHeader")[colIndex - 2];
 
     const fecha = header.dataset.fecha;
-    console.log("Fecha encontrada: ");
-    console.log(fecha);
+    /* console.log("Fecha encontrada: ");
+    console.log(fecha); */
 
     claseSeleccionada = clase;
     precioSeleccionado = precio;
@@ -63,6 +53,12 @@ function abrirPago(elemento) {
 
     fechaBase.setSeconds(0, 0);
 
+    conseguirClasesSeleccionadas(fechaBase, idClase);
+    mostrarDatos(elemento, fechaBase, fecha, clase, precio, horario);
+}
+
+function mostrarDatos(elemento, fechaBase, fecha, clase, precio, horario) {
+
     const ahora = new Date();
 
     if (fechaBase < ahora) {
@@ -81,6 +77,17 @@ function abrirPago(elemento) {
         return;
     }
 
+    document.getElementById("tituloClase").innerText = clase + " (" + horario + ")";
+    document.getElementById("precioClase").innerText = "$" + precio;
+    document.getElementById("fechaClase").innerText = fecha;
+    document.getElementById("salaClase").innerText = elemento.dataset.sala;
+    document.getElementById("panelPago").dataset.llena = elemento.dataset.llena;
+    document.getElementById("capacidad").innerText = elemento.dataset.capacidad
+
+    document.getElementById("panelPago").classList.add("panel-abierto");
+}
+
+function conseguirClasesSeleccionadas(fechaBase, idClase) {
     //Gracias chatgpt
     // Reinicio arreglo
     clasesSeleccionadas = [];
@@ -89,8 +96,8 @@ function abrirPago(elemento) {
     for(let i = 0; i < 4; i++) {
 
         const nuevaFecha = new Date(fechaBase);
-        console.log("Fecha base: ");
-        console.log(nuevaFecha);
+        /* console.log("Fecha base: ");
+        console.log(nuevaFecha); */
 
         // suma 7 dias por iteración
         nuevaFecha.setDate(nuevaFecha.getDate() + (7 * i));
@@ -100,16 +107,6 @@ function abrirPago(elemento) {
             fechaEspecifica: nuevaFecha
         });
     }
-
-
-    document.getElementById("tituloClase").innerText = clase + " (" + horario + ")";
-    document.getElementById("precioClase").innerText = "$" + precio;
-    document.getElementById("fechaClase").innerText = fecha;
-    document.getElementById("salaClase").innerText = elemento.dataset.sala;
-    document.getElementById("panelPago").dataset.llena = elemento.dataset.llena;
-    document.getElementById("capacidad").innerText = elemento.dataset.capacidad
-
-    document.getElementById("panelPago").classList.add("panel-abierto");
 }
 
 function mostrarOpcionesClaseUnica() {
@@ -135,9 +132,21 @@ function cerrarPanel() {
 function volverOpcionesPago() {
 
     document.getElementById("mensajePago").innerText = "";
+    const buttons = document.getElementsByClassName("paymentButtons");
 
-    document.getElementById("btnClaseUnica").hidden = false;
-    document.getElementById("btnMensual").hidden = false;
+    if(sessionData.logged && (sessionData.session.rol === "cliente")) {
+        for(const button of buttons) {
+            button.removeAttribute("hidden");
+        }
+    }
+    else{
+        for(const button of buttons) {
+            button.setAttribute("hidden", true);
+        }
+    }
+
+    /* document.getElementById("btnClaseUnica").hidden = false;
+    document.getElementById("btnMensual").hidden = false; */
 
     document.getElementById("btnSeña").hidden = true;
     document.getElementById("btnCompleta").hidden = true;

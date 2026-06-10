@@ -157,10 +157,15 @@ async function getAllClasses(fechaSemana) {
             //celda.onclick = () => abrirPago(celda);
             //celda.onclick = () => abrirAsistencia(celda)
 
-            if (sessionData.session.rol === "cliente") {
+            if (sessionData.logged) {
+                if (sessionData.session.rol === "cliente") {
+                    celda.onclick = () => abrirPago(celda);
+                } else {
+                    celda.onclick = () => abrirAsistencia(celda);
+                }
+            }
+            else {
                 celda.onclick = () => abrirPago(celda);
-            } else {
-                celda.onclick = () => abrirAsistencia(celda);
             }
 
 
