@@ -43,8 +43,19 @@
     <span class="assistance-close" id="closeAssistance">&times;</span>
     <h3>Tomar asistencia</h3>
     <button id="btnEscanearQR">Escanear QR</button>
+
+    <div id="qrReaderContainer" hidden>
+      <div id="qr-reader"></div>
+
+      <button id="btnCancelarQR">
+        Cancelar
+      </button>
+    </div>
+
+    <p id="mensajeAsistencia"></p>
   </div>
 </div>
+<script src="https://unpkg.com/html5-qrcode"></script>
 <script src="/Home/assistanceModal.js"></script>
 
 

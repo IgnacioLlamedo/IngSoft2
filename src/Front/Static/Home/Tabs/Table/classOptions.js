@@ -39,6 +39,9 @@ function abrirAsistencia(elemento) {
   document.getElementById("btnQR").addEventListener("click", () => {
     const idClase = elemento.dataset.id;
 
+    /*
+    Aún no se si hay que usar eso para cambiar la fecha por MongoDB
+
     const [dia, mes, año] = fecha.split('/').map(Number);
 
     const horaInicio = horario.split('-')[0].trim();
@@ -53,13 +56,20 @@ function abrirAsistencia(elemento) {
         minutos
     );
 
-    fechaBase.setSeconds(0, 0);
+    fechaBase.setSeconds(0, 0); */
 
+    //usando la idClase y fechaEspecifica consiguo el token para generar el qr
     const res = await fetch(`/api/asistencia/obtenerQR/${idClase}/${fecha}`);
     const data = await res.json();
 
     console.log("La data QR para asistencia recibida fue: ")
     console.log(data);
+
+    //Creo el QR y lo muestro.
+    new QRCode(
+      document.getElementById("qrContainer"),
+      data.token
+    );
 
     //Acá hay que mostrar el QR en pantalla, despues averiguo como hacerlo.
   

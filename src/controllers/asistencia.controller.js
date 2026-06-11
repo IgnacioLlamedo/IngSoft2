@@ -7,7 +7,7 @@ export async function registrarQR(req,res) {
     try {
 
         //obtengo la clase especifica con el qr leído
-        const { token } = req.body;
+        const { token } = req.body.qr;
         const clase = await claseEspecificaDao.readOne({tokenAsistencia: token});
 
         if (!clase){
@@ -16,6 +16,10 @@ export async function registrarQR(req,res) {
                 message: "Clase especifica con token dado no encontrada. "
             })
         }
+        console.log("Esta es la clase obtenida con el token ", token);
+        console.log(clase);
+        console.log("********************************");
+
         //si la clase existe, busco si ya registró su asistencia
         const usuario = req.session;
         console.log("La sesión del usuario es: ")

@@ -212,6 +212,8 @@ async function abrirPanelAsistencia(){
       },
       (errorMessage) => {
         // ignorar errores de lectura
+        console.log("Error de lectura: ");
+        console.log(errorMessage);
       }
     );
 }
