@@ -154,13 +154,12 @@ async function getAllClasses(fechaSemana) {
             //Para informar pedir confirmación si quiere entrar en lista de espera.
             celda.dataset.llena = cantidadAnotados >= claseObj.clase.limiteClase;
 
-            //celda.onclick = () => abrirPago(celda);
-            //celda.onclick = () => abrirAsistencia(celda)
-
             if (sessionData.logged) {
                 if (sessionData.session.rol === "cliente") {
                     celda.onclick = () => abrirPago(celda);
                 } else {
+                    console.log("El usuario está logeado y su rol es empleado o admin")
+                    console.log(sessionData.session.rol)
                     celda.onclick = () => abrirAsistencia(celda);
                 }
             }

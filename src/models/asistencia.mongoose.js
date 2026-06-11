@@ -13,4 +13,4 @@ const asistenciaSchema = new Schema({
     versionKey: false
 })
 
-export const Actividad = model(collection, asistenciaSchema)
+export const Asistencia = model(collection, asistenciaSchema)

@@ -9,7 +9,7 @@ export class usuarioDao {
         const usuario = await Usuario.findOne(query).lean()
         if(!usuario){
             //provisional, desarrollar luego
-            console.log("error con: ")
+            console.log("error encontrando el usuario con data: ")
             console.log(query);
         }
         return usuario

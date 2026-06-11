@@ -7,7 +7,7 @@ export async function registrarQR(req,res) {
     try {
 
         //obtengo la clase especifica con el qr leído
-        const { token } = req.body.qr;
+        const { token } = req.body;
         const clase = await claseEspecificaDao.readOne({tokenAsistencia: token});
 
         if (!clase){
@@ -16,23 +16,15 @@ export async function registrarQR(req,res) {
                 message: "Clase especifica con token dado no encontrada. "
             })
         }
-        console.log("Esta es la clase obtenida con el token ", token);
-        console.log(clase);
-        console.log("********************************");
 
         //si la clase existe, busco si ya registró su asistencia
-        const usuario = req.session;
-        console.log("La sesión del usuario es: ")
-        console.log(usuario);
+        const usuario = req.session.user;
 
+        //mover todo lo siguiente a una función y reutilizar acá y en registrarDNI
         //Si está anotado, busco en asistencias
-        let existeAnotado;
-        for(const anotado in clase.anotados){
-            if (anotado.idUsuario === usuario._id){
-                existeAnotado = true;
-                break;
-            }
-        }
+        const existeAnotado = clase.anotados.some(
+            a => a.idUsuario === usuario.id
+        );
 
         if (!existeAnotado){
             return res.json({
@@ -41,7 +33,7 @@ export async function registrarQR(req,res) {
             })
         }
 
-        const asistencia = await asistenciaDao.findOne({idUsuario: usuario._id, idClaseEspecifica: clase._id});
+        const asistencia = await asistenciaDao.readOne({idUsuario: usuario.user.id, idClaseEspecifica: clase._id});
         if (asistencia){
             return res.json({
                 success: false,
@@ -50,7 +42,7 @@ export async function registrarQR(req,res) {
         }
 
         //Si NO tiene asistencia registrada, la creo y la retorno
-        const nueva = await asistenciaDao.create({idUsuario: usuario._id, idClaseEspecifica: clase._id})
+        const nueva = await asistenciaDao.create({idUsuario: usuario.user.id, idClaseEspecifica: clase._id})
 
         return res.json({
             success: true,
@@ -59,7 +51,7 @@ export async function registrarQR(req,res) {
     }
     catch(error) {
         console.error(error);
-        return res.error({
+        return res.json({
             success: false,
             message: error
         })
@@ -70,17 +62,19 @@ export async function registrarQR(req,res) {
 export async function obtenerQR(req,res){
     try{
 
-        const { idClase, fecha } = req.params;
-        const clase = await claseEspecificaDao.readById({idClaseGeneral: idClase, fechaEspecifica: fecha});
+        const { idClase, fecha } = req.body;
+
+        const clase = await claseEspecificaDao.readOne({idClaseGeneral: idClase, fechaEspecifica: fecha});
 
         if (!clase){
             return res.json({
                 success: false,
-                message: "Clase especifica no encontrada"
+                message: "La clase no tiene inscriptos."
             })
         }
 
         return res.json({
+            success: true,
             token: clase.tokenAsistencia
         });
     }
@@ -96,16 +90,14 @@ export async function obtenerQR(req,res){
 //Función back para controlar que el DNI existe y registrarlo
 export async function registrarDNI(req,res) {
     try {
-        const { idClase, fecha } = req.params;
+        const { idClase, fecha, dni } = req.body;
 
         //A partir del dni busco al cliente
-        const dniUsuario = req.body.dni;
-
-        const usuario = await usuarioDao.findOne({dni: dniUsuario, rol: "cliente"})
+        const usuario = await usuarioDao.readOne({dni: dni, rol: "cliente"})
         if (!usuario){
             return res.json({
                 success: false,
-                message: "Usuario con dni inexistente"
+                message: "DNI no encontrado. Intente nuevamente"
             })
         }
 
@@ -113,18 +105,19 @@ export async function registrarDNI(req,res) {
         console.log(usuario);
 
 
+        console.log("Buscando clase especifica con idClaseGeneral: ", idClase, " y fechaEspecifica: ", fecha);
         //busco la clase especifica que tiene el listado de anotados
         const clase = await claseEspecificaDao.readOne({idClaseGeneral: idClase, fechaEspecifica: fecha})
 
-        //Si existe, busco en la lista de anotados al usuario por dni
+        
         if (!clase) {
             return res.json({
                 success: false,
-                message: "La clase especifica no existe -.- no tiene anotados"
+                message: "La clase seleccionada no tiene anotados."
             })
         }
-
-        //Si está anotado, busco en asistencias
+        //Si existe, busco en la lista de anotados al usuario por dni
+        
         let existeAnotado;
         for(const anotado in clase.anotados){
             if (anotado.idUsuario === usuario._id){
@@ -136,10 +129,11 @@ export async function registrarDNI(req,res) {
         if (!existeAnotado){
             return res.json({
                 success: false,
-                message: "El DNI de usuario no se encuentra anotado en la clase."
+                message: "El usuario con DNI " + dni + " no tiene reserva en la clase."
             })
         }
 
+        //Si está anotado, busco en asistencias
         console.log("La clase especifica encontrada desde registrarDNI: ");
         console.log(clase);
         const asistencia = await asistenciaDao.findOne({idUsuario: usuario._id, idClaseEspecifica: clase._id})
@@ -157,13 +151,14 @@ export async function registrarDNI(req,res) {
 
         return res.json({
             success: true,
+            message: "Asistencia registrada correctamente.",
             nueva
         })
 
     }
     catch(error) {
         console.error(error);
-        return res.error({
+        return res.json({
             success: false,
             message: error
         })

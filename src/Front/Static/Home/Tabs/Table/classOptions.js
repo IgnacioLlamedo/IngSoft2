@@ -1,7 +1,7 @@
 let html5QrScanner = null;
+const body = document.getElementById("asistenciaBody");
 
-function abrirAsistencia(elemento) {
-  console.log("Elemento clickeado:", elemento);
+async function abrirAsistencia(elemento) {
   const clase = elemento.dataset.clase;
   const sala = elemento.dataset.sala;
 
@@ -16,32 +16,38 @@ function abrirAsistencia(elemento) {
   const fecha = header ? header.dataset.fecha : "";
 
   // Inyectar contenido en el body del modal
-  const body = document.getElementById("asistenciaBody");
   body.innerHTML = `
-  <h3>${clase} (${horario})</h3>
-  <p>Fecha: ${fecha}</p>
-  <p>Sala: ${sala}</p>
+  <div id="infoAsistencia">
+    <h3>${clase} (${horario})</h3>
+    <p>Fecha: ${fecha}</p>
+    <p>Sala: ${sala}</p>
 
-  <button id="btnQR">Tomar asistencia QR</button>
+    <div id="mensajeAsistencia"></div>
 
-  <button id="btnMostrarDNI">Tomar asistencia DNI</button>
+    <button id="btnQR">Tomar asistencia QR</button>
 
+    <button id="btnMostrarDNI">Tomar asistencia DNI</button>
+  </div>
   <div id="dniContainer" hidden style="margin-top:10px;">
     <input type="text" id="dniInput" placeholder="Ingrese DNI">
     <button id="btnDNI">Confirmar asistencia</button>
     <button id="btnVolverAtras">Volver</button>
-  </div>`;
+  </div>
+  
+  <div id="qrContainer" hidden style="margin-top:20px;">
+  </div>
+  <button id="btnCerrarQR" hidden>
+    Cerrar QR
+  </button>
+  `;
 
   // Mostrar modal
   document.getElementById("asistenciaModal").style.display = "flex";
+  const mensajeAsistencia = document.getElementById("mensajeAsistencia");
 
-  // Enganchar botones internos
-  document.getElementById("btnQR").addEventListener("click", () => {
-    const idClase = elemento.dataset.id;
+  const idClase = elemento.dataset.id;
 
-    /*
-    Aún no se si hay que usar eso para cambiar la fecha por MongoDB
-
+    
     const [dia, mes, año] = fecha.split('/').map(Number);
 
     const horaInicio = horario.split('-')[0].trim();
@@ -56,26 +62,57 @@ function abrirAsistencia(elemento) {
         minutos
     );
 
-    fechaBase.setSeconds(0, 0); */
+    fechaBase.setSeconds(0, 0);
 
+  // Enganchar botones internos
+  document.getElementById("btnQR").addEventListener("click", async () => {
+    mensajeAsistencia.innerHTML = "";
     //usando la idClase y fechaEspecifica consiguo el token para generar el qr
-    const res = await fetch(`/api/asistencia/obtenerQR/${idClase}/${fecha}`);
+    const res = await fetch('/api/asistencia/obtenerQR', {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        idClase: idClase,
+        fecha: fechaBase
+      })
+    });
     const data = await res.json();
 
     console.log("La data QR para asistencia recibida fue: ")
     console.log(data);
+    console.log(data.token);
 
     //Creo el QR y lo muestro.
-    new QRCode(
-      document.getElementById("qrContainer"),
-      data.token
-    );
+    const infoAsistencia = document.getElementById("infoAsistencia");
+    const qrContainer = document.getElementById("qrContainer");
+    const btnCerrarQR = document.getElementById("btnCerrarQR");
 
-    //Acá hay que mostrar el QR en pantalla, despues averiguo como hacerlo.
-  
+    btnCerrarQR.addEventListener("click", () => {
+      qrContainer.innerHTML = "";
+      infoAsistencia.hidden = false;
+      qrContainer.hidden = true;
+      btnCerrarQR.hidden = true;
+    });
+
+    if (data.success) {
+      infoAsistencia.hidden = true;
+      btnCerrarQR.hidden = false;
+      qrContainer.hidden = false;
+      new QRCode(
+        qrContainer,
+        data.token
+      );
+    }
+    else
+      mensajeAsistencia.innerHTML = data.message;
   });
 
+  
+
   document.getElementById("btnMostrarDNI").addEventListener("click", () => {
+    mensajeAsistencia.innerHTML = "";
     document.getElementById("btnQR").hidden = true;
     document.getElementById("btnMostrarDNI").hidden = true;
 
@@ -83,7 +120,8 @@ function abrirAsistencia(elemento) {
   });
 
   // Confirmar asistencia DNI
-  document.getElementById("btnDNI").addEventListener("click", () => {
+  document.getElementById("btnDNI").addEventListener("click", async () => {
+    mensajeAsistencia.innerHTML = "";
     const dni = document.getElementById("dniInput").value.trim();
 
     if (!dni) {
@@ -91,14 +129,15 @@ function abrirAsistencia(elemento) {
       return;
     }
 
-    console.log("Registrar asistencia por DNI:", dni);
-    const res = await fetch(`/api/asistencia/asistenciaDNI/${idClase}/${fecha}`, {
+    const res = await fetch('/api/asistencia/asistenciaDNI', {
       method: "POST",
       headers: {
           "Content-Type": "application/json"
       },
       body: JSON.stringify({
-          dni: dni
+          dni: dni,
+          idClase: idClase,
+          fecha: fechaBase
       })
     })
     const data = await res.json();
@@ -107,15 +146,14 @@ function abrirAsistencia(elemento) {
       alert("Asistencia registrada correctamente");
     }
     else{
-      console.log(data.message);
+      mensajeAsistencia.innerHTML = data.message;
     }
   });
 
   //Botón volver
   const botonVolver = document.getElementById("btnVolverAtras");
-  console.log(botonVolver)
   botonVolver.addEventListener("click", () => {
-    console.log("Acá estoy")
+    mensajeAsistencia.innerHTML = "";
     document.getElementById("btnQR").hidden = true;
     document.getElementById("btnMostrarDNI").hidden = true;
     document.getElementById("dniContainer").hidden = true;

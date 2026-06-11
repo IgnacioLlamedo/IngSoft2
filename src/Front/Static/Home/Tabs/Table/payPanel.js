@@ -163,15 +163,13 @@ function pagarMensual() {
 }
 
 async function abrirPanelAsistencia(){
-    /**
-     * Falta agregar el script en tabla.html y
-     * falta agregar el onclick con esta función
-     * Habría que agregar un botón para pasar asistencia en la barra de
-     * navegación (top-bar(?))
-     */
 
+    
     document.getElementById("qrModal").style.display = "flex";
     html5QrScanner = new Html5Qrcode("qr-reader");
+    document.getElementById("cancelarLectura").addEventListener("click", async () => {
+        await cerrarLectorQR();
+    });
 
     html5QrScanner.start(
       { facingMode: "environment" }, //cámara trasera en celulares
@@ -181,12 +179,8 @@ async function abrirPanelAsistencia(){
       },
       async (decodedText) => {
 
-        //En teoría el decodedText es igual al tokenAsistencia que se guarda en claseEspecificaDao. -- Controlar que sea así
-        console.log("QR leído:", decodedText);
-
         // detener cámara
-        await html5QrScanner.stop();
-        await html5QrScanner.clear();
+        await cerrarLectorQR();
 
         document.getElementById("qrModal").style.display = "none";
 
@@ -202,9 +196,12 @@ async function abrirPanelAsistencia(){
 
         const data = await res.json();
         
-        console.log("La data obtenida al registrar el QR en BD ES: ");
-        console.log(data);
-        console.log(data.message);
+        alert(data.message || "Asistencia registrada correctamente");
+        if (data.success){
+            document.getElementById("assistanceModal").style.display = "none";
+            console.log("La asistencia fue registrada y su data es: ");
+            console.log(data.nueva);
+        }
 
         //Este es del lado del cliente por lo que en caso de data.succeess
         //Supongo que con cerrar el pop-up para la cámara y mostrar un msg de exito basta.
@@ -216,6 +213,23 @@ async function abrirPanelAsistencia(){
         console.log(errorMessage);
       }
     );
+}
+
+async function cerrarLectorQR() {
+
+    try {
+
+        if (html5QrScanner) {
+            await html5QrScanner.stop();
+            await html5QrScanner.clear();
+            html5QrScanner = null;
+        }
+
+    } catch(error) {
+        console.error(error);
+    }
+
+    document.getElementById("qrModal").style.display = "none";
 }
 
 async function pagar(tipoClase, precio, clasesPago) {
