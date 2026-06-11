@@ -90,14 +90,14 @@ export async function consultar(req, res) {
 
         for (const claseData of clases) {
 
-            console.log("La idClase General " + claseData.idClaseGeneral + " en la fecha " + claseData.fechaEspecifica);
-            console.log(claseData.fechaEspecifica);
+            /* console.log("La idClase General " + claseData.idClaseGeneral + " en la fecha " + claseData.fechaEspecifica);
+            console.log(claseData.fechaEspecifica); */
 
             //Consigo la clase especifica
             claseEspecifica = await claseEspecificaDao.readOne({idClaseGeneral: claseData.idClaseGeneral, fechaEspecifica: claseData.fechaEspecifica}); //Si existe la primera del día 1/7, las del 8/7, 15/7 y 22/7 si o si
 
-            console.log("La idClase General " + claseData.idClaseGeneral + " en la fecha " + claseData.fechaEspecifica + ". Encontró la siguiente clase especifica: ");
-            console.log(claseEspecifica);
+            /* console.log("La idClase General " + claseData.idClaseGeneral + " en la fecha " + claseData.fechaEspecifica + ". Encontró la siguiente clase especifica: ");
+            console.log(claseEspecifica); */
             //Revisar listado de anotados y de esprea
 
             /**

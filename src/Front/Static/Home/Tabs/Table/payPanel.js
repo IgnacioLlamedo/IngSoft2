@@ -162,6 +162,60 @@ function pagarMensual() {
     pagar("mensual", precioSeleccionado, clasesSeleccionadas);
 }
 
+async function abrirPanelAsistencia(){
+    /**
+     * Falta agregar el script en tabla.html y
+     * falta agregar el onclick con esta función
+     * Habría que agregar un botón para pasar asistencia en la barra de
+     * navegación (top-bar(?))
+     */
+
+    document.getElementById("qrModal").style.display = "flex";
+    html5QrScanner = new Html5Qrcode("qr-reader");
+
+    html5QrScanner.start(
+      { facingMode: "environment" }, //cámara trasera en celulares
+      {
+        fps: 10,
+        qrbox: 250
+      },
+      async (decodedText) => {
+
+        //En teoría el decodedText es igual al tokenAsistencia que se guarda en claseEspecificaDao. -- Controlar que sea así
+        console.log("QR leído:", decodedText);
+
+        // detener cámara
+        await html5QrScanner.stop();
+        await html5QrScanner.clear();
+
+        document.getElementById("qrModal").style.display = "none";
+
+        const res = await fetch("/api/asistencia/registrarQR", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            qr: decodedText
+          })
+        });
+
+        const data = await res.json();
+        
+        console.log("La data obtenida al registrar el QR en BD ES: ");
+        console.log(data);
+        console.log(data.message);
+
+        //Este es del lado del cliente por lo que en caso de data.succeess
+        //Supongo que con cerrar el pop-up para la cámara y mostrar un msg de exito basta.
+
+      },
+      (errorMessage) => {
+        // ignorar errores de lectura
+      }
+    );
+}
+
 async function pagar(tipoClase, precio, clasesPago) {
     const nombre = document.getElementById("tituloClase").innerText;
     const fecha = document.getElementById("fechaClase").innerText;

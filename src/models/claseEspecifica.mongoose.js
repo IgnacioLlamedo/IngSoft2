@@ -6,6 +6,10 @@ const collection = 'clasesEspecificas'
 const claseEspecificaSchema = new Schema({
     _id: { type: String, default: randomUUID },
     idClaseGeneral: { type: String, ref: "clasesGenerales" },
+    tokenAsistencia: {
+        type: String,
+        default: randomUUID
+    },
     anotados : [{
         idUsuario: { type: String, ref: 'usuarios', required: true },
         tipo: { type: String, enum: ['mensualidad', 'unico', 'seña'], required: true },

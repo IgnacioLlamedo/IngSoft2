@@ -60,7 +60,7 @@
                 </div>
             </div>
             <div id="mensajePago" class="mensaje-pago"></div>
-        </div> <!--Te falto cerrar este div jaja-->
+        </div>
     </div>
 
     <!-- Modal de asistencia -->
@@ -68,22 +68,28 @@
         <div class="modalAsistencia-content">
             <span class="close" id="closeAsistencia">&times;</span>
             <div id="asistenciaBody">
-                <h3>${clase} (${horario})</h3>
-                <p>Fecha: ${fecha}</p>
-                <p>Sala: ${sala}</p>
-                <button id="btnQR">Tomar asistencia QR</button>
-                <div style="margin-top:10px;">
-                <input type="text" id="dniInput" placeholder="Ingrese DNI">
-                <button id="btnDNI">Tomar asistencia DNI</button>
-                </div>
+                
             </div>
         </div>
     </div>
 
+    <!-- Modal de QR -->
+    <div id="qrModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span id="closeQRModal" style="cursor:pointer;">&times;</span>
+
+            <h3>Escanear QR</h3>
+
+            <div id="qr-reader" style="width:100%;"></div>
+        </div>
+    </div>
 
     
     <!-- Script para asignar data-clase y abrir el panel -->
     <script src="/Home/Tabs/Table/weekNav.js"></script>
+
+    <!-- Esta es la librería para qr codes -->
+    <script src="https://unpkg.com/html5-qrcode"></script>
 
     <!-- 
     Esto no estaría andando, trete de hacerlo como esta en navbarSelector pero no se bien como se hace...
