@@ -5,7 +5,7 @@ import { mailer } from "../servicios/mailer.servicio.js";
 import { hash, compareHash } from "../servicios/crypt.servicio.js";
 import { Usuario } from "../models/usuario.mongoose.js";
 import { homeRoute } from "../routes/web/web.router.js";
-import { Role } from "../constants/constants.js";
+import { Role, Status } from "../constants/constants.js";
 
 const errorMessages = {
 	11000: "Error al crear la cuenta, el email ya está registrado.",
@@ -294,7 +294,7 @@ export async function loadProfileController(req, res) {
 		return res.json(publicUser);
 
 	} catch (error) {
-		console.error('accountController ERROR: ', error);
+		console.error('loadProfileController ERROR: ', error);
 		res.status(500).json({ success: false, message: 'Error al obtener perfil. Inténtelo más tarde.' });
 	}
 }
@@ -302,7 +302,7 @@ export async function loadProfileController(req, res) {
 // TODO: permitir guardar la información de cualquier usuario
 export async function saveProfileController(req, res) {
 	try {
-        console.log('saveProfileController llamado con body:', req.body);
+        // console.log('saveProfileController llamado con body:', req.body);
         const sessionUser = req.session && req.session.user;	
         
 		if (!sessionUser) {
@@ -319,7 +319,8 @@ export async function saveProfileController(req, res) {
         }
 
         const emailChanged = newUserData.mail !== oldEmail;
-        if (emailChanged) {
+        // console.log('Email changed:', emailChanged);
+        if (emailChanged) { 
             const emailExists = await usuarioDao.readOne({ mail: newUserData.mail });
             if (emailExists) {
                 return res.status(402).json({
@@ -331,10 +332,11 @@ export async function saveProfileController(req, res) {
 
         // no todos los roles poseen tienen dni (como el admin)
         // const dniChanged = (await usuarioDao.readOne({mail: userMail})).dni !== newUserData.dni;
-        const dniChanged =  newUserData.dni != null && (newUserData.dni !== oldUserData.dni); // para el caso de que el usuario no tenga dni y quiera agregarlo, o lo quiera eliminar
+        const dniChanged = newUserData.dni != null && (newUserData.dni !== oldUserData.dni);
+        // console.log('DNI changed:', dniChanged);
         if (dniChanged) {
             const userRole = (await usuarioDao.readOne({ mail: oldEmail })).rol;
-            const dniExists = await usuarioDao.readOne({ dni: newUserData.dni, rol: userRole.rol });
+            const dniExists = await usuarioDao.readOne({dni: newUserData.dni, rol: userRole });
             if (dniExists) {
                 return res.status(402).json({
                     success: false,
@@ -347,7 +349,7 @@ export async function saveProfileController(req, res) {
 			return res.status(404).json({ success: false, message: 'Usuario no encontrado' });
 		}
 
-        if(emailChanged && savingOwnData)
+        if (emailChanged && savingOwnData)
             changeEmailSession(req, newUserData.mail);
 
 		return res.json(updatedUser);
@@ -409,7 +411,7 @@ export async function setPasswordController(req, res) {
 		return res.json(updatedUser);
 
 	} catch (error) {
-		console.error('savePasswordController ERROR: ', error);
+		console.error('setPasswordController ERROR: ', error);
 		res.status(500).json({ success: false, message: 'Error al actualizar contraseña. Inténtelo más tarde.' });
 	}
 }
@@ -447,5 +449,49 @@ export async function getUserlistController(req, res) {
     } catch (error) {
         console.error('getUserlistController ERROR: ', error);
         return res.status(500).json({ success: false, message: 'Error al obtener la lista de usuarios. Inténtelo más tarde.' });
+    }
+}
+
+
+export async function deleteUserController(req, res) {
+	try {
+        console.log('deleteUserController llamado con body:', req.body);
+        const sessionUser = req.session && req.session.user;
+
+		if (!sessionUser || sessionUser.rol !== Role.ADMIN) {
+            return res.status(403).json({ success: false, message: 'Acceso denegado' });
+        }
+        
+        const userMail = req.body.mail;
+        const motivoEstado = req.body.motivoEstado;
+        console.log("")
+        
+        const updatedUser = await usuarioDao.readOne({
+            mail: userMail,
+            $or: [
+                { estado: { $exists: false } },
+                { estado: { $ne: Status.DELETED } }
+            ]
+        });
+        
+        // TODO: testear y reemplazar por esto
+        // const updatedUser = await usuarioDao.updateOne({
+        //     mail: userMail,
+        //     $or: [
+        //         { estado: { $exists: false } },
+        //         { estado: { $ne: Status.DELETED } }
+        //     ]
+        // }, {
+        //     estado: Status.DELETED,
+        //     motivoEstado: motivoEstado
+        // });
+        if (!updatedUser) {
+            return res.status(404).json({ success: false, message: 'Usuario no encontrado' });
+        }
+
+        return res.json({ success: true, message: 'Usuario eliminado correctamente.' });
+    } catch (error) {
+        console.error('deleteUserController ERROR: ', error);
+        res.status(500).json({ success: false, message: 'Error al eliminar usuario. Inténtelo más tarde.' });
     }
 }

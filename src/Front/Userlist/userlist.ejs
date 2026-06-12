@@ -66,6 +66,22 @@
             </tbody>
         </table>
         <div id="userlistMessage" class="message info">Cargando usuarios…</div>
+
+        <dialog id="deleteUserDialog" class="delete-dialog">
+            <form id="deleteDialogForm" method="dialog" class="delete-dialog-form">
+                <h2 id="deleteDialogTitle">Confirmar baja de usuario</h2>
+                <div class="delete-user-info-container">
+                    <p>Correo: <span id="deleteUserMail" class="delete-user-info"></span></p>
+                    <p>Rol: <span id="deleteUserRole" class="delete-user-info"></span></p>
+                </div>
+                <textarea id="deletionReasonInput" rows="2" placeholder="Ingrese un motivo para la baja"></textarea>
+                <div class="delete-dialog-actions">
+                    <button type="button" id="cancelDelBtn">Cancelar</button>
+                    <button type="button" id="confirmDelBtn">Confirmar</button>
+                </div>
+            </form>
+            <div id="deleteMessage" class="message">Trabajando...</div>
+        </dialog>
     </main>
 
     <script src="/Userlist/userlistLogic.js" defer></script>

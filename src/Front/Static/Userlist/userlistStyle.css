@@ -128,3 +128,94 @@
 .filter-panel button:hover {
     filter: brightness(1.05);
 }
+
+.delete-dialog {
+    border: none;
+    border-radius: 12px;
+    padding: 0px 10px 20px 10px;
+    width: 450px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+    background: #1d1d1d;
+}
+
+.delete-dialog-form {
+    display: grid;
+    gap: 16px;
+    color: #f1f1f1;
+    padding: 22px;
+    border-radius: 12px;
+}
+
+.delete-dialog-form h2 {
+    margin: 0;
+    font-size: 1.15rem;
+    text-align: center;
+}
+
+.delete-dialog-form p {
+    margin: 0;
+    color: #dcdcdc;
+    text-align: center;
+}
+
+.delete-user-info-container {
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    align-items: center;
+}
+
+.delete-user-info {
+    color: #d01f25;    
+}
+
+.delete-dialog-form label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.delete-dialog-form textarea {
+    width: 100%;
+    min-height: 100px;
+    margin-top: 10px;
+    padding: 12px;
+    border: 1px solid #444;
+    border-radius: 10px;
+    resize: vertical;
+    background: #111;
+    color: #f1f1f1;
+    font: inherit;
+}
+
+.delete-dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.delete-dialog-actions button {
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+#cancelDelBtn {
+    background: #444;
+    color: #f1f1f1;
+}
+
+#confirmDelBtn {
+    background: #d01f25;
+    color: #fff;
+}
+
+dialog::backdrop {
+    background-color: rgba(0, 0, 0, 0.45);
+}
