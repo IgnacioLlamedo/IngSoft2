@@ -1,5 +1,6 @@
 import { Schema, model } from "mongoose";
-import { randomUUID } from "node:crypto"
+import { randomUUID } from "node:crypto";
+import { Role, Status } from "../constants/constants.js";
 
 const collection = 'usuarios'
 
@@ -15,7 +16,10 @@ const usuarioSchema = new Schema({
     telefono: { type: String, required: true },
     genero: { type: String, enum: ["femenino", "masculino", "otro"], required: true },
     planilla: { type: String, required: true, ref: "planillas" },
-    rol: { type: String, enum: ["cliente", "administrador", "empleado"], default: "cliente" },
+    // rol: { type: String, enum: ["cliente", "administrador", "empleado"], default: "cliente" },
+    rol: { type: String, enum: [ Role.CLIENT, Role.ADMIN, Role.EMPLOYEE ], default: Role.CLIENT },
+    estado: { type: String, enum: [Status.INACTIVE, Status.UNVERIFIED, Status.REGISTERED, Status.DELETED], default: Status.UNVERIFIED },
+    motivoEstado: { type: String },
     codigo: { type: String },
     limiteCodigo: { type: Date },
 }, {

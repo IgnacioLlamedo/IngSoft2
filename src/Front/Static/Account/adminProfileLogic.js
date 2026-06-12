@@ -133,7 +133,7 @@ async function saveProfile() {
         }, 3000);
 
     } catch (error) {
-        showProfileMessage('Error: ' + error.message, 'error', 'profileMessage');
+        showProfileMessage(error.message, 'error', 'profileMessage');
         console.error('Error:', error);
     }
 }

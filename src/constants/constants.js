@@ -4,7 +4,11 @@ export const Role = {
     CLIENT: "cliente",
     EMPLOYEE: "empleado",
     ADMIN: "administrador",
-    DEL_CLIENT: "del_cliente",
-    DEL_EMPLOYEE: "del_empleado",
-    DEL_ADMIN: "del_administrador",
+};
+
+export const Status = {
+    INACTIVE: "no_disponible",
+    UNVERIFIED: "no_verificado",
+    REGISTERED: "registrado",
+    DELETED: "borrado",
 };
