@@ -6,10 +6,15 @@ import { claseGeneralDao, claseEspecificaDao } from "../daos/index.js";
 export async function getAllClases(req, res) {
     try {
         const fechaSemana = new Date(req.body.fechaSemana);
+        console.log(fechaSemana);
 
         const inicioSemana = new Date(fechaSemana);
         const finSemana = new Date(fechaSemana);
         finSemana.setDate(finSemana.getDate() + 6);
+
+        console.log("Esto es dentro de getallClases")
+        console.log(inicioSemana)
+        console.log(finSemana)
 
         const clasesData = await claseGeneralDao.readMany({});
         const claseEspecificaData = await claseEspecificaDao.readMany({
@@ -19,6 +24,7 @@ export async function getAllClases(req, res) {
                 $lte: finSemana
             }
         });
+        console.log(claseEspecificaData)
         const activitiesData = await actividadDao.readMany({});
         const salasData = await salaDao.readMany({});
         const profesoresData = await profesorDao.readMany({});

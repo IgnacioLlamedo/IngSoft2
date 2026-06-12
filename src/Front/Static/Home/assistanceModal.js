@@ -67,7 +67,7 @@ btnCancelarQR.addEventListener("click", async () => {
 //Para cerrar el modal de lectura de QR
 closeAssistance.addEventListener("click", async () => {
   assistanceModal.style.display = "none";
-  if(qrScanner){ //por si no cancela con el botón primero
+  if((qrScanner) && qrScanner.getState()) { //por si no cancela con el botón primero
     try{
       await qrScanner.stop();
       await qrScanner.clear();

@@ -15,7 +15,7 @@ const claseEspecificaSchema = new Schema({
         tipo: { type: String, enum: ['mensualidad', 'unico', 'seña'], required: true },
     }],
     espera : [{
-        idUsuario: { type: String, ref: 'usuarios' }, //cambiar por mensual o todos los mensual por mensualidad jaja
+        idUsuario: { type: String, ref: 'usuarios' },
         tipo: { type: String, enum: ['mensualidad', 'unico', 'seña'], required: true },
     }],
     fechaEspecifica: { type: Date, required: true },

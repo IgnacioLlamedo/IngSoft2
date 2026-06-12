@@ -16,14 +16,19 @@ async function getMyReservations() {
 
     actividadesUsuario = resData.reservas.map(r => {
 
+        /* console.log(r);
+        console.log(r.tipo) */
+
         // =========================================
         // RESERVA ÚNICA
         // =========================================
-        if ((r.tipo === "unica") || (r.tipo === "seña")) {
+        if (r.tipo === "unica") {
 
             const claseGeneral =
                 r.idClaseEspecifica.idClaseGeneral;
 
+                /* console.log(r.señada) */
+                /*console.log(claseGeneral) */
             const horario =
                 `${claseGeneral.hora}:00 - ${claseGeneral.hora + 1}:00`;
 
@@ -56,7 +61,10 @@ async function getMyReservations() {
                     claseGeneral.precioMensual / 4,
 
                 vencida: 
-                    fechaClase < fechaActual
+                    fechaClase < fechaActual,
+
+                señada:
+                    r.señada
             };
         }
 
@@ -199,7 +207,7 @@ function renderActividades() {
     pSala.textContent = `Sala: ${act.sala}`;
     boxData.appendChild(pSala);
 
-    if ((act.tipo === "Unica") || (act.tipo === "Seña")) {  //Revisar si tipo puede ser seña
+    if (act.tipo === "Unica") {  //Revisar si tipo puede ser seña
       const pFecha = document.createElement("p");
       pFecha.textContent = `Fecha: ${act.fecha}`;
       boxData.appendChild(pFecha);
@@ -235,8 +243,7 @@ function renderActividades() {
         });
         buttonsContainer.appendChild(btnCancelar);
 
-    
-        if (act.tipo === "Unica") {
+        if (act.señada) {            
             const btnPagar = document.createElement("button");
             btnPagar.classList.add("box-button", "pay-rest");
             btnPagar.textContent = "Pagar resto";
@@ -245,7 +252,7 @@ function renderActividades() {
             });
             buttonsContainer.appendChild(btnPagar);
         } 
-        else {
+        else if (act.tipo === "Mensual") {
             const btnCancelarClase = document.createElement("button");
             btnCancelarClase.classList.add("box-button", "cancel-next-class");
             btnCancelarClase.textContent = "Cancelar Siguiente Clase";
@@ -261,9 +268,9 @@ function renderActividades() {
                 console.log(`Pagaste la mensualidad de ${act.actividad}`);
             });
             buttonsContainer.appendChild(btnPagarMensual);
-            boxContent.appendChild(buttonsContainer);
-            box.appendChild(boxContent);
         }
+    boxContent.appendChild(buttonsContainer);
+    box.appendChild(boxContent);
         
     }
     else {

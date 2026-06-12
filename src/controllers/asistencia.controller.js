@@ -33,7 +33,7 @@ export async function registrarQR(req,res) {
             })
         }
 
-        const asistencia = await asistenciaDao.readOne({idUsuario: usuario.user.id, idClaseEspecifica: clase._id});
+        const asistencia = await asistenciaDao.readOne({idUsuario: usuario.id, idClaseEspecifica: clase._id});
         if (asistencia){
             return res.json({
                 success: false,
@@ -101,7 +101,7 @@ export async function registrarDNI(req,res) {
             })
         }
 
-        console.log("El usuario con dni " + dniUsuario + " Tiene como datos: ");
+        console.log("El usuario con dni " + dni + " Tiene como datos: ");
         console.log(usuario);
 
 
@@ -118,13 +118,9 @@ export async function registrarDNI(req,res) {
         }
         //Si existe, busco en la lista de anotados al usuario por dni
         
-        let existeAnotado;
-        for(const anotado in clase.anotados){
-            if (anotado.idUsuario === usuario._id){
-                existeAnotado = true;
-                break;
-            }
-        }
+        const existeAnotado = clase.anotados.some(
+            a => a.idUsuario === usuario.id
+        );
 
         if (!existeAnotado){
             return res.json({

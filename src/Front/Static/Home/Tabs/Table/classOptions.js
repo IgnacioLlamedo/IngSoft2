@@ -80,9 +80,9 @@ async function abrirAsistencia(elemento) {
     });
     const data = await res.json();
 
-    console.log("La data QR para asistencia recibida fue: ")
+    /* console.log("La data QR para asistencia recibida fue: ")
     console.log(data);
-    console.log(data.token);
+    console.log(data.token);*/
 
     //Creo el QR y lo muestro.
     const infoAsistencia = document.getElementById("infoAsistencia");
@@ -141,6 +141,8 @@ async function abrirAsistencia(elemento) {
       })
     })
     const data = await res.json();
+    console.log("Esto es lo recibido al volver de asistenciaDNI")
+    console.log(data);
 
     if (data.success){
       alert("Asistencia registrada correctamente");

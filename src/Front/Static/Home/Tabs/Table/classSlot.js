@@ -125,9 +125,8 @@ async function getAllClasses(fechaSemana) {
     const sessionData = await result.json();
 
     clasesData.forEach(claseObj => {
-        console.log("Esta es una clase encontrada en DB: ");
-        console.log(claseObj);
-
+        /* console.log("Esta es una clase encontrada en DB: ");
+        console.log(claseObj); */
         const tdId = `${claseObj.clase.dia}-${claseObj.clase.hora}`;
 
         const celda = document.querySelector(`#${tdId} [data-sala="${claseObj.sala.nombre}"]`);
@@ -149,6 +148,8 @@ async function getAllClasses(fechaSemana) {
 
             capacidadActual = `${cantidadAnotados}/${claseObj.clase.limiteClase}`;
 
+            /* console.log("la capacidad de la clase de la fecha " + claseObj.clase.dia + " a la hora "+ claseObj.clase.hora)
+            console.log(capacidadActual) */
             celda.dataset.capacidad = capacidadActual;
 
             //Para informar pedir confirmación si quiere entrar en lista de espera.
@@ -158,8 +159,6 @@ async function getAllClasses(fechaSemana) {
                 if (sessionData.session.rol === "cliente") {
                     celda.onclick = () => abrirPago(celda);
                 } else {
-                    console.log("El usuario está logeado y su rol es empleado o admin")
-                    console.log(sessionData.session.rol)
                     celda.onclick = () => abrirAsistencia(celda);
                 }
             }
