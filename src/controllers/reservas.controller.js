@@ -125,8 +125,8 @@ export async function getMyReservations(req, res) {
         }
 
         const idUsuario = req.session.user.id;
-        /* console.log("Id de usuario desde reservas.controller: ");
-        console.log(idUsuario); */
+        console.log("Id de usuario desde reservas.controller: ");
+        console.log(idUsuario);
 
         //Obtengo las reservas de clases únicas y mensuales del usuario
         const reservasUnicas = await reservaDao.readManyUnica({
@@ -152,8 +152,8 @@ export async function getMyReservations(req, res) {
             ...reservasUnicas,
             ...reservasMensuales
         ];
-        /* console.log("Las reservas unicas y mensuales (Desde getMyReservations) del usuario son: ")
-        console.log(reservas); */
+        console.log("Las reservas unicas y mensuales (Desde getMyReservations) del usuario son: ")
+        console.log(reservas);
         
         const reservasUnicasTotal = await reservaDao.populateUnica({ idUsuario: idUsuario })
         const reservasMensualesTotal = await reservaDao.populateMensual({ idUsuario: idUsuario })
@@ -161,8 +161,8 @@ export async function getMyReservations(req, res) {
         reservasTotal = reservasTotal.concat(reservasUnicasTotal)
         reservasTotal = reservasTotal.concat(reservasMensualesTotal)
 
-        /* console.log("Las reservas TOTALES del usuario son: ")
-        console.log(reservasTotal); */
+        console.log("Las reservas TOTALES del usuario son: ")
+        console.log(reservasTotal);
         
         res.json({
             success: true,
@@ -177,6 +177,102 @@ export async function getMyReservations(req, res) {
             success: false,
             message: error.message
         });
+    }
+}
+
+export async function cancelarReserva(req, res) {
+    try {
+
+        /**
+         *  Lista de Anotados Mensuales
+         *  Lista de Anotados Clase única
+         *  Lista de Anotados Seña(?) ---> ¿Los tratamos igual que los de clase única? y si es así, ¿deberíamos hacer que page antes de pasarlos a lista de anotados?
+         * 
+         * Si uno cancela, el que pasará de la lista de espera se priorizará según el tipo que cancele
+         * Ejemplo: si cancela alguien de mensual, se tomará a alguien en lista de espera que sea de tipo
+         * mensual.
+         * 
+         *  1- Si el elegido no puede ser insertado (MÁS ABAJO EXPLICO PQ), se probará con el siguiente
+         * 
+         *  2- Y si ningúno de tipo mensual es insertado, entonces:
+         * 
+         *     2.1- Por cada clase Especifica "liberada" se insertará uno de tipo clase única (ya sea señado o no señado)
+         * 
+         *          Nota: (obviamente que se tiene que consultar al elegido si desea aceptar esa clase específica antes
+         *                 de insertarlo en la lista de anotados.)
+         * 
+         * Nota: Respecto de "liberar" (No se elimina de la lista de anotados al usuario, sino que se marca la reserva como
+         *          cancelada y luego se usará eso para reemplazar al usuario en la lista de anotados)
+         */
+        const tipo = req.body.tipo;
+        const clase = req.body.clase
+        console.log("Desde cancelarReserva Controller: ");
+        console.log(tipo);
+        console.log(clase);
+
+        //Si hay personas en espera --> controlo el tipo que pasará a la lista de anotados
+        if (clase.espera.length !== 0){
+
+            //si el tipo es mensual, busco en la lista de espera el primer mensual que encuentre
+
+            /**
+             * PROBLEMA: Actalmente, al comprar una reserva mensual, se consulta si la clase especifica existe
+             *      si existe y tiene espacio --> se pone en lista de anotados,
+             *      si existe y no tiene espacio --> se pone en lista de espera,
+             *      no existe --> crea las que no existan (máximo 4) y se anota en cada una).
+             * 
+             * Ahora, si la persona que esta en lista de espera (y es espera mensual) NO está esperando
+             * en las mismas 4 clasesEspecificas que la persona que canceló su reserva, entonces
+             * se debe revisar:
+             * 
+             *      1- La persona en espera tiene 4 clasesEspecificas en las que está esperando ser anotado (osea que el día
+             *          en el que hizo la reserva inicial aún no pasó).
+             * 
+             *          1.1- Si la fecha de reserva inicial ya pasó, se podría preguntar al usuario si desea anotarse
+             *                  a la mensualidad a partir de esa fecha. ---> más lógica y crea un nuevo problema.
+             * 
+             *      2- Las 4 clasesEspecificas tienen espacio en la lista de anotados (puede pasar que: si la persona que cancela
+             *          ya realizó 2 clases de su reserva mensual, solo se liberarían las 2 clasesEspecificas
+             *          restantes y, por lo tanto, puede ocurrir que luego de esas 2 clasesEspecificas restantes
+             *          existan 2 claseEspecificas y con lista de anotados ya llena lo que descalificaría a las mensuales.
+             * 
+             *          2.1- Si se quiere evitar esto último, podriamos hacer que una vez que una persona realizó una clase
+             *               de su reserva mensual, ya no pueda cancelar pero esto no tiene mucho sentido.
+             * 
+             *          2.2- En este caso, ya no se debería poder anotar a una mensualidad, sino que pasar a anotar a 1 o varias
+             *               únicas.
+             * 
+             *      3- Tenia otra duda pero ya no me acuerdo de que era.
+             * 
+             */
+            if (tipo === "mensual") {
+
+            }
+            //sino, es única o seña, en cuyo caso, de la lista de espera se saca el primero de única o seña que haya
+            else{
+
+            }
+        }
+        else{
+            //si NO hay personas en la lista de espera simplemente actualizo eliminando el usuario que cancelo de la lista de anotados
+        }
+    
+        //Se actualiza la clase especifica con sacando al usuario de la lista de anotado
+        //y agregando al usuario de la lista de espera a la lista de anotado.
+        const actualizada = await claseEspecificaDao.updateOne({});
+
+        return res.json({
+            success: true,
+            message: "Reservación cancelada exitosamente."
+        })
+
+    }
+    catch(error) {
+        console.error(error);
+        return res.json({
+            success: false,
+            message: error
+        })
     }
 }
 

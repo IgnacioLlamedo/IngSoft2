@@ -20,6 +20,10 @@ function getMonday(d) {
   // Lunes a las 00:00
   date.setHours(0, 0, 0, 0);
 
+  /* console.log("DESDE GET MONDAY EN WEEK NAV")
+  console.log("El nuevo lunes actual es: ");
+  console.log(date); */
+
   return date;
 }
 

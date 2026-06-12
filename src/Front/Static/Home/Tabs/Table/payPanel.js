@@ -237,9 +237,10 @@ async function pagar(tipoClase, precio, clasesPago) {
     const fecha = document.getElementById("fechaClase").innerText;
     const sala = document.getElementById("salaClase").innerText;
     const claseLlena = document.getElementById("panelPago").dataset.llena === "true";
-    //console.log(clasesPago);
+    console.log("Este es el arreglo con las clases que se pagarán (desde payPanel): ")
+    console.log(clasesPago);
+    console.log(tipoClase);
 
-    //
     const res = await fetch('/api/pago/consultar-pago', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -268,7 +269,6 @@ async function pagar(tipoClase, precio, clasesPago) {
             return;
         } else {
             //fetch a guardar en lista de espera
-            console.log(clasesPago);
             const resEspera = await fetch('/api/clases/ingresarAEspera', {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },

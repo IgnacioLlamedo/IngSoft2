@@ -6,15 +6,15 @@ import { claseGeneralDao, claseEspecificaDao } from "../daos/index.js";
 export async function getAllClases(req, res) {
     try {
         const fechaSemana = new Date(req.body.fechaSemana);
-        console.log(fechaSemana);
+        /* console.log(fechaSemana); */
 
         const inicioSemana = new Date(fechaSemana);
         const finSemana = new Date(fechaSemana);
         finSemana.setDate(finSemana.getDate() + 6);
 
-        console.log("Esto es dentro de getallClases")
+        /* console.log("Esto es dentro de getallClases")
         console.log(inicioSemana)
-        console.log(finSemana)
+        console.log(finSemana) */
 
         const clasesData = await claseGeneralDao.readMany({});
         const claseEspecificaData = await claseEspecificaDao.readMany({
@@ -24,7 +24,7 @@ export async function getAllClases(req, res) {
                 $lte: finSemana
             }
         });
-        console.log(claseEspecificaData)
+        /* console.log(claseEspecificaData) */
         const activitiesData = await actividadDao.readMany({});
         const salasData = await salaDao.readMany({});
         const profesoresData = await profesorDao.readMany({});
@@ -85,15 +85,14 @@ export async function ingresarAEspera(req, res) {
         const clases = req.body.clases;
         const claseAnotado = await claseEspecificaDao.updateOne({_id: clases[0].idClaseEsp}, {$push: {anotados: req.session.userId}});
 
-        if (!claseAnotado) {
-           //Crear clase especifica y agregar anotado
-           const nuevaClaseEsp = await claseEspecificaDao.create({
-                idClaseGeneral: clases[0].idClaseGeneral,
-                fechaEspecifica: clases[0].fechaEspecifica,
-                anotados: [req.session.userId],
-                espera: []
-            });
+        //En teoría no debería pasar que no exista la clase.
+        if (!claseAnotado) { //Por lo que esto no tiene sentido.
+            return res.json({
+                success: false,
+                message: "Clase especifica no existente"
+            })
         }
+
         return res.json({
             success: true,
             message: "Ingresado a lista de espera correctamente"

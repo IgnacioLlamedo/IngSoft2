@@ -16,8 +16,9 @@ async function getMyReservations() {
 
     actividadesUsuario = resData.reservas.map(r => {
 
-        /* console.log(r);
-        console.log(r.tipo) */
+
+        console.log(r);
+        console.log(r.tipo)
 
         // =========================================
         // RESERVA ÚNICA
@@ -235,11 +236,33 @@ function renderActividades() {
     if (!act.vencida) {
     // Botones con listeners
 
+        console.log("Esta es la reseva actual: ");
+        console.log(act);
+
         const btnCancelar = document.createElement("button");
         btnCancelar.classList.add("box-button", "cancel-reservation");
         btnCancelar.textContent = "Cancelar Reserva";
-        btnCancelar.addEventListener("click", () => {
-        console.log(`Cancelaste la reserva de ${act.actividad} - ${act.tipo}`);
+        btnCancelar.addEventListener("click", async () => {
+
+            //Este será el fetch que cancelará la reserva
+            //Con el tipo se controla cual será el usuario que hay que sacar de la lista de espera.
+            const res = await fetch('/api/reservas/cancelar-reserva', {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    clase: act.claseEspecifica,
+                    tipo: act.tipo
+                })
+            })
+            const resData = await res.json();
+            if (resData.success){
+                console.log(`Cancelaste la reserva de ${act.actividad} - ${act.tipo}`);
+            }
+            else{
+                console.log(resData.message);
+            }
         });
         buttonsContainer.appendChild(btnCancelar);
 
