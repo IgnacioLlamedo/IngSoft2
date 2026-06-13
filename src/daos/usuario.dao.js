@@ -26,6 +26,14 @@ export class usuarioDao {
         }
         return updated;
     }
+    async updateOneWithQuery(query, datos){
+        const updated = await Usuario.findOneAndUpdate(query, datos, { returnDocument: 'after' }).lean();
+        if(!updated){
+            console.log(`ERROR? al ejecutar usuarioDao.updateOne(query, datos)`);
+            console.log(`query: ${JSON.stringify(query)} / datos: ${JSON.stringify(datos)}`);
+        }
+        return updated;
+    }    
     async deleteOne(query){
         const deleted = await Usuario.findOneAndDelete({ mail: query }).lean();
         if(!deleted){
