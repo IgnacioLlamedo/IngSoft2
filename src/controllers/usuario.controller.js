@@ -299,7 +299,6 @@ export async function loadProfileController(req, res) {
 	}
 }
 
-// TODO: permitir guardar la información de cualquier usuario
 export async function saveProfileController(req, res) {
 	try {
         // console.log('saveProfileController llamado con body:', req.body);
@@ -466,25 +465,24 @@ export async function deleteUserController(req, res) {
         const motivoEstado = req.body.motivoEstado;
         console.log("")
         
-        const updatedUser = await usuarioDao.readOne({
-            mail: userMail,
-            $or: [
-                { estado: { $exists: false } },
-                { estado: { $ne: Status.DELETED } }
-            ]
-        });
-        
-        // TODO: testear y reemplazar por esto
-        // const updatedUser = await usuarioDao.updateOne({
+        // const updatedUser = await usuarioDao.readOne({
         //     mail: userMail,
         //     $or: [
         //         { estado: { $exists: false } },
         //         { estado: { $ne: Status.DELETED } }
         //     ]
-        // }, {
-        //     estado: Status.DELETED,
-        //     motivoEstado: motivoEstado
         // });
+        const updatedUser = await usuarioDao.updateOneWithQuery({
+            mail: userMail,
+            $or: [
+                { estado: { $exists: false } },
+                { estado: { $ne: Status.DELETED } }
+            ]
+        }, {
+            estado: Status.DELETED,
+            motivoEstado: motivoEstado
+        });
+
         if (!updatedUser) {
             return res.status(404).json({ success: false, message: 'Usuario no encontrado' });
         }
