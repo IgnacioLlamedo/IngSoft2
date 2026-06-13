@@ -13,18 +13,30 @@ const deletionReasonInput = document.getElementById('deletionReasonInput');
 const confirmDelBtn = document.getElementById('confirmDelBtn');
 const cancelDelBtn = document.getElementById('cancelDelBtn');
 
+
+let userData;
 let currentUsers = [];
 const currentSort = { key: null, direction: 'asc' };
-let pendingDeleteId = null;
 let pendingDeleteMail = null;
 let pendingDeleteRole = null;
 
 window.addEventListener('DOMContentLoaded', () => {
+    getSessionData();
     bindSortButtons();
     bindFilterControls();
     bindDeleteDialogControls();
     loadUsers();
 });
+
+
+async function getSessionData() {
+    const response = await fetch("/session-data");
+    if (!response.ok) {
+            throw new Error('Error al cargar información del usuario.');
+        }
+    const sessionData = await response.json();
+    userData = sessionData.session;
+}
 
 function bindFilterControls() {
     if (filterSelect) {
@@ -79,10 +91,10 @@ document.addEventListener('click', (event) => {
     }
 
     if (deleteBtn) {
-        const userId = deleteBtn.dataset.id;
+        // const userId = deleteBtn.dataset.id;
         const userMail = deleteBtn.dataset.mail;
         const userRole = deleteBtn.dataset.rol;
-        openDeleteDialog(userId, userMail, userRole);
+        openDeleteDialog(userMail, userRole);
     }
 });
 
@@ -111,39 +123,74 @@ function renderUserTable(users) {
 
     userlistMsgDiv.textContent = '';
     userlistMsgDiv.className = 'message';
-    
+
     // TODO1: Acciones especiales en la fila del propio usuario
-    // 1) Utilizar la ruta "/account" para el botón "Ver/editar perfil"
-    // 2) No mostrar botón "Borrar"
+    // 1) Hecho: Ese botón pasará a llamarse "Ver Mi Perfil"
+    // 2) Hecho: Utilizar la ruta "/account" al acceder a su perfil
+    // 3) Hecho: Deshabilitarle el botón "Borrar"
 
     // TODO2: Realizar borrado lógico
     // 1) Hecho: Creado un nuevo campo en la bd para su estado (borrado, etc) + motivo
-    // 2) No mostrar botón "Borrar" si ya están borrados
-    // 3) Agregar columna "estado" a la tabla
-    // 4) Agregar como opción al realizar búsqueda de filtro
-    // 5) Agregar algún estilo que los distinga en la tabla
-    // 6) Asegurarse que se vea correctamente el motivo
+    // 2) Hecho: Agregar algún estilo que los distinga en la tabla
+    // 3) Hecho: Deshabilitar botón "Borrar" si ya están borrados
+    // 4) Hecho: Agregar columna "estado" a la tabla
+    // 5) Debe poder verse el motivoEstado (posiblemente en la vista de perfil, al visitarlo como admin)
+    // 6) Agregar comportamiento apropiado a la acción de ver los perfiles borrados (ya que no pueden editarse)
 
-    // TODO3: Impedir borrado de clientes anotados a alguna clase
-
+    // TODO3: Filtrado de usuarios
+    // 5) Agregar como opción de filtrado según "estado" y "rol", a través de checkboxes
+    // 6) Indicar el nro. de entradas que abarcan cada checkbox (con un paréntesis al final)
+    // 7) Indicar el nro. de entradas totales (al principio o al final de la tabla)
+    // Esto es para cumplir con lo solicitado en la HU de mostrar el nro. de usuarios
+    // También se podría incluir un botón "Restaurar", pero no es algo solicitado
+    //
+    // TODO4: Impedir borrado de clientes anotados a alguna clase, lista de espera, con seña realizada, etc    
+    
     const sortedUsers = currentSort.key ? sortUsers(users, currentSort.key, currentSort.direction) : users;
     updateSortIndicators();
 
+    const Status = JSON.parse(table.dataset.statusEnum);
+    
     tableBody.innerHTML = sortedUsers
-        .map((user) => {
+		.map((user) => {
+			const userDataCellsHtml = `
+                <td>${escapeHtml(user.nombre)}</td>
+                <td>${escapeHtml(user.mail)}</td>
+                <td>${escapeHtml(user.dni)}</td>
+                <td>${escapeHtml(user.rol)}</td>
+                <td>${escapeHtml(user.estado)}</td>
+            `;
+
+            let trClass = '';
+            switch (user.estado) {
+                case Status.INACTIVE: trClass = 'class="row-inactive"'; break;
+                case Status.UNVERIFIED: trClass = 'class="row-unverified"'; break;
+                case Status.DELETED: trClass = 'class="row-deleted"'; break;
+            }
+
+            let viewBtnText;
+            if (user._id === userData.id) viewBtnText = "Ver Mi Perfil";
+            else if (user.estado === Status.DELETED) viewBtnText = "Ver Perfil";
+            else viewBtnText = "Ver/Editar Perfil";
+
+            const disabledAttr = (user.estado === Status.DELETED) ? 'disabled' : '';
+            const deleteBtnText = "Dar de Baja";
+
+            const userHtmlActionsCell = `
+                <td class="actions-cell">
+                    <button class="btn-action btn-view" data-rol="${escapeHtml(user.rol)}" data-mail="${escapeHtml(user.mail)}">${viewBtnText}</button>
+                    <button class="btn-action btn-delete" data-rol="${escapeHtml(user.rol)}" data-mail="${escapeHtml(user.mail)}" ${disabledAttr}>${deleteBtnText}</button>
+                </td>
+            `;
+
             return `
-                <tr>
-                    <td>${escapeHtml(user.nombre)}</td>
-                    <td>${escapeHtml(user.mail)}</td>
-                    <td>${escapeHtml(user.dni)}</td>
-                    <td>${escapeHtml(user.rol)}</td>
-                    <td class="actions-cell">
-                        <button class="btn-action btn-view" data-id="${escapeHtml(user._id)}" data-rol="${escapeHtml(user.rol)}" data-mail="${escapeHtml(user.mail)}">Ver/Editar Perfil</button>
-                        <button class="btn-action btn-delete" data-id="${escapeHtml(user._id)}" data-rol="${escapeHtml(user.rol)}" data-mail="${escapeHtml(user.mail)}">Dar de Baja</button>
-                    </td>
-                </tr>`;
-        })
-        .join('');
+                <tr ${trClass}>
+                    ${userDataCellsHtml}
+                    ${userHtmlActionsCell}
+                </tr>
+            `;            
+		})
+		.join('');
 }
 
 function bindSortButtons() {
@@ -198,32 +245,31 @@ function bindDeleteDialogControls() {
 
     confirmDelBtn.addEventListener('click', async () => {
         try {
-            await deleteUser(pendingDeleteId, pendingDeleteMail, pendingDeleteRole);
+            await deleteUser(pendingDeleteMail, pendingDeleteRole);
         } catch (err) {
             showMessage('Error al eliminar usuario: ' + err.message, 'error', 'deleteMessage');
             console.error('Error al eliminar usuario:', err);
         } finally {
             deleteDialogForm.style.display = 'none';
-            if (deleteDialog) setTimeout(() => {                
+            if (deleteDialog) setTimeout(() => {
                 deleteMsgDiv.textContent = '';
                 deleteMsgDiv.className = 'message';
                 deleteDialogForm.style.display = 'grid';
                 deleteDialog.close();
             }, 3000);
-            pendingDeleteId = pendingDeleteMail = pendingDeleteRole = null;
+            pendingDeleteMail = pendingDeleteRole = null;
         }
     });
 
     cancelDelBtn.addEventListener('click', () => {
         if (!deleteDialog) return;
         deleteDialog.close();
-        pendingDeleteId = pendingDeleteMail = pendingDeleteRole = null;
+        pendingDeleteMail = pendingDeleteRole = null;
     });
 }
 
-function openDeleteDialog(id, mail, role) {
-    if (!id || !mail || !role || !deleteDialog || !deleteUserMail || !deleteUserRole) return;
-    pendingDeleteId = id;
+function openDeleteDialog(mail, role) {
+    if (!mail || !role || !deleteDialog || !deleteUserMail || !deleteUserRole) return;
     pendingDeleteMail = mail;
     pendingDeleteRole = role;
     deleteUserMail.textContent = mail;
@@ -235,7 +281,7 @@ function openDeleteDialog(id, mail, role) {
     deleteDialog.showModal();
 }
 
-async function deleteUser(id, mail, role) {
+async function deleteUser(mail, role) {
     if (!mail) return;
 
     const reason = deletionReasonInput ? deletionReasonInput.value.trim() : '';
@@ -248,7 +294,7 @@ async function deleteUser(id, mail, role) {
         credentials: 'include',
         body: JSON.stringify({
             mail: mail,
-            motivoBorrado: reason || 'Sin motivo especificado'
+            motivoEstado: reason || 'Sin motivo especificado'
         })
     });
 
@@ -274,6 +320,7 @@ function escapeHtml(value) {
 }
 
 async function openUserProfile(userMail, userRole) {
-	if (!userMail || !userRole) return;
-    window.location.href = `/profile/${encodeURIComponent(userRole)}/${encodeURIComponent(userMail)}`;
+    if (!userMail || !userRole) return;
+    if (userMail === userData.mail) window.location.href = '/account';
+    else window.location.href = `/profile/${encodeURIComponent(userRole)}/${encodeURIComponent(userMail)}`;
 }

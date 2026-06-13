@@ -49,6 +49,7 @@
 }
 
 .actions-cell {
+    display: flex;
     gap: 10px;
     justify-content: flex-end;
     padding: 10px 5px;
@@ -58,11 +59,27 @@
 }
 
 .btn-action {
+    flex: 1;
     padding: 5px 6px 6px 6px;
     border-radius: 4px;
     font-weight: 600;
     cursor: pointer;
     text-align: center;
+    transition: transform 120ms ease, filter 120ms ease, box-shadow 120ms ease;
+}
+
+.btn-action:hover {    
+    filter: brightness(0.94);
+}
+
+.btn-action:active {
+    transform: translateY(0) scale(0.98);
+}
+
+.btn-action:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
 }
 
 .btn-view {
@@ -76,6 +93,22 @@
     color: #ffd6d6;
     border: 1px solid #b71c1c;
 }
+
+.row-inactive {
+    /* border: 2px solid #d01f25; */
+    background-color: rgba(208, 176, 31, 0.2);
+}
+
+.row-unverified {
+    /* border: 2px solid #d01f25; */
+    background-color: rgba(208, 96, 31, 0.2);
+}
+
+.row-deleted {
+    /* border: 2px solid #d01f25; */
+    background-color: rgba(208, 31, 37, 0.2);
+}
+
 
 .filter-panel {
     width: 100%;
