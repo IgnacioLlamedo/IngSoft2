@@ -1,19 +1,38 @@
+const profileContainer = document.getElementById('profileContainer');
 const profileForm = document.getElementById('profileForm');
 const profileEditBtn = document.getElementById('profileEditBtn');
 const profileSaveBtn = document.getElementById('profileSaveBtn');
 const profileCancelBtn = document.getElementById('profileCancelBtn');
 const profileMessageDiv = document.getElementById('profileMessage');
 
+const userStatusCard = document.getElementById('userStatusCard');
+const userStatus = document.getElementById('userStatus');
+const reasonContainer = document.getElementById('reasonContainer');
+const userStatusReason = document.getElementById('userStatusReason');
+
 let originalValues = {};
+let Status;
 let isEditProfileMode = false;
+let userSessionData;
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
     const profileForm = document.getElementById('profileForm');
     const userMail = profileForm.dataset.userMail;
+    Status = JSON.parse(profileContainer.dataset.statusEnum);
+    getSessionData();
     loadProfile(userMail);
     setupProfileEventListeners();
 });
+
+async function getSessionData() {
+    const response = await fetch("/session-data");
+    if (!response.ok) {
+            throw new Error('Error al cargar información del usuario.');
+        }
+    const sessionData = await response.json();
+    userSessionData = sessionData.session;
+}
 
 // Load user profile data
 async function loadProfile(userMail) {
@@ -30,7 +49,8 @@ async function loadProfile(userMail) {
             throw new Error('Error al cargar el perfil');
         }
         const userData = await response.json();
-           
+        
+        populateStatusCard(userData);
         populateProfileForm(userData);
         storeOriginalValues();
 
@@ -40,7 +60,21 @@ async function loadProfile(userMail) {
     }
 }
 
-// Populate profile form with user data
+function populateStatusCard(userData) {
+    if (userData.mail === userSessionData.mail || !userData.estado || !userData.motivoEstado) return;
+    userStatusCard.style.display = 'block';
+    userStatus.textContent = userData.estado;
+    userStatusReason.textContent = `"${userData.motivoEstado}"`;
+
+    if (userData.estado === Status.REGISTERED) userStatus.className = 'text-registered';
+    else {
+        reasonContainer.style.display = 'inline';
+        if (userData.estado === Status.INACTIVE) userStatus.className = 'text-inactive';
+        else if (userData.estado === Status.UNVERIFIED) userStatus.className = 'text-unverified';
+        else if (userData.estado === Status.DELETED) userStatus.className = 'text-deleted';
+    }
+}
+
 function populateProfileForm(userData) {
 
     document.getElementById('nombre').value = userData.nombre || '';
@@ -59,6 +93,9 @@ function storeOriginalValues() {
 
 // Setup event listeners
 function setupProfileEventListeners() {
+    if (userStatus.textContent === Status.DELETED) return;
+
+    profileEditBtn.style.display = 'block';
     profileEditBtn.addEventListener('click', toggleEditProfileMode);
     profileSaveBtn.addEventListener('click', saveProfile);
     profileCancelBtn.addEventListener('click', cancelProfileEdit);
@@ -191,6 +228,7 @@ function validateProfileForm() {
     
     return true;
 }
+
 
 // Show message
 function showProfileMessage(message, type, id) {
