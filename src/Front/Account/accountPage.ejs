@@ -15,7 +15,7 @@
     </header>
     
     <h1 class="profile-title">Información de cuenta</h1>
-    <main class="profile-container">
+    <main id="profileContainer" class="profile-container" data-status-enum="<%= JSON.stringify(Status) %>">
         <%# Mostramos la tarjeta de ver/editar perfil correspondiente al rol %>
         <%- include('../Account/profileSelector.ejs') %>
 

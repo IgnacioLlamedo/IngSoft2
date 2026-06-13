@@ -102,14 +102,14 @@ webRouter.get("/access/auth-pass", (req,res) => {
 webRouter.get("/account", (req,res) => {
     if (!req.session.user) return res.redirect("/access/login");
     // Debería ser con el ID pero hay un bug con los IDs de los usuarios de prueba
-    res.render(path.join(__dirname, "Front/Account/accountPage.ejs"), { userRole: req.session.user.rol, userMail: req.session.user.mail, Role });
+    res.render(path.join(__dirname, "Front/Account/accountPage.ejs"), { userRole: req.session.user.rol, userMail: req.session.user.mail, Role, Status });
 });
 
 webRouter.get("/profile/:userRole/:userMail", (req,res) => {
     if (!req.session.user) return res.redirect("/access/login");
     if (req.session.user.rol !== Role.ADMIN) return res.redirect(homeRoute);
     // Debería ser con el ID pero hay un bug con los IDs de los usuarios de prueba
-    res.render(path.join(__dirname, "Front/Account/userProfilePage.ejs"), { userRole: req.params.userRole, userMail: req.params.userMail, Role });
+    res.render(path.join(__dirname, "Front/Account/userProfilePage.ejs"), { userRole: req.params.userRole, userMail: req.params.userMail, Role, Status });
 });
 
 
