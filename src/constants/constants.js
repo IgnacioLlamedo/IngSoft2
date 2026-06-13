@@ -7,8 +7,8 @@ export const Role = {
 };
 
 export const Status = {
-    INACTIVE: "no_disponible",
-    UNVERIFIED: "no_verificado",
+    INACTIVE: "inactivo",
+    UNVERIFIED: "sin verificar",
     REGISTERED: "registrado",
     DELETED: "borrado",
 };

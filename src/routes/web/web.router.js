@@ -1,7 +1,7 @@
 ﻿import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
-import { Role } from "../../constants/constants.js";
+import { Role, Status } from "../../constants/constants.js";
 
 export const webRouter = express.Router();
 
@@ -171,7 +171,7 @@ webRouter.get("/userlist", (req,res) => {
     // ...para evitar eso mismo, lo más seguro sería mostrar un error 404 en vez de redirigir al login
     if (!req.session.user) return res.redirect("/access/login");    
     if (req.session.user.rol !== Role.ADMIN) return res.redirect(homeRoute);
-    res.render(path.join(__dirname, "Front/Userlist/userlist.ejs"), { userRole: req.session.user.rol, Role });
+    res.render(path.join(__dirname, "Front/Userlist/userlist.ejs"), { userRole: req.session.user.rol, Role, Status });
 });
 
 

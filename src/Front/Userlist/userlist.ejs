@@ -36,7 +36,7 @@
             </label>
             <button type="button" id="clearFilterButton">Limpiar filtro</button>
         </section>
-        <table class="user-table" role="table" id="userlistTable">
+        <table class="user-table" role="table" id="userlistTable" data-status-enum="<%= JSON.stringify(Status) %>">
             <thead>
                 <tr>
                     <th>
@@ -57,6 +57,11 @@
                     <th>
                         <button type="button" class="btn-sort" data-sort-key="rol">
                             Rol <span class="sort-indicator"></span>
+                        </button>
+                    </th>
+                    <th>
+                        <button type="button" class="btn-sort" data-sort-key="estado">
+                            Estado <span class="sort-indicator"></span>
                         </button>
                     </th>
                     <th style="text-align: center">Acciones</th>
