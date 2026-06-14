@@ -1,4 +1,4 @@
-import { Usuario } from "../models/usuario.mongoose.js";
+import { Usuario, Empleado } from "../models/usuario.mongoose.js";
 
 export class usuarioDao {
     async create(datos){
@@ -10,7 +10,7 @@ export class usuarioDao {
         const usuario = await Usuario.findOne(query).lean();
         if(!usuario){
             //provisional, desarrollar luego
-            console.log(`ERROR? al ejecutar usuarioDao.readOne(query)`);
+            console.log(`Ejecutando usuarioDao.readOne(query)`);
             console.log(`query: ${JSON.stringify(query)}`);
         }
         return usuario;
@@ -21,7 +21,7 @@ export class usuarioDao {
     async updateOne(query, datos){
         const updated = await Usuario.findOneAndUpdate({ mail: query }, datos, { returnDocument: 'after' }).lean();
         if(!updated){
-            console.log(`ERROR? al ejecutar usuarioDao.updateOne(query, datos)`);
+            console.log(`Ejecutando usuarioDao.updateOne(query, datos)`);
             console.log(`query: ${JSON.stringify(query)} / datos: ${JSON.stringify(datos)}`);
         }
         return updated;
@@ -29,7 +29,7 @@ export class usuarioDao {
     async updateOneWithQuery(query, datos){
         const updated = await Usuario.findOneAndUpdate(query, datos, { returnDocument: 'after' }).lean();
         if(!updated){
-            console.log(`ERROR? al ejecutar usuarioDao.updateOne(query, datos)`);
+            console.log(`Ejecutando usuarioDao.updateOne(query, datos)`);
             console.log(`query: ${JSON.stringify(query)} / datos: ${JSON.stringify(datos)}`);
         }
         return updated;
@@ -38,7 +38,7 @@ export class usuarioDao {
         const deleted = await Usuario.findOneAndDelete({ mail: query }).lean();
         if(!deleted){
             //provisional, desarrollar luego
-            console.log(`ERROR? al ejecutar usuarioDao.deleteOne(query)`);
+            console.log(`Ejecutando usuarioDao.deleteOne(query)`);
             console.log(`query: ${JSON.stringify(query)}`);
         }
         return deleted;
@@ -47,10 +47,17 @@ export class usuarioDao {
         const deleted = await Usuario.deleteMany(query).lean();
         if(!deleted){
             //provisional, desarrollar luego
-            console.log(`ERROR? al ejecutar usuarioDao.deleteMany(query)`);
+            console.log(`Ejecutando usuarioDao.deleteMany(query)`);
             console.log(`query: ${JSON.stringify(query)}`);
         }
         return deleted;
     }
 }
 
+export class empleadoDao {
+    async create(datos) {
+        console.log(`Ejecutando empleadoDao.create(datos).`);
+        console.log(`datos: ${JSON.stringify(datos)}`);
+        return await Empleado.create(datos);
+    }
+}

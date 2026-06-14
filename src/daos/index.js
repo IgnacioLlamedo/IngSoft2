@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import config from "../config.js";
 import { usuarioDao as usuario } from "./usuario.dao.js";
+import { empleadoDao as empleado } from "./usuario.dao.js";
 import { actividadDao as actividad } from "./actividad.dao.js";
 import { claseGeneralDao as claseGeneral } from "./claseGeneral.dao.js";
 import { salaDao as sala } from "./sala.dao.js";
@@ -25,6 +26,7 @@ catch (error)
 
 
 export const usuarioDao = new usuario()
+export const empleadoDao = new empleado()
 export const actividadDao = new actividad()
 export const claseGeneralDao = new claseGeneral()
 export const claseEspecificaDao = new claseEspecifica()
