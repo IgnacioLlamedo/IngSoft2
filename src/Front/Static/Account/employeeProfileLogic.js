@@ -11,9 +11,10 @@ const reasonContainer = document.getElementById('reasonContainer');
 const userStatusReason = document.getElementById('userStatusReason');
 
 let originalValues = {};
-let isEditProfileMode = false;
 let Status;
+let isEditProfileMode = false;
 let userSessionData;
+let currentStatus;
 
 const edadMin = 14;
 const fechaMax = new Date();
@@ -66,9 +67,12 @@ async function loadProfile(userMail) {
 }
 
 function populateStatusCard(userData) {
-    if (userData.mail === userSessionData.mail || !userData.estado || !userData.motivoEstado) return;
+    if (!userData.motivoEstado) userData.motivoEstado = 'Sin motivo especificado';
+    if (!userData.estado) userData.estado = Status.REGISTERED;
+    if (userData.mail === userSessionData.mail || !userData.estado) return;
+    
     userStatusCard.style.display = 'block';
-    userStatus.textContent = userData.estado;
+    userStatus.textContent = currentStatus = userData.estado;
     userStatusReason.textContent = `"${userData.motivoEstado}"`;
 
     if (userData.estado === Status.REGISTERED) userStatus.className = 'text-registered';
@@ -81,7 +85,6 @@ function populateStatusCard(userData) {
 }
 
 function populateProfileForm(userData) {
-
     document.getElementById('nombre').value = userData.nombre || '';
     document.getElementById('email').value = userData.mail || '';
     document.getElementById('dni').value = userData.dni || '';
@@ -91,6 +94,10 @@ function populateProfileForm(userData) {
         const formattedDate = date.toISOString().split('T')[0];
         document.getElementById('nacimiento').value = formattedDate;
     }
+
+    if (userData.estado === Status.DELETED)
+        profileEditBtn.style.display = 'none';
+    else profileEditBtn.style.display = 'block';
 }
 
 // Store original values for cancellation
@@ -105,9 +112,8 @@ function storeOriginalValues() {
 
 // Setup event listeners
 function setupProfileEventListeners() {
-    if (userStatus.textContent === Status.DELETED) return;
+    if (currentStatus === Status.DELETED) return;
 
-    profileEditBtn.style.display = 'block';
     profileEditBtn.addEventListener('click', toggleEditProfileMode);
     profileSaveBtn.addEventListener('click', saveProfile);
     profileCancelBtn.addEventListener('click', cancelProfileEdit);

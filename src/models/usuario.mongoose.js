@@ -19,7 +19,7 @@ const usuarioSchema = new Schema({
     // rol: { type: String, enum: ["cliente", "administrador", "empleado"], default: "cliente" },
     rol: { type: String, enum: [ Role.CLIENT, Role.ADMIN, Role.EMPLOYEE ], default: Role.CLIENT },
     estado: { type: String, enum: [Status.INACTIVE, Status.UNVERIFIED, Status.REGISTERED, Status.DELETED], default: Status.UNVERIFIED },
-    motivoEstado: { type: String, default: '' },
+    motivoEstado: { type: String, default: 'Sin motivo especificado' },
     codigo: { type: String },
     limiteCodigo: { type: Date },
 }, {
@@ -47,7 +47,7 @@ const empleadoSchema = new Schema({
     nacimiento: { type: Date, required: true },
     rol: { type: String, enum: [ Role.CLIENT, Role.ADMIN, Role.EMPLOYEE ], default: Role.CLIENT },
     estado: { type: String, enum: [Status.INACTIVE, Status.UNVERIFIED, Status.REGISTERED, Status.DELETED], default: Status.UNVERIFIED },
-    motivoEstado: { type: String, default: '' },
+    motivoEstado: { type: String, default: 'Sin motivo especificado' },
 }, {
     strict: false,
     versionKey: false

@@ -498,6 +498,7 @@ export async function employeeSignUpController(req, res) {
 	try {
         const userData = req.body.userData;
         userData.contraseña = hash("1234");
+        userData.motivoEstado = 'Falta completar registro';
         
         // TODO1: (creo que hecho) ¿Crear un nuevo schema junto a su dao para registrar empleados?
         // El problema es que solicitan un montón de campos innecesarios

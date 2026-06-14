@@ -308,10 +308,8 @@ async function deleteUser(mail, role) {
         throw new Error(errorData.message || 'Error desconocido.');
     }
 
-    // Actualizar la tabla sin recargar página; falta probar
     showMessage('Usuario dado de baja exitosamente.', 'success', 'deleteMessage');
-    currentUsers = currentUsers.filter((user) => user.mail !== mail);
-    renderUserTable(getFilteredUsers());
+    await loadUsers();
 }
 
 function escapeHtml(value) {
