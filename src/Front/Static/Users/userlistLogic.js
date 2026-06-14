@@ -1,4 +1,5 @@
-﻿const tableBody = document.getElementById('userlistTableBody');
+﻿const userlistBtn = document.getElementById('userlistBtn');
+const tableBody = document.getElementById('userlistTableBody');
 const userlistMsgDiv = document.getElementById('userlistMessage');
 const deleteMsgDiv = document.getElementById('deleteMessage');
 const deleteDialogForm = document.getElementById('deleteDialogForm');
@@ -21,6 +22,10 @@ let pendingDeleteMail = null;
 let pendingDeleteRole = null;
 
 window.addEventListener('DOMContentLoaded', () => {
+    // userlistBtn.style.backgroundColor = '#006fd6';
+    userlistBtn.style.backgroundColor = 'white';
+    userlistBtn.style.color = '#D01F25';
+    userlistBtn.style.fontWeight = '600';
     getSessionData();
     bindSortButtons();
     bindFilterControls();
@@ -134,8 +139,8 @@ function renderUserTable(users) {
     // 2) Hecho: Agregar algún estilo que los distinga en la tabla
     // 3) Hecho: Deshabilitar botón "Borrar" si ya están borrados
     // 4) Hecho: Agregar columna "estado" a la tabla
-    // 5) Debe poder verse el motivoEstado (posiblemente en la vista de perfil, al visitarlo como admin)
-    // 6) Agregar comportamiento apropiado a la acción de ver los perfiles borrados (ya que no pueden editarse)
+    // 5) Hecho Debe poder verse el motivoEstado (visible en la vista de perfil, al visitarlo como admin)
+    // 6) Hecho: Inhabilitar opción de editar perfiles borrados
 
     // TODO3: Filtrado de usuarios
     // 5) Agregar como opción de filtrado según "estado" y "rol", a través de checkboxes
@@ -143,7 +148,7 @@ function renderUserTable(users) {
     // 7) Indicar el nro. de entradas totales (al principio o al final de la tabla)
     // Esto es para cumplir con lo solicitado en la HU de mostrar el nro. de usuarios
     // También se podría incluir un botón "Restaurar", pero no es algo solicitado
-    //
+
     // TODO4: Impedir borrado de clientes anotados a alguna clase, lista de espera, con seña realizada, etc    
     
     const sortedUsers = currentSort.key ? sortUsers(users, currentSort.key, currentSort.direction) : users;

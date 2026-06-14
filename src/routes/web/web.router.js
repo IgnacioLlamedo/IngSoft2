@@ -165,13 +165,21 @@ webRouter.get("/management/instructors", (req,res) => {
 
 
 // Userlist
-webRouter.get("/userlist", (req,res) => {
+webRouter.get("/users/userlist", (req,res) => {
     // capaz por seguridad no conviene exponer que existe la ruta
     // aunque si ahora se muestran las páginas de error...
     // ...para evitar eso mismo, lo más seguro sería mostrar un error 404 en vez de redirigir al login
     if (!req.session.user) return res.redirect("/access/login");    
     if (req.session.user.rol !== Role.ADMIN) return res.redirect(homeRoute);
-    res.render(path.join(__dirname, "Front/Userlist/userlist.ejs"), { userRole: req.session.user.rol, Role, Status });
+    res.render(path.join(__dirname, "Front/Users/userlist.ejs"), { userRole: req.session.user.rol, Role, Status });
+});
+
+
+// Employee Sign Up
+webRouter.get("/users/employee-signup", (req,res) => {
+    if (!req.session.user) return res.redirect("/access/login");    
+    if (req.session.user.rol !== Role.ADMIN) return res.redirect(homeRoute);
+    res.render(path.join(__dirname, "Front/Users/employeeSignUp.ejs"), { userRole: req.session.user.rol, Role, Status });
 });
 
 
