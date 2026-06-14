@@ -82,6 +82,12 @@ export async function crearClase(req, res){
 
 export async function ingresarAEspera(req, res) {
     try {
+        /**
+         * Si en req.body, decido traerme las clasesEspecificas encontradas
+         * en consultar-clase, acá puedo hacer un for y decidir si hacer update
+         * en cada una o no.
+         */
+
         const clases = req.body.clases;
         const claseAnotado = await claseEspecificaDao.updateOne({_id: clases[0].idClaseEsp}, {$push: {anotados: req.session.userId}});
 

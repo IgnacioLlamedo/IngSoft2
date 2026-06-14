@@ -251,12 +251,30 @@ async function pagar(tipoClase, precio, clasesPago) {
 
     const resData = await res.json();
 
-    /* Ahora, resData recibe un arreglo de 4 elementos. 
-        O claseEspecifica
-        O NULL si la clase especifica no existe.
-    */
-
+    console.log("Desde consultar pago en pagar payPanel: ");
     console.log(resData);
+    /* Ahora, resData recibe un arreglo de 4 objetos donde cada objeto tiene 2 elementos:
+        1. .clase: (objeto) claseEspecifica o NULL (si la clase especifica no existe)
+        2. .llena: (boolean) si la lista de anotados está llena o no.
+
+        ¿La quiero usar para algo?
+
+        La idea es usarlo para el tema de anotar en lista de espera mensual...
+    */  
+    /**
+     * Este es un ejemplo de lo que recibe resData
+     * Evidentemente, si se consulta por una clase única, datos solo recibe un elemento.
+     * 
+        Object
+            datos: Array(4)
+                0: {clase: {…}, llena: false}
+                1: {clase: null, llena: false}
+                2: {clase: null, llena: false}
+                3: {clase: null, llena: false}
+            length: 4
+            [[Prototype]]: Array(0)
+            success: true
+     */
 
     if (!resData.success) {
         document.getElementById("mensajePago").innerText = resData.message;
@@ -275,7 +293,11 @@ async function pagar(tipoClase, precio, clasesPago) {
      * ¿o debería poner en espera en cada una de las 4 clases hasta que se pueda anotar a la que está llena?
      * ¿?
      */
-    if (claseLlena) { 
+
+    /**
+     * Acá, habria que recorrer resData.datos y si encuentra una clase llena ahí decidir que hacer
+     */
+    if (claseLlena) { //Este claseLlena lo saca del dataset de la clase seleccionada (cambiar al de resData(?))
         
         const confirmar = confirm(
             "La clase está llena. ¿Desea ingresar en lista de espera?"
@@ -290,7 +312,9 @@ async function pagar(tipoClase, precio, clasesPago) {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ 
-                    clases: clasesPago
+                    clases: clasesPago //resData.datos (contiene clasesEspecificas y si está llena o no)
+                    //Acá puedo mandar las clases que recibo al consultar-pago (resData) así
+                    //en el ingresarAEspera decido que hacer con todas las clases en las que esté llena la lista de anotados.
                 })
             });
 
