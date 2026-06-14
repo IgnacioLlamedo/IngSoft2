@@ -86,7 +86,8 @@ export async function consultar(req, res) {
     try {
 
         const { clases } = req.body;
-        let claseEspecifica;
+        let claseEspecifica = [];
+        let int = 0;
 
         for (const claseData of clases) {
 
@@ -94,7 +95,8 @@ export async function consultar(req, res) {
             console.log(claseData.fechaEspecifica); */
 
             //Consigo la clase especifica
-            claseEspecifica = await claseEspecificaDao.readOne({idClaseGeneral: claseData.idClaseGeneral, fechaEspecifica: claseData.fechaEspecifica}); //Si existe la primera del día 1/7, las del 8/7, 15/7 y 22/7 si o si
+            claseEspecifica[int] = await claseEspecificaDao.readOne({idClaseGeneral: claseData.idClaseGeneral, fechaEspecifica: claseData.fechaEspecifica});
+            //Si existe la primera del día 1/7, las del 8/7, 15/7 y 22/7 si o si
 
             /* console.log("La idClase General " + claseData.idClaseGeneral + " en la fecha " + claseData.fechaEspecifica + ". Encontró la siguiente clase especifica: ");
             console.log(claseEspecifica); */
@@ -104,13 +106,15 @@ export async function consultar(req, res) {
              * Si no encuentra clase especifica, significa que la clase en la fecha claseData.fechaEspecifica (actual del for)
              * No fue creada y por lo tanto no tiene anotados, Por lo tanto, al pagar, se debe crear la claseEspecifica.
              */
-            if (!claseEspecifica) 
+            if (!claseEspecifica[int]){
+                int++;
                 continue; //Saltea el resto del código y vuelve a entrar al for.
+            }
 
-            const yaAnotado = claseEspecifica.anotados.some(
+            const yaAnotado = claseEspecifica[int].anotados.some(
                 u => u.idUsuario === req.session.user.id
             );
-            const yaEnEspera = claseEspecifica.espera.some(
+            const yaEnEspera = claseEspecifica[int].espera.some(
                 u => u.idUsuario === req.session.user.id
             );
 
@@ -118,14 +122,15 @@ export async function consultar(req, res) {
             if (yaAnotado || yaEnEspera) {
                 return res.json({
                     success: false,
-                    message: ("Ya se encuentra anotado en la actividad")
+                    message: ("Ya se encuentra anotado en la actividad del día " + claseData.fechaEspecifica)
                 });
             }
+            int++;
         }
 
         return res.json({
             success: true,
-            claseEspecifica
+            claseEspecifica //Esto devuelve un arreglo con 2 posibilidades: Clases especificas y/o NULL -- en caso de que no exista la claseEspecifica.
         });
 
     }
@@ -139,21 +144,6 @@ export async function consultar(req, res) {
         });
     }
 }
-
-/* export async function obtenerClaseGeneral(req, res){
-    try{
-        const claseGeneral = await claseGeneralDao.readOne
-
-
-    }
-    catch(error) {
-        console.log(error);
-        return res.json({
-            success: false,
-            message: "Error al conseguir clase General (obtenerClaseGeneral)"
-        })
-    }
-} */
 
 export async function confirmarPagoController(req, res){
     try {

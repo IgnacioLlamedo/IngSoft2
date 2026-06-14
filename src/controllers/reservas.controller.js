@@ -4,116 +4,6 @@ import { actividadDao } from "../daos/index.js";
 import { salaDao } from "../daos/index.js";
 import { profesorDao } from "../daos/index.js";
 
-
-/* export async function getMyReservations(req, res) {
-    try {
-
-        if(!req.session.user) {
-            return res.json({
-                success: false,
-                message: "usuario no autenticado."
-            });
-        }
-
-        const idUsuario = req.session.user.id;
-        console.log("Id de usuario desde reservas.controller: ");
-        console.log(idUsuario);
-
-        //Obtengo las reservas de clases únicas y mensuales del usuario
-        const reservasUnicas = await reservaDao.readManyUnica({
-            idUsuario,
-            cancelada: false
-        });
-
-        const reservasMensuales = await reservaDao.readManyMensual({
-            idUsuario,
-            cancelada: false
-        });
-
-        //Desarmar los arrays obtenidos (se unen las unicas y mensuales)
-        /**
-         * Queda algo como:
-         * [
-            reservaUnica1,
-            reservaUnica2,
-            reservaMensual1
-            ]
-        
-        const reservas = [
-            ...reservasUnicas,
-            ...reservasMensuales
-        ];
-        console.log("Las reservas unicas y mensuales del usuario son: ")
-        console.log(reservas);
-
-        /* Esto estaria bueno modificarlo porque se traen todas las clases,
-        actividades, salas y profesores.
-        Y a partir de ahí se filtran segun las reservas que tiene el usuario.
-        Según consulté con IA, se puede hacer con populate (ni me gaste xd)
-        const clases = await claseGeneralDao.readMany({});
-        const actividades = await actividadDao.readMany({});
-        const salas = await salaDao.readMany({});
-        const profesores = await profesorDao.readMany({});
-
-        const reservasTotal = reservas.map(reserva => {
-
-            //SQL joins intensifies :v
-            const clase = clases.find(
-                c => c._id === reserva.idClase
-            );
-            console.log("Una clase dentro de reserva es: ");
-            console.log(clase); //si retorna undefined es porque el idClase
-            //en reserva estaba hardcodeado y no existe una clase con ese id.
-
-            /* Esto realmente es por temas de testeo,
-            ya que en las reservas, las id de clase están hardcodeadas
-            y al buscar la clase, devuelve undefined.
-            Al eliminar el hard, se puede quitar
-            if (!clase) {
-                return null;
-            }
-
-            const actividad = actividades.find(
-                a => a._id === clase.idActividad
-            );
-
-            const sala = salas.find(
-                s => s._id === clase.idSala
-            );
-
-            const profesor = profesores.find(
-                p => p._id === clase.idProfesor
-            );
-
-            console.log("Información de las reservas del usuario: ");
-            console.log(clase, actividad, sala, profesor);
-
-            return {
-                reserva,
-                clase,
-                actividad,
-                sala,
-                profesor
-            };
-            
-        }).filter(Boolean); //Filtra los null
-
-        res.json({
-            success: true,
-            reservas: reservasTotal
-        });
-
-    }
-    catch(error) {
-        console.log(error);
-
-        res.json({
-            success: false,
-            message: error.message
-        });
-    }
-} */
-
 export async function getMyReservations(req, res) {
     try {
 
@@ -152,8 +42,8 @@ export async function getMyReservations(req, res) {
             ...reservasUnicas,
             ...reservasMensuales
         ];
-        console.log("Las reservas unicas y mensuales (Desde getMyReservations) del usuario son: ")
-        console.log(reservas);
+        /* console.log("Las reservas unicas y mensuales (Desde getMyReservations) del usuario son: ")
+        console.log(reservas); */
         
         const reservasUnicasTotal = await reservaDao.populateUnica({ idUsuario: idUsuario })
         const reservasMensualesTotal = await reservaDao.populateMensual({ idUsuario: idUsuario })
@@ -161,8 +51,8 @@ export async function getMyReservations(req, res) {
         reservasTotal = reservasTotal.concat(reservasUnicasTotal)
         reservasTotal = reservasTotal.concat(reservasMensualesTotal)
 
-        console.log("Las reservas TOTALES del usuario son: ")
-        console.log(reservasTotal);
+        /* console.log("Las reservas TOTALES del usuario son: ")
+        console.log(reservasTotal); */
         
         res.json({
             success: true,
@@ -389,10 +279,11 @@ export async function postReservaMensual(req, res) {
     try {
 
         /* Esto contiene el req.body: 
-            clases: pagoData.clases, //Contiene la idClaseGeneral y FechasEspecificas
+            clases: pagoData.clases, //Contiene la idClaseGeneral y FechasEspecificas (DE 4 CLASES!)
             pagos: [{ idPago: pagoData._id }],
             idUsuario: pagoData.idUsuario,
-            tipoClase: "mensualidad" */
+            tipoClase: "mensualidad"
+        */
         const reservaData = req.body;
 
         /* console.log("(Back) - Datos recibidos en postReservaUnica:");
@@ -404,6 +295,13 @@ export async function postReservaMensual(req, res) {
         };
 
         const clasesReserva = [];
+
+
+        /**
+         * 
+         * Esto está mal, voy a modificarlo para que primero se consigan
+         * 
+         */
         //Itero sobre las 4 clases buscando si la claseEspecifica existe, creandola si no es el caso 
         for (const claseData of reservaData.clases) {
 
@@ -413,21 +311,14 @@ export async function postReservaMensual(req, res) {
             const fechaBuscada = new Date(fecha);
             fechaBuscada.setSeconds(0, 0);
 
-            const claseGeneral = await claseGeneralDao.readOne({
-                _id: idClaseGeneral
-            });
-
-            let claseEspecifica = await claseEspecificaDao.readOne({
-                idClaseGeneral: claseGeneral._id,
-                fechaEspecifica: fechaBuscada
-            });
+            const claseEspecifica = await claseEspecificaDao.readOne({ idClaseGeneral: claseData.idClase, fechaEspecifica: fechaBuscada });
 
             /* console.log("Clase específica encontrada con el idGeneral " + idClaseGeneral + " y fechaEspecifica " + fechaBuscada + " es: ");
             console.log(claseEspecifica); */
 
             if (!claseEspecifica) {
 
-                console.log("No existe clase específica se crea");
+                console.log("No existe clase específica --- se crea");
 
                 const data = {
                     idClaseGeneral: claseGeneral._id,
@@ -468,17 +359,13 @@ export async function postReservaMensual(req, res) {
 
                 continue;
             }
+            /**
+             * Si la lista está llena debo consultar primero
+             * Por lo tanto devuelvo falso?
+             */
+            else{
 
-            //console.log("Sin lugar por lo tanto a la cola de espera");
-
-            await claseEspecificaDao.updateOne(
-                { _id: claseEspecifica._id },
-                {
-                    $push: {
-                        espera: usuarioData
-                    }
-                }
-            );
+            }
 
             return res.json({
                 success: true,

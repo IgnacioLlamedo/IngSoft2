@@ -250,6 +250,12 @@ async function pagar(tipoClase, precio, clasesPago) {
     });
 
     const resData = await res.json();
+
+    /* Ahora, resData recibe un arreglo de 4 elementos. 
+        O claseEspecifica
+        O NULL si la clase especifica no existe.
+    */
+
     console.log(resData);
 
     if (!resData.success) {
@@ -258,6 +264,17 @@ async function pagar(tipoClase, precio, clasesPago) {
     }
 
     // Clase llena -> confirmar lista espera
+    /**
+     * Revisar el tema de clase llena para los 4 días de la mensualidad:
+     * 
+     * Si solo una de las clases de la mensualidad está llena,
+     * ¿Debería permitir anotarse en lista de espera?
+     * 
+     * Osea, si tengo la primer o tercer clase a la cual me quiero anotar mensualmente llena,
+     * ¿debería permitir anotarse a la lista de espera de esa clase llena y el resto de clases anoto normalmente?
+     * ¿o debería poner en espera en cada una de las 4 clases hasta que se pueda anotar a la que está llena?
+     * ¿?
+     */
     if (claseLlena) { 
         
         const confirmar = confirm(
@@ -284,7 +301,6 @@ async function pagar(tipoClase, precio, clasesPago) {
         }
     }
 
-    document.getElementById("mensajePago").innerText = "";
     document.getElementById("mensajePago").innerText = "";
 
     const resPref = await fetch('/api/pago/crear-preferencia', {
