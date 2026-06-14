@@ -22,13 +22,13 @@
     <%- include('../Users/usersNav.html') %>
     
     <main class="main-container">
-        <form id="register-form" class="form">            
+        <form id="registerForm" class="form" data-role-enum="<%= JSON.stringify(Role) %>">       
             <div class="form-card">
                 <h1 class="form-card-title">Registrar Empleado</h1>                
                 <section class="form-section">
                     <div class="input-group">
-                        <label for="nombreCompleto">Nombre completo:</label>
-                        <input type="text" name="nombreCompleto" autocomplete="nombre" required>
+                        <label for="nombre">Nombre completo:</label>
+                        <input id= nombre type="text" name="nombre" autocomplete="nombre" required>
                     </div>
 
                     <div class="input-group">
@@ -42,12 +42,12 @@
                     </div>
 
                     <div class="input-group">
-                        <label for="fechaNacimiento">Fecha de nacimiento:</label>
-                        <input id="birthDate" type="date" name="fechaNacimiento" required placeholder="Fecha de nacimiento">
+                        <label for="fechaInput">Fecha de nacimiento:</label>
+                        <input id="fechaInput" type="date" name="fechaInput" required placeholder="Fecha de nacimiento">
                     </div>
                 </section>
                 <section class="form-section">
-                    <p id="registerError" class="errorMsg" hidden></p>
+                    <p id="registerError" class="errorMsg" style="max-width: 500px" hidden></p>
                     <button class="submit">REGISTRAR</button>
                 </section>
             </div>

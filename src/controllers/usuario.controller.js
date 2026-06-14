@@ -1,9 +1,9 @@
-﻿import { usuarioDao } from "../daos/index.js";
+﻿import { usuarioDao, empleadoDao } from "../daos/index.js";
 import { planillaDao } from "../daos/index.js";
 import { generateOtp } from '@mx7/otp';
 import { mailer } from "../servicios/mailer.servicio.js";
 import { hash, compareHash } from "../servicios/crypt.servicio.js";
-import { Usuario } from "../models/usuario.mongoose.js";
+import { Usuario, Empleado } from "../models/usuario.mongoose.js";
 import { homeRoute } from "../routes/web/web.router.js";
 import { Role, Status } from "../constants/constants.js";
 
@@ -322,7 +322,7 @@ export async function saveProfileController(req, res) {
         if (emailChanged) { 
             const emailExists = await usuarioDao.readOne({ mail: newUserData.mail });
             if (emailExists) {
-                return res.status(402).json({
+                return res.status(409).json({
                     success: false,
                     message: "Error al actualizar el perfil. El email ya se encuentra registrado."
                 });
@@ -337,7 +337,7 @@ export async function saveProfileController(req, res) {
             const userRole = (await usuarioDao.readOne({ mail: oldEmail })).rol;
             const dniExists = await usuarioDao.readOne({dni: newUserData.dni, rol: userRole });
             if (dniExists) {
-                return res.status(402).json({
+                return res.status(409).json({
                     success: false,
                     message: "Error al actualizar el perfil. El DNI ya se encuentra registrado."
                 });
@@ -492,4 +492,47 @@ export async function deleteUserController(req, res) {
         console.error('deleteUserController ERROR: ', error);
         res.status(500).json({ success: false, message: 'Error al eliminar usuario. Inténtelo más tarde.' });
     }
+}
+
+export async function employeeSignUpController(req, res) {
+	try {
+        const userData = req.body.userData;
+        userData.contraseña = hash("1234");
+        
+        // TODO1: (creo que hecho) ¿Crear un nuevo schema junto a su dao para registrar empleados?
+        // El problema es que solicitan un montón de campos innecesarios
+        const emailExists = await usuarioDao.readOne({ mail: userData.mail });
+        if (emailExists) {
+            return res.status(409).json({
+                success: false,
+                message: "Error al registrarse. El email ya se encuentra registrado."
+            });
+        }
+
+        // TODO1: (creo que hecho) ¿Crear un nuevo schema junto a su dao para registrar empleados?
+        // El problema es que solicitan un montón de campos innecesarios
+        const dniExists = await usuarioDao.readOne({ dni: userData.dni, rol: Role.CLIENT });
+        if(dniExists) {
+            return res.status(409).json({
+                success: false,
+                message: "Error al registrarse. El DNI ya se encuentra registrado."
+            });
+        }
+
+		const user = await empleadoDao.create(userData);
+        // TODO2: Enviar un email al empleado que contenga sus datos de registro, junto a
+        // un enlace de verificación, donde se le solicite al empleado que cree una nueva contraseña.
+        // Entonces:
+        // TODO2.1 Generar enlace de verificación
+        // TODO2.2 Armar mail con enlace, datos personales y enviarlo
+        // TODO2.3 Armar proceso de verificación (generar página de contraseña con enlace único)
+        
+        return res.json({
+            success: true,
+        });
+	} 
+    catch (error) {
+		console.error("postController ERROR: ", error);
+		res.status(500).json({ success: false, message: 'Error al registrar empleado. Inténtelo más tarde.' });
+	}
 }

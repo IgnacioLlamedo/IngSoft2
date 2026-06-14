@@ -1,5 +1,5 @@
 import express from "express";
-import { postController, loginController, logoutController, authenticationController, crearCodigo, authPass, resetPass, loadProfileController, saveProfileController, checkPasswordController, setPasswordController, recoverPassword, getUserlistController, deleteUserController } from "../../controllers/usuario.controller.js";
+import { postController, loginController, logoutController, authenticationController, crearCodigo, authPass, resetPass, loadProfileController, saveProfileController, checkPasswordController, setPasswordController, recoverPassword, getUserlistController, deleteUserController, employeeSignUpController } from "../../controllers/usuario.controller.js";
 
 export const usuarioRouter = express.Router();
 
@@ -32,6 +32,8 @@ usuarioRouter.post('/set-password', setPasswordController);
 usuarioRouter.get('/get-userlist', getUserlistController);
 
 usuarioRouter.post('/delete-user', deleteUserController);
+
+usuarioRouter.post('/employee-signup', employeeSignUpController);
 
 /* usuarioRouter.post('/', postController)
 
