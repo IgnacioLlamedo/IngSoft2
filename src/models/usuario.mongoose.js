@@ -48,6 +48,7 @@ const empleadoSchema = new Schema({
     rol: { type: String, enum: [ Role.CLIENT, Role.ADMIN, Role.EMPLOYEE ], default: Role.CLIENT },
     estado: { type: String, enum: [Status.INACTIVE, Status.UNVERIFIED, Status.REGISTERED, Status.DELETED], default: Status.UNVERIFIED },
     motivoEstado: { type: String, default: 'Sin motivo especificado' },
+    codigo: { type: String },
 }, {
     strict: false,
     versionKey: false

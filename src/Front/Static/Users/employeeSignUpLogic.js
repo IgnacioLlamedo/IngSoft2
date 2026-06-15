@@ -90,7 +90,7 @@ registerForm.addEventListener("submit", async (event) => {
     registerErrorMsg.style.color = 'green';
     registerErrorMsg.innerHTML = `
         <b>Empleado registrado exitosamente.</b><br>
-        Un correo ha sido envíado a
+        Ha sido enviado un correo a
         <a href="mailto:${userData.mail}" style="font-weight: 600; color: #cecece">${userData.mail}</a>
         con instrucciones para realizar la verificación.`;
     registerErrorMsg.hidden = false;
