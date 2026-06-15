@@ -7,6 +7,7 @@ const table = document.getElementById('userlistTable');
 const filterSelect = document.getElementById('filterColumnSelect');
 const filterInput = document.getElementById('filterInput');
 const clearFilterButton = document.getElementById('clearFilterButton');
+const showDeletedCheckbox = document.getElementById('showDeletedCheckbox');
 const deleteDialog = document.getElementById('deleteUserDialog');
 const deleteUserMail = document.getElementById('deleteUserMail');
 const deleteUserRole = document.getElementById('deleteUserRole');
@@ -52,10 +53,15 @@ function bindFilterControls() {
         filterInput.addEventListener('input', applyFiltersAndRender);
     }
 
+    if (showDeletedCheckbox) {
+        showDeletedCheckbox.addEventListener('change', applyFiltersAndRender);
+    }
+
     if (clearFilterButton) {
         clearFilterButton.addEventListener('click', () => {
             if (filterInput) filterInput.value = '';
             if (filterSelect) filterSelect.value = 'nombre';
+            if (showDeletedCheckbox) showDeletedCheckbox.checked = false;
             applyFiltersAndRender();
         });
     }
@@ -70,13 +76,21 @@ function getFilteredUsers() {
     const searchKey = filterSelect.value;
 
     if (!searchValue) {
-        return currentUsers;
+        return applyDeletedFilter(currentUsers);
     }
 
-    return currentUsers.filter((user) => {
+    return applyDeletedFilter(currentUsers.filter((user) => {
         const fieldValue = String(user[searchKey] || '').toLowerCase();
         return fieldValue.includes(searchValue);
-    });
+    }));
+}
+
+function applyDeletedFilter(users) {
+    if (showDeletedCheckbox && !showDeletedCheckbox.checked) {
+        const Status = JSON.parse(table.dataset.statusEnum);
+        return users.filter((user) => user.estado !== Status.DELETED);
+    }
+    return users;
 }
 
 function applyFiltersAndRender() {

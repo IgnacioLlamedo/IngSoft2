@@ -38,41 +38,47 @@
                     style="font-weight: 400;" />
             </label>
             <button type="button" id="clearFilterButton">Limpiar filtro</button>
+            <label for="showDeletedCheckbox" class="filter-checkbox">
+                <input id="showDeletedCheckbox" class="filter-checkbox" type="checkbox"/> Mostrar eliminados
+            </label>
         </section>
-        <table class="user-table" role="table" id="userlistTable" data-status-enum="<%= JSON.stringify(Status) %>">
-            <thead>
-                <tr>
-                    <th>
-                        <button type="button" class="btn-sort" data-sort-key="nombre">
-                            Nombre <span class="sort-indicator"></span>
-                        </button>
-                    </th>
-                    <th>
-                        <button type="button" class="btn-sort" data-sort-key="mail">
-                            Correo <span class="sort-indicator"></span>
-                        </button>
-                    </th>
-                    <th>
-                        <button type="button" class="btn-sort" data-sort-key="dni">
-                            DNI <span class="sort-indicator"></span>
-                        </button>
-                    </th>
-                    <th>
-                        <button type="button" class="btn-sort" data-sort-key="rol">
-                            Rol <span class="sort-indicator"></span>
-                        </button>
-                    </th>
-                    <th>
-                        <button type="button" class="btn-sort" data-sort-key="estado">
-                            Estado <span class="sort-indicator"></span>
-                        </button>
-                    </th>
-                    <th style="text-align: center">Acciones</th>
-                </tr>
-            </thead>
-            <tbody id="userlistTableBody">
-            </tbody>
-        </table>
+        <div class="table-wrapper">
+            <table class="user-table" role="table" id="userlistTable" data-status-enum="<%= JSON.stringify(Status) %>">
+                <thead>
+                    <tr>
+                        <th>
+                            <button type="button" class="btn-sort" data-sort-key="nombre">
+                                Nombre <span class="sort-indicator"></span>
+                            </button>
+                        </th>
+                        <th>
+                            <button type="button" class="btn-sort" data-sort-key="mail">
+                                Correo <span class="sort-indicator"></span>
+                            </button>
+                        </th>
+                        <th>
+                            <button type="button" class="btn-sort" data-sort-key="dni">
+                                DNI <span class="sort-indicator"></span>
+                            </button>
+                        </th>
+                        <th>
+                            <button type="button" class="btn-sort" data-sort-key="rol">
+                                Rol <span class="sort-indicator"></span>
+                            </button>
+                        </th>
+                        <th>
+                            <button type="button" class="btn-sort" data-sort-key="estado">
+                                Estado <span class="sort-indicator"></span>
+                            </button>
+                        </th>
+                        <th style="text-align: center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="userlistTableBody">
+                </tbody>
+            </table>
+        </div>
+        
         <div id="userlistMessage" class="message info">Cargando usuarios…</div>
 
         <dialog id="deleteUserDialog" class="delete-dialog">

@@ -45,14 +45,14 @@ class mailService{
                 <h2 style="text-align: center; font-size: 25px">CEF - Verificar cuenta de empleado</h2>
             </div>
             <hr>
-            <p>Bienvenido al sistema de gestión de CEF, fuiste registrado con los siguientes datos:</p>
+            <p>Bienvenido al sistema de gestión de CEF, fuiste registrado con los siguientes datos:</p><br/>
             <p>
                 • Correo: ${user.mail}<br/>
                 • Nombre completo: ${user.nombre}<br/>
                 • DNI: ${user.dni}<br/>
                 • Fecha de nacimiento: ${fechaNac}<br/>
                 • Rol: ${user.rol}
-            </p>
+            </p><br/>
             <p>
                 Para completar el registro, visitá el siguiente enlace y crea tu contraseña.<br/>
                 <br/>
