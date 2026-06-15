@@ -423,7 +423,8 @@ async function createSession(req, user) {
         rol: user.rol,
         nombre: user.nombre,
     };
-    await req.session.save(); 
+    await req.session.save();
+    console.log('Creada sesión de usuario:', req.session.user);
 }
 
 async function changeEmailSession(req, email) {
@@ -496,37 +497,57 @@ export async function deleteUserController(req, res) {
 
 export async function employeeSignUpController(req, res) {
 	try {
-        const userData = req.body.userData;
-        userData.contraseña = hash("1234");
-        userData.motivoEstado = 'Falta completar registro';
+        const sessionUser = req.session && req.session.user;
+
+		if (!sessionUser || sessionUser.rol !== Role.ADMIN) {
+            return res.status(403).json({ success: false, message: 'Acceso denegado' });
+        }
         
-        // TODO1: (creo que hecho) ¿Crear un nuevo schema junto a su dao para registrar empleados?
-        // El problema es que solicitan un montón de campos innecesarios
-        const emailExists = await usuarioDao.readOne({ mail: userData.mail });
-        if (emailExists) {
-            return res.status(409).json({
+        const userData = req.body.userData;
+        userData.contraseña = hash(crypto.randomUUID());
+        userData.motivoEstado = 'Falta completar registro';
+        userData.codigo = crypto.randomUUID().slice(0, 8);
+                
+        // Controlo que no exista un usuario con el mismo mail:
+        // Si no existe o estado === DELETED, lo accepto.
+        // Si estado === UNVERIFIED (registro incompleto), borro anterior y acepto.
+        // Si estado === REGISTERED o INACTIVE (usuario registrado), lo rechazo.
+        const userWithSameEmail = await usuarioDao.readOne({ mail: userData.mail, estado: { $ne: Status.DELETED } });
+        console.log(`userWithSameEmail: ${JSON.stringify(userWithSameEmail)}`);
+        if (userWithSameEmail !== null) {
+            if (userWithSameEmail.estado === Status.UNVERIFIED) {
+                const deletedUnverifiedUser = await usuarioDao.deleteOne({ mail: userData.mail });
+                if (!deletedUnverifiedUser) {
+                    return res.status(404).json({
+                        success: false,
+                        message: "No se pudo borrar el usuario anterior.",
+                    });
+                }
+                console.log('Se encontró un usuario no verificado con el mismo mail que el nuevo. Se ha eliminado.');
+            }
+            else return res.status(409).json({
                 success: false,
                 message: "Error al registrarse. El email ya se encuentra registrado."
             });
         }
 
-        // TODO1: (creo que hecho) ¿Crear un nuevo schema junto a su dao para registrar empleados?
-        // El problema es que solicitan un montón de campos innecesarios
-        const dniExists = await usuarioDao.readOne({ dni: userData.dni, rol: Role.CLIENT });
-        if(dniExists) {
+        const dniExists = await usuarioDao.readOne({ dni: userData.dni, rol: Role.EMPLOYEE });
+        if (dniExists) {
             return res.status(409).json({
                 success: false,
                 message: "Error al registrarse. El DNI ya se encuentra registrado."
             });
         }
 
-		const user = await empleadoDao.create(userData);
+		const createdUserData = await empleadoDao.create(userData);
+        await mailer.employeeAuth(createdUserData);
+
         // TODO2: Enviar un email al empleado que contenga sus datos de registro, junto a
-        // un enlace de verificación, donde se le solicite al empleado que cree una nueva contraseña.
+        // un enlace de verificación, donde se le solicite al empleado que cree una contraseña.
         // Entonces:
-        // TODO2.1 Generar enlace de verificación
-        // TODO2.2 Armar mail con enlace, datos personales y enviarlo
-        // TODO2.3 Armar proceso de verificación (generar página de contraseña con enlace único)
+        // TODO2.1 Hecho: Generar enlace de verificación
+        // TODO2.2 Hecho: Armar mail con enlace, datos personales y enviarlo
+        // TODO2.3 Hecho: Armar proceso de verificación (generar página de contraseña con enlace único)
         
         return res.json({
             success: true,
@@ -535,5 +556,48 @@ export async function employeeSignUpController(req, res) {
     catch (error) {
 		console.error("postController ERROR: ", error);
 		res.status(500).json({ success: false, message: 'Error al registrar empleado. Inténtelo más tarde.' });
+	}
+}
+
+
+export async function employeeAuthController(req, res) {
+	try {
+		const sessionUser = req.session && req.session.user;
+
+		if (sessionUser)
+            return res.status(401).json({ success: false, message: 'Usuario ya autenticado' });
+
+		const codigo = req.body.codigo;
+		const contraseña = req.body.contraseña;
+
+		if (!codigo || !contraseña)
+			return res.status(400).json({ success: false, message: 'Datos no proporcionados' });
+        
+        const query = { codigo: codigo };
+        const datos = {
+            contraseña: hash(contraseña),
+            estado: Status.REGISTERED,
+            motivoEstado: "Registrado mediante enlace de verificación",
+            codigo: '',
+        };
+        
+        const updatedUser = await empleadoDao.updateOneWithQuery(query, datos);
+
+		if (!updatedUser)
+			return res.status(404).json({ success: false, message: 'Código no encontrado' });
+        
+        createSession(req, updatedUser);
+
+        const redirect = homeRoute;
+		return res.json({ success: true, redirect });
+		
+        // return res.json({ success: true });
+
+	} catch (error) {
+		console.error('setPasswordController ERROR: ', error);
+		res.status(500).json({
+            success: false,
+            message: 'Error al completar el registro. Inténtelo más tarde.'
+        });
 	}
 }

@@ -2,6 +2,7 @@
 import path from "path";
 import { fileURLToPath } from "url";
 import { Role, Status } from "../../constants/constants.js";
+import { usuarioDao, empleadoDao } from "../../daos/index.js";
 
 export const webRouter = express.Router();
 
@@ -180,6 +181,18 @@ webRouter.get("/users/employee-signup", (req,res) => {
     if (!req.session.user) return res.redirect("/access/login");    
     if (req.session.user.rol !== Role.ADMIN) return res.redirect(homeRoute);
     res.render(path.join(__dirname, "Front/Users/employeeSignUp.ejs"), { userRole: req.session.user.rol, Role, Status });
+});
+
+webRouter.get("/access/employee-auth", async (req, res, next) => {
+    if (req.session.user) return res.redirect(homeRoute);
+    
+    const code = req.query.code;
+    if (!code) return res.redirect(homeRoute);
+
+    const isValidCode = await empleadoDao.verifyCode(code);
+    if (!isValidCode) return next(); // Redirige al manejador del final de la cadena (Error 404 Landing page)
+
+    res.render(path.join(__dirname, "Front/Access/employeeAuth.ejs"), { userRole: Role.VISITOR, Role, Status, code });
 });
 
 
