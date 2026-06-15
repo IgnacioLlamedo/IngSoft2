@@ -43,7 +43,7 @@
             </label>
         </section>
         <div class="table-wrapper">
-            <table class="user-table" role="table" id="userlistTable" data-status-enum="<%= JSON.stringify(Status) %>">
+            <table class="user-table" role="table" id="userlistTable" data-status-enum="<%= JSON.stringify(Status) %>" data-role-enum="<%= JSON.stringify(Role) %>">
                 <thead>
                     <tr>
                         <th>
@@ -96,6 +96,8 @@
             </form>
             <div id="deleteMessage" class="message">Trabajando...</div>
         </dialog>
+        
+        <div id="userStats" class="user-stats">Cargando estadísticas…</div>
     </main>
 
     <script src="/Users/userlistLogic.js" defer></script>

@@ -14,6 +14,7 @@ const deleteUserRole = document.getElementById('deleteUserRole');
 const deletionReasonInput = document.getElementById('deletionReasonInput');
 const confirmDelBtn = document.getElementById('confirmDelBtn');
 const cancelDelBtn = document.getElementById('cancelDelBtn');
+const statsDiv = document.getElementById('userStats');
 
 
 let userData;
@@ -169,6 +170,7 @@ function renderUserTable(users) {
     updateSortIndicators();
 
     const Status = JSON.parse(table.dataset.statusEnum);
+    const Role = JSON.parse(table.dataset.roleEnum);
     
     tableBody.innerHTML = sortedUsers
 		.map((user) => {
@@ -210,6 +212,33 @@ function renderUserTable(users) {
             `;            
 		})
 		.join('');
+        
+        if (statsDiv) {
+            const roleCounts = {};
+            const roleValues = Object.values(Role);
+            roleValues.forEach(r => roleCounts[r] = 0);
+
+            const statusCounts = {};
+            const statusValues = Object.values(Status);
+            statusValues.forEach(s => statusCounts[s] = 0);
+
+            currentUsers.forEach(u => {
+                roleCounts[u.rol]++;
+                statusCounts[u.estado]++;
+            });
+
+            const registeredCount = (statusCounts[Status.REGISTERED] || 0) + (statusCounts[Status.INACTIVE] || 0);
+
+            const separator = "    &middot    ";
+            statsDiv.innerHTML = `
+                El sistema cuenta con <span class="stat-count stat-registered">${registeredCount}</span> usuarios registrados, de los cuales:
+                <span class="stat-role stat-role-client">Cliente: <span class="stat-count">${roleCounts[Role.CLIENT] || 0}</span></span>` +
+                `${separator}<span class="stat-role stat-role-employee">Empleado: <span class="stat-count">${roleCounts[Role.EMPLOYEE] || 0}</span></span>` +
+                `${separator}<span class="stat-role stat-role-admin">Administrador: <span class="stat-count">${roleCounts[Role.ADMIN] || 0}</span></span>
+                <span>&nbsp;</span>
+                Además, existen <span class="stat-status stat-status-unverified">${statusCounts[Status.UNVERIFIED] || 0}</span> usuarios sin verificar y <span class="stat-status stat-status-deleted">${statusCounts[Status.DELETED] || 0}</span> usuarios eliminados.
+            `;
+        }
 }
 
 function bindSortButtons() {
