@@ -76,7 +76,8 @@ export async function cancelarReserva(req, res) {
         /**
          *  Lista de Anotados Mensuales
          *  Lista de Anotados Clase única
-         *  Lista de Anotados Seña(?) ---> ¿Los tratamos igual que los de clase única? y si es así, ¿deberíamos hacer que page antes de pasarlos a lista de anotados?
+         *  Lista de Anotados Seña(?) ---> ¿Los tratamos igual que los de clase única? y si es así,
+         *                                  ¿deberíamos hacer que page antes de pasarlos a lista de anotados?
          * 
          * Si uno cancela, el que pasará de la lista de espera se priorizará según el tipo que cancele
          * Ejemplo: si cancela alguien de mensual, se tomará a alguien en lista de espera que sea de tipo
@@ -95,23 +96,20 @@ export async function cancelarReserva(req, res) {
          *          cancelada y luego se usará eso para reemplazar al usuario en la lista de anotados)
          */
         const tipo = req.body.tipo;
-        const clase = req.body.clase
+        const clase = req.body.clase;
+        const user = req.session.user.id;
         console.log("Desde cancelarReserva Controller: ");
         console.log(tipo);
         console.log(clase);
 
         //Si hay personas en espera --> controlo el tipo que pasará a la lista de anotados
         if (clase.espera.length !== 0){
-
-            //si el tipo es mensual, busco en la lista de espera el primer mensual que encuentre
-
             /**
              * PROBLEMA: Actalmente, al comprar una reserva mensual, se consulta si la clase especifica existe
              *      si existe y tiene espacio --> se pone en lista de anotados,
              *      si existe y no tiene espacio --> se pone en lista de espera,
              *      no existe --> crea las que no existan (máximo 4) y se anota en cada una).
-             * 
-             * Ahora, si la persona que esta en lista de espera (y es espera mensual) NO está esperando
+             * AHORA, si la persona que esta en lista de espera (y es espera mensual) NO está esperando
              * en las mismas 4 clasesEspecificas que la persona que canceló su reserva, entonces
              * se debe revisar:
              * 
@@ -135,8 +133,32 @@ export async function cancelarReserva(req, res) {
              *      3- Tenia otra duda pero ya no me acuerdo de que era.
              * 
              */
-            if (tipo === "mensual") {
 
+            if (tipo === "mensual") {
+                //marco todas las clases con el usuario cancelado 
+                for(const act in clase){
+                    if (!act) continue; //Controlo que no sea null
+                    /* //busco el indice en la lista de anotados del usuario que canceló la reserva
+                    const posUsuario = act.anotados.findIndex(
+                        usuario => usuario.idUsuario === user
+                    ); */
+
+                    //actualizo la clase especifica con el usuario anotado con estado cancelado (borrado lógico)
+                    const updateado = await claseEspecificaDao.updateOne({ _id: act._id, "anotados.idUsuario": user},
+                        { $set: { "anotados.$.estado": "cancelado" }} )
+                }
+
+                //buscar al usuario que pasará de espera a anotados.
+
+                    //controlar a qué clases debería anotarse el usuario a anotar.
+
+                    //si son clases válidas y con espacio en lista de anotados -- anotar
+
+                    //sino, buscar el siguiente
+
+                //si no hay siguiente, buscar (por cada una de las clases en las que canceló)
+                //desde el inicio pero ahora clases únicas
+                
             }
             //sino, es única o seña, en cuyo caso, de la lista de espera se saca el primero de única o seña que haya
             else{
