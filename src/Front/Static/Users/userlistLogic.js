@@ -143,28 +143,6 @@ function renderUserTable(users) {
 
     userlistMsgDiv.textContent = '';
     userlistMsgDiv.className = 'message';
-
-    // TODO1: Acciones especiales en la fila del propio usuario
-    // 1) Hecho: Ese botón pasará a llamarse "Ver Mi Perfil"
-    // 2) Hecho: Utilizar la ruta "/account" al acceder a su perfil
-    // 3) Hecho: Deshabilitarle el botón "Borrar"
-
-    // TODO2: Realizar borrado lógico
-    // 1) Hecho: Creado un nuevo campo en la bd para su estado (borrado, etc) + motivo
-    // 2) Hecho: Agregar algún estilo que los distinga en la tabla
-    // 3) Hecho: Deshabilitar botón "Borrar" si ya están borrados
-    // 4) Hecho: Agregar columna "estado" a la tabla
-    // 5) Hecho Debe poder verse el motivoEstado (visible en la vista de perfil, al visitarlo como admin)
-    // 6) Hecho: Inhabilitar opción de editar perfiles borrados
-
-    // TODO3: Filtrado de usuarios
-    // 5) Agregar como opción de filtrado según "estado" y "rol", a través de checkboxes
-    // 6) Indicar el nro. de entradas que abarcan cada checkbox (con un paréntesis al final)
-    // 7) Indicar el nro. de entradas totales (al principio o al final de la tabla)
-    // Esto es para cumplir con lo solicitado en la HU de mostrar el nro. de usuarios
-    // También se podría incluir un botón "Restaurar", pero no es algo solicitado
-
-    // TODO4: Impedir borrado de clientes anotados a alguna clase, lista de espera, con seña realizada, etc    
     
     const sortedUsers = currentSort.key ? sortUsers(users, currentSort.key, currentSort.direction) : users;
     updateSortIndicators();
