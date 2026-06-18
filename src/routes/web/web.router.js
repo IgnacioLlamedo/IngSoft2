@@ -170,7 +170,7 @@ webRouter.get("/management/activities", (req,res) => {
 webRouter.get("/management/instructors", (req,res) => {
     if (!req.session.user) return res.redirect("/access/login");
     if (req.session.user.rol !== Role.ADMIN && req.session.user.rol !== Role.EMPLOYEE) return res.redirect(homeRoute);
-    res.render(path.join(__dirname, "Front/Management/managementInstructors.ejs"), { userRole: req.session.user.rol, Role });
+    res.render(path.join(__dirname, "Front/Management/managementInstructors.ejs"), { userRole: req.session.user.rol, Role, Status });
 });
 
 

@@ -26,14 +26,14 @@
 
     <main class="main-container">
 
-        <form id="create-form" class="form">
+        <form id="create-form" class="form" data-status-enum="<%= JSON.stringify(Status) %>">
             
             <div class="form-card">
 
                 <h1 class="form-card-title">Crear nuevo profesor</h1>
                 
                 <section class="form-section">
-
+                    
                     <div class="input-group">
                         <label for="name">Nombre completo:</label>
                         <input id="name" type="text" name="name" required pattern=".*\S+.*">
@@ -52,7 +52,16 @@
                             <option value="otro">Otro</option>
                         </select>
                     </div>
-
+                    
+                    <div class="input-group">
+                        <label>Actividades:</label>
+                        <div class="checkbox-mgmt-container">
+                            <!-- TODO: Obtener actividades de manera dinámica (js o ejs) -->
+                            <label class="checkbox-mgmt"><input type="checkbox" id="yoga" name="activities" value="50825c5a-2e25-4839-9b7d-fb1a952421ce"> Yoga</label>
+                            <label class="checkbox-mgmt"><input type="checkbox" id="spinning" name="activities" value="d1d4a7f9-29be-41ba-baca-6f23fab51fd0"> Spinning</label>
+                            <label class="checkbox-mgmt"><input type="checkbox" id="funcional" name="activities" value="19597609-9dbc-44e0-af05-32a8f68611a7"> Funcional</label>
+                        </div>
+                    </div>
                 </section>
 
                 <section class="form-section">
@@ -91,6 +100,16 @@
                             <option value="femenino">Femenino</option>
                             <option value="otro">Otro</option>
                         </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Actividades:</label>
+                        <div class="checkbox-mgmt-container">
+                            <!-- TODO: Obtener actividades de manera dinámica (js o ejs) -->
+                            <label class="checkbox-mgmt"><input type="checkbox" id="yogaField" name="activities" value="50825c5a-2e25-4839-9b7d-fb1a952421ce"> Yoga</label>
+                            <label class="checkbox-mgmt"><input type="checkbox" id="spinningField" name="activities" value="d1d4a7f9-29be-41ba-baca-6f23fab51fd0"> Spinning</label>
+                            <label class="checkbox-mgmt"><input type="checkbox" id="funcionalField" name="activities" value="19597609-9dbc-44e0-af05-32a8f68611a7"> Funcional</label>
+                        </div>
                     </div>
 
                     </section>
