@@ -82,3 +82,6 @@ export class empleadoDao {
         return updated;
     }
 }
+
+
+export class administradorDao {}

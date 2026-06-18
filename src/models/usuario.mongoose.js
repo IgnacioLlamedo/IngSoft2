@@ -55,3 +55,20 @@ const empleadoSchema = new Schema({
 })
 
 export const Empleado = model('Empleado', empleadoSchema, 'usuarios');
+
+
+const administradorSchema = new Schema({
+    _id: { type: String, default: randomUUID },
+    mail: { type: String, required: true },
+    dni: { type: String, required: true },
+    contraseña: { type: String, required: true },
+    nombre: { type: String, required: true },
+    rol: { type: String, enum: [ Role.CLIENT, Role.ADMIN, Role.EMPLOYEE ], default: Role.CLIENT },
+    estado: { type: String, enum: [Status.INACTIVE, Status.UNVERIFIED, Status.REGISTERED, Status.DELETED], default: Status.UNVERIFIED },
+    motivoEstado: { type: String, default: 'Sin motivo especificado' },
+}, {
+    strict: false,
+    versionKey: false
+})
+
+export const Administrador = model('Administrador', administradorSchema, 'usuarios');
