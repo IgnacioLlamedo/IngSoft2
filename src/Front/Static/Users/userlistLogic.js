@@ -25,10 +25,7 @@ let pendingDeleteMail = null;
 let pendingDeleteRole = null;
 
 window.addEventListener('DOMContentLoaded', () => {
-    // userlistBtn.style.backgroundColor = '#006fd6';
-    userlistBtn.style.backgroundColor = 'white';
-    userlistBtn.style.color = '#D01F25';
-    userlistBtn.style.fontWeight = '600';
+    userlistBtn.classList.add("btn-active");
     getSessionData();
     bindSortButtons();
     bindFilterControls();

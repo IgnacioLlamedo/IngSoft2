@@ -15,10 +15,7 @@ fechaInput.max = fechaMax.toISOString().split('T')[0];
 
 
 window.addEventListener('DOMContentLoaded', () => {
-    // signUpEmployeeBtn.style.backgroundColor = '#006fd6';
-    signUpEmployeeBtn.style.backgroundColor = 'white';
-    signUpEmployeeBtn.style.color = '#D01F25';
-    signUpEmployeeBtn.style.fontWeight = '600';
+    signUpEmployeeBtn.classList.add("btn-active");
 });
 
 function validateSignUpForm() {
