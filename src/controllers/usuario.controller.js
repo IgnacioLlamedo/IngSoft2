@@ -170,7 +170,8 @@ export async function loginController(req, res) {
         if(!user) {
             return res.json({
                 success: false,
-                message: "Error al Iniciar Sesión en la cuenta. El email ingresado no está registrado."
+                // message: "Error al Iniciar Sesión en la cuenta. El email ingresado no está registrado."
+                message: "Error al iniciar sesión en la cuenta. El email o la contraseña son incorrectos."
             });
         }
 
@@ -178,7 +179,8 @@ export async function loginController(req, res) {
         if(!(compareHash(password, user.contraseña))) {
             return res.json({
                 success: false,
-                message: "Error al Iniciar Sesión en la cuenta. La contraseña ingresada es incorrecta."
+                // message: "Error al Iniciar Sesión en la cuenta. La contraseña ingresada es incorrecta."
+                message: "Error al iniciar sesión en la cuenta. El email o la contraseña son incorrectos."
             });
         }
 
@@ -269,7 +271,7 @@ export async function crearCodigo(req, res){
 
         console.log("INFO: Nuevo código: " + usuario.codigo);
 
-        await mailer.auth(usuario.mail, otp);
+        await mailer.clientAuth(usuario.mail, usuario.nombre, otp);
         
         res.json({
             success: true,
