@@ -5,6 +5,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import session from 'express-session';
 import MongoStore from "connect-mongo";
+import { cronService } from './servicios/cron.servicio.js';
 
 // Imports Routers /api/..
 import { apiRouter } from './routes/api/api.router.js';
@@ -44,6 +45,8 @@ app.use(session({
 
 //Importado de rutas
 import { webRouter } from './routes/web/web.router.js';
+
+cronService.iniciar();
 
 app.listen(config.port, () => {
     console.log(`Listening in port ${config.port}`)

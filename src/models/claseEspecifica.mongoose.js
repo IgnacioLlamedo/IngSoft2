@@ -15,9 +15,12 @@ const claseEspecificaSchema = new Schema({
         tipo: { type: String, enum: ['mensualidad', 'unico', 'seña'], required: true },
         estado: { type: String, enum: ['activo', 'cancelado'], default: 'activo' }
     }],
-    espera : [{
+    esperaUnica : [{
         idUsuario: { type: String, ref: 'usuarios' },
         tipo: { type: String, enum: ['mensualidad', 'unico', 'seña'], required: true },
+    }],
+    esperaMensual : [{
+        idUsuario: { type: String, ref: 'usuarios' },
     }],
     //agregar lista de cancelados? - para estadísticas
     //o simplemente recorremos las reservas.

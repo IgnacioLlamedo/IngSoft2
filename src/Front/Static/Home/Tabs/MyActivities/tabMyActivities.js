@@ -10,23 +10,23 @@ async function getMyReservations() {
 
     const resData = await res.json();
 
+    console.log("Estas son todas las reservaciones DEL USUARIO: ")
     console.log(resData);
 
     const fechaActual = new Date();
 
     actividadesUsuario = resData.reservas.map(r => {
 
-
+        console.log("Esta es una reserva del usuario: ");
         console.log(r);
-        console.log(r.tipo)
+        console.log("/////////////////////////////////////////////////");
 
         // =========================================
         // RESERVA ÚNICA
         // =========================================
         if (r.tipo === "unica") {
 
-            const claseGeneral =
-                r.idClaseEspecifica.idClaseGeneral;
+            const claseGeneral = r.idClaseEspecifica.idClaseGeneral;
 
                 /* console.log(r.señada) */
                 /*console.log(claseGeneral) */
@@ -109,6 +109,8 @@ async function getMyReservations() {
                 tipo: "Mensual",
 
                 horario,
+                
+                clases: r.clases,
 
                 fecha: fechas,
 
@@ -129,8 +131,8 @@ async function getMyReservations() {
         }
     });
 
-    console.log("Estas son las actividades del usuario ya formateadas para mostrar: ");
-    console.log(actividadesUsuario);
+    /* console.log("Estas son las actividades del usuario ya formateadas para mostrar: ");
+    console.log(actividadesUsuario); */
 
     renderActividades();
 }
@@ -182,6 +184,9 @@ function renderActividades() {
 
   // Creamos una caja por cada actividad filtrada
   filtradas.forEach(act => {
+    console.log("Esto es actual del filtradas.forEach: ")
+    console.log(act);
+
     const box = document.createElement("div");
     box.classList.add("box", act.tipo.toLowerCase());
 
@@ -236,8 +241,13 @@ function renderActividades() {
     if (!act.vencida) {
     // Botones con listeners
 
-        console.log("Esta es la reseva actual: ");
-        console.log(act);
+        let clasesACancelar;
+        if (act.tipo === 'Mensual'){
+            console.log(act.clases);
+            clasesACancelar = act.clases;
+        }
+        else
+            clasesACancelar = act.claseEspecifica;
 
         const btnCancelar = document.createElement("button");
         btnCancelar.classList.add("box-button", "cancel-reservation");
@@ -252,7 +262,7 @@ function renderActividades() {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    clase: act.claseEspecifica,
+                    clase: clasesACancelar,
                     tipo: act.tipo
                 })
             })
