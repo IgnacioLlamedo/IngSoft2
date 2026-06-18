@@ -89,46 +89,53 @@ export async function postController(req, res) {
 	}
 }
 
-// TODO: Terminar y utilizar autenticación de 2 factores solo al registrarse
+
 export async function postAuthenticationController(req, res) {
-    try { 
-        const userData = req.body.userData;
+    // > Nuestro sistema de códigos, funciona poniendo el código en el usuario por medio de la db.
+    // > Esto no tiene sentido ahora, ya que NO se debería crear el usuario hasta que se verifique el email.
+    // Esto lo resolvemos buscando exclusivamente usuarios registrados en el login
 
-        // Nuestro sistema de códigos, funciona poniendo el código en el usuario por medio de la db.
-        // Esto no tiene sentido ahora, ya que NO se debería crear el usuario hasta que se verifique el email.
+    // > En caso de crear el usuario previamente a la verificación, entonces la verificación no tendría sentido,
+    // > ya que se podría iniciar la sesión sin haber validado el email. O incluso, si se le corta la luz al
+    // > momento de validar el email, entonces después no podrá registrarse ya que el email ya está registrado.
+    // También se resuelve con la implementación de los estados (registrado o sin verificar)
+    // En detalle: Al crear el usuario, se le asigna estado = Status.UNVERIFIED, se le envía un correo con el
+    // código y se lo redirige a la página de verificación.
+    // Una vez que ingrese el código, pasa a estado estado = Status.REGISTERED, se crea la sesión y redirige a
+    // la home (igual que el login).
+    // Ahora el otro tema, ¿qué pasa si es medio bobi y pierde la *página de verificación*?
+    // En teoría (porque no probé aún), dado que la página de verificación usa el mail que está en la url para
+    // buscar el código, la ruta va a ser siempre la misma para ese usuario (authentication?email=xx@x...).
+    // Por lo tanto, esto se podría solucionar incluyendo un link en el correo que envía el código.
+    // Queda pendiente rediseñar el correo envíado al cliente para que tenga el estilo del de empleados
+    // y que incluya el link de verificación
+    try {
+        const mail = req.body.mail;
+        const query1 = { mail: mail, estado: Status.UNVERIFIED };
+        const user = await usuarioDao.readOne(query1);
 
-        // En caso de crear el usuario previamente a la verificación, entonces la verificación no tendría sentido, ya que se podría iniciar
-        // la sesión sin haber validado el email. O incluso, si se le corta la luz al momento de validar el emial, entonces después no podrá
-        // registrarse ya que el emial ya está registrado.
-
-        // Preferiría evitar la solución de agregarle un campo al usuario como "emailVerificado" o algo así.
-
-        return;
-        /* const mail = req.body.mail;
-        const usuario = await usuarioDao.readOne({ mail: mail });
-
-       if(usuario.codigo !== req.body.codigo){
+       if (user.codigo !== req.body.codigo) {
             return res.json({
                 success: false,
                 message: "Error al ingresar el código de validación. El código introducido es incorrecto."
             });
         }
 
-        if(usuario.limiteCodigo.getTime() < new Date(Date.now()).getTime()){
+        if (user.limiteCodigo.getTime() < new Date(Date.now()).getTime()) {
             return res.json({
                 success: false,
                 message: "Error al ingresar el código de validación. El código ya expiró."
             });
-        } */
+        }
         
-        const planilla = await planillaDao.create(req.body.planillaData);
-        userData.planilla = planilla._id;
+        const query2 = { _id: user._id };
+        const datos = { estado: Status.REGISTERED, motivoEstado: "Registrado mediante código de verificación" };
+        const updatedUser = await usuarioDao.updateOne(query2, datos);
+        if (!updatedUser) {
+			return res.status(404).json({ success: false, message: 'Usuario no encontrado' });
+		}
 
-        userData.contraseña = hash(userData.contraseña)
-
-		const user = await usuarioDao.create(userData);
-
-        createSession(req, user);
+        createSession(req, updatedUser);
 
         const redirect = homeRoute;
         res.json({
@@ -137,7 +144,7 @@ export async function postAuthenticationController(req, res) {
         });
     } 
     catch(error) {
-        console.error("authenticationController ERROR: ", error);
+        console.error("postAuthenticationController ERROR: ", error);
         res.json({
             success: false,
             message: "Error al validar el código. Inténtelo más tarde."
@@ -211,46 +218,6 @@ export async function logoutController(req, res) {
 	}
 }
 
-// TODO: Combinar con postAuthenticationController
-export async function authenticationController(req, res) {
-    try { 
-        const mail = req.body.mail;
-        const query = {
-			mail: mail,
-			$or: [{ estado: Status.REGISTERED }, { estado: Status.INACTIVE }],
-		};
-        const usuario = await usuarioDao.readOne(query);
-
-       if(usuario.codigo !== req.body.codigo){
-            return res.json({
-                success: false,
-                message: "Error al ingresar el código de validación. El código introducido es incorrecto."
-            });
-        }
-
-        if(usuario.limiteCodigo.getTime() < new Date(Date.now()).getTime()){
-            return res.json({
-                success: false,
-                message: "Error al ingresar el código de validación. El código ya expiró."
-            });
-        }
-        
-        createSession(req, usuario);
-
-        const redirect = homeRoute;
-        res.json({
-            success: true,
-            redirect
-        });
-    } 
-    catch(error) {
-        console.error("authenticationController ERROR: ", error);
-        res.json({
-            success: false,
-            message: "Error al validar el código. Inténtelo más tarde."
-        });
-    }
-}
 
 export async function authPass(req, res){
     try { 
@@ -290,19 +257,13 @@ export async function authPass(req, res){
     }
 }
 
-// El código debería ser envíado la 1ª vez, a los usuarios aún no registrados
-// Es decir, estado = Status.UNVERIFIED
 export async function crearCodigo(req, res){
     try {
         const expirationTime = 20000;
 		const limite = new Date(Date.now() + expirationTime);
 		const otp = generateOtp();
 
-        // const query = { mail: req.body.mail, estado: Status.UNVERIFIED };
-        const query = {
-			mail: req.body.mail,
-			$or: [{ estado: Status.REGISTERED }, { estado: Status.INACTIVE }],
-		};
+        const query = { mail: req.body.mail, estado: Status.UNVERIFIED };
         const datos = { codigo: otp, limiteCodigo: limite };
 		const usuario = await usuarioDao.updateOne(query, datos);
 

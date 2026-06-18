@@ -26,6 +26,8 @@ class mailService{
         }
         await this.transport.sendMail(mailOptions)
     }
+
+    // TODO: implementar estilo del correo de empleados + incluir enlace para verificar y finalizar el registro
     async auth(mail, codigo){
         const body = `
         <h1>Código de verificación CEF</h1>
