@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/Images/Common/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/Common/commonPageStyle.css">
+    <link rel="stylesheet" href="/Common/commonFormPageStyle.css">
+    <link rel="stylesheet" href="/Account/profileStyle.css">
+    <link rel="stylesheet" href="/Users/userlistStyle.css">
+    <title>CEF - Lista de Usuarios</title>
+</head>
+
+<body>
+    <header>
+        <%- include('../Navbar/navbarSelector.ejs') %>
+    </header>
+
+    <h1 class="title">Usuarios</h1>
+
+    <%- include('../Users/usersNav.html') %>
+    
+    <main class="main-container">
+        <section class="filter-panel" aria-label="Filtrar lista de usuarios">
+            <label for="filterColumnSelect" style="margin-left: 10px; margin-right: 20px;">
+                Columna:
+                <select id="filterColumnSelect" aria-label="Seleccionar columna a filtrar">
+                    <option value="nombre">Nombre</option>
+                    <option value="mail">Correo</option>
+                    <option value="dni">DNI</option>
+                    <option value="rol">Rol</option>
+                    <option value="estado">Estado</option>
+                </select>
+            </label>
+            <label for="filterInput">
+                Buscar:
+                <input id="filterInput" type="search" placeholder="Buscar en la columna seleccionada" aria-label="Texto de búsqueda"
+                    style="font-weight: 400;" />
+            </label>
+            <button type="button" id="clearFilterButton">Limpiar filtro</button>
+            <label for="showDeletedCheckbox" class="filter-checkbox">
+                <input id="showDeletedCheckbox" class="filter-checkbox" type="checkbox"/> Mostrar eliminados
+            </label>
+        </section>
+        <div class="table-wrapper">
+            <table class="user-table" role="table" id="userlistTable" data-status-enum="<%= JSON.stringify(Status) %>" data-role-enum="<%= JSON.stringify(Role) %>">
+                <thead>
+                    <tr>
+                        <th>
+                            <button type="button" class="btn-sort" data-sort-key="nombre">
+                                Nombre <span class="sort-indicator"></span>
+                            </button>
+                        </th>
+                        <th>
+                            <button type="button" class="btn-sort" data-sort-key="mail">
+                                Correo <span class="sort-indicator"></span>
+                            </button>
+                        </th>
+                        <th>
+                            <button type="button" class="btn-sort" data-sort-key="dni">
+                                DNI <span class="sort-indicator"></span>
+                            </button>
+                        </th>
+                        <th>
+                            <button type="button" class="btn-sort" data-sort-key="rol">
+                                Rol <span class="sort-indicator"></span>
+                            </button>
+                        </th>
+                        <th>
+                            <button type="button" class="btn-sort" data-sort-key="estado">
+                                Estado <span class="sort-indicator"></span>
+                            </button>
+                        </th>
+                        <th style="text-align: center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="userlistTableBody">
+                </tbody>
+            </table>
+        </div>
+        
+        <div id="userlistMessage" class="message info">Cargando usuarios…</div>
+
+        <dialog id="deleteUserDialog" class="delete-dialog">
+            <form id="deleteDialogForm" method="dialog" class="delete-dialog-form">
+                <h2 id="deleteDialogTitle">Confirmar baja de usuario</h2>
+                <div class="delete-user-info-container">
+                    <p>Correo: <span id="deleteUserMail" class="delete-user-info"></span></p>
+                    <p>Rol: <span id="deleteUserRole" class="delete-user-info"></span></p>
+                </div>
+                <textarea id="deletionReasonInput" rows="2" placeholder="Ingrese un motivo para la baja"></textarea>
+                <div class="delete-dialog-actions">
+                    <button type="button" id="cancelDelBtn">Cancelar</button>
+                    <button type="button" id="confirmDelBtn">Confirmar</button>
+                </div>
+            </form>
+            <div id="deleteMessage" class="message">Trabajando...</div>
+        </dialog>
+        
+        <div id="userStats" class="user-stats">Cargando estadísticas…</div>
+    </main>
+
+    <script src="/Users/userlistLogic.js" defer></script>
+
+    <%- include('../Navbar/footer.html') %>
+</body>
+</html>

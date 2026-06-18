@@ -27,7 +27,11 @@
             <div class="welcoming-container">
                 <div class="welcoming-card">
                     <div class="welcoming-content">
-                        <h1>¡Bienvenidos a CEF!</h1>
+                        <% if (userRole == Role.VISITOR) { %>
+                            <h1>¡Bienvenido a CEF!</h1>
+                        <% } else { %>
+                            <h1>¡Bienvenido a CEF,<br><span class="user-name"><%= name %></span>!</h1>
+                        <% } %>
                         <p>Somos un centro pensado para que disfrutes del movimiento y el bienestar en comunidad.
                             Creemos que cada persona puede encontrar su espacio para entrenar, divertirse y sentirse
                             mejor día a día.</p>
@@ -36,7 +40,7 @@
                             compartida.</p>
                     </div>
                     <div class="welcoming-image">
-                        <img src="/Images/HomeImages/Logo-banner.png" alt="Bienvenido a CEF">
+                        <img src="/Images/HomeImages/Logo.png" alt="Bienvenido a CEF">
                     </div>
                 </div>
             </div>

@@ -6,6 +6,7 @@ const email = parametrosURL.get('email');
 
 
 document.getElementById("authenticator-form").addEventListener("submit", async (event) => {
+    console.log("DEBUG: (entrando desde authenticator-form en authentication.js) Enviando codigo");
     event.preventDefault();
 
     authenticationErrorMsg.hidden = true;

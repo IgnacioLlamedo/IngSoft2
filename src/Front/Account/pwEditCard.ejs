@@ -1,0 +1,51 @@
+<div class="profile-card">
+    <h2>Cambiar contraseña</h2>
+
+    <div class="profile-content">
+        <form id="passwordForm" class="profile-form">
+
+            <div class="form-group">
+                <label for="contraseña-actual">Contraseña actual:</label>
+                <div class="password-wrapper">
+                    <input type="password" id="contraseña-actual" name="contraseña-actual" disabled>
+                    <button type="button" class="password-toggle-button" aria-label="Mostrar contraseña">
+                        <img class="password-toggle-icon" src="/Images/Inputs/eye-icon-hidden-white.png"
+                            alt="Mostrar contraseña">
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="contraseña-nueva">Contraseña nueva:</label>
+                <div class="password-wrapper">
+                    <input type="password" id="contraseña-nueva" name="contraseña-nueva" disabled>
+                    <button type="button" class="password-toggle-button" aria-label="Mostrar contraseña">
+                        <img class="password-toggle-icon" src="/Images/Inputs/eye-icon-hidden-white.png"
+                                alt="Mostrar contraseña">
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="contraseña-confirmar">Confirmar contraseña:</label>
+                <div class="password-wrapper">
+                    <input type="password" id="contraseña-confirmar" name="contraseña-confirmar" disabled>
+                    <button type="button" class="password-toggle-button" aria-label="Mostrar contraseña">
+                        <img class="password-toggle-icon" src="/Images/Inputs/eye-icon-hidden-white.png" alt="Mostrar contraseña">
+                    </button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+
+    <div class="button-group">
+        <button id="pwEditBtn" class="btn btn-edit">Editar Contraseña</button>
+        <button id="pwSaveBtn" class="btn btn-save" style="display: none;">Guardar Cambios</button>
+        <button id="pwCancelBtn" class="btn btn-cancel" style="display: none;">Cancelar</button>
+    </div>
+
+    <div id="passwordMessage" class="message"></div>
+</div>
+
+<script src="/Account/pwEditLogic.js"></script>

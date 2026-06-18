@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/Images/Common/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/Account/profileStyle.css">
+    <title>CEF - Perfil de usuario</title>
+</head>
+
+<body>
+    <header>
+        <%- include("../Navbar/adminNav.html") %>
+    </header>
+    
+    <h1 class="profile-title">Información de <span style="color: #f14343"><%= userMail %></span></h1>
+    <h2 style="text-align: center">Rol: <span style="color: #f14343"><%= userRole %></span></h2>
+    <main id="profileContainer" class="profile-container" data-status-enum="<%= JSON.stringify(Status) %>">
+        <%- include('../Account/profileSelector.ejs') %>
+    </main>
+        
+    <%- include('../Navbar/footer.html') %>
+</body>
+
+</html>

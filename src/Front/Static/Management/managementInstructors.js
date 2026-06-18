@@ -7,11 +7,28 @@
 const endpoint = "/api/admin/profesor"; // Se usa el mismo fetch pero diferenciando entre GET | POST | PUT | DELETE
 
 
-const slotHtml = (slot) => { return `
-    <p>Nombre: ${slot.nombre}</p>
-    <p>DNI: ${slot.dni}</p>
-    <p>Género: ${slot.genero}</p>
-`};
+const slotHtml = (slot) => {
+
+    // TODO: Obtener nombres de actividades
+    const activitiesNames = slot.actividades.map(activity => "<b>" + activity.slice(0, 6) + '</b>').join(', ');
+
+    let statusHtml = slot.estado === Status.REGISTERED
+            ? `<b>${slot.estado}</b>`
+            : `<b>${slot.estado}</b> con motivo <i>"${slot.motivoEstado}"</i>`;
+    const fechasHtml = slot.fechasEstado.hasta == null
+            ? `<br>Ocurrido el <b>${new Date(slot.fechasEstado.desde).toLocaleString('es-AR')}</b>`
+            : `<br>Desde <b>${new Date(slot.fechasEstado.desde).toLocaleString('es-AR')}</b> hasta <b>${new Date(slot.fechasEstado.hasta).toLocaleString('es-AR')}</b>`;
+    statusHtml += fechasHtml;
+
+    const innerHtml = `
+        <p><u>Nombre:</u> <b>${slot.nombre}</b></p>
+        <p><u>DNI:</u> <b>${slot.dni}</b></p>
+        <p><u>Género:</u> <b>${slot.genero}</b></p>
+        <p><u>Actividades:</u> ${activitiesNames}</p>
+        <p><u>Estado:</u> ${statusHtml}</p>
+    `;
+    return innerHtml;
+};
 
 
 function getFormData(form) {
@@ -19,6 +36,7 @@ function getFormData(form) {
         nombre: form.name.value,
         dni: form.dni.value,
         genero: form.gender.value,
+        actividades: Array.from(form.querySelectorAll('input[name="activities"]:checked')).map(input => input.value),
     }
 }
 
@@ -51,6 +69,12 @@ const slotList = document.getElementById("slotList");
 const notDataAvailableMsg = document.getElementById("notDataAvailableMsg");
 
 const dialog = document.getElementById("confirmPanel");
+
+let Status;
+
+window.addEventListener('DOMContentLoaded', () => {
+    Status = JSON.parse(createForm.dataset.statusEnum);
+});
 
 
 getAllSlots();
@@ -120,28 +144,39 @@ function createEditAndDeleteButtons(slotData, slotError, slotErrorMsg, slot) {
     const buttonsDiv = document.createElement("div");
     buttonsDiv.classList.add("buttons-container");
 
-    const slotEditButton = document.createElement("button");
-    slotEditButton.classList.add("edit-button");
-    slotEditButton.textContent = "Editar";
-    slotEditButton.onclick = () => switchToEdit(slot);
-
-    const slotDeleteButton = document.createElement("button");
-    slotDeleteButton.classList.add("delete-button");
-    slotDeleteButton.type = "button";
-    slotDeleteButton.textContent = "Borrar";
-
-    slotDeleteButton.addEventListener('click', () => {
-        dialog.showModal();
-
-        dialog.addEventListener('close', (closeEvent) => {
-            if (dialog.returnValue === 'default') {
-                deleteActivity(closeEvent, slot._id, slotError, slotErrorMsg);
-            }
-        }, { once: true });
-    });
-
-    buttonsDiv.appendChild(slotEditButton);
-    buttonsDiv.appendChild(slotDeleteButton);
+    if (slot.estado !== Status.DELETED) {
+        if (slot.estado === Status.REGISTERED) {
+            const slotSuspendButton = document.createElement("button");
+            slotSuspendButton.classList.add("suspend-button");
+            slotSuspendButton.textContent = "Inhabilitar";
+            // TODO: Implementar inhabilitación/suspención de profesores (formulario, etc.)
+            // y conectar con inhabilitarProfesor() en admin.controller
+            // slotSuspendButton.onclick = () => switchToSuspend(slot);
+            buttonsDiv.appendChild(slotSuspendButton);
+        }
+    
+        const slotEditButton = document.createElement("button");
+        slotEditButton.classList.add("edit-button");
+        slotEditButton.textContent = "Editar";
+        slotEditButton.onclick = () => switchToEdit(slot);
+        buttonsDiv.appendChild(slotEditButton);
+    
+        const slotDeleteButton = document.createElement("button");
+        slotDeleteButton.classList.add("delete-button");
+        slotDeleteButton.type = "button";
+        slotDeleteButton.textContent = "Borrar";
+        buttonsDiv.appendChild(slotDeleteButton);
+    
+        slotDeleteButton.addEventListener('click', () => {
+            dialog.showModal();
+    
+            dialog.addEventListener('close', (closeEvent) => {
+                if (dialog.returnValue === 'default') {
+                    deleteActivity(closeEvent, slot._id, slotError, slotErrorMsg);
+                }
+            }, { once: true });
+        });
+    }
 
     slotData.appendChild(buttonsDiv);
 }
@@ -181,6 +216,9 @@ createForm.addEventListener("submit", async (event) => {
     CleanMsgs();
 
     const data = getFormData(event.target);
+    data.estado = Status.REGISTERED;
+    data.fechasEstado = { desde: Date.now(), hasta: null };
+    data.motivoEstado = "Registrado vía sistema de gestión";
 
     if(data.dni.length !== 8) {
         ErrorMsg("Error al crear el profesor. El DNI ingresado debe tener 8 caracteres");
@@ -349,13 +387,26 @@ function switchToCreateForm() {
 }
 
 
+// TODO: Terminar esto y controlar que se guarden/carguen bien
+function fillActivitiesCheckboxes(form, activities = []) {
+    const values = Array.isArray(activities) ? activities : [activities];
+    const checkboxes = form.querySelectorAll('input[name="activities"]');
+
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = values.includes(checkbox.value);
+    });
+}
 
 function fillFormWithData(editForm, slot) {
     const formFieldsContent = fieldsToFillWithSlotData(slot);
 
     formFieldsContent.forEach(field => {
-        editForm.querySelector(field.id).value = field.content;
+        const element = editForm.querySelector(field.id);
+        if (!element) return;
+        element.value = field.content;
     });
+
+    fillActivitiesCheckboxes(editForm, slot.actividades);
 }
 
 

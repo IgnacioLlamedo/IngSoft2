@@ -1,0 +1,22 @@
+.main-container p {
+    line-height: 1.6;
+    color: #ccc;
+    font-size: 18px;
+}
+
+.main-container a {
+    color: #ccc;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+.main-container a:hover {
+    color: #de2423;
+}
+
+.main-container .error-icon {
+    max-height: 150px;
+    display: block;
+    margin: 0 auto;
+}

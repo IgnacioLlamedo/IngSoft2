@@ -2,6 +2,7 @@ import { claseGeneralDao, profesorDao } from "../daos/index.js";
 import { salaDao } from "../daos/index.js";
 import { sedeDao } from "../daos/index.js";
 import { actividadDao } from "../daos/index.js";
+import { Status } from '../constants/constants.js';
 
 
 
@@ -19,17 +20,18 @@ import { actividadDao } from "../daos/index.js";
 //profesor
 export async function crearProfesor(req, res){
     try {
-        let data = req.body
+        const data = req.body;
+        console.log("Crear profesor con datos: ", data);
 
-        const intructorAlreadyExists = await profesorDao.readOne({dni: req.body.dni});
-        if(intructorAlreadyExists) {
+        const intructorAlreadyExists = await profesorDao.readOne({ dni: req.body.dni });
+        if (intructorAlreadyExists) {
             return res.json({
                 success: false,
                 message: "Error al crear el profesor. El profesor ingresado ya está registrado en el sistema."
-            })
-        }
+            });
+        };
         
-        await profesorDao.create(data)
+        const newData = await profesorDao.create(data);
 
         res.json({
             success: true,
@@ -45,34 +47,47 @@ export async function crearProfesor(req, res){
     }
 }
 
+
+function isSameInstructor(data, currentInstructor) {
+	return (
+		data.nombre === currentInstructor.nombre &&
+		data.dni === currentInstructor.dni &&
+		data.genero === currentInstructor.genero &&
+		areDeepEqual(data.actividades, currentInstructor.actividades) &&
+		data.estado === currentInstructor.estado &&
+		data.motivoEstado === currentInstructor.motivoEstado &&
+		areDeepEqual(data.fechasEstado, currentInstructor.fechasEstado)
+	);
+}
+
+function areDeepEqual(a, b) {
+    return JSON.stringify(a) === JSON.stringify(b);
+}
+
+// TODO: Chequear que todo esto funcione correctamente
 export async function modificarProfesor(req, res){
     try {
-        let data = req.body;
+        const data = req.body;
+        const currentInstructor = await profesorDao.readOne({ _id: data.id });
 
-        const currentInstructor = await profesorDao.readOne({_id: data.id});
-
-        if(
-            (data.nombre === currentInstructor.nombre) &&
-            (data.dni === currentInstructor.dni) &&
-            (data.genero === currentInstructor.genero)
-        ) {
+        if (isSameInstructor(data, currentInstructor)) {
             return res.json({
                 success: false,
                 message: "Error al modificar el profesor. No se han modificado datos."
-            })
+            });
         }
 
-        if(data.dni !== currentInstructor.dni) {
-            const instructorDniAlreadyExists = await profesorDao.readOne({dni: data.dni});
-            if(instructorDniAlreadyExists) {
+        if (data.dni !== currentInstructor.dni) {
+            const instructorWithSameDni = await profesorDao.readOne({ dni: data.dni });
+            if (instructorWithSameDni) {
                 return res.json({
                     success: false,
                     message: "Error al modificar el profesor. El DNI del nuevo profesor ya está registrado en el sistema."
-                })
+                });
             }
         }
 
-        await profesorDao.updateOne({_id: data.id}, data)
+        await profesorDao.updateOne({ _id: data.id }, data);
 
         res.json({
             success: true,
@@ -88,19 +103,63 @@ export async function modificarProfesor(req, res){
     }
 }
 
+export async function inhabilitarProfesor(req, res){
+    try {
+        const data = req.body;
+        const currentInstructor = await profesorDao.readOne({ _id: data.id });
+
+        if (isSameInstructor(data, currentInstructor)) {
+            return res.json({
+                success: false,
+                message: "Error al modificar el profesor. No se han modificado datos."
+            });
+        }
+        
+        let cantClasesAfectadas = 0;
+        let cantUsuariosAfectados = 0;
+        // TODO1: Chequear si hay clases activas con ese profesor. 
+        // TODO2: De haberlas, corresponde suspenderla* y avisar vía email a los anotados
+        // *Creo que no fue solicitada la cancelación en sí, ni tampoco la devolución del dinero
+        // Dentro de mailer.servicio.js existe mailer.cancelledClass() con el cuerpo del mail.
+
+        await profesorDao.updateOne({ _id: data.id }, data);
+        const clasesMsg = cantClasesAfectadas > 0 ? `. ${cantClasesAfectadas} clases fueron canceladas por este evento` : '';
+        const usuariosMsg = cantUsuariosAfectados > 0 ? `. ${cantUsuariosAfectados} usuarios fueron notificados` : '';
+        const resultMsg = "Se actualizó el estado del profesor" + clasesMsg + usuariosMsg + ".";
+        
+        res.json({
+            success: true,
+            message: resultMsg
+        });
+    }
+    catch(error) {
+        console.error("modificarProfesor ERROR: ", error);
+        res.json({
+            success: false,
+            message: "Error al modificar profesor. Inténtelo de nuevo más tarde."
+        });
+    }
+}
+
 export async function eliminarProfesor(req, res){
     try {
-        let data = req.body
+        const data = req.body;
 
-        const clases = await claseGeneralDao.readMany({idProfesor: data.id})
-        if(clases.length > 0){
+        const clases = await claseGeneralDao.readMany({ idProfesor: data.id }); 
+        if (clases.length > 0) {
             return res.json({
                 success: false,
                 message: "Error al eliminar profesor. Hay clases que corresponden a ese profesor, borre o edite primero las clases."
             });
         }
 
-        await profesorDao.deleteOne({_id: data.id})
+        const query = { _id: data.id };
+        const newData = {
+			estado: Status.DELETED,
+			motivoEstado: data.motivoEstado,
+			fechasEstado: { desde: Date.now(), hasta: null },
+		};
+        await profesorDao.updateOne(query, newData);
 
         res.json({
             success: true,
