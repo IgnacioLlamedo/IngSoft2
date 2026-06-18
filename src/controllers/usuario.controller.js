@@ -14,18 +14,51 @@ const errorMessages = {
 export async function postController(req, res) {
 	try {
         const userData = req.body.userData;
-        
-        const emailExist = await usuarioDao.readOne({mail: userData.mail});
-        if(emailExist) {
-            return res.json({
+
+        // Controlo que no exista un usuario con el mismo mail:
+        // Si no existe o estado === DELETED, lo accepto.
+        // Si estado === UNVERIFIED (registro incompleto), borro anterior y acepto.
+        // Si estado === REGISTERED o INACTIVE (usuario registrado), lo rechazo. 
+        const query = { mail: userData.mail, estado: { $ne: Status.DELETED } };
+        const userWithSameEmail = await usuarioDao.readOne(query);
+        console.log(`DEBUG: Usuario con mismo email: ${JSON.stringify(userWithSameEmail)}`);
+        if (userWithSameEmail !== null) {
+            if (userWithSameEmail.estado === Status.UNVERIFIED) {
+                const deletedUnverifiedUser = await usuarioDao.deleteOne({ _id: userWithSameEmail._id });
+                if (!deletedUnverifiedUser) {
+                    return res.status(404).json({
+                        success: false,
+                        message: "No se pudo borrar el usuario anterior.",
+                    });
+                }
+                console.log('INFO: Se encontró un usuario *no verificado* con el mismo email que el nuevo. Se ha eliminado.');
+            }
+            else return res.status(409).json({
                 success: false,
                 message: "Error al registrarse. El email ya se encuentra registrado."
             });
         }
 
-        const dniExist = await usuarioDao.readOne({dni: userData.dni, rol:"cliente"});
-        if(dniExist) {
-            return res.json({
+        // Lo mismo que para el email, pero con el DNI
+        const query2 = {
+			dni: userData.dni,
+			rol: Role.CLIENT,
+			estado: { $ne: Status.DELETED },
+		};
+        const clientWithSameDni = await usuarioDao.readOne(query2);
+        console.log(`DEBUG: Cliente con mismo DNI: ${JSON.stringify(clientWithSameDni)}`);
+        if (clientWithSameDni !== null) {
+            if (clientWithSameDni.estado === Status.UNVERIFIED) {
+                const deletedUnverifiedClient = await usuarioDao.deleteOne({ _id: clientWithSameDni._id });
+                if (!deletedUnverifiedClient) {
+                    return res.status(404).json({
+                        success: false,
+                        message: "No se pudo borrar el usuario anterior.",
+                    });
+                }
+                console.log('INFO: Se encontró un cliente no verificado con el mismo DNI que el nuevo. Se ha eliminado.');
+            }
+            else return res.status(409).json({
                 success: false,
                 message: "Error al registrarse. El DNI ya se encuentra registrado."
             });
@@ -33,8 +66,9 @@ export async function postController(req, res) {
 
 		const planilla = await planillaDao.create(req.body.planillaData);
         userData.planilla = planilla._id;
-
-        userData.contraseña = hash(userData.contraseña)
+        userData.contraseña = hash(userData.contraseña);
+        // El estado por defecto de un usuario nuevo va a ser UNVERIFIED
+        userData.motivoEstado = 'Falta completar registro';
 
 		const user = await usuarioDao.create(userData);
 
@@ -62,7 +96,11 @@ export async function loginController(req, res) {
 		const mail = req.body.mail;
 		const password = req.body.contraseña;
 
-        const user = await usuarioDao.readOne({ mail: mail });
+        const query = {
+			mail: mail,
+			$or: [{ estado: Status.REGISTERED }, { estado: Status.INACTIVE }],
+		};
+        const user = await usuarioDao.readOne(query);
         // usuario no encontrado
         if(!user) {
             return res.json({
@@ -117,7 +155,11 @@ export async function logoutController(req, res) {
 export async function authenticationController(req, res) {
     try { 
         const mail = req.body.mail;
-        const usuario = await usuarioDao.readOne({ mail: mail });
+        const query = {
+			mail: mail,
+			$or: [{ estado: Status.REGISTERED }, { estado: Status.INACTIVE }],
+		};
+        const usuario = await usuarioDao.readOne(query);
 
        if(usuario.codigo !== req.body.codigo){
             return res.json({
@@ -153,7 +195,11 @@ export async function authenticationController(req, res) {
 export async function authPass(req, res){
     try { 
         const mail = req.body.mail;
-        const usuario = await usuarioDao.readOne({ mail: mail });
+        const query = {
+			mail: mail,
+			$or: [{ estado: Status.REGISTERED }, { estado: Status.INACTIVE }],
+		};
+        const usuario = await usuarioDao.readOne(query);
 
         if(usuario.codigo !== req.body.codigo){
             return res.json({
@@ -184,19 +230,25 @@ export async function authPass(req, res){
     }
 }
 
+// El código debería ser envíado la 1ª vez, a los usuarios aún no registrados
+// Es decir, estado = Status.UNVERIFIED
 export async function crearCodigo(req, res){
     try {
-        const expirationTime = 20000
-        const limite = new Date(Date.now() + expirationTime)
-        const otp = generateOtp()
-        const usuario = await usuarioDao.updateOne(req.body.mail, {
-            codigo: otp,
-            limiteCodigo: limite
-        })
+        const expirationTime = 20000;
+		const limite = new Date(Date.now() + expirationTime);
+		const otp = generateOtp();
 
-        console.log("nuevo codigo: " + usuario.codigo)
+        // const query = { mail: req.body.mail, estado: Status.UNVERIFIED };
+        const query = {
+			mail: req.body.mail,
+			$or: [{ estado: Status.REGISTERED }, { estado: Status.INACTIVE }],
+		};
+        const datos = { codigo: otp, limiteCodigo: limite };
+		const usuario = await usuarioDao.updateOne(query, datos);
 
-        await mailer.auth(usuario.mail, otp)
+        console.log("INFO: Nuevo código: " + usuario.codigo);
+
+        await mailer.auth(usuario.mail, otp);
         
         res.json({
             success: true,
@@ -215,7 +267,11 @@ export async function crearCodigo(req, res){
 
 export async function recoverPassword(req, res) {
     try {
-        const user = await usuarioDao.readOne({mail: req.body.mail})
+        const query = {
+			mail: req.body.mail,
+			$or: [{ estado: Status.REGISTERED }, { estado: Status.INACTIVE }],
+		};
+        const user = await usuarioDao.readOne(query)
 
         if(!user) {
             return res.json({
@@ -242,9 +298,12 @@ export async function recoverPassword(req, res) {
 
 export async function resetPass(req, res){
     try {
-        const usuario = await usuarioDao.updateOne(req.body.mail, {
-            contraseña: hash(req.body.contraseña)
-        })
+        const query = {
+			mail: req.body.mail,
+			$or: [{ estado: Status.REGISTERED }, { estado: Status.INACTIVE }],
+		};
+        const datos = { contraseña: hash(req.body.contraseña) };        
+        const usuario = await usuarioDao.updateOne(query, datos);
 
         if(!usuario) {
             return res.json({
@@ -270,7 +329,6 @@ export async function resetPass(req, res){
     }
 }
 
-// obtener la información de un usuario a partr de su email
 export async function loadProfileController(req, res) {
 	try {
         const sessionUser = req.session && req.session.user;
@@ -278,13 +336,14 @@ export async function loadProfileController(req, res) {
 			return res.status(401).json({ success: false, message: 'Usuario no autenticado' });
 		}        
 
-        const queryMail = req.query && req.query.mail;
+        const queryId = req.query && req.query.id;
         // si no es admin, no puede acceder a perfiles que no sean el suyo
-        if (sessionUser.rol !== Role.ADMIN && sessionUser.mail !== queryMail) {
+        if (sessionUser.rol !== Role.ADMIN && sessionUser.id !== queryId) {
             return res.status(403).json({ success: false, message: 'Acceso denegado' });
         }
 
-        const user = await usuarioDao.readOne({ mail: queryMail });        
+        // const query = { mail: queryMail, $or: [{ estado: Status.REGISTERED }, { estado: Status.INACTIVE }] };
+        const user = await usuarioDao.readOne({ _id: queryId });        
         if (!user) {
             return res.status(404).json({ success: false, message: 'Usuario no encontrado' });
         }
@@ -298,6 +357,7 @@ export async function loadProfileController(req, res) {
 		res.status(500).json({ success: false, message: 'Error al obtener perfil. Inténtelo más tarde.' });
 	}
 }
+
 
 export async function saveProfileController(req, res) {
 	try {
@@ -319,9 +379,11 @@ export async function saveProfileController(req, res) {
 
         const emailChanged = newUserData.mail !== oldEmail;
         // console.log('Email changed:', emailChanged);
+        // Si el mail coincide con algún registrado o que se está verificando, va a ser un problema
         if (emailChanged) { 
-            const emailExists = await usuarioDao.readOne({ mail: newUserData.mail });
-            if (emailExists) {
+            const query1 = { mail: newUserData.mail, estado: { $ne: Status.DELETED }};
+            const userWithSameEmail = await usuarioDao.readOne(query1);
+            if (userWithSameEmail) {
                 return res.status(409).json({
                     success: false,
                     message: "Error al actualizar el perfil. El email ya se encuentra registrado."
@@ -334,16 +396,18 @@ export async function saveProfileController(req, res) {
         const dniChanged = newUserData.dni != null && (newUserData.dni !== oldUserData.dni);
         // console.log('DNI changed:', dniChanged);
         if (dniChanged) {
-            const userRole = (await usuarioDao.readOne({ mail: oldEmail })).rol;
-            const dniExists = await usuarioDao.readOne({dni: newUserData.dni, rol: userRole });
-            if (dniExists) {
+            const userRole = (await usuarioDao.readOne({ _id: newUserData.id })).rol;
+            const query2 = { dni: newUserData.dni, rol: userRole, estado: { $ne: Status.DELETED } };
+            const userWithSameDni = await usuarioDao.readOne(query2);
+            if (userWithSameDni) {
                 return res.status(409).json({
                     success: false,
                     message: "Error al actualizar el perfil. El DNI ya se encuentra registrado."
                 });
             }
         }
-		const updatedUser = await usuarioDao.updateOne(oldEmail, newUserData);
+        const query = { _id: newUserData.id };
+        const updatedUser = await usuarioDao.updateOne(query, newUserData);
 		if (!updatedUser) {
 			return res.status(404).json({ success: false, message: 'Usuario no encontrado' });
 		}
@@ -362,24 +426,24 @@ export async function saveProfileController(req, res) {
 export async function checkPasswordController(req, res) {
 	try {
 		// Return the current logged-in user's profile
-		const sessionUser = req.session && req.session.user;		
-		const mail = sessionUser.mail;
+		const sessionUser = req.session && req.session.user;
+		const userId = sessionUser.id;
 
-		if (!sessionUser || !mail) {
+		if (!sessionUser || !userId) {
 			return res.status(401).json({ success: false, message: 'Usuario no autenticado' });
 		}
-		const user = await usuarioDao.readOne({mail: mail});
 
+        // const query = {
+		// 	mail: mail,
+		// 	$or: [{ estado: Status.REGISTERED }, { estado: Status.INACTIVE }],
+		// };
+		const user = await usuarioDao.readOne({ _id: userId });
 		if (!user) {
 			return res.status(404).json({ success: false, message: 'Usuario no encontrado' });
 		}
 		
+		// las contraseñas no son iguales debido al hasheo
 		const isPasswordCorrect = compareHash(req.body.contraseña, user.contraseña);
-		
-		//las contraseñas no son iguales debido al hasheo
-		/* console.log('checkPasswordController received password:', req.body.contraseña);
-		console.log('User password in DB:', user.contraseña); */
-
 		return res.json({ success: isPasswordCorrect });
 	} catch (error) {
 		console.error('checkPasswordController ERROR: ', error);
@@ -391,9 +455,9 @@ export async function checkPasswordController(req, res) {
 export async function setPasswordController(req, res) {
 	try {
 		const sessionUser = req.session && req.session.user;		
-		const mail = sessionUser.mail;
+		const userId = sessionUser.id;
 
-		if (!sessionUser || !mail) {
+		if (!sessionUser || !userId) {
 			return res.status(401).json({ success: false, message: 'Usuario no autenticado' });
 		}
 
@@ -403,7 +467,10 @@ export async function setPasswordController(req, res) {
 			return res.status(400).json({ success: false, message: 'Contraseña no proporcionada' });
 		}
 
-		const updatedUser = await usuarioDao.updateOne(mail, { contraseña: hash(req.body.contraseña) });
+        // const query = { mail: userId, $or: [{ estado: Status.REGISTERED }, { estado: Status.INACTIVE }] };
+        const query = { _id: userId };
+        const datos = { contraseña: hash(req.body.contraseña) };
+		const updatedUser = await usuarioDao.updateOne(query, datos);
 		if (!updatedUser) {
 			return res.status(404).json({ success: false, message: 'Usuario no encontrado' });
 		}
@@ -462,27 +529,13 @@ export async function deleteUserController(req, res) {
             return res.status(403).json({ success: false, message: 'Acceso denegado' });
         }
         
-        const userMail = req.body.mail;
-        const motivoEstado = req.body.motivoEstado;
-        console.log("")
-        
-        // const updatedUser = await usuarioDao.readOne({
-        //     mail: userMail,
-        //     $or: [
-        //         { estado: { $exists: false } },
-        //         { estado: { $ne: Status.DELETED } }
-        //     ]
-        // });
-        const updatedUser = await usuarioDao.updateOneWithQuery({
-            mail: userMail,
-            $or: [
-                { estado: { $exists: false } },
-                { estado: { $ne: Status.DELETED } }
-            ]
-        }, {
-            estado: Status.DELETED,
-            motivoEstado: motivoEstado
-        });
+        // TODO: Impedir borrado de clientes anotados a alguna clase, lista de espera, con seña realizada, etc.
+        const userId = req.body.id;
+        const motivoEstado = req.body.motivoEstado;        
+        // Con solo _id debería ser suficiente, pero por las dudas...
+        const query = { _id: userId, estado: { $ne: Status.DELETED } };
+        const datos = { estado: Status.DELETED, motivoEstado: motivoEstado };
+        const updatedUser = await usuarioDao.updateOne(query, datos);
 
         if (!updatedUser) {
             return res.status(404).json({ success: false, message: 'Usuario no encontrado' });
@@ -504,26 +557,24 @@ export async function employeeSignUpController(req, res) {
         }
         
         const userData = req.body.userData;
-        userData.contraseña = hash(crypto.randomUUID());
-        userData.motivoEstado = 'Falta completar registro';
-        userData.codigo = crypto.randomUUID().slice(0, 8);
                 
         // Controlo que no exista un usuario con el mismo mail:
         // Si no existe o estado === DELETED, lo accepto.
         // Si estado === UNVERIFIED (registro incompleto), borro anterior y acepto.
         // Si estado === REGISTERED o INACTIVE (usuario registrado), lo rechazo.
-        const userWithSameEmail = await usuarioDao.readOne({ mail: userData.mail, estado: { $ne: Status.DELETED } });
-        console.log(`userWithSameEmail: ${JSON.stringify(userWithSameEmail)}`);
+        const query = { mail: userData.mail, estado: { $ne: Status.DELETED } };
+        const userWithSameEmail = await usuarioDao.readOne(query);
+        console.log(`DEBUG: Usuario con mismo email: ${JSON.stringify(userWithSameEmail)}`);
         if (userWithSameEmail !== null) {
             if (userWithSameEmail.estado === Status.UNVERIFIED) {
-                const deletedUnverifiedUser = await usuarioDao.deleteOne({ mail: userData.mail });
+                const deletedUnverifiedUser = await usuarioDao.deleteOne({ _id: userWithSameEmail._id });
                 if (!deletedUnverifiedUser) {
                     return res.status(404).json({
                         success: false,
                         message: "No se pudo borrar el usuario anterior.",
                     });
                 }
-                console.log('Se encontró un usuario no verificado con el mismo mail que el nuevo. Se ha eliminado.');
+                console.log('INFO: Se encontró un usuario *no verificado* con el mismo email que el nuevo. Se ha eliminado.');
             }
             else return res.status(409).json({
                 success: false,
@@ -531,23 +582,38 @@ export async function employeeSignUpController(req, res) {
             });
         }
 
-        const dniExists = await usuarioDao.readOne({ dni: userData.dni, rol: Role.EMPLOYEE });
-        if (dniExists) {
-            return res.status(409).json({
+        // Lo mismo que para el email, pero con el DNI
+        const query2 = {
+			dni: userData.dni,
+			rol: Role.EMPLOYEE,
+			estado: { $ne: Status.DELETED },
+		};
+        const employeeWithSameDni = await usuarioDao.readOne(query2);
+        console.log(`DEBUG: Empleado con mismo DNI: ${JSON.stringify(employeeWithSameDni)}`);
+        if (employeeWithSameDni !== null) {
+            if (employeeWithSameDni.estado === Status.UNVERIFIED) {
+                const deletedUnverifiedEmployee = await usuarioDao.deleteOne({ _id: employeeWithSameDni._id });
+                if (!deletedUnverifiedEmployee) {
+                    return res.status(404).json({
+                        success: false,
+                        message: "No se pudo borrar el usuario anterior.",
+                    });
+                }
+                console.log('INFO: Se encontró un empleado no verificado con el mismo DNI que el nuevo. Se ha eliminado.');
+            }
+            else return res.status(409).json({
                 success: false,
                 message: "Error al registrarse. El DNI ya se encuentra registrado."
             });
         }
 
+        userData.contraseña = hash(crypto.randomUUID());
+        // El estado por defecto de un usuario nuevo va a ser UNVERIFIED
+        userData.motivoEstado = 'Falta completar registro';
+        userData.codigo = crypto.randomUUID().slice(0, 8);
+
 		const createdUserData = await empleadoDao.create(userData);
         await mailer.employeeAuth(createdUserData);
-
-        // TODO2: Enviar un email al empleado que contenga sus datos de registro, junto a
-        // un enlace de verificación, donde se le solicite al empleado que cree una contraseña.
-        // Entonces:
-        // TODO2.1 Hecho: Generar enlace de verificación
-        // TODO2.2 Hecho: Armar mail con enlace, datos personales y enviarlo
-        // TODO2.3 Hecho: Armar proceso de verificación (generar página de contraseña con enlace único)
         
         return res.json({
             success: true,
@@ -581,7 +647,7 @@ export async function employeeAuthController(req, res) {
             codigo: '',
         };
         
-        const updatedUser = await empleadoDao.updateOneWithQuery(query, datos);
+        const updatedUser = await empleadoDao.updateOne(query, datos);
 
 		if (!updatedUser)
 			return res.status(404).json({ success: false, message: 'Código no encontrado' });

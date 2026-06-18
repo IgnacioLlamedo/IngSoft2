@@ -20,6 +20,7 @@ const statsDiv = document.getElementById('userStats');
 let userData;
 let currentUsers = [];
 const currentSort = { key: null, direction: 'asc' };
+let pendingDeleteId = null;
 let pendingDeleteMail = null;
 let pendingDeleteRole = null;
 
@@ -104,17 +105,15 @@ document.addEventListener('click', (event) => {
     const deleteBtn = event.target.closest('.btn-delete');
 
     if (viewBtn) {
-        // const userId = viewBtn.dataset.id;
-        const userMail = viewBtn.dataset.mail;
-        const userRole = viewBtn.dataset.rol;
-        openUserProfile(userMail, userRole);
+        const userId = viewBtn.dataset.id;
+        openUserProfile(userId);
     }
 
     if (deleteBtn) {
-        // const userId = deleteBtn.dataset.id;
+        const userId = deleteBtn.dataset.id;
         const userMail = deleteBtn.dataset.mail;
         const userRole = deleteBtn.dataset.rol;
-        openDeleteDialog(userMail, userRole);
+        openDeleteDialog(userId, userMail, userRole);
     }
 });
 
@@ -177,8 +176,8 @@ function renderUserTable(users) {
 
             const userHtmlActionsCell = `
                 <td class="actions-cell">
-                    <button class="btn-action btn-view" data-rol="${escapeHtml(user.rol)}" data-mail="${escapeHtml(user.mail)}">${viewBtnText}</button>
-                    <button class="btn-action btn-delete" data-rol="${escapeHtml(user.rol)}" data-mail="${escapeHtml(user.mail)}" ${disabledAttr}>${deleteBtnText}</button>
+                    <button class="btn-action btn-view" data-id="${escapeHtml(user._id)}" data-rol="${escapeHtml(user.rol)}" data-mail="${escapeHtml(user.mail)}">${viewBtnText}</button>
+                    <button class="btn-action btn-delete" data-id="${escapeHtml(user._id)}" data-rol="${escapeHtml(user.rol)}" data-mail="${escapeHtml(user.mail)}" ${disabledAttr}>${deleteBtnText}</button>
                 </td>
             `;
 
@@ -272,7 +271,7 @@ function bindDeleteDialogControls() {
 
     confirmDelBtn.addEventListener('click', async () => {
         try {
-            await deleteUser(pendingDeleteMail, pendingDeleteRole);
+            await deleteUser(pendingDeleteId);
         } catch (err) {
             showMessage('Error al eliminar usuario: ' + err.message, 'error', 'deleteMessage');
             console.error('Error al eliminar usuario:', err);
@@ -284,7 +283,7 @@ function bindDeleteDialogControls() {
                 deleteDialogForm.style.display = 'grid';
                 deleteDialog.close();
             }, 3000);
-            pendingDeleteMail = pendingDeleteRole = null;
+            pendingDeleteId = pendingDeleteMail = pendingDeleteRole = null;
         }
     });
 
@@ -295,8 +294,9 @@ function bindDeleteDialogControls() {
     });
 }
 
-function openDeleteDialog(mail, role) {
-    if (!mail || !role || !deleteDialog || !deleteUserMail || !deleteUserRole) return;
+function openDeleteDialog(id, mail, role) {
+    if (!id || !mail || !role || !deleteDialog || !deleteUserMail || !deleteUserRole) return;
+    pendingDeleteId = id;
     pendingDeleteMail = mail;
     pendingDeleteRole = role;
     deleteUserMail.textContent = mail;
@@ -308,8 +308,8 @@ function openDeleteDialog(mail, role) {
     deleteDialog.showModal();
 }
 
-async function deleteUser(mail, role) {
-    if (!mail) return;
+async function deleteUser(id) {
+    if (!id) return;
 
     const reason = deletionReasonInput ? deletionReasonInput.value.trim() : '';
     // console.log(`El motivo de baja ingresado es: "${reason}"`);
@@ -320,7 +320,7 @@ async function deleteUser(mail, role) {
         },
         credentials: 'include',
         body: JSON.stringify({
-            mail: mail,
+            id: id,
             motivoEstado: reason || 'Sin motivo especificado'
         })
     });
@@ -344,8 +344,8 @@ function escapeHtml(value) {
         .replace(/'/g, '&#39;');
 }
 
-async function openUserProfile(userMail, userRole) {
-    if (!userMail || !userRole) return;
-    if (userMail === userData.mail) window.location.href = '/account';
-    else window.location.href = `/profile/${encodeURIComponent(userRole)}/${encodeURIComponent(userMail)}`;
+async function openUserProfile(userId) {
+    if (!userId) return;
+    if (userId === userData.id) window.location.href = '/account';
+    else window.location.href = `/profile/${encodeURIComponent(userId)}`;
 }

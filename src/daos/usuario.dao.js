@@ -17,21 +17,15 @@ export class usuarioDao {
         return usuario;
     }
 
-    // TODO1: modificar los queries de readOne readOne para filtrar según estado
     async readMany(query){
         return await Usuario.find(query).lean();
     }
-    
-    // TODO2: mover el comportamiento de updateOneWithQuery a updateOne (y unificarlos)
+
+    // Se Utiliza _id en lugar de mail para las búsquedas...
+    // ...con readOne, updateOne y deleteOne (en donde sea posible)
+    // Esto ahorra tener que incluir el estado en el query...
+    // ...ya que podrían existir usuarios borrados con el mismo email
     async updateOne(query, datos){
-        const updated = await Usuario.findOneAndUpdate({ mail: query }, datos, { returnDocument: 'after' }).lean();
-        if(!updated){
-            console.log(`Ejecutando usuarioDao.updateOne(query, datos)`);
-            console.log(`query: ${JSON.stringify(query)} / datos: ${JSON.stringify(datos)}`);
-        }
-        return updated;
-    }
-    async updateOneWithQuery(query, datos){
         const updated = await Usuario.findOneAndUpdate(query, datos, { returnDocument: 'after' }).lean();
         if(!updated){
             console.log(`Ejecutando usuarioDao.updateOne(query, datos)`);
@@ -39,6 +33,7 @@ export class usuarioDao {
         }
         return updated;
     }
+
     async deleteOne(query){
         const deleted = await Usuario.findOneAndDelete(query).lean();
         if(!deleted){
@@ -48,6 +43,7 @@ export class usuarioDao {
         }
         return deleted;
     }
+
     async deleteMany(query){
         const deleted = await Usuario.deleteMany(query).lean();
         if(!deleted){
@@ -58,6 +54,7 @@ export class usuarioDao {
         return deleted;
     }
 }
+
 
 export class empleadoDao {
     async create(datos) {
@@ -73,10 +70,10 @@ export class empleadoDao {
         return empleado !== null;
     }
 
-    async updateOneWithQuery(query, datos){
+    async updateOne(query, datos){
         const updated = await Empleado.findOneAndUpdate(query, datos, { returnDocument: 'after' }).lean();
         if(!updated){
-            console.log(`Ejecutando usuarioDao.updateOne(query, datos)`);
+            console.log(`Ejecutando empleadoDao.updateOne(query, datos)`);
             console.log(`query: ${JSON.stringify(query)} / datos: ${JSON.stringify(datos)}`);
         }
         return updated;

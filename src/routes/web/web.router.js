@@ -103,14 +103,23 @@ webRouter.get("/access/auth-pass", (req,res) => {
 webRouter.get("/account", (req,res) => {
     if (!req.session.user) return res.redirect("/access/login");
     // Debería ser con el ID pero hay un bug con los IDs de los usuarios de prueba
-    res.render(path.join(__dirname, "Front/Account/accountPage.ejs"), { userRole: req.session.user.rol, userMail: req.session.user.mail, Role, Status });
+    res.render(path.join(__dirname, "Front/Account/accountPage.ejs"), { userRole: req.session.user.rol, userId: req.session.user.id, Role, Status });
 });
 
-webRouter.get("/profile/:userRole/:userMail", (req,res) => {
+webRouter.get("/profile/:id", async (req, res) => {
     if (!req.session.user) return res.redirect("/access/login");
     if (req.session.user.rol !== Role.ADMIN) return res.redirect(homeRoute);
-    // Debería ser con el ID pero hay un bug con los IDs de los usuarios de prueba
-    res.render(path.join(__dirname, "Front/Account/userProfilePage.ejs"), { userRole: req.params.userRole, userMail: req.params.userMail, Role, Status });
+
+    const user = await usuarioDao.readOne({ _id: req.params.id });
+    if (!user) return res.status(404).send("Usuario no encontrado");
+    
+    res.render(path.join(__dirname, "Front/Account/userProfilePage.ejs"), {
+        userRole: user.rol,
+        userMail: user.mail,
+        userId: user._id,
+        Role,
+        Status
+    });
 });
 
 

@@ -15,6 +15,7 @@ let Status;
 let isEditProfileMode = false;
 let userSessionData;
 let currentStatus;
+let userId;
 
 const edadMin = 14;
 const fechaMax = new Date();
@@ -24,10 +25,10 @@ document.getElementById("nacimiento").max = fechaMax.toISOString().split('T')[0]
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
     const profileForm = document.getElementById('profileForm');
-    const userMail = profileForm.dataset.userMail;
+    userId = profileForm.dataset.userId;
     Status = JSON.parse(profileContainer.dataset.statusEnum);
     getSessionData();
-    loadProfile(userMail);
+    loadProfile(userId);
     setupProfileEventListeners();
 });
 
@@ -41,10 +42,10 @@ async function getSessionData() {
 }
 
 // Load user profile data
-async function loadProfile(userMail) {
-    console.log('Cargando perfil del email:', userMail);
+async function loadProfile(userId) {
+    console.log('DEBUG: Cargando perfil del id:', userId);
     try {
-        const url = `/api/load-profile?mail=${encodeURIComponent(userMail)}`;
+        const url = `/api/load-profile?id=${encodeURIComponent(userId)}`;
 
         const response = await fetch(url, {
             method: 'GET',
@@ -69,7 +70,7 @@ async function loadProfile(userMail) {
 function populateStatusCard(userData) {
     if (!userData.motivoEstado) userData.motivoEstado = 'Sin motivo especificado';
     if (!userData.estado) userData.estado = Status.REGISTERED;
-    if (userData.mail === userSessionData.mail || !userData.estado) return;
+    if (userData._id === userSessionData.id || !userData.estado) return;
     
     userStatusCard.style.display = 'block';
     userStatus.textContent = currentStatus = userData.estado;
@@ -149,6 +150,7 @@ async function saveProfile() {
         }
 
         const userData = {
+            id: userId,
             nombre: document.getElementById('nombre').value.trim(),
             mail: document.getElementById('email').value.trim(),
             dni: document.getElementById('dni').value.trim(),
