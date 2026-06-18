@@ -26,7 +26,7 @@
 
     <main class="main-container">
 
-        <form id="new-activity-form" class="form">
+        <form id="create-form" class="form">
             
             <div class="form-card">
 
@@ -36,7 +36,7 @@
 
                     <div class="input-group">
                         <label for="name">Nombre:</label>
-                        <input type="text" name="name" required pattern=".*\S+.*">
+                        <input id="name" type="text" name="name" required pattern=".*\S+.*">
                     </div>
 
                 </section>
@@ -51,7 +51,7 @@
 
         </form>
 
-        <template id="edit-activity-form">
+        <template id="edit-form">
             <form class="form">
             
                 <div class="form-card">
@@ -61,7 +61,7 @@
                     <section class="form-section">
 
                         <div class="input-group">
-                            <label for="name">Nombre:</label>
+                            <label for="nameField">Nombre:</label>
                             <input id="nameField" type="text" name="name" required pattern=".*\S+.*">
                         </div>
 
@@ -72,7 +72,7 @@
                         <p id="editSuccess" class="successMsg" hidden></p>
                         <div class="options">
                             <button class="submit-blue">Modificar Actividad</button>
-                            <button id="editCancel" class="submit">Cancelar</button>
+                            <button id="editCancel" class="submit">Dejar de editar</button>
                         </div>
                     </section>
 
@@ -85,7 +85,7 @@
         <section class="list-card">
             <h1> Lista de actividades: </h1>
 
-            <div id="slotsList" class="list">
+            <div id="slotList" class="list">
                 
             </div>
 
@@ -98,8 +98,7 @@
 
     <%- include('../Navbar/footer.html') %>
 
-    <script src="/Management/managementActivities.js"></script>
-
+    
     <dialog id="confirmPanel">
         <p>¿Está seguro que desea borrar la Actividad?</p>
         <form method="dialog">
@@ -107,7 +106,9 @@
             <button id="confirmBtn" value="default">Borrar Actividad</button>
         </form>
     </dialog>
-
+    
+    <script src="/Management/managementActivities.js"></script>
+    
 </body>
 
 </html>

@@ -26,7 +26,7 @@
 
     <main class="main-container">
 
-        <form id="new-instructor-form" class="form">
+        <form id="create-form" class="form">
             
             <div class="form-card">
 
@@ -36,17 +36,17 @@
 
                     <div class="input-group">
                         <label for="name">Nombre completo:</label>
-                        <input type="text" name="name" required pattern=".*\S+.*">
+                        <input id="name" type="text" name="name" required pattern=".*\S+.*">
                     </div>
 
                     <div class="input-group">
                         <label for="dni">DNI:</label>
-                        <input type="number" name="dni" required pattern=".*\S+.*">
+                        <input id="dni" type="number" name="dni" required pattern=".*\S+.*">
                     </div>
 
                     <div class="input-group">
                         <label for="gender">Género:</label>
-                        <select name="gender">
+                        <select id="gender" name="gender">
                             <option value="masculino">Masculino</option>
                             <option value="femenino">Femenino</option>
                             <option value="otro">Otro</option>
@@ -65,7 +65,7 @@
         </form>
 
 
-        <template id="edit-instructor-form">
+        <template id="edit-form">
             <form class="form">
             
                 <div class="form-card">
@@ -75,17 +75,17 @@
                     <section class="form-section">
 
                         <div class="input-group">
-                        <label for="name">Nombre completo:</label>
+                        <label for="nameField">Nombre completo:</label>
                         <input id="nameField" type="text" name="name" required pattern=".*\S+.*">
                     </div>
 
                     <div class="input-group">
-                        <label for="dni">DNI:</label>
+                        <label for="dniField">DNI:</label>
                         <input id="dniField" type="number" name="dni" required pattern=".*\S+.*">
                     </div>
 
                     <div class="input-group">
-                        <label for="gender">Género:</label>
+                        <label for="genderField">Género:</label>
                         <select id="genderField" name="gender">
                             <option value="masculino">Masculino</option>
                             <option value="femenino">Femenino</option>
@@ -100,7 +100,7 @@
                         <p id="editSuccess" class="successMsg" hidden></p>
                         <div class="options">
                             <button class="submit-blue">Modificar Profesor</button>
-                            <button id="editCancel" class="submit">Cancelar</button>
+                            <button id="editCancel" class="submit">Dejar de editar</button>
                         </div>
                     </section>
 
@@ -113,7 +113,7 @@
         <section class="list-card">
             <h1> Lista de Profesores: </h1>
 
-            <div id="slotsList" class="list">
+            <div id="slotList" class="list">
 
             </div>
 
@@ -124,9 +124,7 @@
     </main>
 
     <%- include('../Navbar/footer.html') %>
-
-    <script src="/Management/managementInstructors.js"></script>
-
+    
     <dialog id="confirmPanel">
         <p>¿Está seguro que desea borrar el Profesor?</p>
         <form method="dialog">
@@ -134,7 +132,8 @@
             <button id="confirmBtn" value="default">Borrar Profesor</button>
         </form>
     </dialog>
-
+    
+    <script src="/Management/managementInstructors.js"></script>
 </body>
 
 </html>

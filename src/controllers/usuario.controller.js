@@ -72,9 +72,7 @@ export async function postController(req, res) {
 
 		const user = await usuarioDao.create(userData);
 
-        createSession(req, user);
-
-        const redirect = homeRoute;
+        const redirect = `/access/authentication?email=${userData.mail}`;
 		res.json({
 			success: true,
             redirect
@@ -90,6 +88,66 @@ export async function postController(req, res) {
 		});
 	}
 }
+
+// TODO: Terminar y utilizar autenticación de 2 factores solo al registrarse
+export async function postAuthenticationController(req, res) {
+    try { 
+        const userData = req.body.userData;
+
+        // Nuestro sistema de códigos, funciona poniendo el código en el usuario por medio de la db.
+        // Esto no tiene sentido ahora, ya que NO se debería crear el usuario hasta que se verifique el email.
+
+        // En caso de crear el usuario previamente a la verificación, entonces la verificación no tendría sentido, ya que se podría iniciar
+        // la sesión sin haber validado el email. O incluso, si se le corta la luz al momento de validar el emial, entonces después no podrá
+        // registrarse ya que el emial ya está registrado.
+
+        // Preferiría evitar la solución de agregarle un campo al usuario como "emailVerificado" o algo así.
+
+        return;
+        /* const mail = req.body.mail;
+        const usuario = await usuarioDao.readOne({ mail: mail });
+
+       if(usuario.codigo !== req.body.codigo){
+            return res.json({
+                success: false,
+                message: "Error al ingresar el código de validación. El código introducido es incorrecto."
+            });
+        }
+
+        if(usuario.limiteCodigo.getTime() < new Date(Date.now()).getTime()){
+            return res.json({
+                success: false,
+                message: "Error al ingresar el código de validación. El código ya expiró."
+            });
+        } */
+        
+        const planilla = await planillaDao.create(req.body.planillaData);
+        userData.planilla = planilla._id;
+
+        userData.contraseña = hash(userData.contraseña)
+
+		const user = await usuarioDao.create(userData);
+
+        createSession(req, user);
+
+        const redirect = homeRoute;
+        res.json({
+            success: true,
+            redirect
+        });
+    } 
+    catch(error) {
+        console.error("authenticationController ERROR: ", error);
+        res.json({
+            success: false,
+            message: "Error al validar el código. Inténtelo más tarde."
+        });
+    }
+}
+
+
+
+
 
 export async function loginController(req, res) {
 	try {
@@ -117,8 +175,9 @@ export async function loginController(req, res) {
             });
         }
 
+        createSession(req, user);
 
-        let redirect = `/access/authentication?email=${mail}`;
+        const redirect = homeRoute;
         res.json({
             success: true,
             redirect
@@ -152,6 +211,7 @@ export async function logoutController(req, res) {
 	}
 }
 
+// TODO: Combinar con postAuthenticationController
 export async function authenticationController(req, res) {
     try { 
         const mail = req.body.mail;

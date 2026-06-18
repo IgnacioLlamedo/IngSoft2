@@ -1,17 +1,58 @@
 
-const createForm = document.getElementById("new-room-form");
-const templateEditForm = document.getElementById("edit-room-form");
+
+
+// Estas son las únicas cosas que hay que cambiar de este código para adaptarlo //
+
+const endpoint = "/api/admin/sala"; // Se usa el mismo fetch pero diferenciando entre GET | POST | PUT | DELETE
+
+
+const slotHtml = (slot) => { return `
+    <p>Nombre: ${slot.nombre}</p>
+    <p>Cupo máximo: ${slot.limiteSala}</p>
+`};
+
+
+function getFormData(form) {
+    return {
+        nombre: form.name.value,
+        limiteSala: Number(form.limit.value),
+    }
+}
+
+
+const fieldsToFillWithSlotData = (slot) => {
+    return [
+        {id: '#nameField', content: slot.nombre},
+        {id: '#limitField', content: slot.limiteSala},
+    ];
+};
+
+//////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+const createForm = document.getElementById("create-form");
+const templateEditForm = document.getElementById("edit-form");
 
 const errorMsg = document.getElementById("createError");
 const successMsg = document.getElementById("createSuccess");
 
-const slotsList = document.getElementById("slotsList");
-const notDataAvailableMsg = document.getElementById("notDataAvailableMsg")
+const slotList = document.getElementById("slotList");
+const notDataAvailableMsg = document.getElementById("notDataAvailableMsg");
+
+const dialog = document.getElementById("confirmPanel");
+
 
 getAllSlots();
 
 async function getAllSlots() {
-    const res = await fetch("/api/admin/sala", {
+    const res = await fetch(endpoint, {
         method: 'GET',
         headers: {
             "Content-Type" : "application/json",
@@ -21,118 +62,128 @@ async function getAllSlots() {
     const resData = await res.json();
 
     if(resData.success)
-        printSlots(resData.rooms);
+        printSlots(resData.data);
     else
         notDataAvailableMsg.hidden = false;
 }
 
 
-
-
 function printSlots(slots) {
     notDataAvailableMsg.hidden = true;
 
-    slotsList.innerHTML = "";
+    slotList.innerHTML = "";
 
     const lastIndex = slots.length - 1;
 
     slots.forEach((slot, index) => {
-        
-        const slotElem = document.createElement("div");
-        slotElem.classList.add("slot");
 
-        const slotData = document.createElement("div");
-        slotData.classList.add("slot-data");
-
-        slotData.innerHTML =`
-            <p>Nombre: ${slot.nombre}</p>
-            <p>Cupo máximo: ${slot.limiteSala}</p>
-        `;
-
-
-        const slotError = document.createElement("div");
-        slotError.classList.add("slot-error");
-        slotError.classList.add("none");
-
-        const errorHr = document.createElement("hr");
-        const errorMsg = document.createElement("p");
-        errorMsg.classList.add("errorMsgW");
-
-        slotError.appendChild(errorHr);
-        slotError.appendChild(errorMsg);
-
-        const buttonsDiv = document.createElement("div");
-        buttonsDiv.classList.add("buttons-container");
-
-        const slotEditButton = document.createElement("button");
-        slotEditButton.classList.add("edit-button");
-        slotEditButton.textContent = "Editar";
-        slotEditButton.onclick = () => switchToEdit(slot.nombre, slot.limiteSala, slot._id);
-
-        const slotDeleteButton = document.createElement("button");
-        slotDeleteButton.classList.add("delete-button");
-        slotDeleteButton.type = "button";
-        slotDeleteButton.textContent = "Borrar";
-
-        slotDeleteButton.addEventListener('click', () => {
-            const dialog = document.getElementById('confirmPanel');
-            if (!dialog) {
-                // Fallback: no dialog present, delete immediately
-                deleteActivity(null, slot._id, slotError, errorMsg);
-                return;
-            }
-
-            dialog.showModal();
-
-            dialog.addEventListener('close', (closeEvent) => {
-                if (dialog.returnValue === 'default') {
-                    // pass the close event (may be null) — deleteActivity guards event usage
-                    deleteActivity(closeEvent, slot._id, slotError, errorMsg);
-                }
-            }, { once: true });
-        });
-
-        buttonsDiv.appendChild(slotEditButton);
-        buttonsDiv.appendChild(slotDeleteButton);
-        slotData.appendChild(buttonsDiv);
+        const slotElem = createSlotElem();
+        const slotData = createSlotData(slot);
+    
+        const [slotError, slotErrorMsg] = createSlotError(slotElem);
+        createEditAndDeleteButtons(slotData, slotError, slotErrorMsg, slot);
 
         slotElem.appendChild(slotData);
         slotElem.appendChild(slotError);
+        
+        slotList.appendChild(slotElem);
 
-        slotsList.appendChild(slotElem);
+        createSeparator(slotList, index, lastIndex);
 
-        if(index !== lastIndex) {
-            const separator = document.createElement("hr");
-            separator.classList.add("separator");
-            slotsList.appendChild(separator);
-        }
     });
+}
+
+
+function createSlotElem() {
+    const slotElem = document.createElement("div");
+    slotElem.classList.add("slot");
+
+    return slotElem;
+}
+
+
+function createSlotData(slot) {
+    const slotData = document.createElement("div");
+    slotData.classList.add("slot-data");
+
+    slotData.innerHTML = slotHtml(slot);
+
+    return slotData;
+}
+
+
+function createEditAndDeleteButtons(slotData, slotError, slotErrorMsg, slot) {
+    const buttonsDiv = document.createElement("div");
+    buttonsDiv.classList.add("buttons-container");
+
+    const slotEditButton = document.createElement("button");
+    slotEditButton.classList.add("edit-button");
+    slotEditButton.textContent = "Editar";
+    slotEditButton.onclick = () => switchToEdit(slot);
+
+    const slotDeleteButton = document.createElement("button");
+    slotDeleteButton.classList.add("delete-button");
+    slotDeleteButton.type = "button";
+    slotDeleteButton.textContent = "Borrar";
+
+    slotDeleteButton.addEventListener('click', () => {
+        dialog.showModal();
+
+        dialog.addEventListener('close', (closeEvent) => {
+            if (dialog.returnValue === 'default') {
+                deleteActivity(closeEvent, slot._id, slotError, slotErrorMsg);
+            }
+        }, { once: true });
+    });
+
+    buttonsDiv.appendChild(slotEditButton);
+    buttonsDiv.appendChild(slotDeleteButton);
+
+    slotData.appendChild(buttonsDiv);
+}
+
+
+function createSlotError(slotElem) {
+    const slotError = document.createElement("div");
+    slotError.classList.add("slot-error");
+    slotError.classList.add("none");
+
+    const slotErrorHr = document.createElement("hr");
+    const slotErrorMsg = document.createElement("p");
+    slotErrorMsg.classList.add("errorMsg");
+
+    slotError.appendChild(slotErrorHr);
+    slotError.appendChild(slotErrorMsg);
+
+    return [slotError, slotErrorMsg];
+}
+
+
+function createSeparator(slotList, index, lastIndex) {
+    if(index !== lastIndex) {
+        const separator = document.createElement("hr");
+        separator.classList.add("separator");
+        slotList.appendChild(separator);
+    }
 }
 
 
 
 
 
-document.getElementById("new-room-form").addEventListener("submit", async (event) => {
+createForm.addEventListener("submit", async (event) => {
 
     event.preventDefault();
     CleanMsgs();
 
-    const form = event.target;
+    const data = JSON.stringify( getFormData(event.target) );
 
-    const data = {
-        nombre: form.name.value,
-        limiteSala: form.limit.value,
-    }
-
-    const dataString = JSON.stringify(data);
-
-    const res = await fetch("/api/admin/sala", {
+    const res = await fetch(endpoint, {
         method: 'POST',
         headers: {
             "Content-Type" : "application/json",
         },
-        body: dataString
+        body: data
     });
 
     const resData = await res.json();
@@ -147,79 +198,77 @@ document.getElementById("new-room-form").addEventListener("submit", async (event
 
 
 
+
+
 function SuccessMsg(message) {
-    errorMsg.hidden = true;
-    errorMsg.textContent = "";
+    hideErrorMsg();
 
     successMsg.textContent = message;
     successMsg.hidden = false;
 }
 
 function ErrorMsg(message) {
-    successMsg.hidden = true;
-    successMsg.textContent = "";
+    hideSuccessMsg();
 
     errorMsg.hidden = false;
     errorMsg.textContent = message;
 }
 
 function CleanMsgs() {
-    successMsg.hidden = true;
-    successMsg.textContent = "";
+    hideSuccessMsg();
+    hideErrorMsg();
+}
 
+function hideErrorMsg() {
     errorMsg.hidden = true;
     errorMsg.textContent = "";
+}
+
+function hideSuccessMsg() {
+    successMsg.hidden = true;
+    successMsg.textContent = "";
 }
 
 
 
 
+async function deleteActivity(event, _id, slotError, slotErrorMsg) {
+    event.preventDefault();
 
+    hideSlotError(slotError);
+    
+    const data = JSON.stringify({ id: _id });
 
-
-
-
-
-
-
-
-
-
-
-
-async function deleteActivity(event, _id, slotError, errorMsg) {
-    if (event && typeof event.preventDefault === 'function') event.preventDefault();
-
-    slotError.classList.add("none");
-
-    const data = {
-        id: _id,
-    }
-
-    const dataString = JSON.stringify(data);
-
-    const res = await fetch("/api/admin/sala", {
+    const res = await fetch(endpoint, {
         method: 'DELETE',
         headers: {
             "Content-Type" : "application/json",
         },
-        body: dataString
+        body: data
     });
 
     const resData = await res.json();
 
     if(resData.success)
         getAllSlots();
-    else {
-        errorMsg.textContent = resData.message;
-        slotError.classList.remove("none");
-    }
+    else
+        showSlotError(slotError, slotErrorMsg, resData.message);
+}
+
+
+function hideSlotError(slotError) {
+    slotError.classList.add("none");
+}
+
+function showSlotError(slotError, slotErrorMsg, message) {
+    slotErrorMsg.textContent = message;
+    slotError.classList.remove("none");
 }
 
 
 
 
-// EDIT FORM
+// EDIT FORM //
 
 let currentForm = createForm;
 
@@ -229,17 +278,12 @@ let editFormSuccesMsg;
 let editId;
 
 
-async function switchToEdit(name, limit, id) {
+async function switchToEdit(slot) {
     const templateClone = templateEditForm.content.cloneNode(true);
     
-    editForm = templateClone.querySelector("form");
-    editId = id;
+    const editForm = templateClone.querySelector("form");
 
-    const editNameField = editForm.querySelector("#nameField");
-    editNameField.value = name;
-
-    const editLimitField = editForm.querySelector("#limitField");
-    editLimitField.value = limit;
+    fillFormWithData(editForm, slot);
 
     editFormErrorMsg = editForm.querySelector("#editError");
     editFormSuccessMsg = editForm.querySelector("#editSuccess");
@@ -248,16 +292,12 @@ async function switchToEdit(name, limit, id) {
         event.preventDefault();
         EditCleanMsgs();
 
-        const form = event.target;
-        const data = {
-            id: editId,
-            nombre: form.name.value,
-            limiteSala: Number(form.limit.value),
-        }
+        let data =  getFormData(event.target);
+        data.id = slot._id;
 
         const dataString = JSON.stringify(data);
 
-        const res = await fetch("/api/admin/sala", {
+        const res = await fetch(endpoint, {
             method: 'PUT',
             headers: {
                 "Content-Type" : "application/json",
@@ -269,6 +309,7 @@ async function switchToEdit(name, limit, id) {
 
         if(resData.success) {
             EditSuccessMsg(resData.message);
+            //switchToCreateForm();
             getAllSlots();
         }
         else
@@ -289,6 +330,16 @@ async function switchToEdit(name, limit, id) {
 function switchToCreateForm() {
     currentForm.replaceWith(createForm);
     currentForm = createForm;
+}
+
+
+
+function fillFormWithData(editForm, slot) {
+    const formFieldsContent = fieldsToFillWithSlotData(slot);
+
+    formFieldsContent.forEach(field => {
+        editForm.querySelector(field.id).value = field.content;
+    });
 }
 
 
