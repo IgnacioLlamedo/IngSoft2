@@ -4,13 +4,16 @@
 // Estas son las únicas cosas que hay que cambiar de este código para adaptarlo // 
 // Al profesor le tuve que agregar un control del DNI al crear y modificar      //
 
-const endpoint = "/api/admin/profesor"; // Se usa el mismo fetch pero diferenciando entre GET | POST | PUT | DELETE
+const instructorsEndpoint = "/api/admin/profesor"; // Se usa el mismo fetch pero diferenciando entre GET | POST | PUT | DELETE
+const activitiesEndpoint = "/api/admin/actividad";
 
+let availableActivities = [];
 
 const slotHtml = (slot) => {
-
-    // TODO: Obtener nombres de actividades
-    const activitiesNames = slot.actividades.map(activity => "<b>" + activity.slice(0, 6) + '</b>').join(', ');
+    const activitiesNames = slot.actividades.map(activity => {
+            const activityItem = availableActivities.find(item => item._id === activity);
+            return `<b>${activityItem.nombre}</b>`;
+        }).join(', ');
 
     let statusHtml = slot.estado === Status.REGISTERED
             ? `<b>${slot.estado}</b>`
@@ -40,6 +43,15 @@ function getFormData(form) {
     }
 }
 
+function getSuspendFormData(form) {
+    return {
+        motivoEstado: form.reasonField.value,
+        fechasEstado: {
+            desde: form.dateFromInput.value,
+            hasta: form.dateToInput.value
+        },
+    };
+}
 
 const fieldsToFillWithSlotData = (slot) => {
     return [
@@ -61,6 +73,7 @@ const fieldsToFillWithSlotData = (slot) => {
 
 const createForm = document.getElementById("create-form");
 const templateEditForm = document.getElementById("edit-form");
+const templateSuspendForm = document.getElementById("suspend-form");
 
 const errorMsg = document.getElementById("createError");
 const successMsg = document.getElementById("createSuccess");
@@ -72,15 +85,41 @@ const dialog = document.getElementById("confirmPanel");
 
 let Status;
 
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('DOMContentLoaded', async () => {
     Status = JSON.parse(createForm.dataset.statusEnum);
+    await initializeActivityCheckboxes();
+    attachConfirmDialogHandlers();
+    getAllSlots();
 });
 
+function attachConfirmDialogHandlers() {
+    const cancelButton = dialog.querySelector('button[value="cancel"]');
+    if (cancelButton) {
+        cancelButton.addEventListener('click', () => dialog.close('cancel'));
+    }
 
-getAllSlots();
+    const confirmForm = dialog.querySelector('form');
+    const reasonInput = dialog.querySelector('#deleteReasonField');
+    if (confirmForm && reasonInput) {
+        confirmForm.addEventListener('submit', (event) => {
+            const reason = reasonInput.value.trim();
+            if (!reason) {
+                reasonInput.setCustomValidity('Debe ingresar un motivo para borrar el profesor.');
+                reasonInput.reportValidity();
+                event.preventDefault();
+                return;
+            }
+            reasonInput.setCustomValidity('');
+        });
+
+        reasonInput.addEventListener('input', () => {
+            reasonInput.setCustomValidity('');
+        });
+    }
+}
 
 async function getAllSlots() {
-    const res = await fetch(endpoint, {
+    const res = await fetch(instructorsEndpoint, {
         method: 'GET',
         headers: {
             "Content-Type" : "application/json",
@@ -149,9 +188,7 @@ function createEditAndDeleteButtons(slotData, slotError, slotErrorMsg, slot) {
             const slotSuspendButton = document.createElement("button");
             slotSuspendButton.classList.add("suspend-button");
             slotSuspendButton.textContent = "Inhabilitar";
-            // TODO: Implementar inhabilitación/suspención de profesores (formulario, etc.)
-            // y conectar con inhabilitarProfesor() en admin.controller
-            // slotSuspendButton.onclick = () => switchToSuspend(slot);
+            slotSuspendButton.onclick = () => switchToSuspend(slot);
             buttonsDiv.appendChild(slotSuspendButton);
         }
     
@@ -172,7 +209,8 @@ function createEditAndDeleteButtons(slotData, slotError, slotErrorMsg, slot) {
     
             dialog.addEventListener('close', (closeEvent) => {
                 if (dialog.returnValue === 'default') {
-                    deleteActivity(closeEvent, slot._id, slotError, slotErrorMsg);
+                    const deleteReason = dialog.querySelector('#deleteReasonField')?.value || '';
+                    deleteInstructor(closeEvent, slot._id, slotError, slotErrorMsg, deleteReason);
                 }
             }, { once: true });
         });
@@ -225,9 +263,14 @@ createForm.addEventListener("submit", async (event) => {
         return;
     }
 
+    if (data.actividades.length === 0) {
+        ErrorMsg("Error al crear el profesor. Debe ingresar al menos una actividad");
+        return;
+    }
+
     const dataString = JSON.stringify(data);
 
-    const res = await fetch(endpoint, {
+    const res = await fetch(instructorsEndpoint, {
         method: 'POST',
         headers: {
             "Content-Type" : "application/json",
@@ -281,14 +324,14 @@ function hideSuccessMsg() {
 
 
 
-async function deleteActivity(event, _id, slotError, slotErrorMsg) {
+async function deleteInstructor(event, _id, slotError, slotErrorMsg, motivoEstado) {
     event.preventDefault();
 
     hideSlotError(slotError);
     
-    const data = JSON.stringify({ id: _id });
+    const data = JSON.stringify({ id: _id, motivoEstado: motivoEstado });
 
-    const res = await fetch(endpoint, {
+    const res = await fetch(instructorsEndpoint, {
         method: 'DELETE',
         headers: {
             "Content-Type" : "application/json",
@@ -298,10 +341,10 @@ async function deleteActivity(event, _id, slotError, slotErrorMsg) {
 
     const resData = await res.json();
 
-    if(resData.success)
-        getAllSlots();
-    else
-        showSlotError(slotError, slotErrorMsg, resData.message);
+    // TODO: agregar mensaje de éxito en algún lado (podría ser como al borrar/modificar en userlist)
+
+    if (resData.success) getAllSlots();
+    else showSlotError(slotError, slotErrorMsg, resData.message);
 }
 
 
@@ -349,9 +392,14 @@ async function switchToEdit(slot) {
             return;
         }
 
+        if (data.actividades.length === 0) {
+            EditErrorMsg("Error al modificar el profesor. Debe ingresar al menos una actividad");
+            return;
+        }
+
         const dataString = JSON.stringify(data);
 
-        const res = await fetch(endpoint, {
+        const res = await fetch(instructorsEndpoint, {
             method: 'PUT',
             headers: {
                 "Content-Type" : "application/json",
@@ -381,20 +429,120 @@ async function switchToEdit(slot) {
 }
 
 
+// SUSPEND FORM //
+
+let suspendForm;
+let suspendFormErrorMsg;
+let suspendFormSuccesMsg;
+let suspendId;
+
+
+
+async function switchToSuspend(slot) {
+    const templateClone = templateSuspendForm.content.cloneNode(true);
+    
+    const suspendForm = templateClone.querySelector("form");
+
+    fillFormWithData(suspendForm, slot);
+
+    suspendFormErrorMsg = suspendForm.querySelector("#suspendError");
+    suspendFormSuccessMsg = suspendForm.querySelector("#suspendSuccess");
+
+    suspendForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        suspendCleanMsgs();
+      
+        const data = getSuspendFormData(event.target);
+        data.id = slot._id;
+
+        if (data.fechasEstado.desde < Date.now() || data.fechasEstado.hasta < data.fechasEstado.desde) {
+            suspendErrorMsg("Error al inhabilitar el profesor. Las fechas ingresadas no son correctas");
+            return;
+        }
+
+        const dataString = JSON.stringify(data);
+
+        const res = await fetch(`${instructorsEndpoint}/inhabilitar`, {
+            method: 'PUT',
+            headers: {
+                "Content-Type" : "application/json",
+            },
+            body: dataString
+        });
+
+        const resData = await res.json();
+
+        if(resData.success) {
+            suspendSuccessMsg(resData.message);
+            //switchToCreateForm();
+            getAllSlots();
+        }
+        else
+            suspendErrorMsg(resData.message);
+    });
+
+
+    const cancelButton = suspendForm.querySelector("#suspendCancel");
+    cancelButton.addEventListener("click", (event) => {
+        switchToCreateForm();
+    });
+
+    currentForm.replaceWith(suspendForm);
+    currentForm = suspendForm;
+}
+
+
 function switchToCreateForm() {
     currentForm.replaceWith(createForm);
     currentForm = createForm;
 }
 
 
-// TODO: Terminar esto y controlar que se guarden/carguen bien
+async function initializeActivityCheckboxes() {
+    try {
+        const res = await fetch(activitiesEndpoint, {
+            method: 'GET',
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+
+        const resData = await res.json();
+
+        if (!resData.success) {
+            console.error("No se pudieron cargar las actividades.");
+            return;
+        }
+
+        availableActivities = resData.data;
+        renderActivityCheckboxes(createForm, availableActivities, "createActivitiesContainer");
+    }
+    catch (error) {
+        console.error("initializeActivityCheckboxes ERROR:", error);
+    }
+}
+
+function renderActivityCheckboxes(form, activities, containerId, checkedActivityIds = []) {
+    const container = form.querySelector(`#${containerId}`);
+    if (!container) return;
+
+    container.innerHTML = '';
+
+    activities.forEach(activity => {
+        const checkboxId = `${containerId}-${activity._id}`;
+        const isChecked = Array.isArray(checkedActivityIds) && checkedActivityIds.includes(activity._id);
+
+        const label = document.createElement('label');
+        label.classList.add('checkbox-mgmt');
+        label.innerHTML = `<input type="checkbox" id="${checkboxId}" name="activities" value="${activity._id}" ${isChecked ? 'checked' : ''}> ${activity.nombre}`;
+
+        container.appendChild(label);
+    });
+}
+
 function fillActivitiesCheckboxes(form, activities = []) {
     const values = Array.isArray(activities) ? activities : [activities];
-    const checkboxes = form.querySelectorAll('input[name="activities"]');
-
-    checkboxes.forEach(checkbox => {
-        checkbox.checked = values.includes(checkbox.value);
-    });
+    renderActivityCheckboxes(form, availableActivities, form.id === 'create-form' ? 'createActivitiesContainer' : 'editActivitiesContainer', values);
 }
 
 function fillFormWithData(editForm, slot) {
@@ -434,4 +582,30 @@ function EditCleanMsgs() {
 
     editFormErrorMsg.hidden = true;
     editFormErrorMsg.textContent = "";
+}
+
+
+
+function suspendSuccessMsg(message) {
+    suspendFormErrorMsg.hidden = true;
+    suspendFormErrorMsg.textContent = "";
+
+    suspendFormSuccessMsg.textContent = message;
+    suspendFormSuccessMsg.hidden = false;
+}
+
+function suspendErrorMsg(message) {
+    suspendFormSuccessMsg.hidden = true;
+    suspendFormSuccessMsg.textContent = "";
+
+    suspendFormErrorMsg.hidden = false;
+    suspendFormErrorMsg.textContent = message;
+}
+
+function suspendCleanMsgs() {
+    suspendFormSuccessMsg.hidden = true;
+    suspendFormSuccessMsg.textContent = "";
+
+    suspendFormErrorMsg.hidden = true;
+    suspendFormErrorMsg.textContent = "";
 }
