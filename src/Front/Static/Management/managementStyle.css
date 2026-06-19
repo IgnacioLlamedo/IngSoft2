@@ -196,3 +196,47 @@ dialog::backdrop {
     background-color: rgba(0, 0, 0, 0.45);
 }
 
+
+@media (max-width: 768px) {
+  .list-card {
+    width: 95%;            /* ocupar casi todo el ancho */
+    padding-inline: 20px;  /* menos padding lateral */
+    padding-block: 20px 30px;
+    gap: 15px;
+  }
+
+  .slot {
+    padding-block: 10px;   /* menos espacio vertical */
+    gap: 10px;
+    width: 100%;
+  }
+
+  .slot-data {
+    flex-direction: column; /* ya lo tenías, pero ajusto */
+    gap: 8px;
+    font-size: 0.9em;       /* texto más chico */
+  }
+
+  .edit-button,
+  .delete-button {
+    padding: 8px 12px;      /* botones más compactos */
+    font-size: 0.85em;
+  }
+
+  .buttons-container {
+    gap: 10px;              /* menos espacio entre botones */
+  }
+
+  #confirmPanel {
+    max-width: 280px;       /* panel más chico en mobile */
+    padding: 20px;
+    font-size: 0.9em;
+  }
+
+  #confirmPanel button {
+    min-width: 90px;
+    padding: 8px 12px;
+    font-size: 0.85em;
+  }
+}
+

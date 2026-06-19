@@ -3,13 +3,18 @@
 <link rel="stylesheet" href="/Home/assistanceModalStyle.css">
 
 <nav class="header-nav">
-    <a href="/home">
-        <img class="logo-img" src="/Images/HomeImages/Logo.png" alt="Logo">
-    </a>
+    <div class="nav-data">
+        <a href="/home">
+            <img class="logo-img" src="/Images/HomeImages/Logo.png" alt="Logo">
+        </a>
+    </div>
+    
+    
+
 
     <ul class="nav-links">
         <% if (path === "/" || path === "/home/") { %>
-            <li><a href="#" id="classesLink">Clases</a></li>
+            <li><a href="#" id="classesLink" class="classesLink">Clases</a></li>
         <% } %>
         <li><a href="/my-activities">Mis Actividades</a></li>
         <li>
@@ -22,11 +27,11 @@
                             <img src="/Images/UserDropbox/account_ico.webp" alt="Cuenta">
                             <p>Cuenta</p>
                         </a>
-                        <a href="#" if="asistenciaBtn">
+                        <a href="#" if="asistenciaBtn" class="asistenciaBtn">
                             <img src="/Images/UserDropbox/assistance.webp" alt="Asistencias">
                             <p>Asistencia</p>
                         </a>
-                        <a href="#" id="logout">
+                        <a href="#" class="logout" id="logout">
                             <img src="/Images/UserDropbox/logout_ico.webp" alt="Cerrar sesión">
                             <p>Cerrar sesión</p>
                         </a>
@@ -35,6 +40,23 @@
             </div>
         </li>
     </ul>
+
+    <div>
+        <div class="toggle-icon" id="toggleIcon">&#9776;</div>
+        <div class="menu-toggel">
+            <div class="menu-toggel-wrapper">
+                <ul>
+                    <% if (path === "/" || path === "/home/") { %>
+                        <li><a href="#" class="classesLink">Clases</a></li>
+                    <% } %>
+                    <li><a href="/my-activities">Mis Actividades</a></li>
+                    <li><a href="/account/"><p>Cuenta</p></a></li>
+                    <li><a href="#" class="asistenciaBtn"><p>Asistencia</p></a></li>
+                    <li><a href="#" class="logout"><p>Cerrar sesión</p></a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
 </nav>
 <script src="/Navbar/navLogic.js"></script>
 
@@ -58,3 +80,5 @@
     </div>
     <script src="/Home/classesModal.js"></script>
 <% } %>
+
+

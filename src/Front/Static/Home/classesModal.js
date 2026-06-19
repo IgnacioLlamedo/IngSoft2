@@ -1,18 +1,20 @@
-const classesLink = document.getElementById("classesLink");
 const tablaModal = document.getElementById("tablaModal");
 const closeModal = document.getElementById("closeModal");
 
-if (classesLink && tablaModal && closeModal) {
-  classesLink.addEventListener("click", (e) => {
-    e.preventDefault(); // evita que navegue
-    tablaModal.style.display = "flex"; // muestra el modal
+// engancha todos los links con clase .classesLink
+document.querySelectorAll(".classesLink").forEach(link => {
+  link.addEventListener("click", (e) => {
+    e.preventDefault(); 
+    tablaModal.style.display = "flex";
   });
+});
 
+if (closeModal) {
   closeModal.addEventListener("click", () => {
-    tablaModal.style.display = "none"; // cierra el modal
+    tablaModal.style.display = "none";
   });
 
-  // Cerrar si se hace clic fuera del contenido
+
   window.addEventListener("click", (e) => {
     if (e.target === tablaModal) {
       tablaModal.style.display = "none";
