@@ -105,16 +105,6 @@ export async function cancelarReservaRefactorizadoJsjs(req, res) {
         //lista de anotados a cancelado en el idUsuario que canceló.
         const clasesLiberadas = await cancelarClases(clases, user); 
 
-        //clasesLiberadas no controla los nulls
-        //por lo tanto solo lo voy a usar para marcar al usuario como borrado lógico
-
-        /* console.log("/////////////////////////////////////");
-        console.log("/////////////////////////////////////");
-        console.log("Desde cancelarReservaRefactorizado: ");
-        console.log("Estas son las clases liberadas: ");
-        for (const actual of clasesLiberadas){
-            console.log(actual);
-        } */
         console.log("/////////////////////////////////////");
         console.log("/////////////////////////////////////");
 
@@ -122,44 +112,17 @@ export async function cancelarReservaRefactorizadoJsjs(req, res) {
 ////////////////////////////////////////////
         // Llega hasta acá el código.
         let reemplazo = null;
-        if(tipo === "Mensual"){
 
-            const candidatosMensuales = await obtenerCandidatosMensuales(clases);
-            console.log("Estos son los candidatos mensuales obtenidos: ");
-            for(const candidato of candidatosMensuales){
-                console.log(candidato);
-                console.log("%%%%%%%%%%%%%%%%%%%%%%%%")
-            }
+        const candidatosUnicos = await obtenerCandidatosUnicos(clases);
+        
+        console.log("El tipo de la clase cancelada era ((((UNICO)))), por lo tanto busco un candidato único: ");
+        console.log("Estos son los candidatos únicos obtenidos: ");
 
-            reemplazo = await procesarCandidatos(candidatosMensuales,clases, user, tipo);
-
-            // Si ningún mensual sirvió busco en lista de espera únicos
-            if(!reemplazo){
-                const candidatosUnicos = await obtenerCandidatosUnicos(clases);
-                
-                console.log("NO SE CONSIGUIÓ NINGúN CANDIDATO MENSUAL VÁLIDO O QUE ACEPTE, AHORA PRUEBO CON LOS ÚNICOS ");
-                console.log("Estos son los candidatos únicos obtenidos: ");
-
-                for(const candidato of candidatosUnicos){
-                    console.log(candidato);
-                    console.log("%%%%%%%%%%%%%%%%%%%%%%%%")
-                }
-                
-                reemplazo = await procesarCandidatos(candidatosUnicos, clases, user, tipo);
-            }
+        for(const candidato of candidatosUnicos){
+            console.log(candidato);
+            console.log("%%%%%%%%%%%%%%%%%%%%%%%%")
         }
-        else{
-            const candidatosUnicos = await obtenerCandidatosUnicos(clases);
-           
-            console.log("El tipo de la clase cancelada era ((((UNICO)))), por lo tanto busco un candidato único: ");
-            console.log("Estos son los candidatos únicos obtenidos: ");
-
-            for(const candidato of candidatosUnicos){
-                console.log(candidato);
-                console.log("%%%%%%%%%%%%%%%%%%%%%%%%")
-            }
-            reemplazo = await procesarCandidatos(candidatosUnicos, clases, user, tipo);
-        }
+        reemplazo = await procesarCandidatos(candidatosUnicos, clases, user, tipo);
 
         //Si ningún candidato sirvio o aceptó la clase, se elimina de la
         //lista de anotados al usuario que canceló
@@ -188,26 +151,6 @@ export async function cancelarReservaRefactorizadoJsjs(req, res) {
     }
 }
 
-//funciona joya ya
-async function cancelarClases(clases, user){
-    const clasesLiberadas = [];
-
-    for(const item of clases){
-
-        if(item.clase === null) continue;
-
-        await claseEspecificaDao.updateOne({ _id: item.idClase._id,"anotados.idUsuario": user},
-            {
-                $set:{
-                "anotados.$.estado":"cancelado"
-                }
-            });
-
-        clasesLiberadas.push(item);
-    }
-    return clasesLiberadas;
-}
-
 //ya debería estar joya este
 async function obtenerCandidatosUnicos(clasesLiberadas){
 
@@ -225,9 +168,11 @@ async function obtenerCandidatosUnicos(clasesLiberadas){
 //ya debería estar joya este
 async function obtenerCandidatosMensuales(clasesLiberadas){
 
+    console.log(clasesLiberadas)
+
    const candidatos = [];
 
-   for(const clase of clasesLiberadas){
+   for(const clase of clasesLiberadas.idClase){
       candidatos.push(
          ...clase.esperaMensual
       );
@@ -300,37 +245,33 @@ async function procesarCandidatos(candidatos, clasesLiberadas, idUsuarioCancelad
 
     return lista;
 }
-/* 
-    for(let i = 0; i){
-        
-        esValido = await validarReemplazo(candidato, clasesLiberadas, candidato.tipo);
 
-        if(!esValido){
-            continue;
-        }
+//Pasar esta funcióin a reemplazo.servicio.js
+//también la voy a utilizar con cron.
+async function validarReemplazo(candidato, clase){
 
-        //Mando mail al cliente y espero a que acepte o rechace.
-        const acepto = await notificarUsuario(candidato, clasesLiberadas);
-        //Esto está mal jsjs
-        //Crear un schema que guarde la id de clase especifica y los usuarios
-        //que son candidatos, el await notificarUsuario tiene que ser único
-        //y una vez que el cliente acepte, rechace o (el tiempo caduque (como carajos hago esto ni idea))
-        //el endpoint debería tomar del schema el prox candidato y notificar
-        //nuevamente(?)
+    console.log("Dentro de validar reemplazo: ");
+    console.log("El candidato es el: ")
+    console.log(candidato);
+    console.log("&&&&&&&&&&&&&&&&&");
+    console.log("El tipo de reemplazo que se verificará siempre será UNICO ")
+    console.log("Las clases a validar son: ")
+    console.log(clases);
+    console.log("&&&&&&&&&&&&&&&&&");
+    console.log("&&&&&&&&&&&&&&&&&");
+    
 
-        //Salvame chatgpt
-        if(acepto){
-            return candidato;
-        }
-       break;
+    let reserva = null;
+   
+    const idsClases = [];
+    for(const item of clases){
+        idsClases.push(item.idClase._id);
     }
 
-    return esValido;
-} */
+    
+    console.log(idsClases)
 
-async function validarReemplazo(candidato, clasesLiberadas, tipoReemplazo){
-
-    /**
+     /**
      * Caso 1: El candidato es de reserva mensual
      */
     if (tipoReemplazo === 'mensual'){
@@ -338,11 +279,32 @@ async function validarReemplazo(candidato, clasesLiberadas, tipoReemplazo){
         
         //¿Debería agregar a la lista de anotados la reserva a la que pertenece el?
 
+        reserva = reservaDao.readOne({ idUsuario: candidato.idUsuario,
+            cancelada: false,
+            tipo: 'mensual',
+            clases: {
+                $elemMatch: {
+                    idClase: {
+                        $in: idsClases
+                    }
+                }
+            },
+        });
     }
-
     /**
      * Caso 2: El candidato es de reserva única o seña
      */
+    else{
+        reserva = await reservaDao.readOne({ idUsuario: candidato.idUsuario,
+            cancelada: false,
+            tipo: 'unica', //Verificar
+            idClaseEspecifica: clases[0].idClase._id
+        });
+    }
+
+    if(!reserva){
+        return false;
+    }
     else{
 
     }
@@ -362,21 +324,19 @@ async function validarReemplazo(candidato, clasesLiberadas, tipoReemplazo){
  * Función que elimina el usuario en caso de que no exista ningún usuario válido
  * O, el candidato rechace (o se venca el tiempo límite.) la clase.
  */
-async function eliminarDeClase(clases, user){
-    for (const item of clases){
-        if (item.clase === null)
-            continue
-        const updateado = await claseEspecificaDao.updateOne(
-            { _id: item.clase._id },
-            {
-                $pull: {
-                    anotados: {
-                        idUsuario: user
-                    }
-                } 
-            }
-        )
-    }
+async function eliminarDeClase(clase, user){
+    console.log("Dentro de eliminarDeClase");
+    console.log(clase);
+    const updateado = await claseEspecificaDao.updateOne(
+        { _id: clase._id },
+        {
+            $pull: {
+                anotados: {
+                    idUsuario: user
+                }
+            } 
+        }
+    )
 }
 
 /**
@@ -384,6 +344,8 @@ async function eliminarDeClase(clases, user){
  * de lista de espera a lista de anotados.
  * (En caso de que el usuario que canceló era mensual y ya habia realizado
  * una o más clases de la mensualidad)
+ * 
+ * Se utilizará en validarReemplazo
  */
 async function obtenerClasesNecesarias(candidato, clasesLiberadas){
 

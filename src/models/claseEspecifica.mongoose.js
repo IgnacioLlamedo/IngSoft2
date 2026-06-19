@@ -17,7 +17,7 @@ const claseEspecificaSchema = new Schema({
     }],
     esperaUnica : [{
         idUsuario: { type: String, ref: 'usuarios' },
-        tipo: { type: String, enum: ['mensualidad', 'unico', 'seña'], required: true },
+        tipo: { type: String, enum: ['unico', 'seña'], required: true },
     }],
     esperaMensual : [{
         idUsuario: { type: String, ref: 'usuarios' },

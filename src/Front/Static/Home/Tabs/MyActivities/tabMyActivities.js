@@ -10,8 +10,8 @@ async function getMyReservations() {
 
     const resData = await res.json();
 
-    console.log("Estas son todas las reservaciones DEL USUARIO: ")
-    console.log(resData);
+    /* console.log("Estas son todas las reservaciones DEL USUARIO: ")
+    console.log(resData); */
 
     const fechaActual = new Date();
 
@@ -19,7 +19,7 @@ async function getMyReservations() {
 
         console.log("Esta es una reserva del usuario: ");
         console.log(r);
-        console.log("/////////////////////////////////////////////////");
+        console.log("/////////////////////////////////////////////////"); 
 
         // =========================================
         // RESERVA ÚNICA
@@ -28,14 +28,11 @@ async function getMyReservations() {
 
             const claseGeneral = r.idClaseEspecifica.idClaseGeneral;
 
-                /* console.log(r.señada) */
-                /*console.log(claseGeneral) */
+
             const horario =
                 `${claseGeneral.hora}:00 - ${claseGeneral.hora + 1}:00`;
 
             const fechaClase = new Date(r.clases[0].fecha); //En clase única, no entre por idClase.
-            /* console.log("Fecha de la clase única: " );
-            console.log(fechaClase); */
 
             return {
 
@@ -92,8 +89,6 @@ async function getMyReservations() {
 
             const fechaClase = new Date(r.clases[r.clases.length - 1].idClase.fechaEspecifica);
 
-            /* console.log("Fecha de la última clase de la mensual: " );
-            console.log(fechaClase); */
             
             let vencida = false;
 
@@ -114,6 +109,11 @@ async function getMyReservations() {
 
                 fecha: fechas,
 
+                //Se deben mostrar las fechas (15/5, etc) porque se pueden cancelar
+                //las clases únicas dentro de una mensualidad.
+                //Acá habria que recorrer r.clases y si:
+                //  1. alguna clase tiene estado cancelada, no mostrarla
+                //  2. alguna clase tiene estado en espera, mostrarla en color naranja
                 dia:
                     claseGeneral.dia,
 
@@ -184,7 +184,7 @@ function renderActividades() {
 
   // Creamos una caja por cada actividad filtrada
   filtradas.forEach(act => {
-    console.log("Esto es actual del filtradas.forEach: ")
+    console.log("Esto es actual dentro del filtradas.forEach: ")
     console.log(act);
 
     const box = document.createElement("div");
@@ -223,6 +223,14 @@ function renderActividades() {
       boxData.appendChild(pPrecio);
     } 
     else {
+        /**
+         * acá hay que modificar para que muestre los días (10/07, 17/07, etc)
+         * (de lo siguiente me encargo yo)y que dependiendo de si el estado de la misma
+         * se permita:
+         *  1. si estado = "en espera": Permita salir de lista de espera.
+         *  2. si estado = "activo": Permita cancelar la clase individualmente.
+         */
+
       const pDia = document.createElement("p");
       pDia.textContent = `Día: ${act.dia}`;
       boxData.appendChild(pDia);
@@ -241,39 +249,46 @@ function renderActividades() {
     if (!act.vencida) {
     // Botones con listeners
 
+        console.log("La clase actual es de tipo ", act.tipo, " y estas son sus clases: ")    
+
         let clasesACancelar;
         if (act.tipo === 'Mensual'){
             console.log(act.clases);
             clasesACancelar = act.clases;
         }
-        else
+        else{
+            console.log(act.idClaseEspecifica);
             clasesACancelar = act.claseEspecifica;
+        }
 
         const btnCancelar = document.createElement("button");
         btnCancelar.classList.add("box-button", "cancel-reservation");
         btnCancelar.textContent = "Cancelar Reserva";
-        btnCancelar.addEventListener("click", async () => {
-
-            //Este será el fetch que cancelará la reserva
-            //Con el tipo se controla cual será el usuario que hay que sacar de la lista de espera.
-            const res = await fetch('/api/reservas/cancelar-reserva', {
-                method: 'POST',
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    clase: clasesACancelar,
-                    tipo: act.tipo
+        //No se cancelan las mensualidades, se cancelan individualmente de la misma
+        if (act.tipo === 'Mensual'){
+             //POP-UP que muestra las 4 o 5 clases de la mensualidad y permite elegír una para cancelar
+        }
+        else{
+            btnCancelar.addEventListener("click", async () => {
+                const res = await fetch('/api/reservas/cancelar-reserva', {
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        clase: clasesACancelar,
+                        tipo: act.tipo //Esto no hace falta - modificar despues
+                    })
                 })
-            })
-            const resData = await res.json();
-            if (resData.success){
-                console.log(`Cancelaste la reserva de ${act.actividad} - ${act.tipo}`);
-            }
-            else{
-                console.log(resData.message);
-            }
-        });
+                const resData = await res.json();
+                if (resData.success){
+                    console.log(`Cancelaste la reserva de ${act.actividad} - ${act.tipo}`);
+                }
+                else{
+                    console.log(resData.message);
+                }
+            });
+        }
         buttonsContainer.appendChild(btnCancelar);
 
         if (act.señada) {            
@@ -281,11 +296,13 @@ function renderActividades() {
             btnPagar.classList.add("box-button", "pay-rest");
             btnPagar.textContent = "Pagar resto";
             btnPagar.addEventListener("click", () => {
+                //ACÁ HAY QUE AGREGAR EL FETCH QUE PERMITE PAGAR EL RESTO!!!!!
                 console.log(`Pagaste el resto de la clase única de ${act.actividad}`);
             });
             buttonsContainer.appendChild(btnPagar);
         } 
         else if (act.tipo === "Mensual") {
+            //?
             const btnCancelarClase = document.createElement("button");
             btnCancelarClase.classList.add("box-button", "cancel-next-class");
             btnCancelarClase.textContent = "Cancelar Siguiente Clase";
