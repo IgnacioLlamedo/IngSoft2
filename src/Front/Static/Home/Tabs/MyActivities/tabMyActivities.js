@@ -266,7 +266,37 @@ function renderActividades() {
         btnCancelar.textContent = "Cancelar Reserva";
         //No se cancelan las mensualidades, se cancelan individualmente de la misma
         if (act.tipo === 'Mensual'){
-             //POP-UP que muestra las 4 o 5 clases de la mensualidad y permite elegír una para cancelar
+            //POP-UP que muestra las 4 o 5 clases de la mensualidad y permite elegír una para cancelar
+            //Las clases a cancelar están en esta variable: act.clases
+
+            //acá tenes un console log de todas las clases mensuales, ahí fijate
+            //que variable dentro de claseActual tiene la fecha.
+            for(const claseActual of act.clase){
+                console.log(claseActual)
+            }
+
+
+            //acá no es btn cancelar, a la hora de crear los "botones" de esas fechas
+            //que se deben poder cancelar.
+            btnCancelar.addEventListener("click", async () => {
+                const res = await fetch('/api/reservas/cancelar-reserva', {
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        clase: clasesACancelar,
+                        tipo: act.tipo //Esto no hace falta - modificar despues
+                    })
+                })
+                const resData = await res.json();
+                if (resData.success){
+                    console.log(`Cancelaste la reserva de ${act.actividad} - ${act.tipo}`);
+                }
+                else{
+                    console.log(resData.message);
+                }
+            });
         }
         else{
             btnCancelar.addEventListener("click", async () => {

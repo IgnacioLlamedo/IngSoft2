@@ -19,6 +19,8 @@ const claseEspecificaSchema = new Schema({
         idUsuario: { type: String, ref: 'usuarios' },
         tipo: { type: String, enum: ['unico', 'seña'], required: true },
     }],
+
+    //volver a una única cola de espera (?).
     esperaMensual : [{
         idUsuario: { type: String, ref: 'usuarios' },
     }],
