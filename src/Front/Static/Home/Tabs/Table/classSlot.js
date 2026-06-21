@@ -1,54 +1,171 @@
+init();
+//debugger;
+async function init() {
+    await crearTabla();
+    // Usar el lunes actual de weekNav
+    if (window.currentMonday) {
+        await getAllClasses(window.currentMonday);
+    }
+    // Actualizar la semana para que se pinten fechas en headers
+    if (window.actualizarSemana) {
+        window.actualizarSemana();
+    }
+}
+refrescarSemana();
+
+
+let salas;
+
+async function crearTabla() {
+
+    salas = await getAllSalas();
+
+    /**
+     * El problema es que si las salas se guardan en orden erroneo
+     * en la DB, se muestran en ese orden, ahora están guardadas ->
+     * Sala 1 -> Sala 3 -> Sala 2. 
+     * Habría que reasignarlas o eliminar la 3 y volver a crearla.
+     */
+
+    const tabla = document.getElementById("tablaHorarios");
+
+    const header = document.createElement("tr");
+
+    //No tiene que tener formato cammel porque los días se guardan así en db
+    const dias = [
+        "lunes",
+        "martes",
+        "miércoles",
+        "jueves",
+        "viernes",
+        "sábado"
+    ]; /* -> esto podría hacerse en una función que permita al admin
+    decididr que días mostrar (Pensando en lo que dijo la profe de "destacarse")*/
+
+    //x2
+    const horas = [];
+    for(let h = 7; h <= 21; h++) {
+        horas.push(h);
+    }
+
+    //Se crea el header (horarios + días de la semana)
+    header.innerHTML = `<th>Horarios</th> <th>Sala</th>
+        ${dias.map(dia => `<th class="slotHeader" data-dia="${dia}">${dia}</th>`
+        ).join("")}
+    `;
+
+    tabla.appendChild(header);
+
+    //Por cada horario se crea una fila.
+    horas.forEach(hora => {
+
+        const tr = document.createElement("tr");
+
+        //creo la hora y las salas que existen
+        let filaAct = `
+            <td>${hora}:00 - ${hora + 1}:00</td>
+            <td>
+                ${salas.map(s =>
+                    `<div class="slotDeSala">${s.nombre}</div>`
+                ).join("")}
+            </td>
+        `;
+        //Por cada día se crea la celda correspondiente con el horario
+        dias.forEach(dia => {
+
+            filaAct += `
+                <td id="${dia}-${hora}">
+                    ${salas.map(s =>
+                        `<div class="slotDeClase"
+                              data-sala="${s.nombre}">
+                            Sin Clase
+                        </div>`
+                    ).join("")}
+                </td>
+            `;
+        });
+
+        tr.innerHTML = filaAct;
+
+        tabla.appendChild(tr);
+    });
+}
+
+//Función para recuperar las salas de la db
+//Hay que modificarla para que recupere las clases de la semana actual.
+async function getAllSalas() {
+    const res = await fetch("/api/clases/getSalas");
+    const resData = await res.json();
+
+    return resData.salas;
+}
 
 let clasesData;
 
-getAllClasses();
 
-async function getAllClasses() {
+async function getAllClasses(fechaSemana) {
+    console.log("Recuperando clases para la semana del: " + fechaSemana);
     const res = await fetch("/api/clases/get-all", {
-        method: 'GET'
+        method: 'POST',
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            fechaSemana
+        })
     });
 
     const resData = await res.json();
     clasesData = resData.clases;
     /* console.log("Desde classSlot.js -> estas son las clases conseguidas de db: ")
     console.log(clasesData); */
+    
+    const ahora = new Date();
+    const result = await fetch("/session-data");
+    const sessionData = await result.json();
 
     clasesData.forEach(claseObj => {
-
+        /* console.log("Esta es una clase encontrada en DB: ");
+        console.log(claseObj); */
         const tdId = `${claseObj.clase.dia}-${claseObj.clase.hora}`;
 
         const celda = document.querySelector(`#${tdId} [data-sala="${claseObj.sala.nombre}"]`);
+        
 
         if (celda) {
+            //console.log(celda)
+
             celda.innerText = claseObj.actividad.nombre;
             celda.dataset.id = claseObj.clase._id; //Para mandar por crearPreferencia
             celda.dataset.clase = claseObj.actividad.nombre;
-            celda.dataset.precio = 1; //Esto está hardcodeado -> cambiar en prod. 
-/* 
-            //No es top-level moduel, no se puede hacer fetch -> eliminar.
-            const esp = await fetch("/api/clases/conseguir-especifica", {
-                method: 'GET',
-                body: JSON.stringify(claseObj.clase._id)
-            })
-            const resEsp = await res.json(); */
-            let capacidadActual;
+            celda.dataset.precio = claseObj.clase.precioMensual;
 
-            //Si no tengo clase especifica, significa que no la creé y por lo tanto no tiene alumnos anotados.
-/*             console.log(claseObj.claseEsp);
-            console.log(claseObj.claseEsp.anotados); */
-            if (claseObj.claseEsp){
-                const cant = claseObj.claseEsp.anotados.length;
-                /* console.log("La capacidad de la clase actual conseguida es: " + cant); //resEsp.capacidad);
-                console.log(claseObj.claseEsp.anotados);
-                console.log(typeof(claseObj.claseEsp.anotados))
-                console.log(claseObj.claseEsp.anotados.length); */
-                capacidadActual = claseObj.claseEsp.anotados.length +"/"+ claseObj.clase.limiteClase; //Cambiar formato.
+            let cantidadAnotados = 0;
+
+            if (claseObj.claseEsp) {
+                cantidadAnotados = claseObj.claseEsp.anotados.length;
             }
-            else
-                capacidadActual = "0/"+claseObj.clase.limiteClase;
+
+            capacidadActual = `${cantidadAnotados}/${claseObj.clase.limiteClase}`;
+
+            /* console.log("la capacidad de la clase de la fecha " + claseObj.clase.dia + " a la hora "+ claseObj.clase.hora)
+            console.log(capacidadActual) */
             celda.dataset.capacidad = capacidadActual;
 
-            celda.onclick = () => abrirPago(celda);
+            //Para informar pedir confirmación si quiere entrar en lista de espera.
+            celda.dataset.llena = cantidadAnotados >= claseObj.clase.limiteClase;
+
+            if (sessionData.logged) {
+                if (sessionData.session.rol === "cliente") {
+                    celda.onclick = () => abrirPago(celda);
+                } else {
+                    celda.onclick = () => abrirAsistencia(celda);
+                }
+            }
+            else {
+                celda.onclick = () => abrirPago(celda);
+            }
+
 
             switch (claseObj.actividad.nombre) {
                 case "Spinning":
@@ -67,10 +184,30 @@ async function getAllClasses() {
         }
     });
 
-    // Bauti posta recorreres toda la tabla para poner en sin clase?
     document.querySelectorAll('.slotDeClase').forEach(div => {
         if (div.innerText.trim() === "Sin Clase") {
             div.classList.add("sinclase");
         }
     });
 }
+async function recargarClasesSemana(fechaSemana) {
+
+    document.querySelectorAll(".slotDeClase").forEach(div => {
+
+        div.innerText = "Sin Clase";
+
+        div.removeAttribute("data-id");
+        div.removeAttribute("data-clase");
+        div.removeAttribute("data-precio");
+        div.removeAttribute("data-fecha");
+        div.removeAttribute("data-capacidad");
+        div.removeAttribute("data-llena");
+
+        div.className = "slotDeClase";
+    });
+
+    /* Como esto recupera literalmente todas las clases,
+        Borra el contenido y lo vuelve a cargar
+        Hay que modificarlo para que recupere por semana. */
+    await getAllClasses(fechaSemana);
+};

@@ -24,7 +24,6 @@ webRouter.get("/session-data", (req, res) => {
             logged: false,
         });
     }
-
     res.json({
         session: req.session.user,
         logged: true,

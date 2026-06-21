@@ -103,3 +103,9 @@ hr {
   margin: 0px 10px;
 }
 
+/* le puse un color gris suave para que se note que está vencida, no se si queda del todo bien */
+.vencida {
+  background: linear-gradient(135deg, #e0e0e0, #bdbdbd);
+  color: #444;
+  font-style: italic;
+}

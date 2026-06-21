@@ -5,6 +5,7 @@ import { clasesRouter } from "./clases.router.js";
 import { pagoRouter } from "./pago.router.js";
 import { adminRouter } from "./admin.router.js";
 import { reservasRouter } from "./reservas.router.js"
+import { asistenciaRouter } from "./asistencia.router.js"
 
 
 export const apiRouter = Router()
@@ -15,5 +16,6 @@ apiRouter.use('/clases', clasesRouter)
 apiRouter.use('/pago', pagoRouter);
 apiRouter.use('/admin', adminRouter)
 apiRouter.use('/reservas', reservasRouter);
+apiRouter.use('/asistencia', asistenciaRouter);
 
 apiRouter.use('/test', testRouter);
