@@ -113,13 +113,10 @@ function renderStatsTable(payments) {
     statsMsgDiv.textContent = '';
     statsMsgDiv.className = 'message';
     
-    const sortedUsers = currentSort.key ? sortStats(payments, currentSort.key, currentSort.direction) : payments;
+    const sortedPayments = currentSort.key ? sortStats(payments, currentSort.key, currentSort.direction) : payments;
     updateSortIndicators();
-
-    const Status = JSON.parse(table.dataset.statusEnum);
-    const Role = JSON.parse(table.dataset.roleEnum);
     
-    tableBody.innerHTML = sortedUsers
+    tableBody.innerHTML = sortedPayments
 		.map((payment) => {
             return `
                 <tr>
