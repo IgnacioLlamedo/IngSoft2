@@ -13,7 +13,7 @@ export class salaDao {
         return sala
     }
     async readMany(query){
-        return await Sala.find(query).lean()
+        return await Sala.find(query).sort({ nombre: 1 }).lean();
     }
     async updateOne(query, datos){
         const updated = await Sala.findOneAndUpdate(query, datos, { returnDocument: 'after' }).lean()
