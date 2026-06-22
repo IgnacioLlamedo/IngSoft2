@@ -211,6 +211,12 @@ webRouter.get("/stats/billing-period", (req,res) => {
     res.render(path.join(__dirname, "Front/Stats/statsBillingPeriod.ejs"), { userRole: req.session.user.rol, Role, Status });
 });
 
+webRouter.get("/stats/subscriptions-activity", (req,res) => {
+    if (!req.session.user) return res.redirect("/access/login");    
+    if (req.session.user.rol !== Role.ADMIN) return res.redirect(homeRoute);
+    res.render(path.join(__dirname, "Front/Stats/statsSubscriptionsActivity.ejs"), { userRole: req.session.user.rol, Role, Status });
+});
+
 
 // Error 404 Landing page
 // Acá entra cuando no encuentra ninguna de las rutas de arriba
