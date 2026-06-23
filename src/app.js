@@ -47,6 +47,7 @@ import { webRouter } from './routes/web/web.router.js';
 
 app.listen(config.port, () => {
     console.log(`Listening in port ${config.port}`)
+    console.log(`http://localhost:${config.port}/`)
 })
 
 app.use(express.json());
