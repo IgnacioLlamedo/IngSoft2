@@ -2,6 +2,7 @@ import { claseGeneralDao, profesorDao } from "../daos/index.js";
 import { salaDao } from "../daos/index.js";
 import { sedeDao } from "../daos/index.js";
 import { actividadDao } from "../daos/index.js";
+import { globalesDao } from "../daos/index.js";
 import { Status } from '../constants/constants.js';
 
 
@@ -640,6 +641,22 @@ export async function getActivities(req, res){
         res.json({
             success: false,
             message: "Error al recuperar las actividades. Inténtelo de nuevo más tarde."
+        });
+    }
+}
+
+export async function actualizarDiasAviso(req, res){
+    try {                                            //req.body.dias es provisional
+        await globalesDao.updateOne({id: "1"}, {diasAviso: req.body.dias});
+        /* res.json({
+            success: true,
+        }); */
+    }
+    catch(error) {
+        console.error("actualizarDiasAviso ERROR: ", error);
+        res.json({
+            success: false,
+            message: "Error al actualizar los días del aviso. Inténtelo de nuevo más tarde."
         });
     }
 }
