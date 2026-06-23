@@ -115,8 +115,7 @@ export async function consultar(req, res) {
                 continue; //Saltea el resto del código y vuelve a entrar al for.
             }
 
-
-            const claseGeneral = claseGeneralDao.readOne({ _id: clase.idClaseGeneral })
+            const claseGeneral = await claseGeneralDao.readOne({ _id: clase.idClaseGeneral })
             const llena = clase.anotados.length >= claseGeneral.limiteClase
 
             datos.push({
@@ -127,12 +126,15 @@ export async function consultar(req, res) {
             const yaAnotado = clase.anotados.some(
                 u => u.idUsuario === req.session.user.id
             );
-            const yaEnEspera = clase.espera.some(
+            const yaEnEsperaUnica = clase.esperaUnica.some(
+                u => u.idUsuario === req.session.user.id
+            );
+            const yaEnEsperaMensual = clase.esperaMensual.some(
                 u => u.idUsuario === req.session.user.id
             );
 
             //Si está en lista de anotados o de espera corta el bucle
-            if (yaAnotado || yaEnEspera) {
+            if (yaAnotado || yaEnEsperaMensual || yaEnEsperaUnica) {
                 return res.json({
                     success: false,
                     message: `Ya se encuentra anotado en la actividad del día ${claseData.fechaEspecifica}`

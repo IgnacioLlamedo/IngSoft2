@@ -276,6 +276,8 @@ async function pagar(tipoClase, precio, clasesPago) {
         document.getElementById("mensajePago").innerText = resData.message;
         return;
     }
+    console.log("Estas son los datos de clases.datos desde payPanel.js: ");
+    console.log(resData.datos);
 
     // Clase llena -> confirmar lista espera
     /**
