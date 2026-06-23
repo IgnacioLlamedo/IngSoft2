@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/Images/Common/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/Common/commonPageStyle.css">
+    <link rel="stylesheet" href="/Common/commonFormPageStyle.css">
+    <link rel="stylesheet" href="/Account/profileStyle.css">
+    <link rel="stylesheet" href="/Stats/statsStyle.css">
+    <link rel="stylesheet" href="/Stats/statsCancellationsClassStyle.css">
+    <title>CEF - Estadísticas: Cancelaciones por clase</title>
+</head>
+
+<body>
+    <header>
+        <%- include('../Navbar/navbarSelector.ejs') %>
+    </header>
+
+    <h1 class="title">Estadísticas</h1>
+
+    <%- include('../Stats/statsNav.html') %>
+
+        <main class="main-container">
+            <section class="filter-panel" aria-label="Filtrar estadísticas">
+                <div class="filter-row">
+                    <div class="filter-row">
+                        <label for="filterColumnSelect" style="margin-right: 5px">
+                            Columna:
+                            <select id="filterColumnSelect">
+                                <option value="id">ID</option>
+                                <option value="clase">Clase</option>
+                                <option value="profesor">Profesor</option>
+                            </select>
+                        </label>
+                        <label for="filterInput" style="margin-left: 5px; margin-right: 5px;">
+                            Buscar:
+                            <input id="filterInput" type="search" placeholder="Buscar en la columna seleccionada"
+                                aria-label="Texto de búsqueda" style="font-weight: 400;" />
+                        </label>
+                        <button type="button" id="clearFilterButton" style="margin-left: 2px">Limpiar filtro</button>
+                    </div>
+            </section>
+            <div class="table-wrapper">
+                <table class="stats-table" role="table" id="statsTable" data-status-enum="<%= JSON.stringify(Status) %>"
+                    data-role-enum="<%= JSON.stringify(Role) %>">
+                    <thead>
+                        <tr>
+                            <th>
+                                <button type="button" class="btn-sort" data-sort-key="id-clase-general">
+                                    ID<span class="sort-indicator"></span>
+                                </button>
+                            </th>
+                            <th>
+                                <button type="button" class="btn-sort" data-sort-key="clase">
+                                    Clase<span class="sort-indicator"></span>
+                                </button>
+                            </th>
+                            <th>
+                                <button type="button" class="btn-sort" data-sort-key="profesor">
+                                    Profesor<span class="sort-indicator"></span>
+                                </button>
+                            </th>
+                            <th>
+                                <button type="button" class="btn-sort" data-sort-key="reservas">
+                                    Reservas<span class="sort-indicator"></span>
+                                </button>
+                            </th>
+                            <th>
+                                <button type="button" class="btn-sort" data-sort-key="cancelaciones">
+                                    Cancelaciones<span class="sort-indicator"></span>
+                                </button>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="statsTableBody">
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="statsMessage" class="message info">Cargando información…</div>
+        </main>
+
+        <script src="/Stats/statsCancellationsClassLogic.js" defer></script>
+
+        <%- include('../Navbar/footer.html') %>
+</body>
+
+</html>
