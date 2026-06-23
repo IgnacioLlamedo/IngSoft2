@@ -1,8 +1,11 @@
-import { claseGeneralDao, profesorDao } from "../daos/index.js";
+import { claseGeneralDao } from "../daos/index.js";
+import { claseEspecificaDao } from "../daos/index.js";
+import { profesorDao } from "../daos/index.js";
 import { salaDao } from "../daos/index.js";
 import { sedeDao } from "../daos/index.js";
 import { actividadDao } from "../daos/index.js";
 import { globalesDao } from "../daos/index.js";
+import { reservaDao } from "../daos/index.js";
 import { Status } from '../constants/constants.js';
 
 
@@ -564,7 +567,7 @@ export async function modificarActividad(req, res){
         ) {
             return res.json({
                 success: false,
-                message: "Error al modificar la sala. No se han modificado datos."
+                message: "Error al modificar la actividad. No se han modificado datos."
             })
         }
 
@@ -645,6 +648,55 @@ export async function getActivities(req, res){
     }
 }
 
+
+export async function getActivitiesStats(req, res){
+    try {
+        const activities = await actividadDao.readMany({});
+
+        if (!activities) {
+            return res.json({
+                success: false,
+            })
+        }
+
+        const reservations = await reservaDao.readManyMensual({});
+        const generalClasses = await claseGeneralDao.readMany({});
+
+        activities.forEach(a => a.abonados = 0);
+
+        console.log("reservas mensuales: ", reservations);
+        for (let r of reservations) {
+            // Esto no hacía falta porque solo aplica a reservas únicas 🥲
+            // if (r.idClase) {
+            //     const generalClass = generalClasses.find(c => c._id === r.idClase);
+            //     activities.find(a => a._id === generalClass.idActividad).abonados++;
+            // } else
+
+            // Si hay clases >> Obtengo idClaseEspecífica >> Busco claseEspecifica >>
+            // >> Obtengo idClaseGeneral >> Busco claseGeneral >>
+            // >> Obtengo idActividad >> Obtengo actividad >> Incremento actividad.abonados
+            if (r.clases && r.clases.length > 0) {
+                const idSpecificClass = r.clases[0].idClase;
+                const specificClass = await claseEspecificaDao.readOne({ _id: idSpecificClass });
+                if (!specificClass) continue;
+                const idGeneralClass = specificClass.idClaseGeneral;
+                const generalClass = generalClasses.find(gc => gc._id === idGeneralClass);
+                if (!generalClass) continue;
+                const activity = activities.find(a => a._id === generalClass.idActividad);
+                if (activity) activity.abonados++;
+            }
+        }
+
+        return res.json(activities);
+    }
+    catch(error) {
+        console.error("getAllActivities ERROR: ", error);
+        res.json({
+            success: false,
+            message: "Error al recuperar las actividades. Inténtelo de nuevo más tarde."
+        });
+    }
+}
 
 
 

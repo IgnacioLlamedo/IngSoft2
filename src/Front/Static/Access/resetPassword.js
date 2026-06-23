@@ -11,18 +11,18 @@ const resetPasswordErrorMsg = document.getElementById("registerError");
 
 function checkPasswordRequirement() {
     if(passwordIsEmpty())
-        return "Error al registrarse. Se debe especificar la contraseña.";
+        return "Error al restablecer contraseña. Se debe especificar la contraseña.";
 
     if(password.value.trim().length < 6)
-        return "Error al registrarse. La contraseña debe tener al menos 6 caracteres.";
+        return "Error al restablecer contraseña. La contraseña debe tener al menos 6 caracteres.";
 }
 
 function checkConfirmPassword() {
     if(confirmPasswordIsEmpty())
-        return "Error al registrarse. Se debe confirmar la contraseña en el campo dado.";
+        return "Error al restablecer contraseña. Se debe confirmar la contraseña en el campo dado.";
 
     if(password.value.trim() !== confirmPassword.value.trim())
-        return "Error al registrarse. La contraseña especificada y su confirmación deben coincidir.";
+        return "Error al restablecer contraseña. La contraseña especificada y su confirmación deben coincidir.";
 }
 
 function checkErrors() {

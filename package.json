@@ -16,10 +16,11 @@
     "ejs": "^3.1.10",
     "express": "^5.2.1",
     "express-session": "^1.19.0",
-    "mercadopago": "^2.12.1",
+    "mercadopago": "^3.1.0",
     "mongodb": "^7.2.0",
     "mongoose": "^9.6.1",
-    "nodemailer": "^8.0.7",
+    "node-cron": "^4.4.1",
+    "nodemailer": "^9.0.1",
     "nodemon": "^3.1.14",
     "passport": "^0.7.0",
     "passport-local": "^1.0.0"

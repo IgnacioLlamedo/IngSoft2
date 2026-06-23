@@ -1,0 +1,100 @@
+.table-wrapper {
+    max-width: 45%;  
+}
+
+.stats-table {
+    min-width: 250px;
+    max-width: 400px;
+}
+
+.stats-table th:nth-child(1),
+.stats-table td:nth-child(1) {
+    width: 50%;
+}
+
+.stats-table th:nth-child(2),
+.stats-table td:nth-child(2) {
+    width: 50%;
+}
+
+.chart-panel {
+    margin-top: 45px;
+    max-width: 100%;
+}
+
+.chart-title {
+    color: #eaeaea;
+    margin-bottom: 12px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.chart-container {
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+    padding: 16px;
+    border-radius: 10px;
+    background: #333333;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08);
+    min-height: 220px;
+    overflow-x: auto;
+}
+
+.chart-bar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    min-width: 72px;
+}
+
+.bar-wrapper {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    width: 100%;
+    max-width: 72px;
+    min-height: 180px;
+    padding: 4px 0;
+    border-radius: 12px;
+}
+
+.bar {
+    width: 100%;
+    background: linear-gradient(180deg, #5b8df9, #2b61d4);
+    border-radius: 8px 8px 0 0;
+    transition: transform 0.2s ease;
+}
+
+.chart-bar:hover .bar {
+    /* efecto bastante innecesario pero capaaaz queda mejor */
+    /* en un caso real tendría esa interacción tendría algún efecto, como ver más detalles */
+    transform: scaleY(1.05);
+}
+
+.bar-value {
+    margin-top: 8px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #eaeaea;
+}
+
+.bar-label {
+    margin-top: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-align: center;
+    line-height: 1.2;
+    max-width: 90px;
+    word-wrap: break-word;
+    color: #eaeaea;
+}
+
+.chart-empty {
+    width: 100%;
+    text-align: center;
+    padding: 48px 0;
+    color: #6b7280;
+    font-size: 0.95rem;
+}

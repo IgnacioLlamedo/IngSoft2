@@ -1,0 +1,60 @@
+.data-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+
+    font-size: 20px;
+}
+
+.data-container hr {
+    width: 100%;
+}
+
+
+.options-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    margin-top: 50px;
+}
+
+
+.buttons-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-top: 30px;
+    gap: 100px;
+}
+
+.buttons-container button {
+    padding: 15px 60px;
+    border: none;
+    font-weight: bold;
+    font-size: 15px;
+
+    border: 2px solid transparent;
+    border-radius: 5px;
+    transition: border 0.2s ease;
+}
+
+.buttons-container button:hover {
+    border: 2px solid white;
+}
+
+.yes {
+    background-color: rgb(93, 255, 29);
+}
+
+.no {
+    background-color: rgb(255, 58, 58);
+}
+
+.message {
+    text-align: center;
+}

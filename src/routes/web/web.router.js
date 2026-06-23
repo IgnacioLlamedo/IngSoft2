@@ -24,7 +24,6 @@ webRouter.get("/session-data", (req, res) => {
             logged: false,
         });
     }
-
     res.json({
         session: req.session.user,
         logged: true,
@@ -202,6 +201,30 @@ webRouter.get("/access/employee-auth", async (req, res, next) => {
     if (!isValidCode) return next(); // Redirige al manejador del final de la cadena (Error 404 Landing page)
 
     res.render(path.join(__dirname, "Front/Access/employeeAuth.ejs"), { userRole: Role.VISITOR, Role, Status, code });
+});
+
+
+// Stats Pages
+webRouter.get("/stats/billing-period", (req,res) => {
+    if (!req.session.user) return res.redirect("/access/login");    
+    if (req.session.user.rol !== Role.ADMIN) return res.redirect(homeRoute);
+    res.render(path.join(__dirname, "Front/Stats/statsBillingPeriod.ejs"), { userRole: req.session.user.rol, Role, Status });
+});
+
+webRouter.get("/stats/subscriptions-activity", (req,res) => {
+    if (!req.session.user) return res.redirect("/access/login");    
+    if (req.session.user.rol !== Role.ADMIN) return res.redirect(homeRoute);
+    res.render(path.join(__dirname, "Front/Stats/statsSubscriptionsActivity.ejs"), { userRole: req.session.user.rol, Role, Status });
+});
+
+
+
+// Cupo
+webRouter.get("/cupo", (req,res) => {
+    if (!req.session.user) return res.redirect("/access/login");    
+    if (req.session.user.rol !== Role.CLIENT) return res.redirect(homeRoute);
+    // TODO: VALIDAR ID DEL CLIENTE, SÓLO EL CLIENTE INDICADO DEBERÍA PODER INGRESAR A LA PÁGINA.
+    res.render(path.join(__dirname, "Front/Cupo/manageCupo.ejs"), { userRole: req.session.user.rol, Role, Status });
 });
 
 
