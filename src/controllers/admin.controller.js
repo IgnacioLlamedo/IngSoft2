@@ -645,18 +645,39 @@ export async function getActivities(req, res){
     }
 }
 
+
+
+
 export async function actualizarDiasAviso(req, res){
-    try {                                            //req.body.dias es provisional
-        await globalesDao.updateOne({id: "1"}, {diasAviso: req.body.dias});
-        /* res.json({
+    try {                                            //req.body.diasAviso es provisional
+        await globalesDao.updateOne({id: "1"}, {diasAviso: req.body.diasAviso});
+        res.json({
             success: true,
-        }); */
+            message: "¡Modificaciones hechas con éxito!"
+        });
     }
     catch(error) {
         console.error("actualizarDiasAviso ERROR: ", error);
         res.json({
             success: false,
             message: "Error al actualizar los días del aviso. Inténtelo de nuevo más tarde."
+        });
+    }
+}
+
+
+export async function recuperarDiasAviso(req, res){
+    try {
+        const data = await globalesDao.readOne({id: "1"});
+        res.json({
+            data,
+        });
+    }
+    catch(error) {
+        console.error("recuperarDiasAviso ERROR: ", error);
+        res.json({
+            success: false,
+            message: "Error al recuperar los días del aviso. Inténtelo de nuevo más tarde."
         });
     }
 }
