@@ -73,7 +73,7 @@ document.getElementById("noOption").addEventListener('click', (event) => {
 
     /**
      * Rechazar cupo:
-     *  -> Inavilitar el cupo.
+     *  -> Inhabilitar el cupo.
      *  -> Quitar de la lista a esta persona.
      *  -> Crear cupo de la siguiente persona del mismo tipo (Abonado o No Abonado).
      *  -> Avisarle.
@@ -91,3 +91,19 @@ function showMessage(message, success) {
     const msgClass = success ? "successMsg" : "errorMsg";
     msg.classList.add(msgClass);
 }
+
+
+
+
+
+/**
+ * Lo que se me complica:
+ * 
+ * - Fetch de datos. No sé de bien cómo agarrar los datos de la clase liberada desde BD. (A menos que metamos todo como parámetros)
+ * - Crear preferencia. Necesito las clases que paga, y bueno toda la lógica de pago ya está hecha en otro lado.
+ * - Cancelar el cupo. Desconozco qué carajo se hace al respecto con el sistema que tienen planteado.
+ * 
+ *  Pasar todos los datos por parámetros sería posiblemente lo más sencillo, pero quizás ustedes saben cómo hacerlo con
+ *  un llamado al back y listo.
+ * 
+ */
