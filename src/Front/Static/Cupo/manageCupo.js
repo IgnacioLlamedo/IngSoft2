@@ -143,8 +143,8 @@ function getClassestoPay() {
 
 
 
-/* c() //DEBUG
-async function c() {
+/* createCupo() //DEBUG
+async function createCupo() {
     const data = {
         idUsuario: "878e3bdd-b1ab-4df4-8677-98d210df4a42",
         clasesEspecificas: [

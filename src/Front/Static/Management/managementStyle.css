@@ -274,3 +274,14 @@ dialog::backdrop {
     height: 75px;
     resize: none;
 }
+
+
+
+.activity-price {
+    display: flex;
+    gap: 10px;
+}
+
+.activity-price input{
+    flex: 1;
+}

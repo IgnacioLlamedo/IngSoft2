@@ -1,10 +1,11 @@
 import express from "express";
-import { crearActividad, crearProfesor, crearSala, crearSede, modificarActividad, modificarProfesor, modificarSala, modificarSede, eliminarActividad, eliminarProfesor, eliminarSala, eliminarSede, getActivities, getInstructors, getRooms, getFacilities, inhabilitarProfesor, getActivitiesStats, actualizarDiasAviso, recuperarDiasAviso } from "../../controllers/admin.controller.js";
+import { crearActividad, crearProfesor, crearSala, crearSede, modificarProfesor, modificarSala, modificarSede, eliminarActividad, eliminarProfesor, eliminarSala, eliminarSede, getActivities, getInstructors, getRooms, getFacilities, inhabilitarProfesor, getActivitiesStats, actualizarDiasAviso, recuperarDiasAviso, modificarNombreActividad, modificarPrecioActividad } from "../../controllers/admin.controller.js";
 
 export const adminRouter = express.Router();
 
 adminRouter.post("/actividad", crearActividad)
-adminRouter.put("/actividad", modificarActividad)
+adminRouter.put("/actividad", modificarNombreActividad)
+adminRouter.put("/actividad/change-price", modificarPrecioActividad);
 adminRouter.delete("/actividad", eliminarActividad)
 adminRouter.get("/actividad", getActivities)
 adminRouter.get("/activities-stats", getActivitiesStats)

@@ -42,9 +42,27 @@
                 </section>
 
                 <section class="form-section">
+
+                    <div class="input-group">
+                        <label>Precio de cuota mensual:</label>
+
+                        <div class="activity-price">
+                            <select id="activityName" name="activityName">
+                            </select>
+
+                            <input id="activityPrice" type="text" name="activityPrice" required disabled>
+                        </div>
+                    </div>
+
+                </section>
+
+                <section class="form-section">
                     <p id="editError" class="errorMsg" hidden></p>
                     <p id="editSuccess" class="successMsg" hidden></p>
-                    <button id="submit" class="submit blue">Editar</button>
+                    <div class="options">
+                        <button id="submit" class="submit blue">Editar</button>
+                        <button id="cancel" class="submit">Cancelar</button>
+                    </div>
                 </section>
 
             </div>
