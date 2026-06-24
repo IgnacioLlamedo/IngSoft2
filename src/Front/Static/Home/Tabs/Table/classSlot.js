@@ -141,10 +141,8 @@ async function getAllClasses(fechaSemana) {
             celda.dataset.clase = claseObj.actividad.nombre;
 
 
-            celda.dataset.precio = claseObj.clase.actividad.precioMensual;
-            console.log("Tener en cuenta que hasta que no modifique las actividades (agregandoles el precio en la DB), dataset.precio va a devolver undefined")
+            celda.dataset.precio = claseObj.actividad.precioMensual;
 
-            
             let cantidadAnotados = 0;
 
             if (claseObj.claseEsp) {
