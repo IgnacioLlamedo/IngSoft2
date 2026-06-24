@@ -105,81 +105,14 @@ export async function cancelarReservaRefactorizadoJsjs(req, res) {
         console.log("/////////////////////////////////////");
         console.log("/////////////////////////////////////");
 
-        let reemplazado = null;
-
-        ////////////////////////////////////////////
-        // Llega hasta acá el código. Lo siguiente hay que probarlo.....
-        if (tipo === "Mensual"){
-            let candidato;
-
-            //CONSULTAR: Si una persona se baja de una lista de espera mensual, se baja de una clase sola
-            //o de las 4/5 en las que está en lista de espera?
-            
-            for(const act in claseLiberada.esperaMensual){
-
-                /**
-                 * validarReemplazo devuelve un elemento con esta forma:
-                 * 
-                 *  let valida = {
-                 *      clases: [],        --- clases tiene las 4/5 clases especificas
-                 *      candidatoValido: true
-                 *  }
-                 */
-                candidato = await validarReemplazo(act.idUsuario, claseLiberada);
-
-                /**Corroboro si el siguiente en lista de espera mensual
-                puede acceder a la clase (Osea que las otras clases que corresponden
-                a su reserva tengan espacio)
-                Ya que puede darse la situación:
-                    clase1: espacio suficiente
-                    clase2: llena -- esta fue la reserva cancelada.
-                    clase3: llena
-                    clase4: llena
-                    
-                y por lo tanto no sería elegible para reemplazo.*/
-
-                //si es válido
-                if (candidato.valido){
-
-                    //creo el nuevo cupo
-                    const nuevoCupo = await await cupoDao.create({
-                        idUsuario: act.idUsuario,
-                        clasesEspecificas: candidato.clases,
-                        tipo: tipo
-                    });
-
-                    if (!nuevoCupo){
-                        console.log("error al crear cupo de reemplazo.");
-                        break;
-                    }
-
-                    //consulto al usuario si acepta el nuevo cupo.
-                    reemplazado = await notificarUsuario(act.idUsuario, candidato.clases, nuevoCupo);
-                    break;
-                }
-                //si no sirve sigo recorriendo.
-            }
-        }
-        //la clase cancelada es única -- simplemente busco al siguiente en
-        //lista de espera única
-        else{
-            if (claseLiberada.esperaUnica.length > 0){
-                //No hace falta checkear si es válido asi que simplemente creo el cupo y
-                const nuevoCupo = await await cupoDao.create({
-                    idUsuario: claseLiberada.esperaUnica[0],
-                    clasesEspecificas: claseLiberada,
-                    tipo: tipo
-                });
-
-                //solicito confirmación por parte del usuario
-                reemplazado = await notificarUsuario(claseLiberada.esperaUnica[0], claseLiberada, nuevoCupo);
-            }
-        }
+        //////////////////////////////////////////// Llega hasta acá el código. Lo siguiente hay que probarlo.....
+       
+        const reemplazado = await validarYNotificar(tipo, claseLiberada, user);
 
         //Si ningún usuario fue consultado para aceptar el cupo.
         if (!reemplazado){
             //elimino físicamente al usuario que cancelo la reserva.
-            await eliminarDeClase(user, clases);
+            await eliminarDeClase(user, clase);
 
             /* ¿Debería hacer una lista de usuarios que cancelaron la reserva de una claseEspecifica?
             ¿o simplemente reviso las reservas de los usuarios? */
@@ -197,6 +130,109 @@ export async function cancelarReservaRefactorizadoJsjs(req, res) {
             message: error
         })
     }
+}
+
+export async function validarYNotificar(tipo, claseLiberada, idCancelo){
+
+    let reemplazo = null;
+
+    if (tipo === "Mensual"){
+        let candidato;
+
+        //CONSULTAR: Si una persona se baja de una lista de espera mensual, se baja de una clase sola
+        //o de las 4/5 en las que está en lista de espera?
+        
+        for(const act in claseLiberada.esperaMensual){
+
+            /**
+             * validarReemplazo devuelve un elemento con esta forma:
+             * 
+             *  let valida = {
+             *      clases: [],        --- clases tiene las 4/5 clases especificas
+             *      candidatoValido: true
+             *  }
+             */
+            candidato = await validarReemplazo(act.idUsuario, claseLiberada);
+
+            /**Corroboro si el siguiente en lista de espera mensual
+            puede acceder a la clase (Osea que las otras clases que corresponden
+            a su reserva tengan espacio)
+            Ya que puede darse la situación:
+                clase1: espacio suficiente
+                clase2: llena -- esta fue la reserva cancelada.
+                clase3: llena
+                clase4: llena
+                
+            y por lo tanto no sería elegible para reemplazo.*/
+
+            //si es válido
+            if (candidato.valido){
+
+                const clasesDelCupo = [];
+                for(const actual in candidato.clases){
+                    const claseAct = {
+                        clase: actual,
+                        esLiberada: false
+                    }
+                    if (actual._id === claseLiberada._id){
+                        claseAct.esLiberada = true;
+                    }
+                    clasesDelCupo.push(claseAct);
+                }
+
+                //creo el nuevo cupo
+                const nuevoCupo = await await cupoDao.create({
+                    idUsuario: act.idUsuario,
+                    idUsuarioCanceloClase: idCancelo,
+                    clasesEspecificas: clasesDelCupo,
+                    tipo: tipo
+                });
+
+                if (!nuevoCupo){
+                    console.log("error al crear cupo de reemplazo.");
+                    break;
+                }
+
+                //consulto al usuario si acepta el nuevo cupo.
+                reemplazo = await notificarUsuario(act.idUsuario, candidato.clases, nuevoCupo);
+                break;
+            }
+            //si no sirve sigo recorriendo.
+        }
+    }
+    //la clase cancelada es única -- simplemente busco al siguiente en
+    //lista de espera única
+    else{
+        if (claseLiberada.esperaUnica.length > 0){
+            for(const unicaAct in claseLiberada.esperaUnica){
+                //si el actual aún no fue consultado, aceptó o rechazo un cupo, creo el cupo y lo consulto.
+                if (unicaAct.estado === 'activo') {
+                    
+                    const nuevoCupo = await cupoDao.create({
+                        idUsuario: unicaAct.idUsuario,
+                        idUsuarioCanceloClase: idCancelo,
+                        clasesEspecificas: claseLiberada,
+                        tipo: tipo
+                    });
+                    
+                    await claseEspecificaDao.updateOne({_id: claseLiberada._id, "anotados.idUsuario": unicaAct.idUsuario},
+                    { 
+                        $set:{
+                            "anotados.$.estado":"esperandoConfirmacion"
+                        }
+                    })
+
+                    reemplazo = await notificarUsuario(unicaAct.idUsuario, claseLiberada, nuevoCupo);
+                }
+                else
+                    continue
+            }
+
+            //solicito confirmación por parte del usuario
+            
+        }
+    }
+    return reemplazo;
 }
 
 //Pasar esta funcióin a reemplazo.servicio.js
@@ -246,6 +282,7 @@ async function validarReemplazo(candidato, clase){
 
             if(!especificaAct){ //En teoría no debería ocurrir a menos que modifiquemos la DB
                 valida.candidatoValido = false;
+                console.log("Esto es validarReemplazo linea 285 algun moco te mandaste flaco.")
                 break;
             }
 

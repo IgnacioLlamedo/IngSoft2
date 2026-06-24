@@ -34,13 +34,14 @@ body {
 
 .profile-container {
     display: flex;
+    /* flex-direction: column; */
+    flex-wrap: wrap;
     justify-content: center;
     align-items: flex-start;
     padding: 40px 20px;
-    max-width: 1000px;
+    max-width: 1500px;
     margin: 0 auto;
     gap: 30px;
-    flex-flow: row wrap;
 }
 
 .profile-card {
@@ -48,8 +49,8 @@ body {
     border-radius: 12px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
     padding: 40px;
-    flex: 1;
-    max-width: 600px;
+    width: 100%;
+    max-width: 550px;
 }
 
 .profile-card h2 {
@@ -257,6 +258,33 @@ body {
     border: 1px solid #1c8bb7;
     display: block;
 }
+
+.text-registered {
+    color: rgb(76, 182, 26);
+}
+
+.text-inactive {
+    color: rgba(208, 176, 31);
+}
+
+.text-unverified {
+    color: rgba(208, 96, 31);
+}
+
+.text-deleted {
+    color: rgba(208, 31, 37);
+}
+
+#userStatus {
+    font-weight: bold;
+}
+
+#userStatusReason {
+    font-style: italic;
+    margin: 30px;
+    color: #b3b3b3;
+}
+
 
 /* Responsive Design */
 @media (max-width: 768px) {

@@ -2,7 +2,7 @@
 const errorMsg = document.getElementById("createError");
 const successMsg = document.getElementById("createSuccess");
 
-const slotsList = document.getElementById("slotsList");
+const slotList = document.getElementById("slotList");
 const notDataAvailableMsg = document.getElementById("notDataAvailableMsg")
 
 getAllSlots();
@@ -29,7 +29,7 @@ async function getAllSlots() {
 function printSlots(slots) {
     notDataAvailableMsg.hidden = true;
 
-    slotsList.innerHTML = "";
+    slotList.innerHTML = "";
 
     const lastIndex = slots.length - 1;
 
@@ -101,12 +101,12 @@ function printSlots(slots) {
         slotElem.appendChild(slotData);
         slotElem.appendChild(slotError);
 
-        slotsList.appendChild(slotElem);
+        slotList.appendChild(slotElem);
 
         if(index !== lastIndex) {
             const separator = document.createElement("hr");
             separator.classList.add("separator");
-            slotsList.appendChild(separator);
+            slotList.appendChild(separator);
         }
     });
 }

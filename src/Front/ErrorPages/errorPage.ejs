@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/Images/Common/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/Common/commonPageStyle.css">
+    <link rel="stylesheet" href="/ErrorPage/errorPageStyle.css">
+    <title>CEF - Página no encontrada</title>
+</head>
+
+<body>
+    <header>
+        <%- include('../Navbar/navbarSelector.ejs') %>
+    </header>
+    
+    <main class="main-container">
+        <img class="error-icon" src="/Images/Errors/errorIcon.png" alt="Error Icon">
+        <h1>¡Ups! Página no encontrada</h1>
+        <p style="text-align: center">
+            Lo sentimos, la página que estás buscando no existe.
+            <br>
+            <a href="/">Volver a la página principal</a>
+        </p>
+        
+    </main>
+
+    <%- include('../Navbar/footer.html') %>
+</body>
+
+</html>

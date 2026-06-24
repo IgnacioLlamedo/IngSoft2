@@ -1,0 +1,346 @@
+.main-container {
+    margin-bottom: 75px;
+}
+
+.btn-active {
+    background-color: white !important;
+    color: #D01F25 !important;
+    font-weight: 600;
+}
+
+.user-stats {
+    color: #eaeaea;
+    text-align: center;
+    font-size: x-large;
+    white-space: pre;
+}
+
+.stat-count {
+    padding: 2px 8px;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.stat-registered {
+    color: #eaeaea;
+    background: rgba(255,255,255,0.06);
+}
+
+.stat-role-client { color: #2ecc71; }
+.stat-role-employee { color: #3498db; }
+.stat-role-admin { color: #9b59b6; }
+.stat-status-unverified { color: #f39c12; }
+.stat-status-deleted { color: #e74c3c; }
+
+.table-wrapper {
+    max-width: 80%;
+    max-height: 65vh;
+    margin: 0 auto;
+    overflow: auto;
+    border-radius: 8px;    
+}
+
+.user-table {
+    min-width: 1200px;
+    width: 100%;
+    max-width: 100%;
+    margin: 0px auto;
+    border-collapse: collapse;
+    background: #252525;
+    border-radius: 8px;
+    box-shadow: 0 7px 16px rgba(0, 0, 0, 0.4);
+    table-layout: fixed;
+}
+
+.user-table th {
+    background: rgba(208, 31, 37);
+}
+
+.user-table td {
+    border: 1px solid #333;
+}
+
+.user-table th,
+.user-table td {
+    padding: 12px 14px;
+    text-align: left;
+    color: #eaeaea;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.user-table th:nth-child(1),
+.user-table td:nth-child(1) {
+    width: 30%;
+}
+
+.user-table th:nth-child(2),
+.user-table td:nth-child(2) {
+    width: 20%;
+}
+
+.user-table th:nth-child(3),
+.user-table td:nth-child(3) {
+    width: 10%;
+}
+
+.user-table th:nth-child(4),
+.user-table td:nth-child(4) {
+    width: 10%;
+}
+
+.user-table th:nth-child(5),
+.user-table td:nth-child(5) {
+    width: 10%;
+    min-width: 10%;
+}
+
+/* .user-table th:nth-child(6),
+.user-table td:nth-child(6) {
+    width: 15%;
+} */
+
+.btn-sort {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    border: none;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.btn-sort:hover,
+.btn-sort.active {
+    color: #ffffff;
+    text-decoration: underline;
+}
+
+.sort-indicator {
+    font-size: 0.75em;
+}
+
+.actions-cell {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    padding: 10px 5px;
+    border: 0px;
+    min-width: 180px;
+    white-space: nowrap;
+}
+
+.btn-action {
+    flex: 1;
+    padding: 5px 6px 6px 6px;
+    border-radius: 4px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    transition: transform 120ms ease, filter 120ms ease, box-shadow 120ms ease;
+}
+
+.btn-action:hover {    
+    filter: brightness(0.94);
+}
+
+.btn-action:active {
+    transform: translateY(0) scale(0.98);
+}
+
+.btn-action:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.btn-view {
+    background: #2b442d;
+    color: #d4f3d7;
+    border: 1px solid #4f7f55;
+}
+
+.btn-delete {
+    background: #5f1a1a;
+    color: #ffd6d6;
+    border: 1px solid #b71c1c;
+}
+
+.row-inactive {
+    /* border: 2px solid #d01f25; */
+    background-color: rgba(208, 176, 31, 0.2);
+}
+
+.row-unverified {
+    /* border: 2px solid #d01f25; */
+    background-color: rgba(208, 96, 31, 0.2);
+}
+
+.row-deleted {
+    /* border: 2px solid #d01f25; */
+    background-color: rgba(208, 31, 37, 0.2);
+}
+
+
+.filter-panel {
+    width: 100%;
+    max-width: 915px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    background: #1f1f1f;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+    justify-content: center;
+}
+
+.filter-panel label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #eaeaea;
+    font-weight: 600;
+    min-width: 160px;
+}
+
+.filter-panel select,
+.filter-panel input {
+    border: 1px solid #444;
+    background: #111;
+    color: #f1f1f1;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font: inherit;
+}
+
+
+.filter-panel button {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 8px;
+    background: #d01f25;
+    color: #fff;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.filter-panel button:hover {
+    filter: brightness(1.05);
+}
+
+#filterInput {    
+    min-width: 250px;    
+}
+
+.filter-checkbox, #showDeletedCheckbox {
+    margin-left: 15px;
+    /* min-width: 0px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #eaeaea;
+    font-weight: 600; */
+    /* Borde con fondo negro */
+    /* border: 1px solid #444;
+    border-radius: 8px;
+    background: #111; */
+}
+
+
+.delete-dialog {
+    border: none;
+    border-radius: 12px;
+    padding: 0px 10px 20px 10px;
+    width: 450px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+    background: #1d1d1d;
+}
+
+.delete-dialog-form {
+    display: grid;
+    gap: 16px;
+    color: #f1f1f1;
+    padding: 22px;
+    border-radius: 12px;
+}
+
+.delete-dialog-form h2 {
+    margin: 0;
+    font-size: 1.15rem;
+    text-align: center;
+}
+
+.delete-dialog-form p {
+    margin: 0;
+    color: #dcdcdc;
+    text-align: center;
+}
+
+.delete-user-info-container {
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    align-items: center;
+}
+
+.delete-user-info {
+    color: #d01f25;    
+}
+
+.delete-dialog-form label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.delete-dialog-form textarea {
+    width: 100%;
+    min-height: 100px;
+    margin-top: 10px;
+    padding: 12px;
+    border: 1px solid #444;
+    border-radius: 10px;
+    resize: vertical;
+    background: #111;
+    color: #f1f1f1;
+    font: inherit;
+}
+
+.delete-dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.delete-dialog-actions button {
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+#cancelDelBtn {
+    background: #444;
+    color: #f1f1f1;
+}
+
+#confirmDelBtn {
+    background: #d01f25;
+    color: #fff;
+}
+
+dialog::backdrop {
+    background-color: rgba(0, 0, 0, 0.45);
+}

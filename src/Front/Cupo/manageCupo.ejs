@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/Images/Common/favicon.ico" type="image/x-icon">
+    
+    <link rel="stylesheet" href="/Common/commonPageStyle.css">
+    <link rel="stylesheet" href="/Common/commonFormPageStyle.css">
+    <link rel="stylesheet" href="/Cupo/cupoStyle.css">
+
+    <title>CEF - Gestión de Cupo</title>
+</head>
+
+<body>
+    <header>
+        <%- include('../Navbar/navbarSelector.ejs') %>
+    </header>
+
+    <h1 class="title">Cupo</h1>
+
+    <main class="main-container">
+
+        <section class="form-card">
+            <div id="dataContainer" class="data-container">
+
+                <h2>Se liberó un cupo para la siguiente clase:</h2>
+                <hr>
+                <!-- 
+                    Esqueleto de datos:
+                        <span>Clase: {Nombre clase}</span>
+                        <span>Horario: {Horiario clase}</span>
+                        <span>Precio: {Precio clase}</span>
+                        <span>Tipo: {Tipo reserva clase}</span> 
+                -->
+
+            </div>
+
+            <div class="options-container">
+
+                <h2>¿Desea aceptarlo?</h3>
+
+                <div class="buttons-container">  
+                    <button id="yesOption" class="yes">Sí</button>
+                    <button id="noOption" class="no">No</button>
+                </div>
+
+            </div>
+
+            <span id="message" class="message" hidden></span>
+        </section>
+
+    </main>
+
+
+
+
+    <%- include('../Navbar/footer.html') %>
+    
+    <script src="/Cupo/manageCupo.js"></script>
+</body>
+
+</html>

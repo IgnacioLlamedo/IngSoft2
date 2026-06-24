@@ -1,3 +1,5 @@
+let salas;
+
 init();
 //debugger;
 async function init() {
@@ -14,7 +16,6 @@ async function init() {
 refrescarSemana();
 
 
-let salas;
 
 async function crearTabla() {
 

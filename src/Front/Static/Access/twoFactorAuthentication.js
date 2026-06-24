@@ -4,7 +4,11 @@ const verificationErrorMsg = document.getElementById("verificationError");
 const email = parametrosURL.get('email');
 
 
+// Al parecer sta página no se está usando, en su lugar...
+// existe authentication.js que posee la misma lógica.
+// Pero por las dudas no la borro :v
 document.getElementById("reenviar-codigo").addEventListener("click", async (event) => {
+    console.log("DEBUG: (entrando desde reenviar-codigo) Reenviando codigo");
     const res = await fetch("/api/authentication", {
         method: "PUT",
         headers: {
@@ -15,6 +19,7 @@ document.getElementById("reenviar-codigo").addEventListener("click", async (even
 });
 
 document.getElementById("two-factor-authenticator-form").addEventListener("submit", async (event) => {
+    console.log("DEBUG: (entrando desde two-factor-authenticator-form) Enviando codigo");
     event.preventDefault();
 
     verificationErrorMsg.hidden = true;
