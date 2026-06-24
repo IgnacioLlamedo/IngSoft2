@@ -11,6 +11,7 @@ export async function crearPreferencia(req, res) {
         const precio = req.body.precio; 
         const tipoClase = req.body.tipoClase; //seña, unica o mensual
         const clases = req.body.clases;
+        const datosExternos = req.body.idCupo;
 
         console.log("Desde crearPreferencia. Los tipos de clases y fechas son: ")
 /*         const clases = [];
@@ -55,7 +56,8 @@ export async function crearPreferencia(req, res) {
                     idUsuario: req.session.user.id,
                     tipoClase: tipoClase,
                     nombre: nombre, //Nombre clase (yoga, spinning o funcional)
-                    idPagoPendiente: pagoPendiente._id
+                    idPagoPendiente: pagoPendiente._id,
+                    idCupo: datosExternos
                 }),
                 back_urls: {
                     success: `${config.link}/payment/approved`,

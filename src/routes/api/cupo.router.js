@@ -6,5 +6,5 @@ export const cupoRouter = express.Router();
 
 cupoRouter.get('/get', getCupoData);
 cupoRouter.post('/create', createCupo);
-cupoRouter.put('/accept', acceptCupoCupo);
+cupoRouter.put('/accept', acceptCupo);
 cupoRouter.put('/reject', rejectCupo);
