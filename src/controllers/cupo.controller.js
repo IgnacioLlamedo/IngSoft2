@@ -58,6 +58,26 @@ export async function getCupoData(req, res) {
 }
 
 
+export async function acceptCupo(req, res) {
+    try{
+        let cupoData = await cupoDao.readOne({ _id: req.body.idCupo });
+        cupoData.estado = 'aceptado';
+
+        await cupoDao.updateOne({ _id: cupoData._id }, cupoData);
+
+        res.json({
+            success: true,
+        });
+    }
+    catch(error) {
+        console.error("acceptCupo ERROR: ", error);
+		res.json({
+			success: false,
+			message: "Error al aceptar el cupo. Inténtelo de nuevo más tarde.",
+		});
+    }
+}
+
 export async function rejectCupo(req, res) {
     try{
         let cupoData = await cupoDao.readOne({ _id: req.body.idCupo });
