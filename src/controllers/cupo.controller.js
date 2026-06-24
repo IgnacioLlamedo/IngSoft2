@@ -38,7 +38,7 @@ export async function getCupoData(req, res) {
             activity: activity.nombre,
             day: generalClass.dia,
             hour: generalClass.hora,
-            price: generalClass.precioMensual, // ????? esto no lo teníamos en las actividades ?????
+            price: activity.precioMensual,
             type: cupo.tipo,
             state: cupo.estado,
         }
