@@ -89,7 +89,40 @@ export async function ingresarAEspera(req, res) {
          */
 
         const clases = req.body.clases;
-        const claseAnotado = await claseEspecificaDao.updateOne({_id: clases[0].idClaseEsp}, {$push: {anotados: req.session.userId}});
+        const tipo = req.body.tipo;
+        console.log("Desde ingresar a espera: ")
+        console.log("En este session id: ", req.session.user.id)
+        console.log("El tipo tiene formato: ", tipo);
+
+        const nuevoEspera = {
+            idUsuario: req.session.user.id
+        }
+        let tipoFormateado;
+        if (tipo !== 'mensual'){
+            nuevoEspera.tipo = "Unico"
+            tipoFormateado = "Unico"
+        }
+        else
+            tipoFormateado = "Mensual"
+
+        let claseAnotado;
+        for(const especificaActual of clases){
+            console.log(especificaActual)
+            
+            
+            claseAnotado = await claseEspecificaDao.updateOne({_id: especificaActual.clase._id},
+                {
+                    $push: {
+                        [`espera${tipoFormateado}`]: nuevoEspera
+                    }
+                }
+            );
+            if (!claseAnotado){
+                console.log("Error al actualizar una de las listas de espera.")
+                break;
+            }
+        }
+       // const claseAnotado = await claseEspecificaDao.updateOne({_id: clases[0].clase._id}, {$push: {anotados: req.session.userId}});
 
         //En teoría no debería pasar que no exista la clase.
         if (!claseAnotado) { //Por lo que esto no tiene sentido.

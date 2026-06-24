@@ -1,14 +1,11 @@
 import { mailer } from "./mailer.servicio.js"
+import config from '../config.js';
 
 //HAY QUE PROBAR ESTA -- probablemente clasesLiberadas no recibe lo correcto.
-export async function notificarUsuario(idCandidato, clasesLiberadas){
+export async function notificarUsuario(idCandidato, clasesLiberadas, idCupo){
     try{
         const usuario = await usuarioDao.readOne({ _id: idCandidato });
-        const nuevoCupo = await crearCupo(act.idUsuario, claseLiberada)
 
-        if (!nuevoCupo){
-            return false
-        }
         if(!usuario){
             throw new Error("Usuario no encontrado.");
         }
@@ -18,11 +15,8 @@ export async function notificarUsuario(idCandidato, clasesLiberadas){
         );
 
         // Después cambiarlo por tu dominio real
-        const urlAceptar =
-            `https://tudominio.com/api/reemplazos/aceptar/${nuevoCupo._id}`; //Mandar el id de reserva.
-
-        const urlRechazar =
-            `https://tudominio.com/api/reemplazos/rechazar/${idCandidato}`;
+        const dominio = config.link;
+        const url = `https://${dominio}/cupo/?idCupo=${idCupo}`;
 
         const mensaje =
             `Hola ${usuario.nombre}.
@@ -31,9 +25,7 @@ export async function notificarUsuario(idCandidato, clasesLiberadas){
 
             Clases: ${idsClases.join("\n")}
 
-            Aceptar: ${urlAceptar}
-
-            Rechazar: ${urlRechazar}
+            Para aceptar o rechazar ingrese a: ${url}
 
             Tenés 30 minutos para responder.`; //No me acuerdo cuanto era
 

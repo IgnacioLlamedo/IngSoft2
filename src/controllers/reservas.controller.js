@@ -194,7 +194,7 @@ export async function validarYNotificar(tipo, claseLiberada, idCancelo){
                 }
 
                 //consulto al usuario si acepta el nuevo cupo.
-                reemplazo = await notificarUsuario(act.idUsuario, candidato.clases, nuevoCupo);
+                reemplazo = await notificarUsuario(act.idUsuario, candidato.clases, nuevoCupo._id);
                 break;
             }
             //si no sirve sigo recorriendo.
@@ -222,7 +222,7 @@ export async function validarYNotificar(tipo, claseLiberada, idCancelo){
                         }
                     })
 
-                    reemplazo = await notificarUsuario(unicaAct.idUsuario, claseLiberada, nuevoCupo);
+                    reemplazo = await notificarUsuario(unicaAct.idUsuario, claseLiberada, nuevoCupo._id);
                 }
                 else
                     continue

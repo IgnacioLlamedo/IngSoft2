@@ -30,7 +30,7 @@ async function confirmarPago(data, ext) {
             idPagoPendiente: data.idPagoPendiente, //Para que no rompa el json parser
         })
     });
-
+//
     const resData = await res.json();
     if(resData.success){
         if (ext.idCupo){
@@ -40,7 +40,7 @@ async function confirmarPago(data, ext) {
                 body: JSON.stringify({ idCupo: ext.idCupo })
             });
             const resDataCupo = await resCupo.json();
-            console.log("El cupo fue aceptado con exito?", resDataCupo.success);
+            console.log("El cupo fue aceptado con exito? --- respuesta: ", resDataCupo.success);
         }
         /** 
          * resData.data devuelve un objeto pago con por ejemplo:

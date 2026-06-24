@@ -327,8 +327,8 @@ async function pagar(tipoClase, precio, clasesPago) {
                 headers: { "Content-Type": "application/json" },
                 //sigue haciendo falta mandar el tipo para la selección del reemplazo en lista de espera.
                 body: JSON.stringify({ 
-                    clases: clasesPago, //resData.datos (contiene clasesEspecificas y si está llena o no)
-                    tipo: act.tipo
+                    clases: resData.datos, //resData.datos (contiene clasesEspecificas y si está llena o no)
+                    tipo: tipoClase
                     //Acá puedo mandar las clases que recibo al consultar-pago (resData) así
                     //en el ingresarAEspera decido que hacer con todas las clases en las que esté llena la lista de anotados.
                 })
