@@ -65,8 +65,9 @@ document.getElementById("yesOption").addEventListener('click', async (event) => 
     const data = {
         nombre: cupoData.activity,
         tipoClase: cupoData.type, 
-        precio: cupoData.price, 
-        clases: classesToPay
+        precio: cupoData.price,
+        clases: classesToPay,
+        idCupo: cupoID,
     }
 
     const dataString = JSON.stringify(data);
@@ -79,21 +80,10 @@ document.getElementById("yesOption").addEventListener('click', async (event) => 
 
     const resData = await res.json();
     window.open(resData.init_point, "_blank");
-
-    // Si sale bien necesito marcar el cupo como aceptado. Pero la página de paymentApproved ya está diseñada para clases.
-    // También se debe hace el fetch para que pase de lista de espera a anotados. 
 })
 
 document.getElementById("noOption").addEventListener('click', async (event) => {
     event.preventDefault();
-
-    /**
-     * Rechazar cupo:
-     *  -> Inhabilitar el cupo. ✔️
-     *  -> Quitar de la lista a esta persona.
-     *  -> Crear cupo de la siguiente persona del mismo tipo (Abonado o No Abonado).
-     *  -> Avisarle.
-     */
 
     const res = await fetch('/api/cupo/reject', {
         method: "PUT",
@@ -110,8 +100,6 @@ document.getElementById("noOption").addEventListener('click', async (event) => {
 
     else 
         showMessage(resData.message, false);
-
-    // TODO
 })
 
 
@@ -143,6 +131,20 @@ function getClassestoPay() {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* createCupo() //DEBUG
 async function createCupo() {
     const data = {
@@ -166,31 +168,3 @@ async function createCupo() {
         })
     })
 } */
-
-
-/**
- * Cupos:
- * - idCandidato
- * - idClaseEspecifica -> []
- * - tipo
- * - estado? ['pendiente', 'rechazado', 'aceptado']
- * 
- * Necesito:
- * - Clase: actividad, hora, precio, tipo
- * - idCupo (por parámetro)
- * 
- * Crear preferencia:
- * - nombre
- * - tipoClase
- * - precio
- * - clases -> [{ idClaseGeneral, fechaEspecifica }, ...]
- * 
- * No sé:
- * - Si acepta: Quitarlo de la lista de espera y agregarlo a anotados.
- * - Si rechaza: Crear cupo de la siguiente persona y avisarle.
- * 
- * acepto: fetch a post reemplazarAnotado enviando idCupo
- * 
- * rechaza: fetch a post ... enviando idCupo
- * 
- */
