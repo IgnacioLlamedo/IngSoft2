@@ -6,6 +6,7 @@ import { sedeDao } from "../daos/index.js";
 import { actividadDao } from "../daos/index.js";
 import { reservaDao } from "../daos/index.js";
 import { Status } from '../constants/constants.js';
+import { mailer } from "../servicios/mailer.servicio.js";
 
 
 
@@ -51,23 +52,21 @@ export async function crearProfesor(req, res){
 }
 
 
+// Nota: No comparo el id ya que asumo que es el mismo al usarlo para buscar en la bd,
+// ni tampoco estado, motivoEstado y fechasEstado ya que no las traigo del front
 function isSameInstructor(data, currentInstructor) {
-	return (
-		data.nombre === currentInstructor.nombre &&
-		data.dni === currentInstructor.dni &&
-		data.genero === currentInstructor.genero &&
-		areDeepEqual(data.actividades, currentInstructor.actividades) &&
-		data.estado === currentInstructor.estado &&
-		data.motivoEstado === currentInstructor.motivoEstado &&
-		areDeepEqual(data.fechasEstado, currentInstructor.fechasEstado)
-	);
+    const isSame =
+        data.nombre === currentInstructor.nombre &&
+        data.dni === currentInstructor.dni &&
+        data.genero === currentInstructor.genero &&
+        areDeepEqual(data.actividades, currentInstructor.actividades)
+	return isSame;
 }
 
 function areDeepEqual(a, b) {
     return JSON.stringify(a) === JSON.stringify(b);
 }
 
-// TODO: Chequear que todo esto funcione correctamente
 export async function modificarProfesor(req, res){
     try {
         const data = req.body;
@@ -85,7 +84,7 @@ export async function modificarProfesor(req, res){
             if (instructorWithSameDni) {
                 return res.json({
                     success: false,
-                    message: "Error al modificar el profesor. El DNI del nuevo profesor ya está registrado en el sistema."
+                    message: "Error al modificar el profesor. El DNI ya está registrado en el sistema."
                 });
             }
         }
@@ -108,27 +107,69 @@ export async function modificarProfesor(req, res){
 
 export async function inhabilitarProfesor(req, res){
     try {
-        const data = req.body;
-        const currentInstructor = await profesorDao.readOne({ _id: data.id });
+        const profesor = req.body;
+        
+        // DEBUG
+        // const result = await profesorDao.readOne({ _id: profesor._id });
+        const result = await profesorDao.updateOne({ _id: profesor.id }, profesor);
 
-        if (isSameInstructor(data, currentInstructor)) {
+        if (!result) {
             return res.json({
                 success: false,
-                message: "Error al modificar el profesor. No se han modificado datos."
+                message: "Error al inhabilitar el profesor. No se encontró el profesor en el sistema."
             });
         }
+
+        // Debo chequear si hay clases activas con ese profesor
+        // De haberlas, corresponde suspenderla* y avisar vía email a los anotados
+        // *Creo que no fue solicitada la cancelación en sí, ni tampoco la devolución del dinero
+        //
+        // 1) Obtengo todas las clases generales con ese profesor
+        const generalClasses = await claseGeneralDao.readMany({ idProfesor: profesor._id });
         
         let cantClasesAfectadas = 0;
-        let cantUsuariosAfectados = 0;
-        // TODO1: Chequear si hay clases activas con ese profesor. 
-        // TODO2: De haberlas, corresponde suspenderla* y avisar vía email a los anotados
-        // *Creo que no fue solicitada la cancelación en sí, ni tampoco la devolución del dinero
-        // Dentro de mailer.servicio.js existe mailer.cancelledClass() con el cuerpo del mail.
+        let cantEmailsEnviados = 0;
 
-        await profesorDao.updateOne({ _id: data.id }, data);
-        const clasesMsg = cantClasesAfectadas > 0 ? `. ${cantClasesAfectadas} clases fueron canceladas por este evento` : '';
-        const usuariosMsg = cantUsuariosAfectados > 0 ? `. ${cantUsuariosAfectados} usuarios fueron notificados` : '';
-        const resultMsg = "Se actualizó el estado del profesor" + clasesMsg + usuariosMsg + ".";
+        console.log("parte1");
+        if (generalClasses.length > 0) {
+            console.log("parte2");
+            // 2) Obtengo todas las clases específicas con ese profesor y fecha posterior a la actual            
+            const generalClassesIds = generalClasses.map((gc) => gc._id);
+            const specificClasses = await claseEspecificaDao.readMany({
+				$and: [
+					{ fechaEspecifica: { $gte: profesor.fechasEstado.desde } },
+					{ fechaEspecifica: { $lte: profesor.fechasEstado.hasta } },
+				],
+				idClaseGeneral: { $in: generalClassesIds },
+			});
+            cantClasesAfectadas = specificClasses.length;
+            
+            const activities = await actividadDao.readMany({});
+            generalClasses.forEach((gc) => {
+                gc.actividad = activities.find((a) => a._id === gc.idActividad).nombre;
+            })
+
+            // Y para cada clase específica...
+            for (const sc of specificClasses) {
+                console.log("parte3");
+                // 3) Obtengo los usuarios afectados
+                const anotados = sc.anotados.filter((a) => !a.estado || a.estado === "activo");
+                const actividad = generalClasses.find((gc) => gc._id === sc.idClaseGeneral).actividad;
+
+                for (const a of anotados) {
+                    console.log("parte4");
+                    // 4) Enviar emails
+                    // DEBUG
+                    await mailer.cancelledClass(a.mail, a.nombre, sc.fechaEspecifica, sc.actividad);
+                    cantEmailsEnviados++;
+                }
+            }
+        }
+
+        const clasesMsg = cantClasesAfectadas > 0 ? `. ${cantClasesAfectadas} clases fueron canceladas por este suceso` : '';
+        const emailsMsg = cantEmailsEnviados > 0 ? `. ${cantEmailsEnviados} emails fueron enviados` : '';
+        console.log("modificarProfesor: ", clasesMsg, emailsMsg);
+        const resultMsg = "Se actualizó el estado del profesor" + clasesMsg + emailsMsg + ".";
         
         res.json({
             success: true,
@@ -162,6 +203,8 @@ export async function eliminarProfesor(req, res){
 			motivoEstado: data.motivoEstado,
 			fechasEstado: { desde: Date.now(), hasta: null },
 		};
+        // DEBUG
+        // await profesorDao.readOne(query);
         await profesorDao.updateOne(query, newData);
 
         res.json({
