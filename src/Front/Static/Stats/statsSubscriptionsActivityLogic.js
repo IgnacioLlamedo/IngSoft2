@@ -72,6 +72,8 @@ async function loadStats() {
     }
 }
 
+
+
 function renderStatsTable(activities) {
     tableBody.innerHTML = '';
 
@@ -98,12 +100,10 @@ function renderStatsTable(activities) {
         })
 		.join('');
 
-    renderChart(sortedActivities);
+    renderChart(currentStats);
 }
 
-// TODO: Ignorar filtro de búsqueda (el gráfico no debería actualizarse, tal como sucede en la userlist)
 function renderChart(activities) {
-    
     const chartActivities = activities.map((activity) => ({
         label: activity.nombre,
         value: activity.abonados,
