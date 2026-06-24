@@ -49,24 +49,23 @@ export async function pasarAlSiguiente(lista){
 }
 
 //HAY QUE PROBAR ESTA -- probablemente clasesLiberadas no recibe lo correcto.
-export async function notificarUsuario(candidato, clasesLiberadas){
-    const usuario = await usuarioDao.readOne(candidato.idUsuario);
+export async function notificarUsuario(idCandidato, clasesLiberadas){
+    const usuario = await usuarioDao.readOne({ _id: idCandidato });
 
     if(!usuario){
         throw new Error("Usuario no encontrado.");
     }
 
-    const idsClases =
-        clasesLiberadas.map(
-            clase => clase._id
-        );
+    const idsClases = clasesLiberadas.map(
+        clase => clase._id
+    );
 
     // Después cambiarlo por tu dominio real
     const urlAceptar =
-        `https://tudominio.com/api/reemplazos/aceptar/${candidato.idUsuario}`;
+        `https://tudominio.com/api/reemplazos/aceptar/${idCandidato}`;
 
     const urlRechazar =
-        `https://tudominio.com/api/reemplazos/rechazar/${candidato.idUsuario}`;
+        `https://tudominio.com/api/reemplazos/rechazar/${idCandidato}`;
 
     const mensaje =
         `Hola ${usuario.nombre}.
