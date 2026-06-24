@@ -106,4 +106,11 @@ function showMessage(message, success) {
  *  Pasar todos los datos por parámetros sería posiblemente lo más sencillo, pero quizás ustedes saben cómo hacerlo con
  *  un llamado al back y listo.
  * 
+ *  
+ * 
+ * 
+ *  Recordatorio de parámetros:
+ * 
+ *  const parametrosURL = new URLSearchParams(window.location.search);
+ *  const email = parametrosURL.get('email');
  */
