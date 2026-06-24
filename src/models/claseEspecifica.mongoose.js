@@ -6,14 +6,26 @@ const collection = 'clasesEspecificas'
 const claseEspecificaSchema = new Schema({
     _id: { type: String, default: randomUUID },
     idClaseGeneral: { type: String, ref: "clasesGenerales" },
+    tokenAsistencia: {
+        type: String,
+        default: randomUUID
+    },
     anotados : [{
         idUsuario: { type: String, ref: 'usuarios', required: true },
         tipo: { type: String, enum: ['mensualidad', 'unico', 'seña'], required: true },
+        estado: { type: String, enum: ['activo', 'cancelado'], default: 'activo' }
     }],
-    espera : [{
-        idUsuario: { type: String, ref: 'usuarios' }, //cambiar por mensual o todos los mensual por mensualidad jaja
-        tipo: { type: String, enum: ['mensualidad', 'unico', 'seña'], required: true },
+    esperaUnica : [{
+        idUsuario: { type: String, ref: 'usuarios' },
+        tipo: { type: String, enum: ['unico', 'seña'], required: true },
     }],
+
+    //volver a una única cola de espera (?).
+    esperaMensual : [{
+        idUsuario: { type: String, ref: 'usuarios' },
+    }],
+    //agregar lista de cancelados? - para estadísticas
+    //o simplemente recorremos las reservas.
     fechaEspecifica: { type: Date, required: true },
 }, {
     strict: 'throw',

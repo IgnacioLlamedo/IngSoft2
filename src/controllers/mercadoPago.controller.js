@@ -1,6 +1,6 @@
 import { Preference } from "mercadopago";
 import { client } from "../servicios/mercado.servicio.js";
-import { pagoDao, claseEspecificaDao } from "../daos/index.js";
+import { pagoDao, claseEspecificaDao, claseGeneralDao } from "../daos/index.js";
 import config from "../config.js";
 
 export async function crearPreferencia(req, res) {
@@ -86,31 +86,48 @@ export async function consultar(req, res) {
     try {
 
         const { clases } = req.body;
-        let claseEspecifica;
+        let datos = []
+        let int = 0;
 
         for (const claseData of clases) {
 
-            console.log("La idClase General " + claseData.idClaseGeneral + " en la fecha " + claseData.fechaEspecifica);
-            console.log(claseData.fechaEspecifica);
+            /* console.log("La idClase General " + claseData.idClaseGeneral + " en la fecha " + claseData.fechaEspecifica);
+            console.log(claseData.fechaEspecifica); */
 
             //Consigo la clase especifica
-            claseEspecifica = await claseEspecificaDao.readOne({idClaseGeneral: claseData.idClaseGeneral, fechaEspecifica: claseData.fechaEspecifica}); //Si existe la primera del día 1/7, las del 8/7, 15/7 y 22/7 si o si
+            const clase = await claseEspecificaDao.readOne({idClaseGeneral: claseData.idClaseGeneral, fechaEspecifica: claseData.fechaEspecifica});
+            //Si existe la primera del día 1/7, las del 8/7, 15/7 y 22/7 si o si
 
-            console.log("La idClase General " + claseData.idClaseGeneral + " en la fecha " + claseData.fechaEspecifica + ". Encontró la siguiente clase especifica: ");
-            console.log(claseEspecifica);
+            /* console.log("La idClase General " + claseData.idClaseGeneral + " en la fecha " + claseData.fechaEspecifica + ". Encontró la siguiente clase especifica: ");
+            console.log(claseEspecifica); */
             //Revisar listado de anotados y de esprea
 
             /**
              * Si no encuentra clase especifica, significa que la clase en la fecha claseData.fechaEspecifica (actual del for)
              * No fue creada y por lo tanto no tiene anotados, Por lo tanto, al pagar, se debe crear la claseEspecifica.
              */
-            if (!claseEspecifica) 
-                continue; //Saltea el resto del código y vuelve a entrar al for.
+            if (!clase){
+                datos.push({
+                    clase: null,
+                    llena: false
+                });
 
-            const yaAnotado = claseEspecifica.anotados.some(
+                continue; //Saltea el resto del código y vuelve a entrar al for.
+            }
+
+
+            const claseGeneral = claseGeneralDao.readOne({ _id: clase.idClaseGeneral })
+            const llena = clase.anotados.length >= claseGeneral.limiteClase
+
+            datos.push({
+                clase,
+                llena
+            });
+
+            const yaAnotado = clase.anotados.some(
                 u => u.idUsuario === req.session.user.id
             );
-            const yaEnEspera = claseEspecifica.espera.some(
+            const yaEnEspera = clase.espera.some(
                 u => u.idUsuario === req.session.user.id
             );
 
@@ -118,15 +135,18 @@ export async function consultar(req, res) {
             if (yaAnotado || yaEnEspera) {
                 return res.json({
                     success: false,
-                    message: ("Ya se encuentra anotado en la actividad")
+                    message: `Ya se encuentra anotado en la actividad del día ${claseData.fechaEspecifica}`
                 });
             }
+            int++;
         }
 
         return res.json({
             success: true,
-            claseEspecifica
-        });
+            datos //Esto devuelve un arreglo con:
+            // .clase: (objeto) Clase especifica o
+            //                  NULL (en caso de que no exista la claseEspecifica).
+        }); // .llena: (boolean) Si la clase especifica está llena o no
 
     }
     catch(error) {
@@ -139,21 +159,6 @@ export async function consultar(req, res) {
         });
     }
 }
-
-/* export async function obtenerClaseGeneral(req, res){
-    try{
-        const claseGeneral = await claseGeneralDao.readOne
-
-
-    }
-    catch(error) {
-        console.log(error);
-        return res.json({
-            success: false,
-            message: "Error al conseguir clase General (obtenerClaseGeneral)"
-        })
-    }
-} */
 
 export async function confirmarPagoController(req, res){
     try {

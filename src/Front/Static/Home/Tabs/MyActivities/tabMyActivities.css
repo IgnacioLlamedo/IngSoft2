@@ -143,3 +143,55 @@ hr {
     font-size: 1.1em;         
   }
 }
+
+
+.modal-cancellations {
+  display: none; /* oculto por defecto */
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.6);
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-cancellations-content {
+  background: #fff;
+  width: 90%;
+  max-width: 600px;
+  padding: 20px;
+  border-radius: 8px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.close-cancellations {
+  position: absolute;
+  top: 10px; right: 20px;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+#listaClasesMensual {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#listaClasesMensual button {
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  background-color: #d9534f;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+#listaClasesMensual button:hover {
+  background-color: #c9302c;
+}
+

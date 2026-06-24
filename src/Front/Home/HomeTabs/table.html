@@ -63,43 +63,58 @@
                 </div>
             </div>
             <div id="mensajePago" class="mensaje-pago"></div>
+        </div>
     </div>
 
     <!-- Modal de asistencia -->
     <div class="modalAsistencia" id="asistenciaModal">
-    <div class="modalAsistencia-content">
-        <span class="close" id="closeAsistencia">&times;</span>
-        <div id="asistenciaBody">
-            <h3>${clase} (${horario})</h3>
-            <p>Fecha: ${fecha}</p>
-            <p>Sala: ${sala}</p>
-            <button id="btnQR">Tomar asistencia QR</button>
-            <div style="margin-top:10px;">
-            <input type="text" id="dniInput" placeholder="Ingrese DNI">
-            <button id="btnDNI">Tomar asistencia DNI</button>
+        <div class="modalAsistencia-content">
+            <span class="close" id="closeAsistencia">&times;</span>
+            <div id="asistenciaBody">
+                
             </div>
         </div>
     </div>
-    </div>
 
+    <!-- Modal de QR -->
+    <div id="qrModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span id="closeQRModal" style="cursor:pointer;">&times;</span>
+
+            <h3>Escanear QR</h3>
+
+            <div id="qr-reader" style="width:100%;"></div>
+            <button id="cancelarLectura" hidden>Cencelar</button>
+        </div>
+    </div>
 
     
     <!-- Script para asignar data-clase y abrir el panel -->
     <script src="/Home/Tabs/Table/weekNav.js"></script>
 
-    <!---->
-    <script src="/Home/Tabs/Table/payPanel.js"></script>
-
-    <script src="/Home/Tabs/Table/classSlot.js"></script>
-
-</body>
-</html>  
-
     <!-- 
     Esto no estaría andando, trete de hacerlo como esta en navbarSelector pero no se bien como se hace...
     pero creo que es la forma de hacerlo
+    
+    No funciona porque la tabla es de tipo HTML, para que lo de abajo funcione,
+    la tabla debería ser un EJS.
+    
     <% if (userRole === 'cliente') { %>
     <script src="/Home/Tabs/Table/payPanel.js"></script>
     <% } else { %>
     <script src="/Home/Tabs/Table/classOptions.js"></script>
     <% } %> -->
+
+    <script src="/Home/Tabs/Table/classOptions.js"></script>
+    <script src="/Home/Tabs/Table/payPanel.js"></script>
+
+    <script src="/Home/Tabs/Table/classSlot.js"></script>
+
+    <!-- Librería para generar el QR, habria que moverlo a la pestaña donde
+    se genere el qr(ahora lo genera classOptions dentro de table porlo que lo dejo acá)-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+
+
+</body>
+</html>

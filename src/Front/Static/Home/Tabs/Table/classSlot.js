@@ -1,5 +1,5 @@
 init();
-debugger;
+//debugger;
 async function init() {
     await crearTabla();
     // Usar el lunes actual de weekNav
@@ -121,11 +121,12 @@ async function getAllClasses(fechaSemana) {
     console.log(clasesData); */
     
     const ahora = new Date();
+    const result = await fetch("/session-data");
+    const sessionData = await result.json();
 
     clasesData.forEach(claseObj => {
-        console.log("Esta es una clase encontrada en DB: ");
-        console.log(claseObj);
-
+        /* console.log("Esta es una clase encontrada en DB: ");
+        console.log(claseObj); */
         const tdId = `${claseObj.clase.dia}-${claseObj.clase.hora}`;
 
         const celda = document.querySelector(`#${tdId} [data-sala="${claseObj.sala.nombre}"]`);
@@ -147,17 +148,22 @@ async function getAllClasses(fechaSemana) {
 
             capacidadActual = `${cantidadAnotados}/${claseObj.clase.limiteClase}`;
 
+            /* console.log("la capacidad de la clase de la fecha " + claseObj.clase.dia + " a la hora "+ claseObj.clase.hora)
+            console.log(capacidadActual) */
             celda.dataset.capacidad = capacidadActual;
 
             //Para informar pedir confirmación si quiere entrar en lista de espera.
             celda.dataset.llena = cantidadAnotados >= claseObj.clase.limiteClase;
 
-            //celda.onclick = () => abrirPago(celda);
-            //celda.onclick = () => abrirAsistencia(celda);
-            if (typeof abrirPago === "function") {
-            celda.onclick = () => abrirPago(celda);
-            } else if (typeof abrirAsistencia === "function") {
-            celda.onclick = () => abrirAsistencia(celda);
+            if (sessionData.logged) {
+                if (sessionData.session.rol === "cliente") {
+                    celda.onclick = () => abrirPago(celda);
+                } else {
+                    celda.onclick = () => abrirAsistencia(celda);
+                }
+            }
+            else {
+                celda.onclick = () => abrirPago(celda);
             }
 
 

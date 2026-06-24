@@ -415,6 +415,8 @@ async function createSession(req, user) {
         mail: user.mail,
         rol: user.rol,
     };
+    console.log("Sesión creada para usuario:");
+    console.log(req.session.user);
     await req.session.save(); 
 }
 

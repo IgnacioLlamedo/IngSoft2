@@ -16,10 +16,10 @@ export class claseEspecificaDao {
         return await ClaseEspecifica.find(query).lean()
     }
     async updateOne(query, datos){
-        console.log("Actualizando clase específica con query: ");
+        /* console.log("Actualizando clase específica con query: ");
         console.log(query);
         console.log("Datos a actualizar: ");
-        console.log(datos);
+        console.log(datos); */
         const updated = await ClaseEspecifica.findOneAndUpdate(query, datos, { returnDocument: 'after' }).lean()
         if(!updated){
             //provisional, desarrollar luego

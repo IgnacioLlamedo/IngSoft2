@@ -11,9 +11,19 @@ if (today.getDay() === 0) {
 // Calculamos el lunes de la semana actual
 function getMonday(d) {
   const date = new Date(d);
-  const day = date.getDay(); // 0=domingo, 1=lunes, ...
-  const diff = (day === 0 ? -6 : 1) - day; 
+
+  const day = date.getDay();
+  const diff = (day === 0 ? -6 : 1) - day;
+
   date.setDate(date.getDate() + diff);
+
+  // Lunes a las 00:00
+  date.setHours(0, 0, 0, 0);
+
+  /* console.log("DESDE GET MONDAY EN WEEK NAV")
+  console.log("El nuevo lunes actual es: ");
+  console.log(date); */
+
   return date;
 }
 
@@ -113,6 +123,7 @@ async function refrescarSemana() {
 
     //Función de classSlot para recargar las clases de la semana actualizada
     if(window.recargarClasesSemana){
+        //console.log(currentMonday)
         await window.recargarClasesSemana(currentMonday);
     }
 }

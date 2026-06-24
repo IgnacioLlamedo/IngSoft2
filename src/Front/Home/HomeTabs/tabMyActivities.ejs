@@ -61,6 +61,7 @@
             <option value="Todas">Todas</option>
             <option value="NoVencidas" selected>No vencidas</option>
             <option value="Vencidas">Vencidas</option>
+            <option value="EnEspera">En espera</option>
           </select>
         </div>
 
@@ -71,6 +72,17 @@
         <div id="reservasContainter" class="reservas-containter">
 
         </div>
+
+        <!-- Modal para cancelar clases de mensualidad -->
+        <div id="cancelarMensualModal" class="modal-cancellations">
+          <div class="modal-cancellations-content">
+            <span class="close-cancellations">&times;</span>
+            <h3>Cancelar clase de la mensualidad</h3>
+            <div id="listaClasesMensual"></div>
+          </div>
+        </div>
+
+
 
     </main>
 
