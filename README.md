@@ -136,6 +136,7 @@ Para poder usar mercado pago se debe tener un URL https. Para ello podemos crear
 - Ver facturación por período - [ 3 Pts. ]
 - Ver facturación por tipo de clase - [ 4 Pts. ]
 - Ver cancelaciones por clase - [ 3 Pts. ]
+- Aumentar precio cuota - [ ? Pts. ]
   
 ### Faltan crear las HU nuevas que surgieron en la Demo 1
 
