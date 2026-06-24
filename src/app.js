@@ -51,6 +51,7 @@ cronService.iniciar();
 app.listen(config.port, () => {
     console.log(`Listening in port ${config.port}`)
     console.log(`http://localhost:${config.port}/`)
+    console.log(`${config.link}`)
 })
 
 app.use(express.json());
