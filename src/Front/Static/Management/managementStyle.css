@@ -150,6 +150,7 @@
     padding: 5px;
     color: white;
     background-color: rgb(255, 0, 0);
+    cursor: pointer;
 }
 
 
@@ -160,6 +161,7 @@
     padding: 5px;
     color: white;
     background-color: rgb(112, 188, 0);
+    cursor: pointer;
 }
 
 .suspend-button {
@@ -169,6 +171,7 @@
     padding: 5px;
     color: white;
     background-color: rgb(218, 153, 0);
+    cursor: pointer;
 }
 
 .buttons-container {
@@ -273,4 +276,43 @@ dialog::backdrop {
     width: 100%;
     height: 75px;
     resize: none;
+}
+
+.delete-success-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    cursor: pointer;
+}
+
+.delete-success-dialog {
+    background-color: #1f1f1f;
+    color: #e6e6e6;
+    padding: 20px 24px;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    max-width: 90%;
+    min-width: 260px;
+    text-align: center;
+    cursor: auto;
+}
+
+.delete-success-text {
+    margin: 0 0 16px;
+    font-size: 1rem;
+    line-height: 1.4;
+}
+
+.delete-success-button {
+    padding: 8px 16px;
+    border: none;
+    background-color: #007bff;
+    color: #fff;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
 }
