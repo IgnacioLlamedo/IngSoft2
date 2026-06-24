@@ -9,6 +9,7 @@ const filterFromDate = document.getElementById('filterFromDate');
 const filterToDate = document.getElementById('filterToDate');
 
 
+let interval1, timeout2, timeout3;
 let currentStats = [];
 const currentSort = { key: null, direction: 'asc' };
 let hidePendingPayments = false;
@@ -87,9 +88,28 @@ function applyFiltersAndRender() {
 }
 
 
+// Mensaje animado de carga para que no se aburran los clientes con déficit de atención
+function loopLoadingMessage() {
+    statsMsgDiv.textContent = 'Cargando información.';
+    timeout2 = setTimeout(() => {
+        statsMsgDiv.textContent = 'Cargando información..';
+        timeout3 = setTimeout(() => {
+            statsMsgDiv.textContent = 'Cargando información...';
+        }, 750);
+    }, 750);
+}
+
 async function loadStats() {
+    // Llamo a la función directamente la 1ª vez para que se ejecute instantáneamente
+    loopLoadingMessage();
+    interval1 = setInterval(loopLoadingMessage, 2250);
+
     try {
         const response = await fetch('/api/pago/get-payments', { credentials: 'include' });
+        clearInterval(interval1);
+        clearTimeout(timeout2);
+        clearTimeout(timeout3);
+
         if (!response.ok) {
             throw new Error('No se pudieron cargar las estadísticas.');
         }
@@ -102,6 +122,7 @@ async function loadStats() {
         console.error(error);
     }
 }
+
 
 function renderStatsTable(payments) {
     tableBody.innerHTML = '';
