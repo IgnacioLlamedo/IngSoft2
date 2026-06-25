@@ -64,7 +64,7 @@ export const ReservaMensual = Reserva.discriminator("ReservaMensual", new Schema
     _id: { type: String, default: randomUUID },
     clases: [{ idClase: {type: String, required: true, ref: 'clasesEspecificas'},
         //revisar
-     estado: { type: String, enum: ['cancelada', 'activa']} }],
+    estado: { type: String, enum: ['cancelada', 'activa', 'en espera']} }],
     pagos: [{ idPago: {type: String, required: true, ref: 'pagos'} }],
     idUsuario: { type: String, required: true, ref: 'usuarios' },
     cancelada: { type: Boolean, default: false },

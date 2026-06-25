@@ -1,7 +1,12 @@
-import { claseGeneralDao, profesorDao } from "../daos/index.js";
+import { claseGeneralDao } from "../daos/index.js";
+import { claseEspecificaDao } from "../daos/index.js";
+import { profesorDao } from "../daos/index.js";
 import { salaDao } from "../daos/index.js";
 import { sedeDao } from "../daos/index.js";
 import { actividadDao } from "../daos/index.js";
+import { globalesDao } from "../daos/index.js";
+import { reservaDao } from "../daos/index.js";
+import { Status } from '../constants/constants.js';
 
 
 
@@ -19,17 +24,18 @@ import { actividadDao } from "../daos/index.js";
 //profesor
 export async function crearProfesor(req, res){
     try {
-        let data = req.body
+        const data = req.body;
+        console.log("Crear profesor con datos: ", data);
 
-        const intructorAlreadyExists = await profesorDao.readOne({dni: req.body.dni});
-        if(intructorAlreadyExists) {
+        const intructorAlreadyExists = await profesorDao.readOne({ dni: req.body.dni });
+        if (intructorAlreadyExists) {
             return res.json({
                 success: false,
                 message: "Error al crear el profesor. El profesor ingresado ya está registrado en el sistema."
-            })
-        }
+            });
+        };
         
-        await profesorDao.create(data)
+        const newData = await profesorDao.create(data);
 
         res.json({
             success: true,
@@ -45,34 +51,47 @@ export async function crearProfesor(req, res){
     }
 }
 
+
+function isSameInstructor(data, currentInstructor) {
+	return (
+		data.nombre === currentInstructor.nombre &&
+		data.dni === currentInstructor.dni &&
+		data.genero === currentInstructor.genero &&
+		areDeepEqual(data.actividades, currentInstructor.actividades) &&
+		data.estado === currentInstructor.estado &&
+		data.motivoEstado === currentInstructor.motivoEstado &&
+		areDeepEqual(data.fechasEstado, currentInstructor.fechasEstado)
+	);
+}
+
+function areDeepEqual(a, b) {
+    return JSON.stringify(a) === JSON.stringify(b);
+}
+
+// TODO: Chequear que todo esto funcione correctamente
 export async function modificarProfesor(req, res){
     try {
-        let data = req.body;
+        const data = req.body;
+        const currentInstructor = await profesorDao.readOne({ _id: data.id });
 
-        const currentInstructor = await profesorDao.readOne({_id: data.id});
-
-        if(
-            (data.nombre === currentInstructor.nombre) &&
-            (data.dni === currentInstructor.dni) &&
-            (data.genero === currentInstructor.genero)
-        ) {
+        if (isSameInstructor(data, currentInstructor)) {
             return res.json({
                 success: false,
                 message: "Error al modificar el profesor. No se han modificado datos."
-            })
+            });
         }
 
-        if(data.dni !== currentInstructor.dni) {
-            const instructorDniAlreadyExists = await profesorDao.readOne({dni: data.dni});
-            if(instructorDniAlreadyExists) {
+        if (data.dni !== currentInstructor.dni) {
+            const instructorWithSameDni = await profesorDao.readOne({ dni: data.dni });
+            if (instructorWithSameDni) {
                 return res.json({
                     success: false,
                     message: "Error al modificar el profesor. El DNI del nuevo profesor ya está registrado en el sistema."
-                })
+                });
             }
         }
 
-        await profesorDao.updateOne({_id: data.id}, data)
+        await profesorDao.updateOne({ _id: data.id }, data);
 
         res.json({
             success: true,
@@ -88,19 +107,63 @@ export async function modificarProfesor(req, res){
     }
 }
 
+export async function inhabilitarProfesor(req, res){
+    try {
+        const data = req.body;
+        const currentInstructor = await profesorDao.readOne({ _id: data.id });
+
+        if (isSameInstructor(data, currentInstructor)) {
+            return res.json({
+                success: false,
+                message: "Error al modificar el profesor. No se han modificado datos."
+            });
+        }
+        
+        let cantClasesAfectadas = 0;
+        let cantUsuariosAfectados = 0;
+        // TODO1: Chequear si hay clases activas con ese profesor. 
+        // TODO2: De haberlas, corresponde suspenderla* y avisar vía email a los anotados
+        // *Creo que no fue solicitada la cancelación en sí, ni tampoco la devolución del dinero
+        // Dentro de mailer.servicio.js existe mailer.cancelledClass() con el cuerpo del mail.
+
+        await profesorDao.updateOne({ _id: data.id }, data);
+        const clasesMsg = cantClasesAfectadas > 0 ? `. ${cantClasesAfectadas} clases fueron canceladas por este evento` : '';
+        const usuariosMsg = cantUsuariosAfectados > 0 ? `. ${cantUsuariosAfectados} usuarios fueron notificados` : '';
+        const resultMsg = "Se actualizó el estado del profesor" + clasesMsg + usuariosMsg + ".";
+        
+        res.json({
+            success: true,
+            message: resultMsg
+        });
+    }
+    catch(error) {
+        console.error("modificarProfesor ERROR: ", error);
+        res.json({
+            success: false,
+            message: "Error al modificar profesor. Inténtelo de nuevo más tarde."
+        });
+    }
+}
+
 export async function eliminarProfesor(req, res){
     try {
-        let data = req.body
+        const data = req.body;
 
-        const clases = await claseGeneralDao.readMany({idProfesor: data.id})
-        if(clases.length > 0){
+        const clases = await claseGeneralDao.readMany({ idProfesor: data.id }); 
+        if (clases.length > 0) {
             return res.json({
                 success: false,
                 message: "Error al eliminar profesor. Hay clases que corresponden a ese profesor, borre o edite primero las clases."
             });
         }
 
-        await profesorDao.deleteOne({_id: data.id})
+        const query = { _id: data.id };
+        const newData = {
+			estado: Status.DELETED,
+			motivoEstado: data.motivoEstado,
+			fechasEstado: { desde: Date.now(), hasta: null },
+		};
+        await profesorDao.updateOne(query, newData);
 
         res.json({
             success: true,
@@ -128,7 +191,7 @@ export async function getInstructors(req, res){
 
         res.json({
             success: true,
-            instructors,
+            data: instructors,
         });
     }
     catch(error) {
@@ -198,7 +261,7 @@ export async function modificarSala(req, res) {
         data.nombre = nameConvention(data.nombre);
 
         const currentRoom = await salaDao.readOne({_id: data.id});
-
+        
         if(
             (data.nombre === currentRoom.nombre) &&
             (data.limiteSala === currentRoom.limiteSala)
@@ -289,7 +352,7 @@ export async function getRooms(req, res){
 
         res.json({
             success: true,
-            rooms,
+            data: rooms,
         });
     }
     catch(error) {
@@ -429,7 +492,7 @@ export async function getFacilities(req, res){
 
         res.json({
             success: true,
-            facilities,
+            data: facilities,
         });
     }
     catch(error) {
@@ -492,7 +555,7 @@ export async function crearActividad(req, res){
     }
 }
 
-export async function modificarActividad(req, res){
+export async function modificarNombreActividad(req, res){
     try {
         let data = req.body
         data.nombre = nameConvention(data.nombre);
@@ -531,6 +594,40 @@ export async function modificarActividad(req, res){
         });
     }
 }
+
+
+export async function modificarPrecioActividad(req, res){
+    try {
+        let data = req.body
+
+        const currentActivity = await actividadDao.readOne({_id: data.id});
+
+        if(
+            (data.precioMensual === currentActivity.precioMensual)
+        ) {
+            return res.json({
+                success: false,
+                message: "Error al modificar la actividad. No se han modificado datos."
+            })
+        }
+
+        await actividadDao.updateOne({_id: data.id}, data)
+
+        res.json({
+            success: true,
+            message: "¡Modificación de actividad realizada con éxito!"
+        });
+    }
+    catch(error) {
+        console.error("modificarActividad ERROR: ", error);
+        res.json({
+            success: false,
+            message: "Error al modificar actividad. Inténtelo de nuevo más tarde."
+        });
+    }
+}
+
+
 
 export async function eliminarActividad(req, res){
     try {
@@ -573,7 +670,7 @@ export async function getActivities(req, res){
 
         res.json({
             success: true,
-            activities,
+            data: activities,
         });
     }
     catch(error) {
@@ -581,6 +678,92 @@ export async function getActivities(req, res){
         res.json({
             success: false,
             message: "Error al recuperar las actividades. Inténtelo de nuevo más tarde."
+        });
+    }
+}
+
+
+export async function getActivitiesStats(req, res){
+    try {
+        const activities = await actividadDao.readMany({});
+
+        if (!activities) {
+            return res.json({
+                success: false,
+            })
+        }
+
+        const reservations = await reservaDao.readManyMensual({});
+        const generalClasses = await claseGeneralDao.readMany({});
+
+        activities.forEach(a => a.abonados = 0);
+
+        console.log("reservas mensuales: ", reservations);
+        for (let r of reservations) {
+            // Esto no hacía falta porque solo aplica a reservas únicas 🥲
+            // if (r.idClase) {
+            //     const generalClass = generalClasses.find(c => c._id === r.idClase);
+            //     activities.find(a => a._id === generalClass.idActividad).abonados++;
+            // } else
+
+            // Si hay clases >> Obtengo idClaseEspecífica >> Busco claseEspecifica >>
+            // >> Obtengo idClaseGeneral >> Busco claseGeneral >>
+            // >> Obtengo idActividad >> Obtengo actividad >> Incremento actividad.abonados
+            if (r.clases && r.clases.length > 0) {
+                const idSpecificClass = r.clases[0].idClase;
+                const specificClass = await claseEspecificaDao.readOne({ _id: idSpecificClass });
+                if (!specificClass) continue;
+                const idGeneralClass = specificClass.idClaseGeneral;
+                const generalClass = generalClasses.find(gc => gc._id === idGeneralClass);
+                if (!generalClass) continue;
+                const activity = activities.find(a => a._id === generalClass.idActividad);
+                if (activity) activity.abonados++;
+            }
+        }
+
+        return res.json(activities);
+    }
+    catch(error) {
+        console.error("getAllActivities ERROR: ", error);
+        res.json({
+            success: false,
+            message: "Error al recuperar las actividades. Inténtelo de nuevo más tarde."
+        });
+    }
+}
+
+
+
+export async function actualizarDiasAviso(req, res){
+    try {                                            //req.body.diasAviso es provisional
+        await globalesDao.updateOne({id: "1"}, {diasAviso: req.body.diasAviso});
+        res.json({
+            success: true,
+            message: "¡Modificaciones hechas con éxito!"
+        });
+    }
+    catch(error) {
+        console.error("actualizarDiasAviso ERROR: ", error);
+        res.json({
+            success: false,
+            message: "Error al actualizar los días del aviso. Inténtelo de nuevo más tarde."
+        });
+    }
+}
+
+
+export async function recuperarDiasAviso(req, res){
+    try {
+        const data = await globalesDao.readOne({id: "1"});
+        res.json({
+            data,
+        });
+    }
+    catch(error) {
+        console.error("recuperarDiasAviso ERROR: ", error);
+        res.json({
+            success: false,
+            message: "Error al recuperar los días del aviso. Inténtelo de nuevo más tarde."
         });
     }
 }

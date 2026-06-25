@@ -1,5 +1,6 @@
 import { Schema, model } from "mongoose";
-import { randomUUID } from "node:crypto"
+import { randomUUID } from "node:crypto";
+import { Role, Status } from "../constants/constants.js";
 
 const collection = 'usuarios'
 
@@ -7,15 +8,18 @@ const collection = 'usuarios'
 
 const usuarioSchema = new Schema({
     _id: { type: String, default: randomUUID },
-    mail: { type: String, unique: true, required: true },
+    mail: { type: String, required: true },
     dni: { type: String, required: true },
     contraseña: { type: String, required: true },
     nombre: { type: String, required: true },
     nacimiento: { type: Date, required: true },
     telefono: { type: String, required: true },
-    genero: { type: String, enum: ['femenino', 'masculino', 'otro'], required: true },
-    planilla: { type: String, required: true, ref: 'planillas' },
-    rol: { type: String, enum: ['cliente', 'administrador', 'empleado'], default: 'cliente' },
+    genero: { type: String, enum: ["femenino", "masculino", "otro"], required: true },
+    planilla: { type: String, required: true, ref: "planillas" },
+    // rol: { type: String, enum: ["cliente", "administrador", "empleado"], default: "cliente" },
+    rol: { type: String, enum: [ Role.CLIENT, Role.ADMIN, Role.EMPLOYEE ], default: Role.CLIENT },
+    estado: { type: String, enum: [Status.INACTIVE, Status.UNVERIFIED, Status.REGISTERED, Status.DELETED], default: Status.UNVERIFIED },
+    motivoEstado: { type: String, default: 'Sin motivo especificado' },
     codigo: { type: String },
     limiteCodigo: { type: Date },
 }, {
@@ -33,3 +37,38 @@ const usuarioSchema = new Schema({
 
 export const Usuario = model(collection, usuarioSchema)
 
+
+const empleadoSchema = new Schema({
+    _id: { type: String, default: randomUUID },
+    mail: { type: String, required: true },
+    dni: { type: String, required: true },
+    contraseña: { type: String, required: true },
+    nombre: { type: String, required: true },
+    nacimiento: { type: Date, required: true },
+    rol: { type: String, enum: [ Role.CLIENT, Role.ADMIN, Role.EMPLOYEE ], default: Role.CLIENT },
+    estado: { type: String, enum: [Status.INACTIVE, Status.UNVERIFIED, Status.REGISTERED, Status.DELETED], default: Status.UNVERIFIED },
+    motivoEstado: { type: String, default: 'Sin motivo especificado' },
+    codigo: { type: String },
+}, {
+    strict: false,
+    versionKey: false
+})
+
+export const Empleado = model('Empleado', empleadoSchema, 'usuarios');
+
+
+const administradorSchema = new Schema({
+    _id: { type: String, default: randomUUID },
+    mail: { type: String, required: true },
+    dni: { type: String, required: true },
+    contraseña: { type: String, required: true },
+    nombre: { type: String, required: true },
+    rol: { type: String, enum: [ Role.CLIENT, Role.ADMIN, Role.EMPLOYEE ], default: Role.CLIENT },
+    estado: { type: String, enum: [Status.INACTIVE, Status.UNVERIFIED, Status.REGISTERED, Status.DELETED], default: Status.UNVERIFIED },
+    motivoEstado: { type: String, default: 'Sin motivo especificado' },
+}, {
+    strict: false,
+    versionKey: false
+})
+
+export const Administrador = model('Administrador', administradorSchema, 'usuarios');

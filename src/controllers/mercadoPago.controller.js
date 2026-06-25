@@ -1,7 +1,8 @@
 import { Preference } from "mercadopago";
 import { client } from "../servicios/mercado.servicio.js";
-import { pagoDao, claseEspecificaDao, claseGeneralDao } from "../daos/index.js";
+import { pagoDao, claseEspecificaDao, claseGeneralDao, usuarioDao, actividadDao } from "../daos/index.js";
 import config from "../config.js";
+import { Role } from "../constants/constants.js";
 
 export async function crearPreferencia(req, res) {
 
@@ -10,6 +11,7 @@ export async function crearPreferencia(req, res) {
         const precio = req.body.precio; 
         const tipoClase = req.body.tipoClase; //seña, unica o mensual
         const clases = req.body.clases;
+        const datosExternos = req.body.idCupo;
 
         console.log("Desde crearPreferencia. Los tipos de clases y fechas son: ")
 /*         const clases = [];
@@ -54,7 +56,8 @@ export async function crearPreferencia(req, res) {
                     idUsuario: req.session.user.id,
                     tipoClase: tipoClase,
                     nombre: nombre, //Nombre clase (yoga, spinning o funcional)
-                    idPagoPendiente: pagoPendiente._id
+                    idPagoPendiente: pagoPendiente._id,
+                    idCupo: datosExternos
                 }),
                 back_urls: {
                     success: `${config.link}/payment/approved`,
@@ -195,4 +198,60 @@ export async function confirmarPagoController(req, res){
             message: "Error al almacenar datos de pago en DB."
         })
     }
+}
+
+
+export async function getPaymentsController(req, res) {
+    try {
+        const sessionUser = req.session && req.session.user;
+
+        if (!sessionUser || sessionUser.rol !== Role.ADMIN) {
+            return res.status(403).json({ success: false, message: 'Acceso denegado' });
+        }
+
+        const query = req.query || {};
+
+        const payments = await pagoDao.readMany(query);
+        
+        // Nuevo arreglo con la información extra que necesito de cada pago
+        const paymentsWithInfo = await generatePaymentsWithInfo(payments);
+
+        return res.json(paymentsWithInfo);
+
+    } catch (error) {
+        console.error('getPaymentsController ERROR: ', error);
+        return res.status(500).json({ success: false, message: 'Error al obtener la lista de usuarios. Inténtelo más tarde.' });
+    }
+}
+
+
+async function generatePaymentsWithInfo(payments) {
+    const paymentsWithInfo = [];
+
+    for (const p of payments) {
+        const fecha = (p.fecha != null) ? p.fecha : p.clases[0].fecha;
+
+        const objUsuario = await usuarioDao.readOne({ _id: p.idUsuario });
+        const usuario = (objUsuario) ? objUsuario.mail : "Usuario desconocido";
+
+        const tipo = (p.clases && p.clases.length > 1) ? "Mensualidad" : "Clase Única";
+
+        const idClase = p.idClase || p.clases[0].idClase;
+        const objClase = await claseGeneralDao.readOne({ _id: idClase });
+        const clase = (objClase) ? `${objClase.dia}, ${objClase.hora}:00 hs.` : "Horario desconocido";
+
+        const objActividad = await actividadDao.readOne({ _id: objClase.idActividad });
+        const actividad = (objActividad) ? objActividad.nombre : "Actividad desconocida";
+
+        paymentsWithInfo.push({
+            fecha,
+            usuario,
+            monto: p.monto,
+            tipo,
+            clase,
+            actividad,
+            pendiente: p.pendiente
+        });
+    }
+    return paymentsWithInfo;
 }

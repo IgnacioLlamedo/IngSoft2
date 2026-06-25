@@ -163,8 +163,6 @@ function hidePassword(button, visibilityButton, visibilityIcon) {
 
 
 
-
-
 document.getElementById("register-form").addEventListener("submit", async (event) => {
     event.preventDefault();
     
@@ -176,7 +174,6 @@ document.getElementById("register-form").addEventListener("submit", async (event
         registerErrorMsg.hidden = false;
         return;
     }
-
     const form = event.target;
 
     const planillaData = {
@@ -229,7 +226,6 @@ document.getElementById("register-form").addEventListener("submit", async (event
     }
 
     const dataString = JSON.stringify(data);
-    console.log("Front:" + JSON.stringify(planillaData));
 
     // autenticar req?
     const res = await fetch("/api/register", {

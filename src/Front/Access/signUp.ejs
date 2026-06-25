@@ -30,8 +30,8 @@
                 <section class="form-section">
 
                     <div class="input-group">
-                        <label for="nombreCompleto">Nombre completo:</label>
-                        <input id="nombreCompleto" type="text" name="nombreCompleto" autocomplete="nombre" required>
+                        <label for="fullName">Nombre completo:</label>
+                        <input id="fullName" type="text" name="nombreCompleto" autocomplete="nombre" required>
                     </div>
 
                     <div class="input-group">
@@ -45,8 +45,8 @@
                     </div>
 
                     <div class="input-group">
-                        <label for="numeroTelefono">Número de teléfono:</label>
-                        <input id="numeroTelefono" type="tel" name="numeroTelefono" autocomplete="tel" required>
+                        <label for="phoneNumber">Número de teléfono:</label>
+                        <input id="phoneNumber" type="tel" name="numeroTelefono" autocomplete="tel" required>
                     </div>
     
     
@@ -77,8 +77,8 @@
                     </div>
 
                     <div class="input-group">
-                        <label for="genero">Género:</label>
-                        <select id="genero" name="genero">
+                        <label for="gender">Género:</label>
+                        <select id="gender" name="genero">
                             <option value="masculino">Masculino</option>
                             <option value="femenino">Femenino</option>
                             <option value="otro">Otro</option>
@@ -102,18 +102,18 @@
                 </div>
 
                 <div class="input-group">
-                    <label for="nombreCompletoContactoEmergencia">Nombre completo:</label>
-                    <input id="nombreCompletoContactoEmergencia" type="text" name="nombreCompletoContactoEmergencia" required>
+                    <label for="emergencyContactFullName">Nombre completo:</label>
+                    <input id="emergencyContactFullName" type="text" name="nombreCompletoContactoEmergencia" required>
                 </div>
 
                 <div class="input-group">
-                    <label for="relacionContactoEmergencia">Relación con el contacto:</label>
-                    <input id="relacionContactoEmergencia" type="text" name="relacionContactoEmergencia" required>
+                    <label for="emergencyContactRelationship">Relación con el contacto:</label>
+                    <input id="emergencyContactRelationship" type="text" name="relacionContactoEmergencia" required>
                 </div>
 
                 <div class="input-group">
-                    <label for="telefonoContactoEmergencia">Número de teléfono:</label>
-                    <input id="telefonoContactoEmergencia" type="tel" name="telefonoContactoEmergencia" required>
+                    <label for="emergencyContactPhoneNumber">Número de teléfono:</label>
+                    <input id="emergencyContactPhoneNumber" type="tel" name="telefonoContactoEmergencia" required>
                 </div>
 
 
@@ -125,69 +125,69 @@
 
                 <div class="input-group">
                     <div class="checkbox-container">
-                        <input id="tieneHipertension" type="checkbox" name="tieneHipertension">
-                        <label for="tieneHipertension">Hipertensión</label>
+                        <input id="hasHypertension" type="checkbox" name="tieneHipertension">
+                        <label for="hasHypertension">Hipertensión</label>
                     </div>
                 </div>
 
                 <div class="input-group">
                     <div class="checkbox-container">
-                        <input id="tieneDiabetes" type="checkbox" name="tieneDiabetes">
-                        <label for="tieneDiabetes">Diabetes</label>
-                    </div>
-                </div>
-
-
-                <div class="input-group">
-                    <div class="checkbox-container">
-                        <input id="tieneAsma" type="checkbox" name="tieneAsma">
-                        <label for="tieneAsma">Asma</label>
+                        <input id="hasDiabetes" type="checkbox" name="tieneDiabetes">
+                        <label for="hasDiabetes">Diabetes</label>
                     </div>
                 </div>
 
 
                 <div class="input-group">
                     <div class="checkbox-container">
-                        <input id="tieneCardiacos" type="checkbox" name="tieneCardiacos">
-                        <label for="tieneCardiacos">Cardiacos</label>
+                        <input id="hasAsthma" type="checkbox" name="tieneAsma">
+                        <label for="hasAsma">Asma</label>
                     </div>
                 </div>
 
 
                 <div class="input-group">
                     <div class="checkbox-container">
-                        <input id="tieneArtritis" type="checkbox" name="tieneArtritis">
-                        <label for="tieneArtritis">Artritis</label>
+                        <input id="isHeartPatients" type="checkbox" name="tieneCardiacos">
+                        <label for="isHeartPatients">Cardiacos</label>
                     </div>
                 </div>
 
 
                 <div class="input-group">
                     <div class="checkbox-container">
-                        <input id="tieneEpilepsia" type="checkbox" name="tieneEpilepsia">
-                        <label for="tieneEpilepsia">Epilepsia</label>
+                        <input id="hasArthritis" type="checkbox" name="tieneArtritis">
+                        <label for="hasArtritis">Artritis</label>
                     </div>
                 </div>
 
 
                 <div class="input-group">
                     <div class="checkbox-container">
-                        <input id="tieneLesiones" type="checkbox" name="tieneLesiones">
-                        <label for="tieneLesiones">Lesiones</label>
+                        <input id="hasEplepsy" type="checkbox" name="tieneEpilepsia">
+                        <label for="hasEplepsy">Epilepsia</label>
                     </div>
                 </div>
 
 
                 <div class="input-group">
                     <div class="checkbox-container">
-                        <input type="checkbox" id="hasOtherHistory" name="haceActividadFisica">
+                        <input id="hasInjuries" type="checkbox" name="tieneLesiones">
+                        <label for="hasInjuries">Lesiones</label>
+                    </div>
+                </div>
+
+
+                <div class="input-group">
+                    <div class="checkbox-container">
+                        <input id="hasOtherHistory" type="checkbox" name="tieneOtrosAntecedentes">
                         <label for="hasOtherHistory">¿Tiene algún otro antecedente médico?</label>
                     </div>
                 </div>
 
                 <div class="input-group">
-                    <label class="otherHistoryFields" for="otrosAntecedentes" hidden>Otros antecedentes:</label>
-                    <input id="otrosAntecedentes" class="otherHistoryFields" type="text" name="otrosAntecedentes" hidden>
+                    <label class="otherHistoryFields" for="hasotherHistoryField" hidden>Otros antecedentes:</label>
+                    <input id="hasotherHistoryField" class="otherHistoryFields" type="text" name="otrosAntecedentes" hidden>
                 </div>
 
 
@@ -199,40 +199,40 @@
 
                 <div class="input-group">
                     <div class="checkbox-container">
-                        <input id="fuma" type="checkbox" name="fuma">
-                        <label for="fuma">Fuma</label>
+                        <input id="smoke" type="checkbox" name="fuma">
+                        <label for="smoke">Fuma</label>
                     </div>
                 </div>
 
                 <div class="input-group">
                     <div class="checkbox-container">
-                        <input id="tomaAlcohol" type="checkbox" name="tomaAlcohol">
-                        <label for="tomaAlcohol">Consume alcohol</label>
+                        <input id="drinkAlcohol" type="checkbox" name="tomaAlcohol">
+                        <label for="drinkAlcohol">Consume alcohol</label>
                     </div>
                 </div>
 
                 <div class="input-group">
                     <div class="checkbox-container">
-                        <input id="sintomasRecientes" type="checkbox" name="sintomasRecientes">
-                        <label for="sintomasRecientes">Sintomas recientes</label>
+                        <input id="recentSymptoms" type="checkbox" name="sintomasRecientes">
+                        <label for="recentSymptoms">Sintomas recientes</label>
                     </div>
                 </div>
 
                 <div class="input-group">
                     <div class="checkbox-container">
-                        <input id="tieneDificultadDormir" type="checkbox" name="tieneDificultadDormir">
-                        <label for="tieneDificultadDormir">Dificultad para dormir</label>
+                        <input id="hasDifficultySleeping" type="checkbox" name="tieneDificultadDormir">
+                        <label for="hasDifficultySleeping">Dificultad para dormir</label>
                     </div>
                 </div>
 
                 <div class="input-group">
-                    <label for="horasSueño">Horas de sueño habituales:</label>
-                    <input id="horasSueño" type="number" name="horasSueño">
+                    <label for="sleepHours">Horas de sueño habituales:</label>
+                    <input id="sleepHours" type="number" name="horasSueño">
                 </div>
 
                 <div class="input-group">
-                    <label for="nutricion">Dieta habitual:</label>
-                    <input id="nutricion" type="text" name="nutricion" required>
+                    <label for="nutrition">Dieta habitual:</label>
+                    <input id="nutrition" type="text" name="nutricion" required>
                 </div>
 
                 
@@ -251,18 +251,18 @@
                 </div>
 
                 <div class="input-group">
-                    <label class="surgeriesFields" for="descripcionCirugia" hidden>Descripción de la cirugía:</label>
-                    <input id="descripcionCirugia" class="surgeriesFields" type="text" name="descripcionCirugia" hidden>
+                    <label class="surgeriesFields" for="surgerieDescription" hidden>Descripción de la cirugía:</label>
+                    <input id="surgerieDescription" class="surgeriesFields" type="text" name="descripcionCirugia" hidden>
                 </div>
 
                 <div class="input-group">
-                    <label class="surgeriesFields" for="fechaCirugia" hidden>Fecha de la cirugía:</label>
-                    <input id="fechaCirugia" class="surgeriesFields" type="date" name="fechaCirugia" hidden>
+                    <label class="surgeriesFields" for="surgeryDate" hidden>Fecha de la cirugía:</label>
+                    <input id="surgeryDate" class="surgeriesFields" type="date" name="fechaCirugia" hidden>
                 </div>
 
                 <div class="input-group">
-                    <label class="surgeriesFields" for="secuelasCirugia" hidden>Secuelas de la cirugía:</label>
-                    <input id="secuelasCirugia" class="surgeriesFields" type="text" name="secuelasCirugia" hidden>
+                    <label class="surgeriesFields" for="surgeryAfterEffects" hidden>Secuelas de la cirugía:</label>
+                    <input id="surgeryAfterEffects" class="surgeriesFields" type="text" name="secuelasCirugia" hidden>
                 </div>
 
                 
@@ -274,19 +274,19 @@
 
                 <div class="input-group">
                     <div class="checkbox-container">
-                        <input type="checkbox" id="hasAllergies">
+                        <input id="hasAllergies" type="checkbox">
                         <label for="hasAllergies">¿Tiene alguna alergia?</label>
                     </div>
                 </div>
 
                 <div class="input-group">
-                    <label class="allergiesFields" for="alergias" hidden>Descripción de alergias:</label>
-                    <input id="alergias" class="allergiesFields" type="text" name="alergias" hidden>
+                    <label class="allergiesFields" for="allergyDescription" hidden>Descripción de alergias:</label>
+                    <input id="allergyDescription" class="allergiesFields" type="text" name="alergias" hidden>
                 </div>
 
                 <div class="input-group">
-                    <label class="allergiesFields" for="medicacionAlergias" hidden>Medicación tomada para las alergias:</label>
-                    <input id="medicacionAlergias" class="allergiesFields" type="text" name="medicacionAlergias" hidden>
+                    <label class="allergiesFields" for="allergyDate" hidden>Medicación tomada para las alergias:</label>
+                    <input id="allergyDate" class="allergiesFields" type="text" name="medicacionAlergias" hidden>
                 </div>
 
 
@@ -304,15 +304,15 @@
                 </div>
 
                 <div class="input-group">
-                    <label class="physicallyActiveFields" for="frecuenciaActividadFisica" hidden>Frecuencia de actividad física:</label>
-                    <input id="frecuenciaActividadFisica" class="physicallyActiveFields" type="text" name="frecuenciaActividadFisica" hidden>
+                    <label class="physicallyActiveFields" for="physicallyActiveFrequency" hidden>Frecuencia de actividad física:</label>
+                    <input id="physicallyActiveFrequency" class="physicallyActiveFields" type="text" name="frecuenciaActividadFisica" hidden>
                 </div>
 
 
                 <div class="input-group">
                     <div class="selector">
-                        <label for="objetivo">Objetivo:</label>
-                        <select id="objetivo" name="objetivo">
+                        <label for="objective">Objetivo:</label>
+                        <select id="objective" name="objetivo">
                             <option value="0">Perdida de peso</option>
                             <option value="1">Tonificación</option>
                             <option value="2">Salud</option>

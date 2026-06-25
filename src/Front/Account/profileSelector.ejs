@@ -1,0 +1,7 @@
+<% if (userRole === Role.ADMIN) { %>
+	<%- include("adminProfileCard.ejs") %>
+<% } else if (userRole === Role.EMPLOYEE) { %>
+	<%- include("employeeProfileCard.ejs") %>
+<% } else if (userRole === Role.CLIENT) { %>
+	<%- include("clientProfileCard.ejs") %>
+<% } %>

@@ -7,9 +7,9 @@
         <img class="logo-img" src="/Images/HomeImages/Logo.png" alt="Logo">
     </a>
     <ul class="nav-links">
-        <% if (path === "/" || path === "/home/") { %>
-            <li><a href="#" class="classesLink" id="classesLink">Listar Clases</a></li>
-        <% } %>
+        <li><a href="#" class="classesLink" id="classesLink">Listar Clases</a></li>
+        <li><a href="/attendance">Asistencia</a></li>
+        <li><a href="/management">Gestión</a></li>
         <li>
             <img class="user-ico" id="userIcon" src="/Images/HomeImages/user_ico.webp" alt="Opciones de usuario">
 
@@ -20,9 +20,9 @@
                             <img src="/Images/UserDropbox/account_ico.webp" alt="Cuenta">
                             <p>Cuenta</p>
                         </a>
-                        <a href="">
-                            <img src="/Images/UserDropbox/assistance.webp" alt="Dashboard">
-                            <p>Dashboard</p>
+                        <a href="/">
+                            <img src="/Images/UserDropbox/Admin/management_ico.webp" alt="Notificaciones">
+                            <p>Notificaciones</p>
                         </a>
                         <a href="#" id="logout">
                             <img src="/Images/UserDropbox/logout_ico.webp" alt="Cerrar sesión">
@@ -39,9 +39,9 @@
         <div class="menu-toggel">
             <div class="menu-toggel-wrapper">
                 <ul>
-                    <% if (path === "/" || path === "/home/") { %>
-                        <li><a href="#" class="classesLink">Listar Clases</a></li>
-                    <% } %>
+                    <li><a href="#" class="classesLink">Listar Clases</a></li>
+                    <li><a href="/attendance">Asistencia</a></li>
+                    <li><a href="/management">Gestión</a></li>
                     <li><a href="/account/"><p>Cuenta</p></a></li>
                     <li><a href="#"><p>Dashboard</p></a></li>
                     <li><a href="#" class="logout"><p>Cerrar sesión</p></a></li>

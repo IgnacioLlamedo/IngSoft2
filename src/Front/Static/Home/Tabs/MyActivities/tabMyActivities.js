@@ -25,9 +25,20 @@ async function getMyReservations() {
         // RESERVA ÚNICA
         // =========================================
         if (r.tipo === "unica") {
-
+            
             const claseGeneral = r.idClaseEspecifica.idClaseGeneral;
 
+            /**
+             * Acá agregué para mostrar bien el precio en caso de ser una seña de única,
+             * habría que hascer parte del fetch traerse los pagos de la reserva y no solo los ids
+             * de los pagos para así poner la información precisa. -- más adelante.
+             */
+            let precioUnica = claseGeneral.idActividad.precioMensual / 4;
+
+            //Cuando agregue la lógica de cancelar resto de seña, hay que cambiar este campo en reserva!!!!!!!!!!!
+            if (r.señada){
+                precioUnica = precioUnica/2;
+            }
 
             const horario =
                 `${claseGeneral.hora}:00 - ${claseGeneral.hora + 1}:00`;
@@ -55,8 +66,7 @@ async function getMyReservations() {
                 profesor:
                     claseGeneral.idProfesor.nombre,
 
-                precio:
-                    claseGeneral.precioMensual / 4,
+                precio: precioUnica,
 
                 vencida: 
                     fechaClase < fechaActual,
@@ -124,7 +134,7 @@ async function getMyReservations() {
                     claseGeneral.idProfesor.nombre,
 
                 precio:
-                    claseGeneral.precioMensual,
+                    claseGeneral.idActividad.precioMensual,
 
                 vencida
             };
@@ -194,7 +204,10 @@ function renderActividades() {
 
     // Título dinámico: Actividad - tipo
     const h3 = document.createElement("h3");
-    h3.textContent = `${act.actividad} - ${act.tipo}`;
+    if (act.señada)
+        h3.textContent = `${act.actividad} - ${act.tipo} - Seña de Clase`;
+    else
+        h3.textContent = `${act.actividad} - ${act.tipo}`;
     box.appendChild(h3);
 
     const hr = document.createElement("hr");
@@ -267,9 +280,10 @@ function renderActividades() {
         btnCancelar.classList.add("box-button", "cancel-reservation");
         btnCancelar.textContent = "Cancelar Reserva";
         //No se cancelan las mensualidades, se cancelan individualmente de la misma
+
+        //POP-UP que muestra las 4 o 5 clases de la mensualidad y permite elegír una para cancelar
+        //Las clases a cancelar están en esta variable: act.clases
         if (act.tipo === 'Mensual'){
-            //POP-UP que muestra las 4 o 5 clases de la mensualidad y permite elegír una para cancelar
-            //Las clases a cancelar están en esta variable: act.clases
 
             btnCancelar.addEventListener("click", () => {
             const modal = document.getElementById("cancelarMensualModal");
@@ -283,7 +297,7 @@ function renderActividades() {
                 btnClase.textContent = `Cancelar clase del ${fecha}`;
                 btnClase.classList.add("box-button");
 
-                //espero que esto esté bien..
+                //no creo que esto esté bien..
                 btnClase.addEventListener("click", async () => {
                 const res = await fetch('/api/reservas/cancelar-reserva', {
                     method: 'POST',

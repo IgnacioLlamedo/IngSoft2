@@ -1,17 +1,125 @@
 
-const createForm = document.getElementById("new-instructor-form");
-const templateEditForm = document.getElementById("edit-instructor-form");
+
+
+// Estas son las únicas cosas que hay que cambiar de este código para adaptarlo // 
+// Al profesor le tuve que agregar un control del DNI al crear y modificar      //
+
+const instructorsEndpoint = "/api/admin/profesor"; // Se usa el mismo fetch pero diferenciando entre GET | POST | PUT | DELETE
+const activitiesEndpoint = "/api/admin/actividad";
+
+let availableActivities = [];
+
+const slotHtml = (slot) => {
+    const activitiesNames = slot.actividades.map(activity => {
+            const activityItem = availableActivities.find(item => item._id === activity);
+            return `<b>${activityItem.nombre}</b>`;
+        }).join(', ');
+
+    let statusHtml = slot.estado === Status.REGISTERED
+            ? `<b>${slot.estado}</b>`
+            : `<b>${slot.estado}</b> con motivo <i>"${slot.motivoEstado}"</i>`;
+    const fechasHtml = slot.fechasEstado.hasta == null
+            ? `<br>Ocurrido el <b>${new Date(slot.fechasEstado.desde).toLocaleString('es-AR')}</b>`
+            : `<br>Desde <b>${new Date(slot.fechasEstado.desde).toLocaleString('es-AR')}</b> hasta <b>${new Date(slot.fechasEstado.hasta).toLocaleString('es-AR')}</b>`;
+    statusHtml += fechasHtml;
+
+    const innerHtml = `
+        <p><u>Nombre:</u> <b>${slot.nombre}</b></p>
+        <p><u>DNI:</u> <b>${slot.dni}</b></p>
+        <p><u>Género:</u> <b>${slot.genero}</b></p>
+        <p><u>Actividades:</u> ${activitiesNames}</p>
+        <p><u>Estado:</u> ${statusHtml}</p>
+    `;
+    return innerHtml;
+};
+
+
+function getFormData(form) {
+    return {
+        nombre: form.name.value,
+        dni: form.dni.value,
+        genero: form.gender.value,
+        actividades: Array.from(form.querySelectorAll('input[name="activities"]:checked')).map(input => input.value),
+    }
+}
+
+function getSuspendFormData(form) {
+    return {
+        motivoEstado: form.reasonField.value,
+        fechasEstado: {
+            desde: form.dateFromInput.value,
+            hasta: form.dateToInput.value
+        },
+    };
+}
+
+const fieldsToFillWithSlotData = (slot) => {
+    return [
+        {id: '#nameField', content: slot.nombre},
+        {id: '#dniField', content: slot.dni},
+        {id: '#genderField', content: slot.genero},
+    ];
+};
+
+//////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+const createForm = document.getElementById("create-form");
+const templateEditForm = document.getElementById("edit-form");
+const templateSuspendForm = document.getElementById("suspend-form");
 
 const errorMsg = document.getElementById("createError");
 const successMsg = document.getElementById("createSuccess");
 
-const slotsList = document.getElementById("slotsList");
+const slotList = document.getElementById("slotList");
 const notDataAvailableMsg = document.getElementById("notDataAvailableMsg");
 
-getAllSlots();
+const dialog = document.getElementById("confirmPanel");
+
+let Status;
+
+window.addEventListener('DOMContentLoaded', async () => {
+    Status = JSON.parse(createForm.dataset.statusEnum);
+    await initializeActivityCheckboxes();
+    attachConfirmDialogHandlers();
+    getAllSlots();
+});
+
+function attachConfirmDialogHandlers() {
+    const cancelButton = dialog.querySelector('button[value="cancel"]');
+    if (cancelButton) {
+        cancelButton.addEventListener('click', () => dialog.close('cancel'));
+    }
+
+    const confirmForm = dialog.querySelector('form');
+    const reasonInput = dialog.querySelector('#deleteReasonField');
+    if (confirmForm && reasonInput) {
+        confirmForm.addEventListener('submit', (event) => {
+            const reason = reasonInput.value.trim();
+            if (!reason) {
+                reasonInput.setCustomValidity('Debe ingresar un motivo para borrar el profesor.');
+                reasonInput.reportValidity();
+                event.preventDefault();
+                return;
+            }
+            reasonInput.setCustomValidity('');
+        });
+
+        reasonInput.addEventListener('input', () => {
+            reasonInput.setCustomValidity('');
+        });
+    }
+}
 
 async function getAllSlots() {
-    const res = await fetch("/api/admin/profesor", {
+    const res = await fetch(instructorsEndpoint, {
         method: 'GET',
         headers: {
             "Content-Type" : "application/json",
@@ -21,120 +129,148 @@ async function getAllSlots() {
     const resData = await res.json();
 
     if(resData.success)
-        printSlots(resData.instructors);
+        printSlots(resData.data);
     else
         notDataAvailableMsg.hidden = false;
 }
 
 
-
-
 function printSlots(slots) {
     notDataAvailableMsg.hidden = true;
 
-    slotsList.innerHTML = "";
+    slotList.innerHTML = "";
 
     const lastIndex = slots.length - 1;
 
     slots.forEach((slot, index) => {
+
+        const slotElem = createSlotElem();
+        const slotData = createSlotData(slot);
+    
+        const [slotError, slotErrorMsg] = createSlotError(slotElem);
+        createEditAndDeleteButtons(slotData, slotError, slotErrorMsg, slot);
+
+        slotElem.appendChild(slotData);
+        slotElem.appendChild(slotError);
         
-        const slotElem = document.createElement("div");
-        slotElem.classList.add("slot");
+        slotList.appendChild(slotElem);
 
-        const slotData = document.createElement("div");
-        slotData.classList.add("slot-data");
+        createSeparator(slotList, index, lastIndex);
 
-        slotData.innerHTML =`
-            <p>Nombre: ${slot.nombre}</p>
-            <p>DNI: ${slot.dni}</p>
-            <p>Género: ${slot.genero}</p>
-        `;
+    });
+}
 
-        const slotError = document.createElement("div");
-        slotError.classList.add("slot-error");
-        slotError.classList.add("none");
 
-        const errorHr = document.createElement("hr");
-        const errorMsg = document.createElement("p");
-        errorMsg.classList.add("errorMsg");
+function createSlotElem() {
+    const slotElem = document.createElement("div");
+    slotElem.classList.add("slot");
 
-        slotError.appendChild(errorHr);
-        slotError.appendChild(errorMsg);
+    return slotElem;
+}
 
-        const buttonsDiv = document.createElement("div");
-        buttonsDiv.classList.add("buttons-container");
 
+function createSlotData(slot) {
+    const slotData = document.createElement("div");
+    slotData.classList.add("slot-data");
+
+    slotData.innerHTML = slotHtml(slot);
+
+    return slotData;
+}
+
+
+function createEditAndDeleteButtons(slotData, slotError, slotErrorMsg, slot) {
+    const buttonsDiv = document.createElement("div");
+    buttonsDiv.classList.add("buttons-container");
+
+    if (slot.estado !== Status.DELETED) {
+        if (slot.estado === Status.REGISTERED) {
+            const slotSuspendButton = document.createElement("button");
+            slotSuspendButton.classList.add("suspend-button");
+            slotSuspendButton.textContent = "Inhabilitar";
+            slotSuspendButton.onclick = () => switchToSuspend(slot);
+            buttonsDiv.appendChild(slotSuspendButton);
+        }
+    
         const slotEditButton = document.createElement("button");
         slotEditButton.classList.add("edit-button");
         slotEditButton.textContent = "Editar";
-        slotEditButton.onclick = () => switchToEdit(slot.nombre, slot.dni, slot.genero, slot._id);
-
+        slotEditButton.onclick = () => switchToEdit(slot);
+        buttonsDiv.appendChild(slotEditButton);
+    
         const slotDeleteButton = document.createElement("button");
         slotDeleteButton.classList.add("delete-button");
         slotDeleteButton.type = "button";
         slotDeleteButton.textContent = "Borrar";
-
+        buttonsDiv.appendChild(slotDeleteButton);
+    
         slotDeleteButton.addEventListener('click', () => {
-            const dialog = document.getElementById('confirmPanel');
-            if (!dialog) {
-                // Fallback: no dialog present, delete immediately
-                deleteActivity(null, slot._id, slotError, errorMsg);
-                return;
-            }
-
             dialog.showModal();
-
+    
             dialog.addEventListener('close', (closeEvent) => {
                 if (dialog.returnValue === 'default') {
-                    // pass the close event (may be null) — deleteActivity guards event usage
-                    deleteActivity(closeEvent, slot._id, slotError, errorMsg);
+                    const deleteReason = dialog.querySelector('#deleteReasonField')?.value || '';
+                    deleteInstructor(closeEvent, slot._id, slotError, slotErrorMsg, deleteReason);
                 }
             }, { once: true });
         });
+    }
+
+    slotData.appendChild(buttonsDiv);
+}
 
 
-        buttonsDiv.appendChild(slotEditButton);
-        buttonsDiv.appendChild(slotDeleteButton);
-        slotData.appendChild(buttonsDiv);
+function createSlotError(slotElem) {
+    const slotError = document.createElement("div");
+    slotError.classList.add("slot-error");
+    slotError.classList.add("none");
 
-        slotElem.appendChild(slotData);
-        slotElem.appendChild(slotError);
+    const slotErrorHr = document.createElement("hr");
+    const slotErrorMsg = document.createElement("p");
+    slotErrorMsg.classList.add("errorMsg");
 
-        slotsList.appendChild(slotElem);
+    slotError.appendChild(slotErrorHr);
+    slotError.appendChild(slotErrorMsg);
 
-        if(index !== lastIndex) {
-            const separator = document.createElement("hr");
-            separator.classList.add("separator");
-            slotsList.appendChild(separator);
-        }
-    });
+    return [slotError, slotErrorMsg];
+}
+
+
+function createSeparator(slotList, index, lastIndex) {
+    if(index !== lastIndex) {
+        const separator = document.createElement("hr");
+        separator.classList.add("separator");
+        slotList.appendChild(separator);
+    }
 }
 
 
 
 
 
-document.getElementById("new-instructor-form").addEventListener("submit", async (event) => {
+createForm.addEventListener("submit", async (event) => {
 
     event.preventDefault();
     CleanMsgs();
 
-    const form = event.target;
-
-    const data = {
-        nombre: form.name.value, // Se puede poner "Yo ga" pero bueno. Haría replaceAll(" ", "") pero entonces no podría existir nada con dos plaabras
-        dni: form.dni.value,
-        genero: form.gender.value,
-    }
+    const data = getFormData(event.target);
+    data.estado = Status.REGISTERED;
+    data.fechasEstado = { desde: Date.now(), hasta: null };
+    data.motivoEstado = "Registrado vía sistema de gestión";
 
     if(data.dni.length !== 8) {
         ErrorMsg("Error al crear el profesor. El DNI ingresado debe tener 8 caracteres");
         return;
     }
 
+    if (data.actividades.length === 0) {
+        ErrorMsg("Error al crear el profesor. Debe ingresar al menos una actividad");
+        return;
+    }
+
     const dataString = JSON.stringify(data);
 
-    const res = await fetch("/api/admin/profesor", {
+    const res = await fetch(instructorsEndpoint, {
         method: 'POST',
         headers: {
             "Content-Type" : "application/json",
@@ -154,71 +290,77 @@ document.getElementById("new-instructor-form").addEventListener("submit", async 
 
 
 
+
+
 function SuccessMsg(message) {
-    errorMsg.hidden = true;
-    errorMsg.textContent = "";
+    hideErrorMsg();
 
     successMsg.textContent = message;
     successMsg.hidden = false;
 }
 
 function ErrorMsg(message) {
-    successMsg.hidden = true;
-    successMsg.textContent = "";
+    hideSuccessMsg();
 
     errorMsg.hidden = false;
     errorMsg.textContent = message;
 }
 
 function CleanMsgs() {
-    successMsg.hidden = true;
-    successMsg.textContent = "";
+    hideSuccessMsg();
+    hideErrorMsg();
+}
 
+function hideErrorMsg() {
     errorMsg.hidden = true;
     errorMsg.textContent = "";
 }
 
-
-
-
-
-
-
-
-
-async function deleteActivity(event, _id, slotError, errorMsg) {
-    if (event && typeof event.preventDefault === 'function') event.preventDefault();
-
-    slotError.classList.add("none");
-
-    const data = {
-        id: _id,
-    }
-
-    const dataString = JSON.stringify(data);
-
-    const res = await fetch("/api/admin/profesor", {
-        method: 'DELETE',
-        headers: {
-            "Content-Type" : "application/json",
-        },
-        body: dataString
-    });
-
-    const resData = await res.json();
-
-    if(resData.success)
-        getAllSlots();
-    else {
-        errorMsg.textContent = resData.message;
-        slotError.classList.remove("none");
-    }
+function hideSuccessMsg() {
+    successMsg.hidden = true;
+    successMsg.textContent = "";
 }
 
 
 
 
-// EDIT FORM
+async function deleteInstructor(event, _id, slotError, slotErrorMsg, motivoEstado) {
+    event.preventDefault();
+
+    hideSlotError(slotError);
+    
+    const data = JSON.stringify({ id: _id, motivoEstado: motivoEstado });
+
+    const res = await fetch(instructorsEndpoint, {
+        method: 'DELETE',
+        headers: {
+            "Content-Type" : "application/json",
+        },
+        body: data
+    });
+
+    const resData = await res.json();
+
+    // TODO: agregar mensaje de éxito en algún lado (podría ser como al borrar/modificar en userlist)
+
+    if (resData.success) getAllSlots();
+    else showSlotError(slotError, slotErrorMsg, resData.message);
+}
+
+
+function hideSlotError(slotError) {
+    slotError.classList.add("none");
+}
+
+function showSlotError(slotError, slotErrorMsg, message) {
+    slotErrorMsg.textContent = message;
+    slotError.classList.remove("none");
+}
+
+
+
+
+// EDIT FORM //
 
 let currentForm = createForm;
 
@@ -228,20 +370,12 @@ let editFormSuccesMsg;
 let editId;
 
 
-async function switchToEdit(name, dni, gender, id) {
+async function switchToEdit(slot) {
     const templateClone = templateEditForm.content.cloneNode(true);
     
-    editForm = templateClone.querySelector("form");
-    editId = id;
+    const editForm = templateClone.querySelector("form");
 
-    const editNameField = editForm.querySelector("#nameField");
-    editNameField.value = name;
-
-    const editDniField = editForm.querySelector("#dniField");
-    editDniField.value = dni;
-
-    const editGenderField = editForm.querySelector("#genderField");
-    editGenderField.value = gender;
+    fillFormWithData(editForm, slot);
 
     editFormErrorMsg = editForm.querySelector("#editError");
     editFormSuccessMsg = editForm.querySelector("#editSuccess");
@@ -250,22 +384,22 @@ async function switchToEdit(name, dni, gender, id) {
         event.preventDefault();
         EditCleanMsgs();
 
-        const form = event.target;
-        const data = {
-            id: editId,
-            nombre: form.name.value,
-            dni: form.dni.value,
-            genero: form.gender.value,
-        }
+        let data =  getFormData(event.target);
+        data.id = slot._id;
 
         if(data.dni.length !== 8) {
-            EditErrorMsg("Error al crear el profesor. El DNI ingresado debe tener 8 caracteres");
+            EditErrorMsg("Error al modificar el profesor. El DNI ingresado debe tener 8 caracteres");
+            return;
+        }
+
+        if (data.actividades.length === 0) {
+            EditErrorMsg("Error al modificar el profesor. Debe ingresar al menos una actividad");
             return;
         }
 
         const dataString = JSON.stringify(data);
 
-        const res = await fetch("/api/admin/profesor", {
+        const res = await fetch(instructorsEndpoint, {
             method: 'PUT',
             headers: {
                 "Content-Type" : "application/json",
@@ -277,6 +411,7 @@ async function switchToEdit(name, dni, gender, id) {
 
         if(resData.success) {
             EditSuccessMsg(resData.message);
+            //switchToCreateForm();
             getAllSlots();
         }
         else
@@ -294,9 +429,132 @@ async function switchToEdit(name, dni, gender, id) {
 }
 
 
+// SUSPEND FORM //
+
+let suspendForm;
+let suspendFormErrorMsg;
+let suspendFormSuccesMsg;
+let suspendId;
+
+
+
+async function switchToSuspend(slot) {
+    const templateClone = templateSuspendForm.content.cloneNode(true);
+    
+    const suspendForm = templateClone.querySelector("form");
+
+    fillFormWithData(suspendForm, slot);
+
+    suspendFormErrorMsg = suspendForm.querySelector("#suspendError");
+    suspendFormSuccessMsg = suspendForm.querySelector("#suspendSuccess");
+
+    suspendForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        suspendCleanMsgs();
+      
+        const data = getSuspendFormData(event.target);
+        data.id = slot._id;
+
+        if (data.fechasEstado.desde < Date.now() || data.fechasEstado.hasta < data.fechasEstado.desde) {
+            suspendErrorMsg("Error al inhabilitar el profesor. Las fechas ingresadas no son correctas");
+            return;
+        }
+
+        const dataString = JSON.stringify(data);
+
+        const res = await fetch(`${instructorsEndpoint}/inhabilitar`, {
+            method: 'PUT',
+            headers: {
+                "Content-Type" : "application/json",
+            },
+            body: dataString
+        });
+
+        const resData = await res.json();
+
+        if(resData.success) {
+            suspendSuccessMsg(resData.message);
+            //switchToCreateForm();
+            getAllSlots();
+        }
+        else
+            suspendErrorMsg(resData.message);
+    });
+
+
+    const cancelButton = suspendForm.querySelector("#suspendCancel");
+    cancelButton.addEventListener("click", (event) => {
+        switchToCreateForm();
+    });
+
+    currentForm.replaceWith(suspendForm);
+    currentForm = suspendForm;
+}
+
+
 function switchToCreateForm() {
     currentForm.replaceWith(createForm);
     currentForm = createForm;
+}
+
+
+async function initializeActivityCheckboxes() {
+    try {
+        const res = await fetch(activitiesEndpoint, {
+            method: 'GET',
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+
+        const resData = await res.json();
+
+        if (!resData.success) {
+            console.error("No se pudieron cargar las actividades.");
+            return;
+        }
+
+        availableActivities = resData.data;
+        renderActivityCheckboxes(createForm, availableActivities, "createActivitiesContainer");
+    }
+    catch (error) {
+        console.error("initializeActivityCheckboxes ERROR:", error);
+    }
+}
+
+function renderActivityCheckboxes(form, activities, containerId, checkedActivityIds = []) {
+    const container = form.querySelector(`#${containerId}`);
+    if (!container) return;
+
+    container.innerHTML = '';
+
+    activities.forEach(activity => {
+        const checkboxId = `${containerId}-${activity._id}`;
+        const isChecked = Array.isArray(checkedActivityIds) && checkedActivityIds.includes(activity._id);
+
+        const label = document.createElement('label');
+        label.classList.add('checkbox-mgmt');
+        label.innerHTML = `<input type="checkbox" id="${checkboxId}" name="activities" value="${activity._id}" ${isChecked ? 'checked' : ''}> ${activity.nombre}`;
+
+        container.appendChild(label);
+    });
+}
+
+function fillActivitiesCheckboxes(form, activities = []) {
+    const values = Array.isArray(activities) ? activities : [activities];
+    renderActivityCheckboxes(form, availableActivities, form.id === 'create-form' ? 'createActivitiesContainer' : 'editActivitiesContainer', values);
+}
+
+function fillFormWithData(editForm, slot) {
+    const formFieldsContent = fieldsToFillWithSlotData(slot);
+
+    formFieldsContent.forEach(field => {
+        const element = editForm.querySelector(field.id);
+        if (!element) return;
+        element.value = field.content;
+    });
+
+    fillActivitiesCheckboxes(editForm, slot.actividades);
 }
 
 
@@ -324,4 +582,30 @@ function EditCleanMsgs() {
 
     editFormErrorMsg.hidden = true;
     editFormErrorMsg.textContent = "";
+}
+
+
+
+function suspendSuccessMsg(message) {
+    suspendFormErrorMsg.hidden = true;
+    suspendFormErrorMsg.textContent = "";
+
+    suspendFormSuccessMsg.textContent = message;
+    suspendFormSuccessMsg.hidden = false;
+}
+
+function suspendErrorMsg(message) {
+    suspendFormSuccessMsg.hidden = true;
+    suspendFormSuccessMsg.textContent = "";
+
+    suspendFormErrorMsg.hidden = false;
+    suspendFormErrorMsg.textContent = message;
+}
+
+function suspendCleanMsgs() {
+    suspendFormSuccessMsg.hidden = true;
+    suspendFormSuccessMsg.textContent = "";
+
+    suspendFormErrorMsg.hidden = true;
+    suspendFormErrorMsg.textContent = "";
 }

@@ -1,3 +1,5 @@
+let salas;
+
 init();
 //debugger;
 async function init() {
@@ -14,7 +16,6 @@ async function init() {
 refrescarSemana();
 
 
-let salas;
 
 async function crearTabla() {
 
@@ -117,8 +118,8 @@ async function getAllClasses(fechaSemana) {
 
     const resData = await res.json();
     clasesData = resData.clases;
-    /* console.log("Desde classSlot.js -> estas son las clases conseguidas de db: ")
-    console.log(clasesData); */
+    console.log("Desde classSlot.js -> estas son las clases conseguidas de db: ")
+    console.log(clasesData);
     
     const ahora = new Date();
     const result = await fetch("/session-data");
@@ -133,12 +134,15 @@ async function getAllClasses(fechaSemana) {
         
 
         if (celda) {
-            //console.log(celda)
+            /* console.log("Desde classSlot, esto es una celda: ")
+            console.log(celda) */
 
             celda.innerText = claseObj.actividad.nombre;
             celda.dataset.id = claseObj.clase._id; //Para mandar por crearPreferencia
             celda.dataset.clase = claseObj.actividad.nombre;
-            celda.dataset.precio = claseObj.clase.precioMensual;
+
+
+            celda.dataset.precio = claseObj.actividad.precioMensual;
 
             let cantidadAnotados = 0;
 

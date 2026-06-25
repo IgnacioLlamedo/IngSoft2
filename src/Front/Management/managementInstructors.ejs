@@ -26,33 +26,39 @@
 
     <main class="main-container">
 
-        <form id="new-instructor-form" class="form">
+        <form id="create-form" class="form" data-status-enum="<%= JSON.stringify(Status) %>">
             
             <div class="form-card">
 
                 <h1 class="form-card-title">Crear nuevo profesor</h1>
                 
                 <section class="form-section">
-
+                    
                     <div class="input-group">
                         <label for="name">Nombre completo:</label>
-                        <input type="text" name="name" required pattern=".*\S+.*">
+                        <input id="name" type="text" name="name" required pattern=".*\S+.*">
                     </div>
 
                     <div class="input-group">
                         <label for="dni">DNI:</label>
-                        <input type="number" name="dni" required pattern=".*\S+.*">
+                        <input id="dni" type="number" name="dni" required pattern=".*\S+.*">
                     </div>
 
                     <div class="input-group">
                         <label for="gender">Género:</label>
-                        <select name="gender">
+                        <select id="gender" name="gender">
                             <option value="masculino">Masculino</option>
                             <option value="femenino">Femenino</option>
                             <option value="otro">Otro</option>
                         </select>
                     </div>
-
+                    
+                    <div class="input-group">
+                        <label>Actividades:</label>
+                        <div id="createActivitiesContainer" class="checkbox-mgmt-container">
+                            <!-- Las actividades se cargan dinámicamente desde la base de datos -->
+                        </div>
+                    </div>
                 </section>
 
                 <section class="form-section">
@@ -65,7 +71,7 @@
         </form>
 
 
-        <template id="edit-instructor-form">
+        <template id="edit-form">
             <form class="form">
             
                 <div class="form-card">
@@ -75,22 +81,29 @@
                     <section class="form-section">
 
                         <div class="input-group">
-                        <label for="name">Nombre completo:</label>
+                        <label for="nameField">Nombre completo:</label>
                         <input id="nameField" type="text" name="name" required pattern=".*\S+.*">
                     </div>
 
                     <div class="input-group">
-                        <label for="dni">DNI:</label>
+                        <label for="dniField">DNI:</label>
                         <input id="dniField" type="number" name="dni" required pattern=".*\S+.*">
                     </div>
 
                     <div class="input-group">
-                        <label for="gender">Género:</label>
+                        <label for="genderField">Género:</label>
                         <select id="genderField" name="gender">
                             <option value="masculino">Masculino</option>
                             <option value="femenino">Femenino</option>
                             <option value="otro">Otro</option>
                         </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Actividades:</label>
+                        <div id="editActivitiesContainer" class="checkbox-mgmt-container">
+                            <!-- Las actividades se cargan dinámicamente desde la base de datos -->
+                        </div>
                     </div>
 
                     </section>
@@ -100,7 +113,47 @@
                         <p id="editSuccess" class="successMsg" hidden></p>
                         <div class="options">
                             <button class="submit-blue">Modificar Profesor</button>
-                            <button id="editCancel" class="submit">Cancelar</button>
+                            <button id="editCancel" class="submit">Dejar de editar</button>
+                        </div>
+                    </section>
+
+                </div>
+            </form>
+        </template>
+        
+
+        <template id="suspend-form">
+            <form class="form">
+            
+                <div class="form-card">
+
+                    <h1 class="form-card-title">Inhabilitar Profesor</h1>
+                    
+                    <section class="form-section">
+
+                    <div class="input-group">
+                        <label for="reasonField">Motivo:</label>
+                        <input id="reasonField" type="textarea" name="reason" required pattern=".*\S+.*">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="fechaInput">Desde:</label>
+                        <input id="dateFromInput" type="date" name="dateFromInput" required placeholder="Desde...">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="fechaInput">Hasta:</label>
+                        <input id="dateToInput" type="date" name="dateToInput" required placeholder="Hasta...">
+                    </div>
+
+                    </section>
+
+                    <section class="form-section">
+                        <p id="suspendError" class="errorMsg" hidden></p>
+                        <p id="suspendSuccess" class="successMsg" hidden></p>
+                        <div class="options">
+                            <button class="submit-blue">Inhabilitar Profesor</button>
+                            <button id="suspendCancel" class="submit">Cancelar</button>
                         </div>
                     </section>
 
@@ -109,11 +162,10 @@
         </template>
 
 
-
         <section class="list-card">
             <h1> Lista de Profesores: </h1>
 
-            <div id="slotsList" class="list">
+            <div id="slotList" class="list">
 
             </div>
 
@@ -124,17 +176,22 @@
     </main>
 
     <%- include('../Navbar/footer.html') %>
-
-    <script src="/Management/managementInstructors.js"></script>
-
+    
     <dialog id="confirmPanel">
         <p>¿Está seguro que desea borrar el Profesor?</p>
         <form method="dialog">
-            <button value="cancel">Cancelar</button>
-            <button id="confirmBtn" value="default">Borrar Profesor</button>
+            <div>
+                <label for="deleteReasonField">Motivo:</label>
+                <textarea id="deleteReasonField" name="reason" required rows="3"></textarea>
+            </div>
+            <div class="dialog-actions">
+                <button type="button" value="cancel">Cancelar</button>
+                <button id="confirmBtn" value="default">Borrar Profesor</button>
+            </div>
         </form>
     </dialog>
-
+    
+    <script src="/Management/managementInstructors.js"></script>
 </body>
 
 </html>

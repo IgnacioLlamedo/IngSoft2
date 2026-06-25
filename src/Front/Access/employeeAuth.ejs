@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/Images/Common/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/Account/profileStyle.css">
+    <title>CEF - Finalizar Registro</title>
+</head>
+
+<body>
+    <header>
+        <%- include('../Navbar/navbarSelector.ejs') %>
+    </header>
+    
+    <h1 class="profile-title">Finalizar registro de empleado</h1>
+    <main id="profileContainer" class="profile-container" data-role-enum="<%= JSON.stringify(Role) %>" data-status-enum="<%= JSON.stringify(Status) %>">
+        <div class="profile-card">
+            <h2>Crear contraseña</h2>
+
+            <div class="profile-content">
+                <form id="passwordForm" class="profile-form">
+
+                    <div class="form-group">
+                        <label for="contraseña-nueva">Contraseña:</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="contraseña-nueva" name="contraseña-nueva" disabled>
+                            <button type="button" class="password-toggle-button" aria-label="Mostrar contraseña">
+                                <img class="password-toggle-icon" src="/Images/Inputs/eye-icon-hidden-white.png"
+                                        alt="Mostrar contraseña">
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contraseña-confirmar">Confirmar contraseña:</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="contraseña-confirmar" name="contraseña-confirmar" disabled>
+                            <button type="button" class="password-toggle-button" aria-label="Mostrar contraseña">
+                                <img class="password-toggle-icon" src="/Images/Inputs/eye-icon-hidden-white.png" alt="Mostrar contraseña">
+                            </button>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+
+            <div class="button-group">
+                <button id="pwSaveBtn" class="btn btn-save">Enviar</button>
+            </div>
+
+            <div id="passwordMessage" class="message"></div>
+        </div>
+    </main>
+
+    <script src="/Access/employeeAuthLogic.js"></script>
+    
+    <%- include('../Navbar/footer.html') %>
+</body>
+
+</html>
