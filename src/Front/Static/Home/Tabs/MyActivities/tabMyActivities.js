@@ -174,8 +174,10 @@ function renderActividades() {
       (act.dia && act.dia === dayFilter.value.toLowerCase());
 
     const filtroEstado = statusFilter.value === "Todas" ||
-    (statusFilter.value === "NoVencidas" && !act.vencida) ||
-    (statusFilter.value === "Vencidas" && act.vencida); 
+    (statusFilter.value === "NoVencidas" && !act.vencida && act.estado !== "en espera") ||
+    (statusFilter.value === "Vencidas" && act.vencida) ||
+    (statusFilter.value === "EnEspera" && act.estado === "en espera");
+
 
     return filtroActividad && filtroTipo && filtroDia && filtroEstado;
   });
@@ -278,13 +280,55 @@ function renderActividades() {
         btnCancelar.classList.add("box-button", "cancel-reservation");
         btnCancelar.textContent = "Cancelar Reserva";
         //No se cancelan las mensualidades, se cancelan individualmente de la misma
+
+        //POP-UP que muestra las 4 o 5 clases de la mensualidad y permite elegír una para cancelar
+        //Las clases a cancelar están en esta variable: act.clases
         if (act.tipo === 'Mensual'){
-            //POP-UP que muestra las 4 o 5 clases de la mensualidad y permite elegír una para cancelar
-            //Las clases a cancelar están en esta variable: act.clases
+
+            btnCancelar.addEventListener("click", () => {
+            const modal = document.getElementById("cancelarMensualModal");
+            const lista = document.getElementById("listaClasesMensual");
+            lista.innerHTML = ""; // limpio antes de renderizar
+
+            act.clases.forEach(claseActual => {
+                const fecha = new Date(claseActual.idClase.fechaEspecifica)
+                                .toLocaleDateString("es-AR");
+                const btnClase = document.createElement("button");
+                btnClase.textContent = `Cancelar clase del ${fecha}`;
+                btnClase.classList.add("box-button");
+
+                //no creo que esto esté bien..
+                btnClase.addEventListener("click", async () => {
+                const res = await fetch('/api/reservas/cancelar-reserva', {
+                    method: 'POST',
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ clase: claseActual, tipo: act.tipo })
+                });
+                const resData = await res.json();
+                if (resData.success) {
+                    console.log(`Cancelaste la clase del ${fecha}`);
+                    modal.style.display = "none";
+                } else {
+                    console.log(resData.message);
+                }
+                });
+
+                lista.appendChild(btnClase);
+            });
+
+            modal.style.display = "flex";
+            });
+
+            // Cerrar modal
+            document.querySelector("#cancelarMensualModal .close-cancellations")
+                    .addEventListener("click", () => {
+            document.getElementById("cancelarMensualModal").style.display = "none";
+            });
+
 
             //acá tenes un console log de todas las clases mensuales, ahí fijate
             //que variable dentro de claseActual tiene la fecha.
-            for(const claseActual of act.clase){
+            for(const claseActual of act.clases){
                 console.log(claseActual)
             }
 

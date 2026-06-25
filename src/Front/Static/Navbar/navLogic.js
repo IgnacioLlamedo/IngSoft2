@@ -1,6 +1,9 @@
 const userIcon = document.getElementById("userIcon");
 const userOptions = document.getElementById("userOptions");
 
+const toggleIcon = document.getElementById("toggleIcon");
+const menuToggel = document.querySelector(".menu-toggel");
+
 const parametersURL = new URLSearchParams(window.location.search);
 const statusPago = parametersURL.get('status');
 
@@ -14,12 +17,17 @@ document.addEventListener("click", (e) => {
         userOptions.classList.remove("user-options-open");
 });
 
-document.getElementById("logout").addEventListener("click", async (e) => {
+
+document.querySelectorAll(".logout").forEach(el => {
+  el.addEventListener("click", async (e) => {
     e.preventDefault();
-
-    await fetch("/api/logout", {
-        method: "POST"
-    });
-
+    await fetch("/api/logout", { method: "POST" });
     window.location.href = "/";
+  });
+});
+
+
+
+toggleIcon.addEventListener("click", () => {
+  menuToggel.classList.toggle("open");
 });
