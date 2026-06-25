@@ -101,11 +101,15 @@ function conseguirClasesSeleccionadas(fechaBase, idClase) {
      * Entonces, si alguien busca reservar mensualmente una clase el día 2 de julio,
      * 2 de julio + 28 = 30 de julio
      */
-    const fechaBaseMas28 = new Date(fechaBase) + 28;
-    if (fechaBaseMas28.getMonth() === fechaBase.getMonth())
-        indiceMaximo = 5
+    const fechaBaseMas28 = new Date(fechaBase);
+    fechaBaseMas28.setDate(fechaBaseMas28.getDate() + 28)
 
-    for(let i = 0; i < indiceMáximo; i++) {
+    if (fechaBaseMas28.getMonth() === new Date(fechaBase).getMonth()){
+        console.log("En la reserva mensual entran 5 clases, cambiando indice máximo.")
+        indiceMaximo = 5
+    }
+
+    for(let i = 0; i < indiceMaximo; i++) {
 
         const nuevaFecha = new Date(fechaBase);
         /* console.log("Fecha base: ");
@@ -113,6 +117,7 @@ function conseguirClasesSeleccionadas(fechaBase, idClase) {
 
         // suma 7 dias por iteración
         nuevaFecha.setDate(nuevaFecha.getDate() + (7 * i));
+        console.log(nuevaFecha)
 
         clasesSeleccionadas.push({
             idClaseGeneral: idClase,

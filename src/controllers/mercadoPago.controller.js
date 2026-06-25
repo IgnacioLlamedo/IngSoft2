@@ -126,6 +126,16 @@ export async function consultar(req, res) {
                 llena
             });
 
+            /**
+             * Acá hay un problema:
+             * 
+             * Como no hacemos borrado físico, cuando una persona
+             * cancela su reservación a una clase (ya sea si está en lista de anotados
+             *  o en algúna lista de espera), al hacer estas consultas siempre devolverá 
+             * que el usuario ya está anotado o en espera.
+             *  Por lo que no te deja inscribirte nuevamente a una clase que ya cancelaste.
+             * ¿Esto está bien?
+             */
             const yaAnotado = clase.anotados.some(
                 u => u.idUsuario === req.session.user.id
             );
