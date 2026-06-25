@@ -368,13 +368,14 @@ export async function postReservaUnica(req, res) {
         let claseEspecifica = await claseEspecificaDao.readOne({ idClaseGeneral: claseGeneral._id,
             fechaEspecifica: fechaBuscada })
         if (!claseEspecifica) {
-            console.log("No existeclase especifica (desde postReservaUnica)");
+            console.log("Desde postReservaUnica, creando clase especifica y agregando a lista de anotados...");
             //Creo la clase especifica con el usuario anotado.
             const data = {
                 idClaseGeneral: claseGeneral._id,         
                 fechaEspecifica: fecha,
                 anotados: [usuarioData],
-                espera: [],
+                esperaUnica: [],
+                esperaMensual: [],
             };
 
             //Crea la clase especifica y asigna la nueva id, luego crea la reserva
@@ -395,11 +396,11 @@ export async function postReservaUnica(req, res) {
 
         //Si hay lugar lo agrego al arreglo de anotados.
         if (capacidadActual < claseGeneral.limiteClase) {
-            console.log("Hay lugar en la clase para anotarse -> pasa a lista de anotados.");
+            console.log("Hay lugar en la clase para anotarse -> anotando en lista de anotados...");
             await claseEspecificaDao.updateOne(
                 { _id: claseEspecifica._id },
                 {
-                    $push: {    //No sabia que se podia hacer esto jsjs, igual hay que probarlo
+                    $push: {
                         anotados: usuarioData
                     }
                 }

@@ -42,7 +42,8 @@ export class reservaDao {
     }
 
     async populateUnica(query){
-        const populated = await ReservaUnica.find(query).populate({
+        const populated = await ReservaUnica.find(query)
+        .populate({
             path: 'idClaseEspecifica',
             populate: {
                 path: 'idClaseGeneral',
@@ -50,8 +51,11 @@ export class reservaDao {
                     { path: 'idActividad' },
                     { path: 'idProfesor' },
                     { path: 'idSala' }
-                ]
+                ],
             }
+        })
+        .populate({
+            path: 'pagos.idPago'
         })
         if(!populated){
             //provisional, desarrollar luego
@@ -103,7 +107,8 @@ export class reservaDao {
     }
 
     async populateMensual(query){
-        const populated = await ReservaMensual.find(query).populate({
+        const populated = await ReservaMensual.find(query)
+        .populate({
             path: 'clases',
             populate: {
                 path: 'idClase',
@@ -116,7 +121,9 @@ export class reservaDao {
                     ]
                 }
             }
-            
+        })
+        .populate({
+            path: 'pagos.idPago'
         })
         if(!populated){
             //provisional, desarrollar luego

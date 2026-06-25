@@ -94,7 +94,18 @@ function conseguirClasesSeleccionadas(fechaBase, idClase) {
     clasesSeleccionadas = [];
 
     // Agrego clase seleccionada + próximas 3 semanas
-    for(let i = 0; i < 4; i++) {
+
+    let indiceMaximo = 4;
+
+    /**
+     * Entonces, si alguien busca reservar mensualmente una clase el día 2 de julio,
+     * 2 de julio + 28 = 30 de julio
+     */
+    const fechaBaseMas28 = new Date(fechaBase) + 28;
+    if (fechaBaseMas28.getMonth() === fechaBase.getMonth())
+        indiceMaximo = 5
+
+    for(let i = 0; i < indiceMáximo; i++) {
 
         const nuevaFecha = new Date(fechaBase);
         /* console.log("Fecha base: ");

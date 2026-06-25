@@ -25,9 +25,20 @@ async function getMyReservations() {
         // RESERVA ÚNICA
         // =========================================
         if (r.tipo === "unica") {
-
+            
             const claseGeneral = r.idClaseEspecifica.idClaseGeneral;
 
+            /**
+             * Acá agregué para mostrar bien el precio en caso de ser una seña de única,
+             * habría que hascer parte del fetch traerse los pagos de la reserva y no solo los ids
+             * de los pagos para así poner la información precisa. -- más adelante.
+             */
+            let precioUnica = claseGeneral.idActividad.precioMensual / 4;
+
+            //Cuando agregue la lógica de cancelar resto de seña, hay que cambiar este campo en reserva!!!!!!!!!!!
+            if (r.señada){
+                precioUnica = precioUnica/2;
+            }
 
             const horario =
                 `${claseGeneral.hora}:00 - ${claseGeneral.hora + 1}:00`;
@@ -55,8 +66,7 @@ async function getMyReservations() {
                 profesor:
                     claseGeneral.idProfesor.nombre,
 
-                precio:
-                    claseGeneral.precioMensual / 4,
+                precio: precioUnica,
 
                 vencida: 
                     fechaClase < fechaActual,
@@ -124,7 +134,7 @@ async function getMyReservations() {
                     claseGeneral.idProfesor.nombre,
 
                 precio:
-                    claseGeneral.precioMensual,
+                    claseGeneral.idActividad.precioMensual,
 
                 vencida
             };
@@ -192,7 +202,10 @@ function renderActividades() {
 
     // Título dinámico: Actividad - tipo
     const h3 = document.createElement("h3");
-    h3.textContent = `${act.actividad} - ${act.tipo}`;
+    if (act.señada)
+        h3.textContent = `${act.actividad} - ${act.tipo} - Seña de Clase`;
+    else
+        h3.textContent = `${act.actividad} - ${act.tipo}`;
     box.appendChild(h3);
 
     const hr = document.createElement("hr");
