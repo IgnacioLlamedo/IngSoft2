@@ -98,11 +98,10 @@ function conseguirClasesSeleccionadas(fechaBase, idClase) {
     let indiceMaximo = 4;
 
     /**
-     * Entonces, si alguien busca reservar mensualmente una clase el día 2 de julio,
-     * 2 de julio + 28 = 30 de julio
-     */
-    const fechaBaseMas28 = new Date(fechaBase);
-    fechaBaseMas28.setDate(fechaBaseMas28.getDate() + 28)
+Entonces, si alguien busca reservar mensualmente una clase el día 2 de julio,
+2 de julio + 28 = 30 de julio*/
+const fechaBaseMas28 = new Date(fechaBase);
+fechaBaseMas28.setDate(fechaBaseMas28.getDate() + 28)
 
     if (fechaBaseMas28.getMonth() === new Date(fechaBase).getMonth()){
         console.log("En la reserva mensual entran 5 clases, cambiando indice máximo.")
