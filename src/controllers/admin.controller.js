@@ -111,7 +111,7 @@ export async function inhabilitarProfesor(req, res){
         
         // DEBUG
         // const result = await profesorDao.readOne({ _id: profesor._id });
-        const result = await profesorDao.updateOne({ _id: profesor.id }, profesor);
+        const result = await profesorDao.updateOne({ _id: profesor._id }, profesor);
 
         if (!result) {
             return res.json({
@@ -120,6 +120,7 @@ export async function inhabilitarProfesor(req, res){
             });
         }
 
+        console.log("DEBUG: parte1");
         // Debo chequear si hay clases activas con ese profesor
         // De haberlas, corresponde suspenderla* y avisar vía email a los anotados
         // *Creo que no fue solicitada la cancelación en sí, ni tampoco la devolución del dinero
@@ -130,9 +131,9 @@ export async function inhabilitarProfesor(req, res){
         let cantClasesAfectadas = 0;
         let cantEmailsEnviados = 0;
 
-        console.log("parte1");
+        console.log("DEBUG: parte2");
         if (generalClasses.length > 0) {
-            console.log("parte2");
+            console.log("DEBUG: parte3");
             // 2) Obtengo todas las clases específicas con ese profesor y fecha posterior a la actual            
             const generalClassesIds = generalClasses.map((gc) => gc._id);
             const specificClasses = await claseEspecificaDao.readMany({
@@ -151,13 +152,13 @@ export async function inhabilitarProfesor(req, res){
 
             // Y para cada clase específica...
             for (const sc of specificClasses) {
-                console.log("parte3");
+                console.log("parte4");
                 // 3) Obtengo los usuarios afectados
                 const anotados = sc.anotados.filter((a) => !a.estado || a.estado === "activo");
                 const actividad = generalClasses.find((gc) => gc._id === sc.idClaseGeneral).actividad;
 
                 for (const a of anotados) {
-                    console.log("parte4");
+                    console.log("parte5");
                     // 4) Enviar emails
                     // DEBUG
                     await mailer.cancelledClass(a.mail, a.nombre, sc.fechaEspecifica, sc.actividad);

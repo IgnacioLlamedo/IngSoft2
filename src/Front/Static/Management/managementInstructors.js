@@ -486,12 +486,16 @@ async function switchToSuspend(slot) {
       
         const profesor = getSuspendFormData(event.target);
         profesor._id = slot._id;
+        profesor.estado = Status.INACTIVE;
         profesor.fechasEstado = {
             desde: new Date(profesor.fechasEstado.desde),
             hasta: new Date(profesor.fechasEstado.hasta)
         };
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
 
-        if (profesor.fechasEstado.desde < Date.now() || profesor.fechasEstado.hasta < profesor.fechasEstado.desde) {
+        // !!! fechasEstado.desde TIENE QUE SER MAYOR A HOY !!!
+        if (profesor.fechasEstado.desde < today || profesor.fechasEstado.hasta < profesor.fechasEstado.desde) {
             suspendErrorMsg("Error al inhabilitar el profesor. Las fechas ingresadas no son correctas.");
             return;
         }
