@@ -266,7 +266,7 @@ export async function crearCodigo(req, res){
 		const limite = new Date(Date.now() + expirationTime);
 		const otp = generateOtp();
 
-        const query = { mail: req.body.mail, estado: Status.UNVERIFIED };
+        const query = { mail: req.body.mail, estado: { $ne: Status.DELETED } };
         const datos = { codigo: otp, limiteCodigo: limite };
 		const usuario = await usuarioDao.updateOne(query, datos);
 
