@@ -165,10 +165,10 @@ function renderUserTable(users) {
 
             let viewBtnText;
             if (user._id === userData.id) viewBtnText = "Ver Mi Perfil";
-            else if (user.estado === Status.DELETED) viewBtnText = "Ver Perfil";
+            else if (user.estado === Status.DELETED || user.rol === Role.ADMIN) viewBtnText = "Ver Perfil";
             else viewBtnText = "Ver/Editar Perfil";
 
-            const disabledAttr = (user.estado === Status.DELETED) ? 'disabled' : '';
+            const disabledAttr = (user.estado === Status.DELETED || user.rol === Role.ADMIN) ? 'disabled' : '';
             const deleteBtnText = "Dar de Baja";
 
             const userHtmlActionsCell = `

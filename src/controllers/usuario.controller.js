@@ -1,5 +1,6 @@
 ﻿import { usuarioDao, empleadoDao } from "../daos/index.js";
 import { planillaDao } from "../daos/index.js";
+import { claseEspecificaDao } from "../daos/index.js";
 import { generateOtp } from '@mx7/otp';
 import { mailer } from "../servicios/mailer.servicio.js";
 import { hash, compareHash } from "../servicios/crypt.servicio.js";
@@ -265,7 +266,7 @@ export async function crearCodigo(req, res){
 		const limite = new Date(Date.now() + expirationTime);
 		const otp = generateOtp();
 
-        const query = { mail: req.body.mail, estado: Status.UNVERIFIED };
+        const query = { mail: req.body.mail, estado: { $ne: Status.DELETED } };
         const datos = { codigo: otp, limiteCodigo: limite };
 		const usuario = await usuarioDao.updateOne(query, datos);
 
@@ -543,6 +544,8 @@ export async function getUserlistController(req, res) {
 }
 
 
+// TODO: Hasta donde probé anda, pero faltaría más testeo con casos reales
+// para no borrar nada se puede reemplazar con el query debajo de la línea que dice DEBUG)
 export async function deleteUserController(req, res) {
 	try {
         console.log('deleteUserController llamado con body:', req.body);
@@ -552,16 +555,40 @@ export async function deleteUserController(req, res) {
             return res.status(403).json({ success: false, message: 'Acceso denegado' });
         }
         
-        // TODO: Impedir borrado de clientes anotados a alguna clase, lista de espera, con seña realizada, etc.
         const userId = req.body.id;
-        const motivoEstado = req.body.motivoEstado;        
-        // Con solo _id debería ser suficiente, pero por las dudas...
+        // Controlo si tiene reservas activas (o sin estado, por eso hay 2km de query) o está en una lista de espera...
+        // ...para una clase que aún no haya comenzado
+        const specificClass = await claseEspecificaDao.readOne({
+			fechaEspecifica: { $gte: new Date() },
+			$or: [
+                {
+                    anotados: {
+                        $elemMatch: {
+                            $and: [{ idUsuario: userId }, { $or: [{ estado: "activo" }, {estado: {$exists: false}}] } ],
+                        },
+                    },
+                },
+                { "espera.idUsuario": userId },
+				{ "esperaUnica.idUsuario": userId },
+				{ "esperaMensual.idUsuario": userId },
+			],
+		});
+        console.log("specificClass: ", specificClass);
+        if (specificClass) {
+            const msg = "El usuario tiene reservas activas o se encuentra en una lista de espera.";
+            return res.status(400).json({ success: false, message: msg });
+        }
+        
+        const motivoEstado = req.body.motivoEstado;
+        // Con solo _id debería ser suficiente, pero por las dudas que ya esté borrado...
         const query = { _id: userId, estado: { $ne: Status.DELETED } };
         const datos = { estado: Status.DELETED, motivoEstado: motivoEstado };
+        // DEBUG
+        // const updatedUser = await usuarioDao.readOne(query, datos);
         const updatedUser = await usuarioDao.updateOne(query, datos);
 
         if (!updatedUser) {
-            return res.status(404).json({ success: false, message: 'Usuario no encontrado' });
+            return res.status(404).json({ success: false, message: 'Usuario no encontrado o ya está eliminado' });
         }
 
         return res.json({ success: true, message: 'Usuario eliminado correctamente.' });
