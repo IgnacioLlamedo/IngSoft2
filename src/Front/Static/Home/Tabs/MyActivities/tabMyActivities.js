@@ -1,5 +1,6 @@
 let actividadesUsuario = [];
-
+let userData;
+getSessionData();
 getMyReservations();
 
 async function getMyReservations() {
@@ -43,9 +44,11 @@ async function getMyReservations() {
             const horario =
                 `${claseGeneral.hora}:00 - ${claseGeneral.hora + 1}:00`;
 
-            const fechaClase = new Date(r.clases[0].fecha); //En clase única, no entre por idClase.
+            const fechaClase = new Date(r.idClaseEspecifica.fechaEspecifica); //En clase única, no entre por idClase.
 
             return {
+
+                idReserva: r._id,
 
                 actividad:
                     claseGeneral.idActividad.nombre,
@@ -72,7 +75,10 @@ async function getMyReservations() {
                     fechaClase < fechaActual,
 
                 señada:
-                    r.señada
+                    r.señada,
+
+                estado: r.estado,
+                cancelada: r.estado === "cancelada",
             };
         }
 
@@ -88,14 +94,17 @@ async function getMyReservations() {
 
             const horario = `${claseGeneral.hora}:00 - ${claseGeneral.hora + 1}:00`;
 
-            const fechas = r.clases.map(c => {
-                    const fecha = new Date(c.idClase.fechaEspecifica);
+            const fechas = r.clases.map(c => ({
+                fecha: new Date(c.idClase.fechaEspecifica)
+                        .toLocaleDateString("es-AR", {
+                            day: "2-digit",
+                            month: "2-digit"
+                        }),
 
-                    return fecha.toLocaleDateString("es-AR", {
-                        day: "2-digit",
-                        month: "2-digit"
-                    });
-                }).join(" - ");
+                estado: c.estado,
+
+                cancelada: c.estado === "cancelada"
+            }));
 
             const fechaClase = new Date(r.clases[r.clases.length - 1].idClase.fechaEspecifica);
 
@@ -107,6 +116,8 @@ async function getMyReservations() {
             }
 
             return {
+
+                idReserva: r._id,
 
                 actividad:
                     claseGeneral.idActividad.nombre,
@@ -147,6 +158,44 @@ async function getMyReservations() {
     renderActividades();
 }
 
+function mostrarConfirmacionCancelacion(fecha, callbackConfirmar) {
+
+    const modal = document.getElementById("confirmCancelModal");
+
+    const btnCerrar =
+    document.getElementById("btnCerrarConfirmacion");
+
+    btnCerrar.onclick = () => {
+        modal.style.display = "none";
+    };
+
+    const btnVolver =
+        document.getElementById("btnVolverCancelar");
+
+    const btnConfirmar =
+        document.getElementById("btnConfirmarCancelar");
+
+    btnConfirmar.textContent =
+        `Cancelar clase del ${fecha}`;
+
+    modal.style.display = "flex";
+
+    btnVolver.onclick = () => {
+        modal.style.display = "none";
+    };
+
+    btnConfirmar.onclick = async () => {
+        modal.style.display = "none";
+        await callbackConfirmar();
+    };
+
+    modal.onclick = (e) => {
+    if (e.target === modal) {
+        modal.style.display = "none";
+    }
+};
+}
+
 // Referencias a los filtros
 const activityFilter = document.getElementById("activityFilter");
 const tipeFilter = document.getElementById("tipeFilter");
@@ -167,6 +216,16 @@ function renderActividades() {
 
   // Aplicamos filtros
   const filtradas = actividadesUsuario.filter(act => {
+    const esCancelada =
+        act.tipo === "Unica"
+            ? act.estado === "cancelada"
+            : act.fechas?.some(f => f.estado === "cancelada");
+
+    const estaEnEspera =
+        act.tipo === "Unica"
+            ? act.estado === "en espera"
+            : act.fechas?.some(f => f.estado === "en espera");
+            
     const filtroActividad = activityFilter.value === "Todas" || act.actividad.toLowerCase() === activityFilter.value.toLowerCase();
     const filtroTipo = tipeFilter.value === "Todas" || act.tipo.toLowerCase() === tipeFilter.value.toLowerCase();
     const filtroDia = dayFilter.value === "Todas" ||
@@ -176,7 +235,8 @@ function renderActividades() {
     const filtroEstado = statusFilter.value === "Todas" ||
     (statusFilter.value === "NoVencidas" && !act.vencida && act.estado !== "en espera") ||
     (statusFilter.value === "Vencidas" && act.vencida) ||
-    (statusFilter.value === "EnEspera" && act.estado === "en espera");
+    (statusFilter.value === "EnEspera" && estaEnEspera) ||
+    (statusFilter.value === "Canceladas" && esCancelada);
 
 
     return filtroActividad && filtroTipo && filtroDia && filtroEstado;
@@ -199,7 +259,24 @@ function renderActividades() {
     console.log("Esto es actual dentro del filtradas.forEach: ")
     console.log(act);
 
+    const esCancelada =
+        act.tipo === "Unica"
+            ? act.estado === "cancelada"
+            : act.fecha?.some(f => f.estado === "cancelada");
+
+    const estaEnEspera =
+        act.tipo === "Unica"
+            ? act.estado === "en espera"
+            : act.fecha?.some(f => f.estado === "en espera");
+
     const box = document.createElement("div");
+    if (esCancelada) {
+        box.classList.add("cancelada");
+    }
+
+    if (estaEnEspera) {
+        box.classList.add("en-espera");
+    }
     box.classList.add("box", act.tipo.toLowerCase());
 
     // Título dinámico: Actividad - tipo
@@ -238,16 +315,9 @@ function renderActividades() {
       boxData.appendChild(pPrecio);
     } 
     else {
-        /**
-         * acá hay que modificar para que muestre los días (10/07, 17/07, etc)
-         * (de lo siguiente me encargo yo)y que dependiendo de si el estado de la misma
-         * se permita:
-         *  1. si estado = "en espera": Permita salir de lista de espera.
-         *  2. si estado = "activo": Permita cancelar la clase individualmente.
-         */
 
       const pDia = document.createElement("p");
-      pDia.textContent = `Día: ${act.dia}`;
+      pDia.textContent = `Días: ${act.fecha.map(f => f.fecha).join(" - ")}`;
       boxData.appendChild(pDia);
 
       const pPrecio = document.createElement("p");
@@ -260,11 +330,47 @@ function renderActividades() {
     const buttonsContainer = document.createElement("div");
     buttonsContainer.classList.add("box-buttons-container");
 
+    if (estaEnEspera) {
+        const btnSalirEspera = document.createElement("button");
+
+        btnSalirEspera.textContent = "Salir de Lista de Espera";
+        btnSalirEspera.classList.add("btn-salir-espera");
+
+        btnSalirEspera.addEventListener("click", async () => {
+            let descripcion;
+            if (act.tipo === "Unica") 
+                descripcion = act.fecha;
+            else 
+                descripcion =act.fecha.map(f => f.fecha).join(" - ");
+
+            mostrarConfirmacionCancelacion(descripcion, async () => {
+                const resultado = await fetch("/api/reservas/salir-lista-espera", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({idReserva: act.idReserva})
+                });
+
+                const res = await resultado.json();
+
+                if (res.success) {
+                    console.log("Ha salido de lista de espera exitosamente.");
+                    await getMyReservations(); //actualizo el listado de actividades.
+                }
+                else {
+                    console.log(res.message);
+                }
+            });;  
+        });
+
+        buttonsContainer.appendChild(btnSalirEspera);
+    }
+
     // Si la actividad no está vencida, muestro botones de acción
     if (!act.vencida) {
     // Botones con listeners
-
-        console.log("La clase actual es de tipo ", act.tipo, " y estas son sus clases: ")    
+        /* console.log("La clase actual es de tipo ", act.tipo, " y estas son sus clases: ")    */ 
 
         let clasesACancelar;
         if (act.tipo === 'Mensual'){
@@ -279,14 +385,18 @@ function renderActividades() {
         const btnCancelar = document.createElement("button");
         btnCancelar.classList.add("box-button", "cancel-reservation");
         btnCancelar.textContent = "Cancelar Reserva";
-        //No se cancelan las mensualidades, se cancelan individualmente de la misma
 
-        //POP-UP que muestra las 4 o 5 clases de la mensualidad y permite elegír una para cancelar
-        //Las clases a cancelar están en esta variable: act.clases
+
         if (act.tipo === 'Mensual'){
 
             btnCancelar.addEventListener("click", () => {
             const modal = document.getElementById("cancelarMensualModal");
+            modal.onclick = (e) =>
+            {
+                if (e.target === modal) {
+                    modal.style.display = "none";
+                }
+            }
             const lista = document.getElementById("listaClasesMensual");
             lista.innerHTML = ""; // limpio antes de renderizar
 
@@ -297,21 +407,49 @@ function renderActividades() {
                 btnClase.textContent = `Cancelar clase del ${fecha}`;
                 btnClase.classList.add("box-button");
 
-                //no creo que esto esté bien..
-                btnClase.addEventListener("click", async () => {
-                const res = await fetch('/api/reservas/cancelar-reserva', {
-                    method: 'POST',
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ clase: claseActual, tipo: act.tipo })
-                });
-                const resData = await res.json();
-                if (resData.success) {
-                    console.log(`Cancelaste la clase del ${fecha}`);
-                    modal.style.display = "none";
-                } else {
-                    console.log(resData.message);
+                const esCancelado = claseActual.idClase.anotados.some(
+                    u => u.estado === "cancelado" && u.idUsuario === userData.session.id
+                );
+                
+                const noExiste = claseActual.idClase.anotados.some(
+                    u => u.idUsuario === userData.session.id
+                );
+
+                //no creo que esto esté bien..              Facu: ¿Por? Lo que se podría hacer es que la clase btnClase tenga un addEventListener, y la clase y el tipo guardarlo en el dataset(?)
+                
+                if ((!esCancelado) && (noExiste)){
+                    btnClase.addEventListener("click", async () => {
+                        mostrarConfirmacionCancelacion(fecha, async () => {
+                            const res = await fetch('/api/reservas/cancelar-reserva', {
+                                method: 'POST',
+                                headers: {
+                                    "Content-Type": "application/json"
+                                },
+                                body: JSON.stringify({
+                                    clase: claseActual,
+                                    tipo: act.tipo
+                                })
+                            });
+                            const resData = await res.json();
+                            if (resData.success) {
+                                console.log(`Cancelaste la clase del ${fecha}`);
+                                await getMyReservations();
+                                document.getElementById(
+                                    "cancelarMensualModal"
+                                ).style.display = "none";
+                            }
+                            else {
+                                console.log(resData.message);
+                            }
+                        });
+                    });
                 }
-                });
+                else{
+                    btnClase.classList.add("boton-ya-cancelada");
+                    btnClase.disabled = true;
+                    btnClase.style.backgroundColor = "#858585";
+                    btnClase.textContent = `Clase del ${fecha} (Cancelada)`;
+                }
 
                 lista.appendChild(btnClase);
             });
@@ -324,56 +462,30 @@ function renderActividades() {
                     .addEventListener("click", () => {
             document.getElementById("cancelarMensualModal").style.display = "none";
             });
-
-
-            //acá tenes un console log de todas las clases mensuales, ahí fijate
-            //que variable dentro de claseActual tiene la fecha.
-            for(const claseActual of act.clases){
-                console.log(claseActual)
-            }
-
-
-            //acá no es btn cancelar, a la hora de crear los "botones" de esas fechas
-            //que se deben poder cancelar.
-            btnCancelar.addEventListener("click", async () => {
-                const res = await fetch('/api/reservas/cancelar-reserva', {
-                    method: 'POST',
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        clase: clasesACancelar,
-                        tipo: act.tipo //Esto no hace falta - modificar despues
-                    })
-                })
-                const resData = await res.json();
-                if (resData.success){
-                    console.log(`Cancelaste la reserva de ${act.actividad} - ${act.tipo}`);
-                }
-                else{
-                    console.log(resData.message);
-                }
-            });
         }
         else{
             btnCancelar.addEventListener("click", async () => {
-                const res = await fetch('/api/reservas/cancelar-reserva', {
-                    method: 'POST',
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        clase: clasesACancelar,
-                        tipo: act.tipo //Esto no hace falta - modificar despues
-                    })
-                })
-                const resData = await res.json();
-                if (resData.success){
-                    console.log(`Cancelaste la reserva de ${act.actividad} - ${act.tipo}`);
-                }
-                else{
-                    console.log(resData.message);
-                }
+                mostrarConfirmacionCancelacion(act.fecha, async () => {
+                    const res = await fetch('/api/reservas/cancelar-reserva', {
+                        method: 'POST',
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            clase: clasesACancelar,
+                            tipo: act.tipo
+                        })
+                    });
+                    const resData = await res.json();
+
+                    if (resData.success) {
+                        console.log(`Cancelaste la reserva de ${act.actividad} - ${act.tipo}`);
+                        await getMyReservations();
+                    }
+                    else {
+                        console.log(resData.message);
+                    }
+                });
             });
         }
         buttonsContainer.appendChild(btnCancelar);
@@ -384,6 +496,9 @@ function renderActividades() {
             btnPagar.textContent = "Pagar resto";
             btnPagar.addEventListener("click", () => {
                 //ACÁ HAY QUE AGREGAR EL FETCH QUE PERMITE PAGAR EL RESTO!!!!!
+
+
+
                 console.log(`Pagaste el resto de la clase única de ${act.actividad}`);
             });
             buttonsContainer.appendChild(btnPagar);
@@ -434,3 +549,14 @@ statusFilter.addEventListener("change", renderActividades);
 
 // Render inicial
 //renderActividades();
+
+
+//Esta función hay que exportarla, la estamos usando en 5 scripts distintos jaja
+async function getSessionData() {
+    const response = await fetch("/session-data");
+    if (!response.ok) {
+            throw new Error('Error al cargar información del usuario.');
+        }
+    const sessionData = await response.json();
+    userData = sessionData;
+}

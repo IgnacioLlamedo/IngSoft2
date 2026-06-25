@@ -1,5 +1,5 @@
 import { cupoDao, claseEspecificaDao, claseGeneralDao, actividadDao } from "../daos/index.js";
-import { validarYNotificar } from "./reservas.controller.js"
+import { validarYNotificar, eliminarDeClase } from "./reservas.controller.js"
 
 export async function createCupo(req, res) {
     try {
@@ -112,6 +112,8 @@ export async function rejectCupo(req, res) {
 
         await cupoDao.updateOne({ _id: cupoData._id }, cupoData);
 
+        let reemplazado;
+
         let claseLiberada;
         for(const claseAct in cupoData.clasesEspecificas){
             //La persona que rechaza el cupo (y si es mensual), rechaza las 4 clases dentro del cupo.
@@ -127,7 +129,13 @@ export async function rejectCupo(req, res) {
         }
 
         //Busco el siguiente candidato a pasar a lista de anotados y lo notifico.
-        await validarYNotificar(cupoData.tipo, claseLiberada);
+        reemplazado = await validarYNotificar(cupoData.tipo, claseLiberada);
+
+        //Si no existe nadie más que pueda ser notificado para aceptar el cupo,
+        //elimino al usuario que canceló la clase la primera vez.
+        if(!reemplazado){
+            await eliminarDeClase(cupoData.idUsuarioCanceloClase, claseLiberada);
+        }
 
         res.json({
             success: true,

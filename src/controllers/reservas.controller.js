@@ -21,15 +21,14 @@ export async function getMyReservations(req, res) {
         console.log(idUsuario); */
 
         //Obtengo las reservas de clases únicas y mensuales del usuario
-        const reservasUnicas = await reservaDao.readManyUnica({
-            idUsuario,
-            cancelada: false
-        });
+        const reservasUnicasTotal = await reservaDao.populateUnica({ idUsuario });
 
-        const reservasMensuales = await reservaDao.readManyMensual({
-            idUsuario, 
-            cancelada: false
-        });
+        const reservasMensualesTotal = await reservaDao.populateMensual({ idUsuario });
+
+        const reservasTotal = [
+            ...reservasUnicasTotal,
+            ...reservasMensualesTotal
+        ];
 
         //Desarmar los arrays obtenidos (se unen las unicas y mensuales)
         /**
@@ -40,18 +39,15 @@ export async function getMyReservations(req, res) {
             reservaMensual1
             ]
          */
-        const reservas = [
-            ...reservasUnicas,
-            ...reservasMensuales
-        ];
+
         /* console.log("Las reservas unicas y mensuales (Desde getMyReservations) del usuario son: ")
         console.log(reservas); */
         
-        const reservasUnicasTotal = await reservaDao.populateUnica({ idUsuario: idUsuario })
+        /* const reservasUnicasTotal = await reservaDao.populateUnica({ idUsuario: idUsuario })
         const reservasMensualesTotal = await reservaDao.populateMensual({ idUsuario: idUsuario })
         let reservasTotal = []
         reservasTotal = reservasTotal.concat(reservasUnicasTotal)
-        reservasTotal = reservasTotal.concat(reservasMensualesTotal)
+        reservasTotal = reservasTotal.concat(reservasMensualesTotal) */
 
         /* console.log("Las reservas TOTALES del usuario son: ")
         console.log(reservasTotal);
@@ -102,6 +98,10 @@ export async function cancelarReservaRefactorizadoJsjs(req, res) {
                 }
         });
 
+        const reservaCancelada = await reservaDao.updateOne`${tipo}`({ _
+
+        })
+
         console.log("/////////////////////////////////////");
         console.log("/////////////////////////////////////");
 
@@ -112,7 +112,7 @@ export async function cancelarReservaRefactorizadoJsjs(req, res) {
         //Si ningún usuario fue consultado para aceptar el cupo.
         if (!reemplazado){
             //elimino físicamente al usuario que cancelo la reserva.
-            await eliminarDeClase(user, clase);
+            await eliminarDeClase(user, clase.idClase);
 
             /* ¿Debería hacer una lista de usuarios que cancelaron la reserva de una claseEspecifica?
             ¿o simplemente reviso las reservas de los usuarios? */
@@ -313,8 +313,8 @@ async function validarReemplazo(candidato, clase){
  * Función que elimina el usuario en caso de que no exista ningún usuario válido
  * O, el candidato rechace (o se venca el tiempo límite.) la clase.
  */
-async function eliminarDeClase(clase, user){
-    console.log("Dentro de eliminarDeClase");
+export async function eliminarDeClase(user, clase){
+    console.log("Dentro de eliminarDeClase, esta es la clase de la que eliminar de la lista de anotados al usuario con id: ", user);
     console.log(clase);
     const updateado = await claseEspecificaDao.updateOne(
         { _id: clase._id },
@@ -326,6 +326,10 @@ async function eliminarDeClase(clase, user){
             } 
         }
     )
+    console.log("--------------")
+    console.log("Esta es la clase especifica con el usuario con id ", user, " eliminado...")
+    console.log(updateado);
+    console.log("--------------")
 }
 
 export async function reemplazarAnotado(clase, usuario){
@@ -565,5 +569,136 @@ export async function postReservaMensual(req, res) {
             success: false,
             message: error,
         });
+    }
+}
+
+//Función que se llamará cuando el usuario desde tabMyActivities presione el botón salir de lista de espera.
+export async function salirListaEspera(req, res) {
+    try {
+        const { idReserva } = req.body;
+
+        const reserva = await reservaDao.readOne({
+            _id: idReserva,
+            idUsuario: req.session.user.id
+        });
+
+        if (!reserva) {
+            return res.json({
+                success: false,
+                message: "Reserva no encontrada"
+            });
+        }
+
+        const idUsuario = req.session.user.id;
+
+        //RESERVA UNICA
+        if (reserva.tipo === "unica") {
+
+            const clase = await claseEspecificaDao.readOne({
+                _id: reserva.idClaseEspecifica
+            });
+
+            if (!clase) {
+                return res.json({
+                    success: false,
+                    message: "Clase específica no encontrada"
+                });
+            }
+
+            await claseEspecificaDao.updateOne(
+                { _id: clase._id },
+                {
+                    $pull: {
+                        esperaUnica: {
+                            idUsuario
+                        }
+                    }
+                }
+            );
+
+            const claseActualizada = await claseEspecificaDao.readOne({
+                _id: clase._id
+            });
+
+            const sigueEnEspera = claseActualizada.esperaUnica.some(
+                u => u.idUsuario === idUsuario
+            );
+
+            if (sigueEnEspera) { //En teoría imposible porque no puede estar registrado en espera 2 veces
+                return res.json({
+                    success: false,
+                    message: "No se pudo eliminar de lista de espera"
+                });
+            }
+
+            console.log("Salió correctamente de lista de espera");
+            await reservaDao.updateOne({ _id: reserva._id },
+                {
+                    estado: "cancelada"
+                }
+            );
+        }
+        //RESERVA MENSUAL
+        else {
+
+            for (const claseReserva of reserva.clases) {
+
+                const idClase = claseReserva.idClase;
+
+                await claseEspecificaDao.updateOne(
+                    { _id: idClase },
+                    {
+                        $pull: {
+                            esperaMensual: {
+                                idUsuario
+                            }
+                        }
+                    }
+                );
+
+                const claseActualizada =
+                    await claseEspecificaDao.readOne({
+                        _id: idClase
+                    });
+
+                const sigueEnEspera =
+                    claseActualizada.esperaMensual.some(
+                        u => u.idUsuario === idUsuario
+                    );
+
+                if (sigueEnEspera) {
+                    return res.json({
+                        success: false,
+                        message:
+                            "No se pudo eliminar al usuario de todas las listas de espera"
+                    });
+                }
+            }
+
+            console.log(
+                "Salió correctamente de lista de espera"
+            );
+
+            await reservaDao.updateOne(
+                { _id: reserva._id },
+                {
+                    $set: {
+                        "clases.$[].estado":
+                            "cancelada"
+                    }
+                }
+            );
+        }
+
+        return res.json({
+            success: true
+        });
+    }
+    catch(error) {
+        console.error(error);
+        return res.json({
+            success: false,
+            message: error
+        })
     }
 }

@@ -16,6 +16,24 @@
   z-index: 1000;
 }
 
+.modal-content,
+.modal-cancellations-content,
+.confirm-modal-content {
+  animation: modalFadeIn 0.2s ease;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 .modal-content {
   background: #fff;
   width: 90%;
@@ -29,9 +47,16 @@
 
 .modal-content .close {
   position: absolute;
-  top: 10px; right: 20px;
+  top: 10px;
+  right: 20px;
   font-size: 28px;
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.modal-content .close:hover {
+  color: #dc3545;
+  transform: scale(1.2);
 }
 
 .tabla-iframe {
@@ -74,7 +99,9 @@
   margin: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: all 0.2s ease;
 }
+
 
 .box h3 {
   margin-top: 5px;
@@ -170,10 +197,17 @@ hr {
 
 .close-cancellations {
   position: absolute;
-  top: 10px; right: 20px;
+  top: 10px;
+  right: 20px;
   font-size: 28px;
   cursor: pointer;
   color: #000000;
+  transition: all 0.2s ease;
+}
+
+.close-cancellations:hover {
+  color: #dc3545;
+  transform: scale(1.2);
 }
 
 #listaClasesMensual {
@@ -190,10 +224,139 @@ hr {
   background-color: #d9534f;
   color: white;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
 }
+
 
 #listaClasesMensual button:hover {
-  background-color: #c9302c;
+  background-color: #ff0800;
+  transform: scale(1.05);
 }
 
+#listaClasesMensual button.boton-ya-cancelada:hover {
+  transform: none;
+  cursor: not-allowed;
+}
+
+.confirm-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.7);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+}
+
+.confirm-modal-content {
+    position: relative;
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    width: 450px;
+    max-width: 90%;
+    text-align: center;
+}
+
+.close-confirm-modal {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+
+    border: none;
+    background: transparent;
+
+    font-size: 26px;
+    font-weight: bold;
+
+    cursor: pointer;
+
+    color: #666;
+
+    transition: all 0.2s ease;
+}
+
+.close-confirm-modal:hover {
+    color: #dc3545;
+    transform: scale(1.2);
+}
+
+.confirm-modal-content h3 {
+    margin-bottom: 15px;
+}
+
+.confirm-modal-buttons {
+    margin-top: 25px;
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+#btnVolverCancelar {
+    flex: 1;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+#btnVolverCancelar:hover {
+    background-color: #218838;
+    transform: scale(1.05);
+}
+
+.btn-confirmar {
+    flex: 1;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-confirmar:hover {
+    background-color: #bb2d3b;
+    transform: scale(1.05);
+}
+
+.cancelada {
+    background: #000000;
+    color: white;
+}
+
+.cancelada h3 {
+    color: white;
+}
+
+.en-espera {
+    background: linear-gradient(
+        135deg,
+        #ffb347,
+        #ff8c00
+    );
+    color: white;
+}
+
+.en-espera h3 {
+    color: white;
+}
+
+.btn-salir-espera {
+    background-color: #ff8c00;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-salir-espera:hover {
+    background-color: #e67700;
+    transform: scale(1.05);
+}
