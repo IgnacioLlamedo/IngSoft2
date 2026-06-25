@@ -8,7 +8,7 @@ const clearFilterButton = document.getElementById('clearFilterButton');
 
 
 let currentStats = [];
-const currentSort = { key: null, direction: 'asc' };
+const currentSort = { key: 'cancelaciones', direction: 'desc' };
 // DEBUG: Activar para ver datos de prueba
 let testing = true;
 
