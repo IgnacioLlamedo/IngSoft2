@@ -3,6 +3,7 @@ import { client } from "../servicios/mercado.servicio.js";
 import { pagoDao, claseEspecificaDao, claseGeneralDao, usuarioDao, actividadDao } from "../daos/index.js";
 import config from "../config.js";
 import { Role } from "../constants/constants.js";
+import { now } from "mongoose";
 
 export async function crearPreferencia(req, res) {
 
@@ -12,10 +13,6 @@ export async function crearPreferencia(req, res) {
         const tipoClase = req.body.tipoClase; //seña, unica o mensual
         const clases = req.body.clases;
         const datosExternos = req.body.idCupo;
-
-        console.log("Desde crearPreferencia. Los tipos de clases y fechas son: ")
-/*         const clases = [];
-        const fechas = []; */
 
         /* for (const c of clasesObtenidas.clases) {
 
@@ -34,11 +31,14 @@ export async function crearPreferencia(req, res) {
         
         const clasesFormateadasString = JSON.stringify(clasesFormateadas);
 
+        const fechaPago = new Date(Date.now());
+
         const pagoPendiente = await pagoDao.create({
             monto: precio,
             idUsuario: req.session.user.id,
             clases: clasesFormateadas, //Contiene los id de clases y fechas especificas (en el caso de Mensual, contiene 4 de c/u)
-            pendiente: true //Lo uso previo al pago, al entrar en paymentApproved.js, se cambia a false.
+            pendiente: true, //Lo uso previo al pago, al entrar en paymentApproved.js, se cambia a false.
+            fechaPago: fechaPago
         });
 
         const preference = new Preference(client);
@@ -193,8 +193,9 @@ export async function confirmarPagoController(req, res){
             })
         }
 
-        const updateado = await pagoDao.updateOne({_id: dataPago.idPagoPendiente}, {pendiente: false})
+        const updateado = await pagoDao.updateOne({_id: dataPago.idPagoPendiente}, {pendiente: false, fechaPago: dataPago.fechaPago})
         //Actualizo el estado pendiente a false -> porque ya se confirmó el pago.
+        //y la fechaPago con la brindada por mercado pago en la url...
 
         res.json({
             success: true,
