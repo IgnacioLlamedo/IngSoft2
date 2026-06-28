@@ -1,4 +1,4 @@
-﻿const userlistBtn = document.getElementById('userlistBtn');
+﻿const clientsBtn = document.getElementById('clientsBtn');
 const tableBody = document.getElementById('userlistTableBody');
 const userlistMsgDiv = document.getElementById('userlistMessage');
 const deleteMsgDiv = document.getElementById('deleteMessage');
@@ -10,22 +10,23 @@ const clearFilterButton = document.getElementById('clearFilterButton');
 const showDeletedCheckbox = document.getElementById('showDeletedCheckbox');
 const deleteDialog = document.getElementById('deleteUserDialog');
 const deleteUserMail = document.getElementById('deleteUserMail');
-const deleteUserRole = document.getElementById('deleteUserRole');
 const deletionReasonInput = document.getElementById('deletionReasonInput');
 const confirmDelBtn = document.getElementById('confirmDelBtn');
 const cancelDelBtn = document.getElementById('cancelDelBtn');
 const statsDiv = document.getElementById('userStats');
 
-
+let Role;
+let Status;
 let userData;
 let currentUsers = [];
 const currentSort = { key: null, direction: 'asc' };
 let pendingDeleteId = null;
 let pendingDeleteMail = null;
-let pendingDeleteRole = null;
 
 window.addEventListener('DOMContentLoaded', () => {
-    userlistBtn.classList.add("btn-active");
+    clientsBtn.classList.add("btn-active");
+    Status = JSON.parse(table.dataset.statusEnum);
+    Role = JSON.parse(table.dataset.roleEnum);
     getSessionData();
     bindSortButtons();
     bindFilterControls();
@@ -109,14 +110,13 @@ document.addEventListener('click', (event) => {
     if (deleteBtn) {
         const userId = deleteBtn.dataset.id;
         const userMail = deleteBtn.dataset.mail;
-        const userRole = deleteBtn.dataset.rol;
-        openDeleteDialog(userId, userMail, userRole);
+        openDeleteDialog(userId, userMail);
     }
 });
 
 async function loadUsers() {
     try {
-        const response = await fetch('/api/get-userlist', { credentials: 'include' });
+        const response = await fetch(`/api/get-userlist?role=${Role.CLIENT}`, { credentials: 'include' });
         if (!response.ok) {
             throw new Error('No se pudo cargar la lista de usuarios.');
         }
@@ -142,9 +142,6 @@ function renderUserTable(users) {
     
     const sortedUsers = currentSort.key ? sortUsers(users, currentSort.key, currentSort.direction) : users;
     updateSortIndicators();
-
-    const Status = JSON.parse(table.dataset.statusEnum);
-    const Role = JSON.parse(table.dataset.roleEnum);
     
     tableBody.innerHTML = sortedUsers
 		.map((user) => {
@@ -152,7 +149,6 @@ function renderUserTable(users) {
                 <td>${escapeHtml(user.nombre)}</td>
                 <td>${escapeHtml(user.mail)}</td>
                 <td>${escapeHtml(user.dni)}</td>
-                <td>${escapeHtml(user.rol)}</td>
                 <td>${escapeHtml(user.estado)}</td>
             `;
 
@@ -206,12 +202,9 @@ function renderUserTable(users) {
 
             const separator = "    &middot    ";
             statsDiv.innerHTML = `
-                El sistema cuenta con <span class="stat-count stat-registered">${registeredCount}</span> usuarios registrados, de los cuales:
-                <span class="stat-role stat-role-client">Cliente: <span class="stat-count">${regRoleCounts[Role.CLIENT] || 0}</span></span>` +
-                `${separator}<span class="stat-role stat-role-employee">Empleado: <span class="stat-count">${regRoleCounts[Role.EMPLOYEE] || 0}</span></span>` +
-                `${separator}<span class="stat-role stat-role-admin">Administrador: <span class="stat-count">${regRoleCounts[Role.ADMIN] || 0}</span></span>
-                <span>&nbsp;</span>
-                Además, existen <span class="stat-status stat-status-unverified">${statusCounts[Status.UNVERIFIED] || 0}</span> usuarios sin verificar y <span class="stat-status stat-status-deleted">${statusCounts[Status.DELETED] || 0}</span> usuarios eliminados.
+                El sistema cuenta con <span class="stat-role stat-role-client stat-count stat-registered">${registeredCount}</span> clientes registrados.` +
+                `<span>&nbsp;</span>
+                Además, existen <span class="stat-count stat-registered stat-status stat-status-unverified">${statusCounts[Status.UNVERIFIED] || 0}</span> clientes sin verificar y <span class="stat-count stat-registered stat-status stat-status-deleted">${statusCounts[Status.DELETED] || 0}</span> clientes eliminados.
             `;
         }
 }
@@ -267,6 +260,7 @@ function bindDeleteDialogControls() {
     if (!deleteDialog) return;
 
     confirmDelBtn.addEventListener('click', async () => {
+        confirmDelBtn.disabled = true;
         try {
             await deleteUser(pendingDeleteId);
         } catch (err) {
@@ -279,25 +273,24 @@ function bindDeleteDialogControls() {
                 deleteMsgDiv.className = 'message';
                 deleteDialogForm.style.display = 'grid';
                 deleteDialog.close();
+                confirmDelBtn.disabled = false;
             }, 3000);
-            pendingDeleteId = pendingDeleteMail = pendingDeleteRole = null;
+            pendingDeleteId = pendingDeleteMail = null;
         }
     });
 
     cancelDelBtn.addEventListener('click', () => {
         if (!deleteDialog) return;
         deleteDialog.close();
-        pendingDeleteMail = pendingDeleteRole = null;
+        pendingDeleteMail = null;
     });
 }
 
-function openDeleteDialog(id, mail, role) {
-    if (!id || !mail || !role || !deleteDialog || !deleteUserMail || !deleteUserRole) return;
+function openDeleteDialog(id, mail) {
+    if (!id || !mail || !deleteDialog || !deleteUserMail) return;
     pendingDeleteId = id;
     pendingDeleteMail = mail;
-    pendingDeleteRole = role;
     deleteUserMail.textContent = mail;
-    deleteUserRole.textContent = role;
     if (deletionReasonInput) {
         deletionReasonInput.value = '';
         deletionReasonInput.focus();

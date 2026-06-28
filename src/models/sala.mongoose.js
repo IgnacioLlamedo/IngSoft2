@@ -6,8 +6,7 @@ const collection = 'salas'
 const salaSchema = new Schema({
     _id: { type: String, default: randomUUID },
     nombre: { type: String, required: true },
-    limiteSala: { type: Number, required: true },
-    estado: { type: String, enum: ["disponible", "no disponible"], default: "disponible", }
+    limiteSala: { type: Number, required: true }
 }, {
     strict: 'throw',
     versionKey: false

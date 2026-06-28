@@ -120,7 +120,6 @@ async function getAllClasses(fechaSemana) {
     clasesData = resData.clases;
     console.log("Desde classSlot.js -> estas son las clases conseguidas de db: ")
     console.log(clasesData);
-<<<<<<< HEAD
     
     const ahora = new Date();
     const result = await fetch("/session-data");
@@ -129,17 +128,6 @@ async function getAllClasses(fechaSemana) {
     clasesData.forEach(claseObj => {
         /* console.log("Esta es una clase encontrada en DB: ");
         console.log(claseObj); */
-=======
-
-    clasesData.forEach(claseObj => {
-
-        /* console.log(claseObj); Si empieza a haber errores a la hora de mostrar las clases, usar esto
-        para debuggear, Por cada claseGeneral que haya te genera 3 objetos y podes ver cual es
-        el que le falta info.
-        console.log(claseObj.sala);
-        console.log(claseObj.actividad); */
-
->>>>>>> siEstoNoFuncionaMeMato
         const tdId = `${claseObj.clase.dia}-${claseObj.clase.hora}`;
 
         const celda = document.querySelector(`#${tdId} [data-sala="${claseObj.sala.nombre}"]`);
@@ -152,7 +140,6 @@ async function getAllClasses(fechaSemana) {
             celda.innerText = claseObj.actividad.nombre;
             celda.dataset.id = claseObj.clase._id; //Para mandar por crearPreferencia
             celda.dataset.clase = claseObj.actividad.nombre;
-<<<<<<< HEAD
 
 
             celda.dataset.precio = claseObj.actividad.precioMensual;
@@ -161,16 +148,6 @@ async function getAllClasses(fechaSemana) {
 
             if (claseObj.claseEsp) {
                 cantidadAnotados = claseObj.claseEsp.anotados.length;
-=======
-            celda.dataset.precio = 4; //Esto está hardcodeado -> cambiar en prod. 
-            
-            /* //Si no tengo clase especifica, significa que no la creé y por lo tanto no tiene alumnos anotados.
-            console.log(claseObj.claseEsp);
-            console.log(claseObj.claseEsp.anotados); */
-            if (claseObj.claseEsp){
-                const cant = claseObj.claseEsp.anotados.length;
-                capacidadActual = claseObj.claseEsp.anotados.length +"/"+ claseObj.clase.limiteClase; //Cambiar formato.
->>>>>>> siEstoNoFuncionaMeMato
             }
 
             capacidadActual = `${cantidadAnotados}/${claseObj.clase.limiteClase}`;

@@ -1,4 +1,4 @@
-*:not(.header-nav) {
+*:not(.header-nav, .management-nav-button) {
     box-sizing: border-box;
 }
 

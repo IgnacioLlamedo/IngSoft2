@@ -13,10 +13,12 @@ const claseEspecificaSchema = new Schema({
     anotados : [{
         idUsuario: { type: String, ref: 'usuarios', required: true },
         tipo: { type: String, enum: ['mensualidad', 'unico', 'seña'], required: true },
+        estado: { type: String, enum: ['activo', 'cancelado'], default: 'activo' }
     }],
-    espera : [{
-        idUsuario: { type: String, ref: 'usuarios' }, //cambiar por mensual o todos los mensual por mensualidad jaja
-        tipo: { type: String, enum: ['mensualidad', 'unico', 'seña'], required: true },
+    esperaUnica : [{
+        idUsuario: { type: String, ref: 'usuarios' },
+        tipo: { type: String, enum: ['unico', 'seña'], required: true }, //Esto me parece al pedo(?)
+        estado: { type: String, enum: ['activo', 'esperandoConfirmacion', 'aceptado', 'rechazado'], defult: 'activo' }
     }],
     esperaMensual : [{
         idUsuario: { type: String, ref: 'usuarios' },

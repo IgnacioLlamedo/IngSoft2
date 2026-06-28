@@ -43,25 +43,4 @@ export class asistenciaDao {
         }
         return deleted
     }
-    async populate(query){
-        const populated = await Asistencia.find(query).populate([
-            { path: 'idUsuario' },
-            { 
-                path: 'idClaseEspecifica',
-                populate: {
-                    path: 'idClaseGeneral',
-                    populate: [
-                        { path: 'idActividad' },
-                        { path: 'idProfesor' },
-                        { path: 'idSala' }
-                    ]
-                }
-            }
-        ])
-        if(!populated){
-            //provisional, desarrollar luego
-            console.log("error")
-        }
-        return populated
-    }
 }

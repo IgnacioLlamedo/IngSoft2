@@ -18,7 +18,6 @@ async function getMyReservations() {
 
     actividadesUsuario = resData.reservas.map(r => {
 
-<<<<<<< HEAD
         console.log("Esta es una reserva del usuario: ");
         console.log(r);
         console.log("/////////////////////////////////////////////////"); 
@@ -64,41 +63,12 @@ async function getMyReservations() {
 
                 dia: claseGeneral.dia,
 
-=======
-        // =========================================
-        // RESERVA ÚNICA
-        // =========================================
-        if ((r.tipo === "unica") || (r.tipo === "seña")) {
-
-            const claseGeneral =
-                r.idClaseEspecifica.idClaseGeneral;
-
-            const horario =
-                `${claseGeneral.hora}:00 - ${claseGeneral.hora + 1}:00`;
-
-            return {
-
-                actividad:
-                    claseGeneral.idActividad.nombre,
-
-                tipo: "Unica",
-
-                horario,
-
-                fecha:
-                    new Date(r.idClaseEspecifica.fechaEspecifica)
-                        .toLocaleDateString("es-AR"),
-
-                dia: claseGeneral.dia,
-
->>>>>>> siEstoNoFuncionaMeMato
                 sala:
                     claseGeneral.idSala.nombre,
 
                 profesor:
                     claseGeneral.idProfesor.nombre,
 
-<<<<<<< HEAD
                 precio: precioUnica,
 
                 vencida: 
@@ -109,10 +79,6 @@ async function getMyReservations() {
 
                 estado: r.estado,
                 cancelada: r.estado === "cancelada",
-=======
-                precio:
-                    claseGeneral.precioMensual / 4
->>>>>>> siEstoNoFuncionaMeMato
             };
         }
 
@@ -122,7 +88,6 @@ async function getMyReservations() {
         else {
 
             // Uso la primera clase para info común
-<<<<<<< HEAD
             const primeraClase = r.clases[0].idClase;
 
             const claseGeneral = primeraClase.idClaseGeneral;
@@ -154,40 +119,12 @@ async function getMyReservations() {
 
                 idReserva: r._id,
 
-=======
-            const primeraClase =
-                r.clases[0].idClase;
-
-            const claseGeneral =
-                primeraClase.idClaseGeneral;
-
-            const horario =
-                `${claseGeneral.hora}:00 - ${claseGeneral.hora + 1}:00`;
-
-            const fechas = r.clases
-                .map(c => {
-
-                    const fecha =
-                        new Date(c.idClase.fechaEspecifica);
-
-                    return fecha.toLocaleDateString("es-AR", {
-                        day: "2-digit",
-                        month: "2-digit"
-                    });
-
-                })
-                .join(" - ");
-
-            return {
-
->>>>>>> siEstoNoFuncionaMeMato
                 actividad:
                     claseGeneral.idActividad.nombre,
 
                 tipo: "Mensual",
 
                 horario,
-<<<<<<< HEAD
                 
                 clases: r.clases,
 
@@ -198,11 +135,6 @@ async function getMyReservations() {
                 //Acá habria que recorrer r.clases y si:
                 //  1. alguna clase tiene estado cancelada, no mostrarla
                 //  2. alguna clase tiene estado en espera, mostrarla en color naranja
-=======
-
-                fecha: fechas,
-
->>>>>>> siEstoNoFuncionaMeMato
                 dia:
                     claseGeneral.dia,
 
@@ -213,23 +145,15 @@ async function getMyReservations() {
                     claseGeneral.idProfesor.nombre,
 
                 precio:
-<<<<<<< HEAD
                     claseGeneral.idActividad.precioMensual,
 
                 vencida
-=======
-                    claseGeneral.precioMensual
->>>>>>> siEstoNoFuncionaMeMato
             };
         }
     });
 
-<<<<<<< HEAD
     /* console.log("Estas son las actividades del usuario ya formateadas para mostrar: ");
     console.log(actividadesUsuario); */
-=======
-    console.log(actividadesUsuario);
->>>>>>> siEstoNoFuncionaMeMato
 
     renderActividades();
 }

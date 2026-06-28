@@ -1,5 +1,5 @@
 import express from "express";
-import { obtenerQR, registrarQR, registrarDNI, getAsistencias } from "../../controllers/asistencia.controller.js";
+import { obtenerQR, registrarQR, registrarDNI } from "../../controllers/asistencia.controller.js";
 
 
 export const asistenciaRouter = express.Router();
@@ -8,5 +8,3 @@ export const asistenciaRouter = express.Router();
 asistenciaRouter.post('/asistenciaQR', registrarQR);
 asistenciaRouter.post('/asistenciaDNI', registrarDNI);
 asistenciaRouter.post('/obtenerQR', obtenerQR)
-
-asistenciaRouter.get('/', getAsistencias)

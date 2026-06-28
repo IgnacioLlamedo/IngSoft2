@@ -4,9 +4,12 @@ const ext = parametersURL.get('external_reference')
 const externo = JSON.parse(ext);
 const container = document.querySelector(".main-container");
 
+console.log("Estos son los datos que llegaron en la URL desde paymentApproved.js: ");
+console.log(externo);
 
 const pagoData = {
-    idPagoPendiente: externo.idPagoPendiente
+    idPagoPendiente: externo.idPagoPendiente,
+    fechaPago: externo.fechaPago
 }
 
 console.log("pagoData recibido por external_reference en paymentApproved: ");
@@ -20,18 +23,15 @@ confirmarPago(pagoData, ext)
 
 async function confirmarPago(data, ext) {
     console.log("Dentro de confirmarPago (paymentApproved.js.)");
-<<<<<<< HEAD
 
-=======
->>>>>>> siEstoNoFuncionaMeMato
     const res = await fetch("/api/pago/confirmarPago", {
         method: "POST",
         headers: {
             "Content-Type" : "application/json"
         }, 
         body: JSON.stringify({
-<<<<<<< HEAD
             idPagoPendiente: data.idPagoPendiente, //Para que no rompa el json parser
+            fechaPago: data.fechaPago
         })
     });
 //
@@ -46,14 +46,6 @@ async function confirmarPago(data, ext) {
             const resDataCupo = await resCupo.json();
             console.log("El cupo fue aceptado con exito? --- respuesta: ", resDataCupo.success);
         }
-=======
-            idPagoPendiente: data.idPagoPendiente //Para que no rompa el json parser
-        })
-    });
-
-    const resData = await res.json();
-    if(resData.success){
->>>>>>> siEstoNoFuncionaMeMato
         /** 
          * resData.data devuelve un objeto pago con por ejemplo:
          * clases: [

@@ -69,7 +69,7 @@ const fieldsToFillWithSlotData = (slot) => {
 
 
 
-
+const instructorsBtn = document.getElementById('instructorsBtn');
 
 const createForm = document.getElementById("create-form");
 const templateEditForm = document.getElementById("edit-form");
@@ -86,6 +86,7 @@ const dialog = document.getElementById("confirmPanel");
 let Status;
 
 window.addEventListener('DOMContentLoaded', async () => {
+    instructorsBtn.classList.add("btn-active");
     Status = JSON.parse(createForm.dataset.statusEnum);
     await initializeActivityCheckboxes();
     attachConfirmDialogHandlers();
