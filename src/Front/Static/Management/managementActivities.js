@@ -19,16 +19,11 @@ function getFormData(form) {
     }
 }
 
-function getEditFormData(form) {
-    return {
-        nombre: form.name.value, // Se puede poner "Yo ga" pero bueno. Haría replaceAll(" ", "") pero entonces no podría existir nada con dos plaabras
-    }
-}
-
 
 const fieldsToFillWithSlotData = (slot) => {
     return [
         {id: '#nameField', content: slot.nombre},
+        {id: '#priceField', content: slot.precioMensual}
     ];
 };
 
@@ -310,7 +305,7 @@ async function switchToEdit(slot) {
         event.preventDefault();
         EditCleanMsgs();
 
-        let data =  getEditFormData(event.target);
+        let data =  getFormData(event.target);
         data.id = slot._id;
 
         const dataString = JSON.stringify(data);

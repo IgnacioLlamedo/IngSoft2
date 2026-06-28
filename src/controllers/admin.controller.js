@@ -555,7 +555,7 @@ export async function crearActividad(req, res){
     }
 }
 
-export async function modificarNombreActividad(req, res){
+export async function modificarActividad(req, res){
     try {
         let data = req.body
         data.nombre = nameConvention(data.nombre);
@@ -563,52 +563,23 @@ export async function modificarNombreActividad(req, res){
         const currentActivity = await actividadDao.readOne({_id: data.id});
 
         if(
-            (data.nombre === currentActivity.nombre)
-        ) {
-            return res.json({
-                success: false,
-                message: "Error al modificar la actividad. No se han modificado datos."
-            })
-        }
-
-        const activityAlreadyExists = await actividadDao.readOne({nombre: req.body.nombre});
-        if(activityAlreadyExists) {
-            return res.json({
-                success: false,
-                message: "Error al modificar la actividad. El nuevo nombre de actividad ingresado ya está registrado en el sistema."
-            })
-        }
-
-        await actividadDao.updateOne({_id: data.id}, data)
-
-        res.json({
-            success: true,
-            message: "¡Modificación de actividad realizada con éxito!"
-        });
-    }
-    catch(error) {
-        console.error("modificarActividad ERROR: ", error);
-        res.json({
-            success: false,
-            message: "Error al modificar actividad. Inténtelo de nuevo más tarde."
-        });
-    }
-}
-
-
-export async function modificarPrecioActividad(req, res){
-    try {
-        let data = req.body
-
-        const currentActivity = await actividadDao.readOne({_id: data.id});
-
-        if(
+            (data.nombre === currentActivity.nombre) &&
             (data.precioMensual === currentActivity.precioMensual)
         ) {
             return res.json({
                 success: false,
                 message: "Error al modificar la actividad. No se han modificado datos."
             })
+        }
+
+        if(data.nombre !== currentActivity.nombre) {
+            const activityAlreadyExists = await actividadDao.readOne({nombre: req.body.nombre});
+            if(activityAlreadyExists) {
+                return res.json({
+                    success: false,
+                    message: "Error al modificar la actividad. El nuevo nombre de actividad ingresado ya está registrado en el sistema."
+                })
+            }
         }
 
         await actividadDao.updateOne({_id: data.id}, data)

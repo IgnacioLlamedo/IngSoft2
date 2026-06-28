@@ -5,10 +5,10 @@ const errorMsg = document.getElementById("editError");
 
 const daysInput = document.getElementById("days");
 
-const activityNameSelect = document.getElementById("activityName");
+/* const activityNameSelect = document.getElementById("activityName");
 const activityPriceInput = document.getElementById("activityPrice");
 let activitiesData;
-let activitiesPriceTemp;
+let activitiesPriceTemp; */
 
 setInputDisabled(true);
 fetchData();
@@ -16,28 +16,28 @@ fetchData();
 
 function setInputDisabled(state) {
     daysInput.disabled = state;
-    activityPriceInput.disabled = state;
+    /* activityPriceInput.disabled = state; */
     cancelButton.hidden = state;
 }
 
 
 async function fetchData() {
-    const [daysRes, activitiesRes] = await Promise.all([
+    const [daysRes/* , activitiesRes */] = await Promise.all([
         fetch("/api/admin/diasaviso"),
-        fetch("/api/admin/actividad"),
+        /* fetch("/api/admin/actividad"), */
     ]);
 
-    const [daysResData, activitiesResData] = await Promise.all([
+    const [daysResData/* , activitiesResData */] = await Promise.all([
         daysRes.json(),
-        activitiesRes.json(),
+        /* activitiesRes.json(), */
     ]);
 
     daysInput.value = daysResData.data.diasAviso;
-    loadActivitiesOptions(activitiesResData.data);
+    /* loadActivitiesOptions(activitiesResData.data); */
 }
 
 
-function loadActivitiesOptions(data) {
+/* function loadActivitiesOptions(data) {
     
     const options = data.map((activity, index) => {
         return {
@@ -71,7 +71,7 @@ activityPriceInput.addEventListener('input', (event) => {
     const newValue = checkNumberInput(event.target.value, 0);
     activityPriceInput.value = newValue;
     activitiesPriceTemp[activityNameSelect.value] = newValue;
-});
+}); */
 
 
 
@@ -128,7 +128,7 @@ function toggleEditMode() {
 }
 
 function enterEditMode() {
-    activitiesPriceTemp = activitiesData.map((activity) => activity.precioMensual);
+    /* activitiesPriceTemp = activitiesData.map((activity) => activity.precioMensual); */
     daysInitValue = daysInput.value;
 
     setInputDisabled(false);
@@ -143,7 +143,7 @@ function exitEditMode() {
 let daysInitValue;
 function resetValues() {
     daysInput.value = daysInitValue;
-    activityPriceInput.value = activitiesData[activityNameSelect.value].precioMensual;
+    /* activityPriceInput.value = activitiesData[activityNameSelect.value].precioMensual; */
 }
 
 
@@ -154,11 +154,11 @@ async function saveData() {
         return;
     }
 
-    const [activitiesSuccess, activitiesMessage] = await saveActivities();
+    /* const [activitiesSuccess, activitiesMessage] = await saveActivities();
     if(!activitiesSuccess) {
         ErrorMsg(activitiesMessage);
         return;
-    }
+    } */
 
     SuccessMsg("¡Cambios realizados con éxito!");
 }
@@ -182,7 +182,7 @@ async function saveDays() {
 }
 
 
-async function saveActivities() {
+/* async function saveActivities() {
     for (const [index, activity] of activitiesData.entries()) {
         if(activitiesPriceTemp[index] === activitiesData[index].precioMensual) continue;
         
@@ -199,10 +199,10 @@ async function saveActivities() {
     activitiesPriceTemp = null;
 
     return [true, ""]
-}
+} */
 
 
-async function saveActivity(index) {
+/* async function saveActivity(index) {
     let newActivity = {
         id: activitiesData[index]._id,
         nombre: activitiesData[index].nombre,
@@ -220,7 +220,7 @@ async function saveActivity(index) {
     const activitiesResData = await activitiesRes.json();
 
     return [activitiesResData.success, activitiesResData.success ? "" : activitiesResData.message];
-}
+} */
 
 
 
