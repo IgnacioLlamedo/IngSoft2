@@ -1,4 +1,4 @@
-import { claseEspecificaDao, reservaDao, usuarioDao } from "../daos/index.js";
+import { claseEspecificaDao, reservaDao, usuarioDao, cupoDao } from "../daos/index.js";
 import { claseGeneralDao } from "../daos/index.js";
 import { actividadDao } from "../daos/index.js";
 import { salaDao } from "../daos/index.js";
@@ -21,15 +21,14 @@ export async function getMyReservations(req, res) {
         console.log(idUsuario); */
 
         //Obtengo las reservas de clases únicas y mensuales del usuario
-        const reservasUnicas = await reservaDao.readManyUnica({
-            idUsuario,
-            cancelada: false
-        });
+        const reservasUnicasTotal = await reservaDao.populateUnica({ idUsuario });
 
-        const reservasMensuales = await reservaDao.readManyMensual({
-            idUsuario,
-            cancelada: false
-        });
+        const reservasMensualesTotal = await reservaDao.populateMensual({ idUsuario });
+
+        const reservasTotal = [
+            ...reservasUnicasTotal,
+            ...reservasMensualesTotal
+        ];
 
         //Desarmar los arrays obtenidos (se unen las unicas y mensuales)
         /**
@@ -40,18 +39,15 @@ export async function getMyReservations(req, res) {
             reservaMensual1
             ]
          */
-        const reservas = [
-            ...reservasUnicas,
-            ...reservasMensuales
-        ];
+
         /* console.log("Las reservas unicas y mensuales (Desde getMyReservations) del usuario son: ")
         console.log(reservas); */
         
-        const reservasUnicasTotal = await reservaDao.populateUnica({ idUsuario: idUsuario })
+        /* const reservasUnicasTotal = await reservaDao.populateUnica({ idUsuario: idUsuario })
         const reservasMensualesTotal = await reservaDao.populateMensual({ idUsuario: idUsuario })
         let reservasTotal = []
         reservasTotal = reservasTotal.concat(reservasUnicasTotal)
-        reservasTotal = reservasTotal.concat(reservasMensualesTotal)
+        reservasTotal = reservasTotal.concat(reservasMensualesTotal) */
 
         /* console.log("Las reservas TOTALES del usuario son: ")
         console.log(reservasTotal);
@@ -80,63 +76,48 @@ export async function cancelarReservaRefactorizadoJsjs(req, res) {
         /**
          * Ejemplos:
          * 
-         * Si tipo es única:
+         * Solo se cancelan clases de tipo única:
          * clases:
             Array(1)
-                0: {clase: {…}, llena: false}
-
-        Si tipo es mensual:
-         * clases: 
-            Array(4)
-                0: {clase: {…}, llena: false}
-                1: {clase: null, llena: false}
-                2: {clase: {…}, llena: true}
-                3: {clase: null, llena: false}
+                0: {clase: {{claseEspecifica}, llena: false}
          */
-        const clases = req.body.clase;
+        const clase = req.body.clase;
         const user = req.session.user.id;
         console.log("Desde cancelarReserva Controller: ");
         console.log(tipo);
-        console.log(clases);//cuidado, tiene idClase (que dentro tiene el idClaseEspecifica,
+        console.log(clase);//cuidado, tiene idClase (que dentro tiene el idClaseEspecifica,
         //listados y todo lo de claseEspecifica)
         //y por otro lado tiene _id que no se que carajo es.
 
-        //Itera sobre las clasesEspecificas recibidas cambiando el estado de la
-        //lista de anotados a cancelado en el idUsuario que canceló.
-        const clasesLiberadas = await cancelarClases(clases, user); 
+        //Marco en la lista de anotados en la posicion donde se encuentra
+        //el usuario que cancelo la clase con estado "cancelado".
+        const claseLiberada = await claseEspecificaDao.updateOne({ _id: clase.idClase._id,"anotados.idUsuario": user},
+            {                                                       //el clase.idClase._id puede estar mal, revisar.
+                $set:{
+                "anotados.$.estado":"cancelado"
+                }
+        });
+
+        const reservaCancelada = await reservaDao.updateOne`${tipo}`({ _
+
+        })
 
         console.log("/////////////////////////////////////");
         console.log("/////////////////////////////////////");
 
+        //////////////////////////////////////////// Llega hasta acá el código. Lo siguiente hay que probarlo.....
+       
+        const reemplazado = await validarYNotificar(tipo, claseLiberada, user);
 
-////////////////////////////////////////////
-        // Llega hasta acá el código.
-        let reemplazo = null;
+        //Si ningún usuario fue consultado para aceptar el cupo.
+        if (!reemplazado){
+            //elimino físicamente al usuario que cancelo la reserva.
+            await eliminarDeClase(user, clase.idClase);
 
-        const candidatosUnicos = await obtenerCandidatosUnicos(clases);
-        
-        console.log("El tipo de la clase cancelada era ((((UNICO)))), por lo tanto busco un candidato único: ");
-        console.log("Estos son los candidatos únicos obtenidos: ");
-
-        for(const candidato of candidatosUnicos){
-            console.log(candidato);
-            console.log("%%%%%%%%%%%%%%%%%%%%%%%%")
+            /* ¿Debería hacer una lista de usuarios que cancelaron la reserva de una claseEspecifica?
+            ¿o simplemente reviso las reservas de los usuarios? */
         }
-        reemplazo = await procesarCandidatos(candidatosUnicos, clases, user, tipo);
 
-        //Si ningún candidato sirvio o aceptó la clase, se elimina de la
-        //lista de anotados al usuario que canceló
-        if (!reemplazo){
-            console.log("ningún candidato era válido para reemplazar al usuario que cancelo la reserva, POR LO TANTO ELIMINO AL USUARIO DE LA LISTA DE ANOTADOS. ")
-            await eliminarDeClase(clases, user);
-        }
-        else{
-            //reemplazo al usuario con estado "cancelado" en la lista de anotados
-            //con el candidato. (No olvidadr cambiar el estado TANTO EN CLASE ESPECIFICA como en RESERVA)
-            console.log("Se encontró un usuario válido y que aceptó anotarse: ");
-            await actualizarAnotado(clases, user) // Nosé si mandar un resultado acá, despues veo
-        }
-////////////////////////////////////////////////////////////
         return res.json({
             success: true,
             message: "Reserva cancelada exitosamente"
@@ -151,181 +132,244 @@ export async function cancelarReservaRefactorizadoJsjs(req, res) {
     }
 }
 
-//ya debería estar joya este
-async function obtenerCandidatosUnicos(clasesLiberadas){
+export async function validarYNotificar(tipo, claseLiberada, idCancelo){
 
-   const candidatos = [];
+    let reemplazo = null;
 
-   for(const clase of clasesLiberadas){
-      candidatos.push(
-         ...clase.esperaUnica
-      );
-   }
+    //////////////////////////////////
+    //          MENSUAL
+    //////////////////////////////////
+    if (tipo === "Mensual"){
+        let candidato;
+        
+        /**Por cada persona dentro de la lista de espera mensual de la clase liberada:  */
+        for(const act in claseLiberada.esperaMensual){
 
-   return candidatos;
-}
+            /**
+             * validarReemplazo devuelve un elemento con esta forma:
+             * 
+             *  let valida = {
+             *      clases: [],        --- clases tiene las 4/5 clases especificas
+             *      candidatoValido: true
+             *  }
+             * 
+             *  ó
+             * 
+             * let valida = {
+             *      clases: [],     --- puede o no tener clases, lo importante es candidatoValido
+             *      candidatoValido: false
+             * }
+             * 
+             */
+            candidato = await validarReemplazo(act.idUsuario, claseLiberada);
 
-//ya debería estar joya este
-async function obtenerCandidatosMensuales(clasesLiberadas){
+            /**Corroboro si el siguiente en lista de espera mensual
+            puede acceder a la clase (Osea que las otras clases que corresponden
+            a su reserva tengan espacio)
+            Ya que puede darse la situación:
+                clase1: espacio suficiente
+                clase2: llena -- esta fue la reserva cancelada.
+                clase3: llena
+                clase4: llena
+                
+            y por lo tanto no sería elegible para reemplazo.*/
 
-    console.log(clasesLiberadas)
+            let nuevoCupo = null;
 
-   const candidatos = [];
+            //si el candidato es válido
+            if (candidato.valido){
 
-   for(const clase of clasesLiberadas.idClase){
-      candidatos.push(
-         ...clase.esperaMensual
-      );
-   }
-   return eliminarDup(candidatos);
-}
+                const clasesDelCupo = [];
+                for(const actual in candidato.clases){
+                    const claseAct = {
+                        clase: actual,
+                        esLiberada: false
+                    }
+                    if (actual._id === claseLiberada._id){
+                        claseAct.esLiberada = true;
+                    }
+                    clasesDelCupo.push(claseAct);
+                }
 
-//ya debería estar joya este
-async function eliminarDup(candidatos){
-    return [
-        ...new Map(
-            candidatos.map(
-                candidato => [
-                    candidato.idUsuario,
-                    candidato
-                ]
-            )
-        ).values()
-    ];
-}
+                //creo el nuevo cupo
+                nuevoCupo = await await cupoDao.create({
+                    idUsuario: act.idUsuario,
+                    idUsuarioCanceloClase: idCancelo,
+                    clasesEspecificas: clasesDelCupo,
+                    tipo: tipo
+                });
 
-async function procesarCandidatos(candidatos, clasesLiberadas, idUsuarioCancelado, tipoCancelacion){
+                if (!nuevoCupo){
+                    console.log("error al crear cupo de reemplazo.");
+                    break;
+                }
 
-    let indiceValido = -1;
+                await claseEspecificaDao.updateOne({_id: claseLiberada._id, "esperaMensual.idUsuario": act.idUsuario},
+                    { 
+                        $set:{
+                            "anotados.$.estado":"esperandoConfirmacion"
+                        }
+                    }
+                )
 
-    for(let i = 0; i < candidatos.length; i++){
+                //consulto al usuario si acepta el nuevo cupo.
+                reemplazo = await notificarUsuario(act.idUsuario, candidato.clases, nuevoCupo._id);
+                break;
+            }
+            else{
+                console.log()
+            }
+            //si el candidato no es válido, sigo con el siguiente en la lista de espera
+        }
+    }
+    //////////////////////////////////
+    //          UNICA
+    //////////////////////////////////
+    else{
+        //si la clase cancelada es única -- simplemente busco al siguiente en lista de espera única
 
-        const candidato = candidatos[i];
 
-        //Controlo que las clasesEspecificas que pertenecen a la reserva del
-        //candidato sean utilizables
-        const esValido = await validarReemplazo(candidato, clasesLiberadas, candidato.tipo);
+        //si existen personas en la lista de espera única
+        if (claseLiberada.esperaUnica.length > 0){
 
-        if(esValido){
-            indiceValido = i;
-            break;
+            //Itero sobre la lista de espera unica.
+            for(const unicaAct in claseLiberada.esperaUnica){
+
+                //si el actual aún no está esperando confirmación, aceptó o rechazo un cupo
+                if (unicaAct.estado === 'activo') {
+
+                    //creo el cupo.
+                    const nuevoCupo = await cupoDao.create({
+                        idUsuario: unicaAct.idUsuario,
+                        idUsuarioCanceloClase: idCancelo,
+                        clasesEspecificas: claseLiberada,
+                        tipo: tipo
+                    });
+                    
+                    //Modifico el estado en la lista de espera única del usuario a esperandoConfirmación para que
+                    //no pueda ser elegído en caso de que otra persona cancele clase en el mismo moomento.
+                    await claseEspecificaDao.updateOne({_id: claseLiberada._id, "esperaUnica.idUsuario": unicaAct.idUsuario},
+                    { 
+                        $set:{
+                            "esperaUnica.$.estado":"esperandoConfirmacion"
+                        }
+                    })
+
+                    //Mando mail al usuario consultando si acepta el cupo.
+                    reemplazo = await notificarUsuario(unicaAct.idUsuario, claseLiberada, nuevoCupo._id);
+                }
+
+                //si el actual ya fue notificado para confirmar anteriormente, aceptó una clase o la rechazó
+                else
+                    //Paso al siguiente candidato.
+                    continue
+            }
         }
     }
 
-    //Si ningún candidato era válido,
-    //no creo listaDeCandidatos y retorno null
-    if (indiceValido === -1){
-        return null;
-    }
 
-    //Se crea la lista de candidatos con los candidatos pendientes en caso de
-    //que el cliente rechace el mail o se venza el tiempo de espera.
-    const lista = await listaCandidatosDao.create({
-        idsClasesEspecificas: clasesLiberadas.map(clase => clase._id),
-
-        //Me quedo con los candidatos restantes
-        candidatos: candidatos.slice(indiceValido),
-
-        idUsuarioCancelado,
-
-        tipoCancelacion,
-
-        candidatoActual: 0,
-
-        estado: "pendiente",
-
-        //No recuerdo cuanto era lo que habia que esperar hasta el siguiente.
-        fechaLimite: new Date(Date.now() + 30 * 60 * 1000)
-    });
-
-    const candidatoValido = candidatos[indiceValido];
-
-    //Mando mail al candidato válido (crear un nuevo endpoint)
-    await notificarUsuario(candidatoValido, clasesLiberadas);
-
-    return lista;
+    return reemplazo;
 }
 
 //Pasar esta funcióin a reemplazo.servicio.js
 //también la voy a utilizar con cron.
 async function validarReemplazo(candidato, clase){
 
+    //Ahora esta función solo se utiliza si la clase cancelada es de tipo
+    //UNICA!
     console.log("Dentro de validar reemplazo: ");
     console.log("El candidato es el: ")
     console.log(candidato);
     console.log("&&&&&&&&&&&&&&&&&");
     console.log("El tipo de reemplazo que se verificará siempre será UNICO ")
     console.log("Las clases a validar son: ")
-    console.log(clases);
+    console.log(clase);
     console.log("&&&&&&&&&&&&&&&&&");
     console.log("&&&&&&&&&&&&&&&&&");
     
-
     let reserva = null;
    
-    const idsClases = [];
-    for(const item of clases){
-        idsClases.push(item.idClase._id);
+    //paso 1: Obtener la reserva del candidato a la que pertenece la clase.
+    reserva = reservaDao.readOne({ idUsuario: candidato.idUsuario,
+        cancelada: false,
+        tipo: 'mensual',
+        clases: {
+            $elemMatch: {
+                idClase: clase._id //Probar esto
+            }
+        },
+    });
+
+    let valida = {
+        clases: [],
+        candidatoValido: true
     }
 
-    
-    console.log(idsClases)
-
-     /**
-     * Caso 1: El candidato es de reserva mensual
-     */
-    if (tipoReemplazo === 'mensual'){
-        //paso 1: Obtener todas las clases de la reserva del candidato
-        
-        //¿Debería agregar a la lista de anotados la reserva a la que pertenece el?
-
-        reserva = reservaDao.readOne({ idUsuario: candidato.idUsuario,
-            cancelada: false,
-            tipo: 'mensual',
-            clases: {
-                $elemMatch: {
-                    idClase: {
-                        $in: idsClases
-                    }
-                }
-            },
-        });
-    }
-    /**
-     * Caso 2: El candidato es de reserva única o seña
-     */
-    else{
-        reserva = await reservaDao.readOne({ idUsuario: candidato.idUsuario,
-            cancelada: false,
-            tipo: 'unica', //Verificar
-            idClaseEspecifica: clases[0].idClase._id
-        });
-    }
-
+    //paso 2: iterar las clases de la reserva
     if(!reserva){
         return false;
     }
     else{
+        const claseGeneral = await claseGeneralDao.readOne({ _id: reserva.clases[0].idClaseGeneral })
 
+        //revisar si todas las clases tienen espacio para anotar al usuario.
+        for(const claseAct in reserva.clases){
+            const especificaAct = await claseEspecificaDao.readOne({ idClase: claseAct.idClase });
+
+            if(!especificaAct){ //En teoría no debería ocurrir a menos que modifiquemos la DB
+                valida.candidatoValido = false;
+                console.log("Esto es validarReemplazo linea 285 algun moco te mandaste flaco.")
+                break;
+            }
+
+            const hayCancelado = especificaAct.anotados.some(
+                c => c.estado === 'cancelado'
+            )
+
+            //La clase no va a ser válida si la clase está llena y no hay un usuario que haya cancelado
+            if (especificaAct.anotados.length === claseGeneral.limiteClase){
+                /**
+                 * Separo los ifs porque puede darse el caso en el que haya cancelados y la clase no esté llena.
+                 * De todas formas al devolver al siguiente en lista de espera (este usuario) como válido,
+                 * se reemplazará al usuario con estado cancelado.
+                 */
+                if (!hayCancelado){
+                    valida.candidatoValido = false;
+                    break;
+                }
+            }
+            valida.clases.push(especificaAct);
+        }
     }
 
-
-    /**
-     * Caso 3: La cancelación mensual fue realizada
-     * luego de haber hecho alguna clase (clasesLiberadas < 4)
-     * 
-     * En este caso, si el candidato es mensual, debo crear las
-     * clases especificas necesarias o controlar que existan
-     */
-
+    return valida;
 }
 
 /**
  * Función que elimina el usuario en caso de que no exista ningún usuario válido
  * O, el candidato rechace (o se venca el tiempo límite.) la clase.
  */
-async function eliminarDeClase(clase, user){
-    console.log("Dentro de eliminarDeClase");
+export async function eliminarDeClase(user, clase){
+    console.log("Dentro de eliminarDeClase, esta es la clase de la que eliminar de la lista de anotados al usuario con id: ", user);
+    console.log(clase);
+    const updateado = await claseEspecificaDao.updateOne(
+        { _id: clase._id },
+        {
+            $pull: {
+                anotados: {
+                    idUsuario: user
+                }
+            } 
+        }
+    )
+    console.log("--------------")
+    console.log("Esta es la clase especifica con el usuario con id ", user, " eliminado...")
+    console.log(updateado);
+    console.log("--------------")
+}
+
+export async function reemplazarAnotado(clase, usuario){
+    console.log("Dentro de reemplazar anotado");
     console.log(clase);
     const updateado = await claseEspecificaDao.updateOne(
         { _id: clase._id },
@@ -339,155 +383,7 @@ async function eliminarDeClase(clase, user){
     )
 }
 
-/**
- * Función para encontrar las clases especificas del usuario que pasará
- * de lista de espera a lista de anotados.
- * (En caso de que el usuario que canceló era mensual y ya habia realizado
- * una o más clases de la mensualidad)
- * 
- * Se utilizará en validarReemplazo
- */
-async function obtenerClasesNecesarias(candidato, clasesLiberadas){
-
-}
-
-////////////////////
-
-
-export async function cancelarReserva(req, res) {
-    try {
-
-        /**
-         *  Lista de Anotados Mensuales
-         *  Lista de Anotados Clase única
-         *  Lista de Anotados Seña(?) ---> ¿Los tratamos igual que los de clase única? y si es así,
-         *                                  ¿deberíamos hacer que page antes de pasarlos a lista de anotados?
-         * 
-         * Si uno cancela, el que pasará de la lista de espera se priorizará según el tipo que cancele
-         * Ejemplo: si cancela alguien de mensual, se tomará a alguien en lista de espera que sea de tipo
-         * mensual.
-         * 
-         *  1- Si el elegido no puede ser insertado (MÁS ABAJO EXPLICO PQ), se probará con el siguiente
-         * 
-         *  2- Y si ningúno de tipo mensual es insertado, entonces:
-         * 
-         *     2.1- Por cada clase Especifica "liberada" se insertará uno de tipo clase única (ya sea señado o no señado)
-         * 
-         *          Nota: (obviamente que se tiene que consultar al elegido si desea aceptar esa clase específica antes
-         *                 de insertarlo en la lista de anotados.)
-         * 
-         * Nota: Respecto de "liberar" (No se elimina de la lista de anotados al usuario, sino que se marca la reserva como
-         *          cancelada y luego se usará eso para reemplazar al usuario en la lista de anotados)
-         */
-        const tipo = req.body.tipo;
-        const clase = req.body.clase;
-        const user = req.session.user.id;
-        console.log("Desde cancelarReserva Controller: ");
-        console.log(tipo);
-        console.log(clase);
-
-        //Si hay personas en espera --> controlo el tipo que pasará a la lista de anotados
-        if (clase.espera.length !== 0){
-            /**
-             * PROBLEMA: Actalmente, al comprar una reserva mensual, se consulta si la clase especifica existe
-             *      si existe y tiene espacio --> se pone en lista de anotados,
-             *      si existe y no tiene espacio --> se pone en lista de espera,
-             *      no existe --> crea las que no existan (máximo 4) y se anota en cada una).
-             * AHORA, si la persona que esta en lista de espera (y es espera mensual) NO está esperando
-             * en las mismas 4 clasesEspecificas que la persona que canceló su reserva, entonces
-             * se debe revisar:
-             * 
-             *      1- La persona en espera tiene 4 clasesEspecificas en las que está esperando ser anotado (osea que el día
-             *          en el que hizo la reserva inicial aún no pasó).
-             * 
-             *          1.1- Si la fecha de reserva inicial ya pasó, se podría preguntar al usuario si desea anotarse
-             *                  a la mensualidad a partir de esa fecha. ---> más lógica y crea un nuevo problema.
-             * 
-             *      2- Las 4 clasesEspecificas tienen espacio en la lista de anotados (puede pasar que: si la persona que cancela
-             *          ya realizó 2 clases de su reserva mensual, solo se liberarían las 2 clasesEspecificas
-             *          restantes y, por lo tanto, puede ocurrir que luego de esas 2 clasesEspecificas restantes
-             *          existan 2 claseEspecificas y con lista de anotados ya llena lo que descalificaría a las mensuales.
-             * 
-             *          2.1- Si se quiere evitar esto último, podriamos hacer que una vez que una persona realizó una clase
-             *               de su reserva mensual, ya no pueda cancelar pero esto no tiene mucho sentido.
-             * 
-             *          2.2- En este caso, ya no se debería poder anotar a una mensualidad, sino que pasar a anotar a 1 o varias
-             *               únicas.
-             * 
-             *      3- Tenia otra duda pero ya no me acuerdo de que era.
-             * 
-             */
-
-            if (tipo === "mensual") {
-                //marco todas las clases con el usuario cancelado 
-                for(const act in clase){
-                    if (!act) continue; //Controlo que no sea null
-                    /* //busco el indice en la lista de anotados del usuario que canceló la reserva
-                    const posUsuario = act.anotados.findIndex(
-                        usuario => usuario.idUsuario === user
-                    ); */
-
-                    //actualizo la clase especifica con el usuario anotado con estado cancelado (borrado lógico)
-                    const updateado = await claseEspecificaDao.updateOne({ _id: act._id, "anotados.idUsuario": user},
-                        { $set: { "anotados.$.estado": "cancelado" }} )
-                }
-
-                //buscar al usuario que pasará de espera a anotados.
-
-                    //controlar a qué clases debería anotarse el usuario a anotar.
-
-                    //si son clases válidas y con espacio en lista de anotados -- anotar
-
-                    //sino, buscar el siguiente
-
-                //si no hay siguiente, buscar (por cada una de las clases en las que canceló)
-                //desde el inicio pero ahora clases únicas
-                
-            }
-            //sino, es única o seña, en cuyo caso, de la lista de espera se saca el primero de única o seña que haya
-            else{
-                const act = clases[0];
-                if (act) { //En teoría este no va ya que no puede ser null
-                    const updateado = await claseEspecificaDao.updateOne({ _id: act._id, "anotados.idUsuario": user},
-                        { $set: { "anotados.$.estado": "cancelado" }} );
-                    //si hay gente en lista de espera
-                    if (act.espera.length > 0) {
-                        for(const espAct in act.espera){
-                            if (espAct.tipo !== 'mensualidad'){
-                                //mandar mail al usuario para confirmación
-
-                                //¿como hago si el usuario no cancela y pasó el tiempo límite
-                                // para mandar mensaje al siguiente usuario válido?
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        else{
-            //si NO hay personas en la lista de espera simplemente actualizo eliminando el usuario que cancelo de la lista de anotados
-            
-        }
-    
-        //Se actualiza la clase especifica con sacando al usuario de la lista de anotado
-        //y agregando al usuario de la lista de espera a la lista de anotado.
-        const actualizada = await claseEspecificaDao.updateOne({});
-
-        return res.json({
-            success: true,
-            message: "Reservación cancelada exitosamente."
-        })
-
-    }
-    catch(error) {
-        console.error(error);
-        return res.json({
-            success: false,
-            message: error
-        })
-    }
-}
+//////////////////// Acá estaba lo viejo
 
 //Unir reservaUnica y mensual. separar por if
 export async function postReservaUnica(req, res) {
@@ -512,13 +408,14 @@ export async function postReservaUnica(req, res) {
         let claseEspecifica = await claseEspecificaDao.readOne({ idClaseGeneral: claseGeneral._id,
             fechaEspecifica: fechaBuscada })
         if (!claseEspecifica) {
-            console.log("No existeclase especifica (desde postReservaUnica)");
+            console.log("Desde postReservaUnica, creando clase especifica y agregando a lista de anotados...");
             //Creo la clase especifica con el usuario anotado.
             const data = {
                 idClaseGeneral: claseGeneral._id,         
                 fechaEspecifica: fecha,
                 anotados: [usuarioData],
-                espera: [],
+                esperaUnica: [],
+                esperaMensual: [],
             };
 
             //Crea la clase especifica y asigna la nueva id, luego crea la reserva
@@ -539,11 +436,11 @@ export async function postReservaUnica(req, res) {
 
         //Si hay lugar lo agrego al arreglo de anotados.
         if (capacidadActual < claseGeneral.limiteClase) {
-            console.log("Hay lugar en la clase para anotarse -> pasa a lista de anotados.");
+            console.log("Hay lugar en la clase para anotarse -> anotando en lista de anotados...");
             await claseEspecificaDao.updateOne(
                 { _id: claseEspecifica._id },
                 {
-                    $push: {    //No sabia que se podia hacer esto jsjs, igual hay que probarlo
+                    $push: {
                         anotados: usuarioData
                     }
                 }
@@ -596,17 +493,17 @@ export async function postReservaMensual(req, res) {
             clases: pagoData.clases, //Contiene la idClaseGeneral y FechasEspecificas (DE 4 CLASES!)
             pagos: [{ idPago: pagoData._id }],
             idUsuario: pagoData.idUsuario,
-            tipoClase: "mensualidad"
+            tipoClase: "mensualidad" ó "unico" (seña?)
         */
         const reservaData = req.body;
 
-        /* console.log("(Back) - Datos recibidos en postReservaUnica:");
-        console.log(reservaData); */
+        console.log("(Back) - Datos recibidos en postReservaUnica:");
+        console.log(reservaData);
 
         const usuarioData = {
             idUsuario: reservaData.idUsuario,
             tipo: reservaData.tipoClase
-        };
+        };2 
 
         const clasesReserva = [];
 
@@ -768,5 +665,135 @@ export async function getCancellations(req, res) {
             success: false,
             message: "Error al recuperar las cancelaciones. Inténtelo de nuevo más tarde."
         });
+    }
+}//Función que se llamará cuando el usuario desde tabMyActivities presione el botón salir de lista de espera.
+export async function salirListaEspera(req, res) {
+    try {
+        const { idReserva } = req.body;
+
+        const reserva = await reservaDao.readOne({
+            _id: idReserva,
+            idUsuario: req.session.user.id
+        });
+
+        if (!reserva) {
+            return res.json({
+                success: false,
+                message: "Reserva no encontrada"
+            });
+        }
+
+        const idUsuario = req.session.user.id;
+
+        //RESERVA UNICA
+        if (reserva.tipo === "unica") {
+
+            const clase = await claseEspecificaDao.readOne({
+                _id: reserva.idClaseEspecifica
+            });
+
+            if (!clase) {
+                return res.json({
+                    success: false,
+                    message: "Clase específica no encontrada"
+                });
+            }
+
+            //Habría que hacer algun tipo de checkeo?
+            await claseEspecificaDao.updateOne(
+                { _id: clase._id },
+                {
+                    $pull: {
+                        esperaUnica: {
+                            idUsuario
+                        }
+                    }
+                }
+            );
+
+            const claseActualizada = await claseEspecificaDao.readOne({
+                _id: clase._id
+            });
+
+            const sigueEnEspera = claseActualizada.esperaUnica.some(
+                u => u.idUsuario === idUsuario
+            );
+
+            if (sigueEnEspera) { //En teoría imposible porque no puede estar registrado en espera 2 veces
+                return res.json({
+                    success: false,
+                    message: "No se pudo eliminar de lista de espera"
+                });
+            }
+
+            console.log("Salió correctamente de lista de espera");
+            await reservaDao.updateOne({ _id: reserva._id },
+                {
+                    estado: "cancelada"
+                }
+            );
+        }
+        //RESERVA MENSUAL
+        else {
+
+            for (const claseReserva of reserva.clases) {
+
+                const idClase = claseReserva.idClase;
+
+                await claseEspecificaDao.updateOne(
+                    { _id: idClase },
+                    {
+                        $pull: {
+                            esperaMensual: {
+                                idUsuario
+                            }
+                        }
+                    }
+                );
+
+                const claseActualizada =
+                    await claseEspecificaDao.readOne({
+                        _id: idClase
+                    });
+
+                const sigueEnEspera =
+                    claseActualizada.esperaMensual.some(
+                        u => u.idUsuario === idUsuario
+                    );
+
+                if (sigueEnEspera) {
+                    return res.json({
+                        success: false,
+                        message:
+                            "No se pudo eliminar al usuario de todas las listas de espera"
+                    });
+                }
+            }
+
+            console.log(
+                "Salió correctamente de lista de espera"
+            );
+
+            await reservaDao.updateOne(
+                { _id: reserva._id },
+                {
+                    $set: {
+                        "clases.$[].estado":
+                            "cancelada"
+                    }
+                }
+            );
+        }
+
+        return res.json({
+            success: true
+        });
+    }
+    catch(error) {
+        console.error(error);
+        return res.json({
+            success: false,
+            message: error
+        })
     }
 }

@@ -30,3 +30,23 @@
 .management-nav-button:hover {
     transform: scale(0.98);
 }
+
+
+@media (max-width: 768px) {
+  .management-nav {
+    flex-direction: column;   
+    gap: 15px;                
+    align-items: center;
+  }
+
+  .management-nav-button {
+    font-size: 16px;       
+    padding: 10px;     
+    max-width: none;       
+    width: 90%;      
+  }
+
+  .management-navbar hr {
+    margin-block: 5px;
+  }
+}

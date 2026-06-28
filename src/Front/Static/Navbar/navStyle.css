@@ -1,17 +1,61 @@
 * {
   font-family: 'Segoe UI', Arial, sans-serif;
-  padding: 0px;
-  margin: 0px;
+  padding: 0;
+  margin: 0;
 }
 
-header {
+
+.header-nav{
   width: 100%;
-  /* height: 95px; */
   background-color: rgb(43, 43, 43);  
   z-index: 1;
+  height: 70px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 15px;
+  padding-bottom: 10px;
+  position: relative;
+  border-bottom: 2px solid rgba(208, 31, 37, 0.7);
+  z-index: 200;
+}
+
+.nav-data {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.nav-links{
+  display: flex;
+  list-style: none;
+  gap: 30px;
+  flex: 1;
+  justify-content: flex-end;
+  align-items: center;
+  margin-right: 50px;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: #de2423;
+  font-weight: bold;
+  font-size: 19px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+  transition: color 0.3s ease;
+}
+
+.nav-links a:hover {    
+  color: #d1d1d1;
+}
+
+.nav-links li {
+  text-transform: uppercase;
 }
 
 
+/*
+/*Estilo bien 
 .header-nav {
   height: 70px;
   display: flex;
@@ -19,8 +63,7 @@ header {
   align-items: center;
   padding-top: 15px;
   padding-bottom: 10px;
-  padding-left: 10px;
-  padding-right: 50px;
+
   position: relative;
   border-bottom: 2px solid rgba(208, 31, 37, 0.7);
 
@@ -38,7 +81,7 @@ header {
 
 .header-nav a {
   text-decoration: none;
-  color: #de2423; /*Para tema claro podemos ponerlos con el azul: #163F7A*/
+  color: #de2423;
   font-weight: bold;
   font-size: 19px;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
@@ -53,8 +96,11 @@ header {
   text-transform: uppercase;
 }
 
+*/
+
+
 .logo-img {
-  height: 90px;
+  height: 80px;
   overflow: hidden;
 }
 
@@ -119,5 +165,109 @@ header {
 
 .user-options-open {
   max-height: 200px;
+  z-index: 2000;
+}
+
+
+/* Menú hamburguesa oculto por defecto */
+.toggle-icon {
+  font-size: 28px;
+  color: #de2423;
+  cursor: pointer;
+  display: none; /* oculto en escritorio */
+}
+
+.menu-toggel{
+  display: none;
+  flex-direction: column;
+
+  position: absolute;
+  right: 0;
+  top: 100%;
+  width: 100%;
+  border-radius: 0 0 5px 5px;
+
+  background-color: rgb(54, 54, 54);
+  gap: 15px;
+  border-top: 1px solid rgba(208, 31, 37, 0.7); 
+  border-bottom: 1px solid rgba(208, 31, 37, 0.7); 
   z-index: 1000;
+}
+
+.menu-toggel-wrapper {
+  padding: 15px;
+}
+
+.menu-toggel ul{
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+}
+
+.menu-toggel li a {
+  display: block;
+  padding: 12px 15px;
+  border-radius: 6px;
+  background-color: #3a3a3a;   /* fondo gris más claro */
+  color: #f0f0f0;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.menu-toggel li a:hover {
+  background-color: #de2423;   /* rojo al hover */
+  color: #fff;
+  transform: scale(1.02);  
+}
+
+/*
+.menu-toggel li{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #ccc;
+  font-weight: uppercase;
+  cursor: pointer;
+}
+
+.menu-toggel li:hover{
+  color: #de2423;
+}
+*/
+
+
+
+/* Responsive */
+@media (max-width: 768px) {
+  .nav-links  {
+   display: none;  
+  }
+  .toggle-icon {
+    display: flex; /* mostrar hamburguesa */
+    justify-content: flex-end;
+    margin-right: 50px;
+  }
+
+  .menu-toggel{
+    display: none;
+  }
+
+  .menu-toggel.open{
+    display: flex;
+  }
+
+  .user-ico {
+    height: 20px;
+  }
+  
+}
+
+@media (min-width: 769px) {
+  .nav-menu {
+    display: none; /* ocultar panel hamburguesa en escritorio */
+  }
 }

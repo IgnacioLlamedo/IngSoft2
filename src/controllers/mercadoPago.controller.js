@@ -3,6 +3,7 @@ import { client } from "../servicios/mercado.servicio.js";
 import { pagoDao, claseEspecificaDao, claseGeneralDao, usuarioDao, actividadDao } from "../daos/index.js";
 import config from "../config.js";
 import { Role } from "../constants/constants.js";
+import { now } from "mongoose";
 
 export async function crearPreferencia(req, res) {
 
@@ -11,10 +12,7 @@ export async function crearPreferencia(req, res) {
         const precio = req.body.precio; 
         const tipoClase = req.body.tipoClase; //seña, unica o mensual
         const clases = req.body.clases;
-
-        console.log("Desde crearPreferencia. Los tipos de clases y fechas son: ")
-/*         const clases = [];
-        const fechas = []; */
+        const datosExternos = req.body.idCupo;
 
         /* for (const c of clasesObtenidas.clases) {
 
@@ -33,11 +31,14 @@ export async function crearPreferencia(req, res) {
         
         const clasesFormateadasString = JSON.stringify(clasesFormateadas);
 
+        const fechaPago = new Date(Date.now());
+
         const pagoPendiente = await pagoDao.create({
             monto: precio,
             idUsuario: req.session.user.id,
             clases: clasesFormateadas, //Contiene los id de clases y fechas especificas (en el caso de Mensual, contiene 4 de c/u)
-            pendiente: true //Lo uso previo al pago, al entrar en paymentApproved.js, se cambia a false.
+            pendiente: true, //Lo uso previo al pago, al entrar en paymentApproved.js, se cambia a false.
+            fechaPago: fechaPago
         });
 
         const preference = new Preference(client);
@@ -55,7 +56,8 @@ export async function crearPreferencia(req, res) {
                     idUsuario: req.session.user.id,
                     tipoClase: tipoClase,
                     nombre: nombre, //Nombre clase (yoga, spinning o funcional)
-                    idPagoPendiente: pagoPendiente._id
+                    idPagoPendiente: pagoPendiente._id,
+                    idCupo: datosExternos
                 }),
                 back_urls: {
                     success: `${config.link}/payment/approved`,
@@ -116,8 +118,7 @@ export async function consultar(req, res) {
                 continue; //Saltea el resto del código y vuelve a entrar al for.
             }
 
-
-            const claseGeneral = claseGeneralDao.readOne({ _id: clase.idClaseGeneral })
+            const claseGeneral = await claseGeneralDao.readOne({ _id: clase.idClaseGeneral })
             const llena = clase.anotados.length >= claseGeneral.limiteClase
 
             datos.push({
@@ -125,15 +126,28 @@ export async function consultar(req, res) {
                 llena
             });
 
+            /**
+             * Acá hay un problema:
+             * 
+             * Como no hacemos borrado físico, cuando una persona
+             * cancela su reservación a una clase (ya sea si está en lista de anotados
+             *  o en algúna lista de espera), al hacer estas consultas siempre devolverá 
+             * que el usuario ya está anotado o en espera.
+             *  Por lo que no te deja inscribirte nuevamente a una clase que ya cancelaste.
+             * ¿Esto está bien?
+             */
             const yaAnotado = clase.anotados.some(
                 u => u.idUsuario === req.session.user.id
             );
-            const yaEnEspera = clase.espera.some(
+            const yaEnEsperaUnica = clase.esperaUnica.some(
+                u => u.idUsuario === req.session.user.id
+            );
+            const yaEnEsperaMensual = clase.esperaMensual.some(
                 u => u.idUsuario === req.session.user.id
             );
 
             //Si está en lista de anotados o de espera corta el bucle
-            if (yaAnotado || yaEnEspera) {
+            if (yaAnotado || yaEnEsperaMensual || yaEnEsperaUnica) {
                 return res.json({
                     success: false,
                     message: `Ya se encuentra anotado en la actividad del día ${claseData.fechaEspecifica}`
@@ -179,8 +193,9 @@ export async function confirmarPagoController(req, res){
             })
         }
 
-        const updateado = await pagoDao.updateOne({_id: dataPago.idPagoPendiente}, {pendiente: false})
+        const updateado = await pagoDao.updateOne({_id: dataPago.idPagoPendiente}, {pendiente: false, fechaPago: dataPago.fechaPago})
         //Actualizo el estado pendiente a false -> porque ya se confirmó el pago.
+        //y la fechaPago con la brindada por mercado pago en la url...
 
         res.json({
             success: true,

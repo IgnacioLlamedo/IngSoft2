@@ -132,6 +132,30 @@ export async function registrarDNI(req,res) {
         //Si está anotado, busco en asistencias
         console.log("La clase especifica encontrada desde registrarDNI: ");
         console.log(clase);
+        let esUnica = true;
+
+        //el usuario está anotado en esta clase especifica a traves de una reserva única?
+        let reserva = await reservaDao.readOneUnica({
+            idUsuario: usuario._id,
+            idClaseEspecifica: clase._id
+        });
+
+        //si no es una reserva unica tiene que ser una reserva mensual.
+        if (!reserva) {
+            esUnica = false;
+            reserva = await reservaDao.readOneMensual({
+                idUsuario: usuario._id,
+                "clases.idClase": clase._id
+            });
+        }
+
+        //en teoria no debería poder entrar por acá, ya que si no es una reserva única
+        //y no es una reserva mensual, no debería estar en la lista de anotados de la clase especifica.
+        if (!reserva){
+
+        }
+        
+
         const asistencia = await asistenciaDao.findOne({idUsuario: usuario._id, idClaseEspecifica: clase._id})
 
         //si tiene asistencia registrada no hago nada.

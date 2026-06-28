@@ -13,8 +13,23 @@
         <li><a href="/access/login">Iniciar Sesión</a></li>
         <li><a href="/access/register">Registrarse</a></li>
     </ul>
+
+    <div>
+        <div class="toggle-icon" id="toggleIcon">&#9776;</div>
+        <div class="menu-toggel">
+            <div class="menu-toggel-wrapper">
+                <ul>
+                    <% if (path==="/" || path==="/home/" ) { %>
+                        <li><a href="#" id="classesLink">Clases</a></li>
+                    <% } %>
+                    <li><a href="/access/login">Iniciar Sesión</a></li>
+                    <li><a href="/access/register">Registrarse</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
 </nav>
-<!-- <script src="/Navbar/navLogic.js"></script> -->
+<script src="/Navbar/navLogic.js"></script>
 
 
 <% if (path==="/" || path==="/home/" ) { %>

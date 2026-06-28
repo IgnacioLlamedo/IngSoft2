@@ -39,6 +39,7 @@ async function getSessionData() {
         }
     const sessionData = await response.json();
     userSessionData = sessionData.session;
+    console.log(userSessionData);
 }
 
 // Load user profile data

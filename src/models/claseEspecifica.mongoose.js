@@ -17,15 +17,14 @@ const claseEspecificaSchema = new Schema({
     }],
     esperaUnica : [{
         idUsuario: { type: String, ref: 'usuarios' },
-        tipo: { type: String, enum: ['unico', 'seña'], required: true },
+        tipo: { type: String, enum: ['unico', 'seña'], required: true }, //Esto me parece al pedo(?)
+        estado: { type: String, enum: ['activo', 'esperandoConfirmacion', 'aceptado', 'rechazado'], defult: 'activo' }
     }],
-
-    //volver a una única cola de espera (?).
     esperaMensual : [{
         idUsuario: { type: String, ref: 'usuarios' },
+        estado: { type: String, enum: ['activo', 'esperandoConfirmacion', 'aceptado', 'rechazado'], default: 'activo' }
     }],
-    //agregar lista de cancelados? - para estadísticas
-    //o simplemente recorremos las reservas.
+    //Para lista de cancelados, simplemente recorremos las reservas de los usuarios.
     fechaEspecifica: { type: Date, required: true },
 }, {
     strict: 'throw',

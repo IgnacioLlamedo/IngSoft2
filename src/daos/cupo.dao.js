@@ -10,7 +10,7 @@ export class cupoDao {
             //provisional, desarrollar luego
             console.log("No se encontró ningún Cupo con id " + query)
         }
-        return cupo
+        return Cupo
     }
     async readMany(query){
         return await Cupo.find(query).lean()
@@ -40,3 +40,4 @@ export class cupoDao {
         return deleted
     }
 }
+

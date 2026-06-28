@@ -18,6 +18,8 @@ html, body {
     padding: 15px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.25);
     margin: 0 auto;
+    overflow: auto;
+    max-width: 100%;
 }
 
 table {
@@ -25,6 +27,30 @@ table {
   width: 100%;
   border-collapse: collapse;
   margin: 20px 0;
+  min-width: 600px;
+}
+
+/* Responsive: en pantallas muy chicas */
+@media (max-width: 768px) {
+  .table-container {
+    padding: 10px;
+    display: block;
+  }
+
+  table {
+    font-size: 0.85em;   /* texto un poco más chico */
+  }
+
+  .slotDeClase {
+    font-size: 0.75em;   /* clases más compactas */
+    padding: 2px;
+  }
+
+  .week-nav {
+    justify-content: center;
+    flex-direction: column; 
+    gap: 10px;
+  }
 }
 
 .slotDeClase {
@@ -85,11 +111,18 @@ th {
   border: none;
 }
 
+.week-nav-wrapper {
+  overflow-x: auto;
+  display: block;
+}
+
 .week-nav {
   display: flex;
-  justify-content: center;
+  flex-direction: row;
+  justify-content:center;
   align-items: center;
   gap: 20px;
+  margin-top: 20px;
   margin-bottom: 20px;
 }
 
@@ -150,7 +183,7 @@ html {
   display: none; /* oculto por defecto */
   justify-content: center;
   align-items: center;
-  z-index: 1000; /* aseguramos que quede arriba de todo */
+  z-index: 1000; 
 }
 
 .panel-contenido {
@@ -162,7 +195,7 @@ html {
   height: auto;
   box-shadow: 0 8px 20px rgba(0,0,0,0.25); 
   position: relative;
-  animation: fadeIn 0.3s ease; /* animación al aparecer */
+  animation: fadeIn 0.3s ease; 
   display: flex;
   flex-direction: column;
   gap: 15px;
@@ -394,3 +427,67 @@ html {
   from { transform: scale(0.95); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
 }
+
+/* Responsive: paneles en pantallas pequeñas */
+@media (max-width: 768px) {
+  .panel-contenido,
+  .modalAsistencia-content {
+    width: 80%;          /* ocupa casi todo el ancho del móvil */
+    min-width: none;
+    max-width: 250px;    /* límite para que no se vea enorme */
+    padding: 5px;       /* menos padding */
+    font-size: 0.9em;    /* texto un poco más chico */
+  }
+
+  .panel-contenido h2,
+  .modalAsistencia-content h3 {
+    font-size: 1.2rem;   /* títulos más compactos */
+  }
+
+  .botones-pago {
+    flex-direction: column; /* botones uno debajo del otro */
+    gap: 10px;
+  }
+
+  .botones-pago button,
+  .modalAsistencia-content button {
+    padding: 8px 2px;   /* botones más chicos */
+    font-size: 0.9em;
+  }
+
+  .cerrar-panel,
+  #closeAsistencia {
+    font-size: 20px;     /* ícono cerrar más chico */
+    top: 8px;
+    right: 10px;
+  }
+
+  .week-nav{
+    gap: 5px;
+    margin-bottom: 10px;
+  }
+
+  .week-nav-wrapper {
+    display: block;
+    overflow-x: auto; 
+    padding-top: 10px;
+  }
+
+  .week-display {
+    padding: 5px 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    font-size: 1em;
+    gap: 5px;
+  }
+
+  .week-nav button {
+    padding: 8px 12px;
+    font-size: 0.9em;
+  }
+
+  .modal-content .close {
+    top: 0; right: 15px;
+    font-size: 28px;
+  }
+}
+

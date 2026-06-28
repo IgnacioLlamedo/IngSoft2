@@ -94,7 +94,22 @@ function conseguirClasesSeleccionadas(fechaBase, idClase) {
     clasesSeleccionadas = [];
 
     // Agrego clase seleccionada + próximas 3 semanas
-    for(let i = 0; i < 4; i++) {
+
+    let indiceMaximo = 4;
+
+    /**
+     * Entonces, si alguien busca reservar mensualmente una clase el día 2 de julio,
+     * 2 de julio + 28 = 30 de julio
+     */
+    const fechaBaseMas28 = new Date(fechaBase);
+    fechaBaseMas28.setDate(fechaBaseMas28.getDate() + 28)
+
+    if (fechaBaseMas28.getMonth() === new Date(fechaBase).getMonth()){
+        console.log("En la reserva mensual entran 5 clases, cambiando indice máximo.")
+        indiceMaximo = 5
+    }
+
+    for(let i = 0; i < indiceMaximo; i++) {
 
         const nuevaFecha = new Date(fechaBase);
         /* console.log("Fecha base: ");
@@ -102,6 +117,7 @@ function conseguirClasesSeleccionadas(fechaBase, idClase) {
 
         // suma 7 dias por iteración
         nuevaFecha.setDate(nuevaFecha.getDate() + (7 * i));
+        console.log(nuevaFecha)
 
         clasesSeleccionadas.push({
             idClaseGeneral: idClase,
@@ -276,6 +292,8 @@ async function pagar(tipoClase, precio, clasesPago) {
         document.getElementById("mensajePago").innerText = resData.message;
         return;
     }
+    console.log("Estas son los datos de clases.datos desde payPanel.js: ");
+    console.log(resData.datos);
 
     // Clase llena -> confirmar lista espera
     /**
@@ -323,8 +341,10 @@ async function pagar(tipoClase, precio, clasesPago) {
             const resEspera = await fetch('/api/clases/ingresarAEspera', {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
+                //sigue haciendo falta mandar el tipo para la selección del reemplazo en lista de espera.
                 body: JSON.stringify({ 
-                    clases: clasesPago //resData.datos (contiene clasesEspecificas y si está llena o no)
+                    clases: resData.datos, //resData.datos (contiene clasesEspecificas y si está llena o no)
+                    tipo: tipoClase
                     //Acá puedo mandar las clases que recibo al consultar-pago (resData) así
                     //en el ingresarAEspera decido que hacer con todas las clases en las que esté llena la lista de anotados.
                 })

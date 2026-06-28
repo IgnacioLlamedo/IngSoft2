@@ -5,10 +5,14 @@ const collection = 'cupos'
 
 const cupoSchema = new Schema({
     _id: { type: String, default: randomUUID },
-    idUsuario: { type: String, ref: "usuarios", required: true},
-    clasesEspecificas: [{ type: String, ref: "claseEspecifica" }],
-    estado: { type: String, enum: ['pendiente', 'rechazado', 'aceptado'], required: true },
-    tipo: { type: String, enum: ['mensual', 'unico', 'seña'], required: true }
+    idUsuario: { type: String, ref: "usuarios", required: true}, //Es el id del usuario que recibe el cupo
+    idUsuarioCanceloClase: { type: String, ref: "usuarios", required: true},
+    clasesEspecificas: [{
+        clase: { type: String, ref: "claseEspecifica" },
+        esLiberada: { type: Boolean, default: false }
+    }],
+    estado: { type: String, enum: ['pendiente', 'rechazado', 'aceptado'], default: 'pendiente' },
+    tipo: { type: String, enum: ['Mensual', 'Unica', 'seña'], required: true },
 }, {
     strict: 'throw',
     versionKey: false

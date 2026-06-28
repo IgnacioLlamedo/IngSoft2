@@ -1,4 +1,3 @@
-const asistenciaBtn = document.querySelector(".user-options-list a:nth-child(2)");
 const assistanceModal = document.getElementById("assistanceModal");
 const closeAssistance = document.getElementById("closeAssistance");
 let qrScanner = null;
@@ -80,12 +79,13 @@ closeAssistance.addEventListener("click", async () => {
   btnEscanearQR.hidden = false;
 });
 
-if (asistenciaBtn) {
-  asistenciaBtn.addEventListener("click", (e) => {
+// engancha todos los botones con clase .asistenciaBtn
+document.querySelectorAll(".asistenciaBtn").forEach(btn => {
+  btn.addEventListener("click", (e) => {
     e.preventDefault();
     assistanceModal.style.display = "flex"; // abrir modal
   });
-}
+});
 
 if (closeAssistance) {
   closeAssistance.addEventListener("click", () => {
@@ -98,4 +98,3 @@ window.addEventListener("click", (e) => {
     assistanceModal.style.display = "none";
   }
 });
-
