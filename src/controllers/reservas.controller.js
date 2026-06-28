@@ -192,7 +192,7 @@ export async function validarYNotificar(tipo, claseLiberada, idCancelo){
                 }
 
                 //creo el nuevo cupo
-                nuevoCupo = await await cupoDao.create({
+                nuevoCupo = await cupoDao.create({
                     idUsuario: act.idUsuario,
                     idUsuarioCanceloClase: idCancelo,
                     clasesEspecificas: clasesDelCupo,
@@ -211,11 +211,11 @@ export async function validarYNotificar(tipo, claseLiberada, idCancelo){
                         }
                     }
                 )
-
                 //consulto al usuario si acepta el nuevo cupo.
                 reemplazo = await notificarUsuario(act.idUsuario, candidato.clases, nuevoCupo._id);
                 break;
             }
+
             else{
                 console.log()
             }
@@ -266,7 +266,6 @@ export async function validarYNotificar(tipo, claseLiberada, idCancelo){
             }
         }
     }
-
 
     return reemplazo;
 }
@@ -503,7 +502,10 @@ export async function postReservaMensual(req, res) {
         const usuarioData = {
             idUsuario: reservaData.idUsuario,
             tipo: reservaData.tipoClase
-        };2 
+
+        };
+
+
 
         const clasesReserva = [];
 
@@ -666,7 +668,9 @@ export async function getCancellations(req, res) {
             message: "Error al recuperar las cancelaciones. Inténtelo de nuevo más tarde."
         });
     }
-}//Función que se llamará cuando el usuario desde tabMyActivities presione el botón salir de lista de espera.
+}
+
+//Función que se llamará cuando el usuario desde tabMyActivities presione el botón salir de lista de espera.
 export async function salirListaEspera(req, res) {
     try {
         const { idReserva } = req.body;
@@ -700,6 +704,7 @@ export async function salirListaEspera(req, res) {
             }
 
             //Habría que hacer algun tipo de checkeo?
+
             await claseEspecificaDao.updateOne(
                 { _id: clase._id },
                 {
@@ -797,3 +802,4 @@ export async function salirListaEspera(req, res) {
         })
     }
 }
+

@@ -599,54 +599,16 @@ export async function crearActividad(req, res){
     }
 }
 
-export async function modificarNombreActividad(req, res){
+export async function modificarActividad(req, res){
     try {
         let data = req.body
         data.nombre = nameConvention(data.nombre);
 
         const currentActivity = await actividadDao.readOne({_id: data.id});
-
+        console.log(data.precioMensual);
+        console.log(currentActivity.precioMensual)
         if(
-            (data.nombre === currentActivity.nombre)
-        ) {
-            return res.json({
-                success: false,
-                message: "Error al modificar la actividad. No se han modificado datos."
-            })
-        }
-
-        const activityAlreadyExists = await actividadDao.readOne({nombre: req.body.nombre});
-        if(activityAlreadyExists) {
-            return res.json({
-                success: false,
-                message: "Error al modificar la actividad. El nuevo nombre de actividad ingresado ya está registrado en el sistema."
-            })
-        }
-
-        await actividadDao.updateOne({_id: data.id}, data)
-
-        res.json({
-            success: true,
-            message: "¡Modificación de actividad realizada con éxito!"
-        });
-    }
-    catch(error) {
-        console.error("modificarActividad ERROR: ", error);
-        res.json({
-            success: false,
-            message: "Error al modificar actividad. Inténtelo de nuevo más tarde."
-        });
-    }
-}
-
-
-export async function modificarPrecioActividad(req, res){
-    try {
-        let data = req.body
-
-        const currentActivity = await actividadDao.readOne({_id: data.id});
-
-        if(
+            (data.nombre === currentActivity.nombre) &&
             (data.precioMensual === currentActivity.precioMensual)
         ) {
             return res.json({
@@ -655,6 +617,16 @@ export async function modificarPrecioActividad(req, res){
             })
         }
 
+        if(data.nombre !== currentActivity.nombre) {
+            const activityAlreadyExists = await actividadDao.readOne({nombre: req.body.nombre});
+            if(activityAlreadyExists) {
+                return res.json({
+                    success: false,
+                    message: "Error al modificar la actividad. El nuevo nombre de actividad ingresado ya está registrado en el sistema."
+                })
+            }
+        }
+
         await actividadDao.updateOne({_id: data.id}, data)
 
         res.json({
@@ -670,8 +642,6 @@ export async function modificarPrecioActividad(req, res){
         });
     }
 }
-
-
 
 export async function eliminarActividad(req, res){
     try {
@@ -813,6 +783,94 @@ export async function recuperarDiasAviso(req, res){
 }
 
 
+//Clases
+export async function getAllClasses(req, res){
+    try {
+        const data = await claseGeneralDao.populate()
+        res.json({
+            success: true,
+            data,
+        });
+    }
+    catch(error) {
+        console.error(error);
+        res.json({
+            success: false,
+            message: "Error al mostrar las clases. Inténtelo de nuevo más tarde."
+        });
+    }
+}
+//REVISAR QUE EL PROFESOR PERTENEZCA A ESA ACTIVIDAD, QUE EL PROFESOR LA SALA Y LA ACTIVIDAD EXISTAN,
+//QUE LOS DIAS EXISTAN???????? (HAY QUE REVISAR COMO ESTA HECHA LA TABLA)
+//QUE LA HORA SE PUEDA USAR (ENTRE 7 Y 22)
+//QUE NO EXISTA UNA CLASE YA EN ESE DIA, HORARIO Y SALA
+
+/* 
+body para crear una clase con thunder client
+{
+    "idActividad": "50825c5a-2e25-4839-9b7d-fb1a952421ce",
+    "idSala": "41920088-7c6d-4cba-9571-e6a769cec84f",
+    "idProfesor": "dcf70730-df9b-4ec5-9588-3649ad2aa0dd",
+    "limiteClase": 85,
+    "dia": "jueves",
+    "hora": 8
+} */
+export async function createClass(req, res){
+    try {
+        const clases = await claseGeneralDao.readMany({dia: req.body.dia, hora: req.body.hora, idSala: req.body.idSala})
+        if(clases.length > 0){
+            return res.json({
+                success: false,
+                message: "Error al crear clase, ya existe una clase en ese dia, horario y sala"
+            })
+        }
+        const data = await claseGeneralDao.create(req.body)
+        res.json({
+            success: true,
+            data,
+        });
+    }
+    catch(error) {
+        console.error(error);
+        res.json({
+            success: false,
+            message: "Error al crear la clase. Inténtelo de nuevo más tarde."
+        });
+    }
+}
+export async function updateClass(req, res){
+    try {
+        const data = await claseGeneralDao.updateOne({_id: req.body.id}, req.body)
+        res.json({
+            success: true,
+            data,
+        });
+    }
+    catch(error) {
+        console.error(error);
+        res.json({
+            success: false,
+            message: "Error al actualizar la clase. Inténtelo de nuevo más tarde."
+        });
+    }
+}
+//REVISAR QUE NO HAYA NADIE INSCRIPTO
+export async function deleteClass(req, res){
+    try {
+        console.log(req.body)
+        await claseGeneralDao.deleteOne({_id: req.body._id})
+        res.json({
+            success: true,
+        });
+    }
+    catch(error) {
+        console.error(error);
+        res.json({
+            success: false,
+            message: "Error al borrar la clase. Inténtelo de nuevo más tarde."
+        });
+    }
+}
 
 
 

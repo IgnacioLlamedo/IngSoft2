@@ -269,7 +269,6 @@ dialog::backdrop {
     background-color: rgba(0, 0, 0, 0.45);
 }
 
-<<<<<<< HEAD
 
 @media (max-width: 768px) {
   .list-card {
@@ -314,7 +313,6 @@ dialog::backdrop {
   }
 }
 
-=======
 #deleteReasonField {
     color: #e6e6e6;
     background-color: rgba(0, 0, 0, 0.35);
@@ -323,6 +321,18 @@ dialog::backdrop {
     height: 75px;
     resize: none;
 }
+
+
+
+.activity-price {
+    display: flex;
+    gap: 10px;
+}
+
+.activity-price input{
+    flex: 1;
+}
+
 
 .delete-success-overlay {
     position: fixed;
@@ -362,15 +372,3 @@ dialog::backdrop {
     border-radius: 6px;
     cursor: pointer;
 }
-
-
-
-.activity-price {
-    display: flex;
-    gap: 10px;
-}
-
-.activity-price input{
-    flex: 1;
-}
->>>>>>> f2fa4abab7b1188f7678cf2ee29fb793fe526856

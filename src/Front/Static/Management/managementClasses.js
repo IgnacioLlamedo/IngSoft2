@@ -14,7 +14,7 @@ window.addEventListener('DOMContentLoaded', () => {
 getAllSlots();
 
 async function getAllSlots() {
-    const res = await fetch("/api/clases/get-all", {
+    const res = await fetch("/api/admin/clase", {
         method: 'GET',
         headers: {
             "Content-Type" : "application/json",
