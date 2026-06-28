@@ -8,7 +8,9 @@
     <link rel="icon" href="/Images/Common/favicon.ico" type="image/x-icon">
 
     <link rel="stylesheet" href="/Common/commonPageStyle.css">
+    <link rel="stylesheet" href="/Common/commonFormPageStyle.css">
     <link rel="stylesheet" href="/Management/managementStyle.css">
+
 
     <title>CEF - Gestión</title>
 </head>
@@ -23,12 +25,54 @@
     <%- include('../Management/managementNav.html') %>
 
     <main class="main-container">
-        <h2>Hola, ¿qué datos pongo acá?</h2>
+
+        <form id="global-settings-form" class="form"">
+            
+            <div class="form-card">
+
+                <h1 class="form-card-title">Configuración general</h1>
+                
+                <section class="form-section">
+                    
+                    <div class="input-group">
+                        <label for="days">Ventana de días para renovar tras cuota vencida:</label>
+                        <input id="days" type="text" name="name" required disabled>
+                    </div>
+
+                </section>
+
+                <section class="form-section">
+
+                    <div class="input-group">
+                        <label>Precio de cuota mensual:</label>
+
+                        <div class="activity-price">
+                            <select id="activityName" name="activityName">
+                            </select>
+
+                            <input id="activityPrice" type="text" name="activityPrice" required disabled>
+                        </div>
+                    </div>
+
+                </section>
+
+                <section class="form-section">
+                    <p id="editError" class="errorMsg" hidden></p>
+                    <p id="editSuccess" class="successMsg" hidden></p>
+                    <div class="options">
+                        <button id="submit" class="submit blue">Editar</button>
+                        <button id="cancel" class="submit">Cancelar</button>
+                    </div>
+                </section>
+
+            </div>
+        </form>
+
     </main>
 
-    
     <%- include('../Navbar/footer.html') %>
     
+    <script src="/Management/management.js"></script>
 </body>
 
 </html>

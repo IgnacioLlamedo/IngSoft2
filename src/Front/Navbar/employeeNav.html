@@ -7,6 +7,7 @@
         <img class="logo-img" src="/Images/HomeImages/Logo.png" alt="Logo">
     </a>
     <ul class="nav-links">
+        <li><a href="#" class="classesLink" id="classesLink">Listar Clases</a></li>
         <li><a href="/attendance">Asistencia</a></li>
         <li><a href="/management">Gestión</a></li>
         <li>
@@ -32,6 +33,30 @@
             </div>
         </li>
     </ul>
+
+    <div>
+        <div class="toggle-icon" id="toggleIcon">&#9776;</div>
+        <div class="menu-toggel">
+            <div class="menu-toggel-wrapper">
+                <ul>
+                    <li><a href="#" class="classesLink">Listar Clases</a></li>
+                    <li><a href="/attendance">Asistencia</a></li>
+                    <li><a href="/management">Gestión</a></li>
+                    <li><a href="/account/"><p>Cuenta</p></a></li>
+                    <li><a href="#"><p>Dashboard</p></a></li>
+                    <li><a href="#" class="logout"><p>Cerrar sesión</p></a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
 </nav>
 
 <script src="/Navbar/navLogic.js"></script>
+
+<div class="modal" id="tablaModal">
+  <div class="modal-content">
+    <span class="close" id="closeModal">&times;</span>
+    <iframe src="/home/table" class="tabla-iframe"></iframe>
+  </div>
+</div>
+<script src="/Home/classesModal.js"></script>

@@ -55,12 +55,61 @@
             </select>
           </div>
 
+        <div class="filter-container">
+          <label for="statusFilter">Estado:</label>
+          <select id="statusFilter">
+            <option value="Todas">Todas</option>
+            <option value="NoVencidas" selected>No vencidas</option>
+            <option value="Vencidas">Vencidas</option>
+            <option value="EnEspera">En espera</option>
+            <option value="Canceladas">Canceladas</option>
+          </select>
+        </div>
+
+
         </div>
         
 
         <div id="reservasContainter" class="reservas-containter">
 
         </div>
+
+        <!-- Modal para cancelar clases de mensualidad -->
+        <div id="cancelarMensualModal" class="modal-cancellations">
+          <div class="modal-cancellations-content">
+            <span class="close-cancellations">&times;</span>
+            <h3 style="color: black;">Cancelar clase de la mensualidad</h3>
+            <div id="listaClasesMensual"></div>
+          </div>
+        </div>
+
+        <!-- Modal para confirmación de cancelaciones -->
+        <div id="confirmCancelModal" class="confirm-modal">
+          <div class="confirm-modal-content">
+
+            <button id="btnCerrarConfirmacion" class="close-confirm-modal">
+                ×
+            </button>
+
+              <h3 style="color: black;">Confirmar cancelación</h3>
+
+              <p style="color: black;">
+                  Está a punto de cancelar una clase, la acción no es reversible.
+                  ¿Está seguro?
+              </p>
+
+              <div class="confirm-modal-buttons">
+                  <button id="btnVolverCancelar" class="btn-volver">
+                      Volver
+                  </button>
+
+                  <button id="btnConfirmarCancelar" class="btn-confirmar">
+                      Cancelar clase
+                  </button>
+              </div>
+          </div>
+        </div>
+
 
     </main>
 

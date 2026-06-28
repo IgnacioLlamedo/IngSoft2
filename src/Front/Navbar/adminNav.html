@@ -8,7 +8,7 @@
     </a>
     <ul class="nav-links">
         <li><a href="/users/userlist">Usuarios</a></li>
-        <li><a href="/stats">Estadísticas</a></li>
+        <li><a href="/stats/billing-period">Estadísticas</a></li>
         <li><a href="/management">Gestión</a></li>
         <li>
             <img class="user-ico" id="userIcon" src="/Images/HomeImages/user_ico.webp" alt="Opciones de usuario">
@@ -24,7 +24,7 @@
                             <img src="/Images/UserDropbox/Admin/management_ico.webp" alt="Notificaciones">
                             <p>Notificaciones</p>
                         </a>
-                        <a href="#" id="logout">
+                        <a href="#" class="logout" id="logout">
                             <img src="/Images/UserDropbox/logout_ico.webp" alt="Cerrar sesión">
                             <p>Cerrar sesión</p>
                         </a>
@@ -33,6 +33,22 @@
             </div>
         </li>
     </ul>
+
+    <div>
+        <div class="toggle-icon" id="toggleIcon">&#9776;</div>
+        <div class="menu-toggel">
+            <div class="menu-toggel-wrapper">
+                <ul>
+                    <li><a href="/users/userlist">Usuarios</a></li>
+                    <li><a href="/stats/billing-period">Estadísticas</a></li>
+                    <li><a href="/management">Gestión</a></li>
+                    <li><a href="/account/"><p>Cuenta</p></a></li>
+                    <li><a href="/management"><p>Gestión</p></a></li>
+                    <li><a href="#" class="logout" id="logout"><p>Cerrar sesión</p></a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
 </nav>
 
 <script src="/Navbar/navLogic.js"></script>

@@ -1,145 +1,206 @@
-/*
-<div class="box unica">
-  <h3>Yoga - Única</h3>
-  <hr>
-  <div class="box-content">
-    <div class="box-data unica">
-      <p>Horario: 18:00 - 19:00</p>
-      <p>Sala: S2</p>
-      <p>Fecha: Lunes 17/05</p>
-      <p>Precio por clase: $20</p>
-    </div>
-    <div class="box-buttons-container">
-      <button class="box-button cancel-reservation">Cancelar Reserva</button>
-      <button class="box-button pay-rest">Pagar resto</button>
-    </div>
-  </div>
-</div>
-
-<div class="box mensualidad">
-  <h3>Spinning - Mensualidad</h3>
-  <hr>
-  <div class="box-content">
-    <div class="box-data mensualidad">
-      <p>Horario: 19:00 - 20:00</p>
-      <p>Sala: S1</p>
-      <p>Día: Martes</p>
-      <p>Precio mensual: $50</p>
-    </div>
-    <div class="box-buttons-container">
-      <button class="box-button cancel-reservation">Cancelar Reserva</button>
-      <button class="box-button cancel-next-class">Cancelar Siguiente Clase</button>
-      <button class="box-button pay-reservation">Pagar Mensualidad</button>
-    </div>
-  </div>
-</div> 
-*/
-
-
-
-// Datos de ejemplo hardcodeados para las actividades del usuario
-/* const actividadesUsuario = [
-  {
-    actividad: "Yoga",
-    tipo: "Unica",
-    horario: "18:00 - 19:00",
-    fecha: "Lunes 17/05",
-    sala: "S2",
-    precio: 20
-  },
-  {
-    actividad: "Spinning",
-    tipo: "Mensualidad",
-    horario: "19:00 - 20:00",
-    dia: "Martes",
-    sala: "S1",
-    precio: 50
-  },
-  {
-    actividad: "Funcional",
-    tipo: "Unica",
-    horario: "10:00 - 11:00",
-    fecha: "Jueves 21/05",
-    sala: "S3",
-    precio: 30
-  },
-  {
-    actividad: "Pilates",
-    tipo: "Mensualidad",
-    horario: "17:00 - 18:00",
-    dia: "Miércoles",
-    sala: "S2",
-    precio: 45
-  }
-]; */
-
 let actividadesUsuario = [];
-
+let userData;
+getSessionData();
 getMyReservations();
 
 async function getMyReservations() {
 
     const res = await fetch('/api/reservas/my-reservations', {
-      method: 'GET'
+        method: 'GET'
     });
 
     const resData = await res.json();
 
-    console.log(resData);
+    /* console.log("Estas son todas las reservaciones DEL USUARIO: ")
+    console.log(resData); */
+
+    const fechaActual = new Date();
 
     actividadesUsuario = resData.reservas.map(r => {
 
-      //idClaseGeneral undefined? .-.
-        const horario = `${r.idClaseEspecifica.idClaseGeneral.hora}:00 - ${r.idClaseEspecifica.idClaseGeneral.hora + 1}:00`;
+        console.log("Esta es una reserva del usuario: ");
+        console.log(r);
+        console.log("/////////////////////////////////////////////////"); 
 
-        return {
-            actividad: r.idClaseEspecifica.idClaseGeneral.idActividad.nombre,
+        // =========================================
+        // RESERVA ÚNICA
+        // =========================================
+        if (r.tipo === "unica") {
+            
+            const claseGeneral = r.idClaseEspecifica.idClaseGeneral;
 
-            tipo:
-            //Para entenderlo, esto es un if ->
+            /**
+             * Acá agregué para mostrar bien el precio en caso de ser una seña de única,
+             * habría que hascer parte del fetch traerse los pagos de la reserva y no solo los ids
+             * de los pagos para así poner la información precisa. -- más adelante.
+             */
+            let precioUnica = claseGeneral.idActividad.precioMensual / 4;
 
-            /** if (r.tipo === "unica")
-             *     tipo = "Unica"
-             *  else 
-             *     tipo = "Mensual"
-            */ 
-                r.tipo === "unica"
-                ? "Unica"
-                : "Mensual",
+            //Cuando agregue la lógica de cancelar resto de seña, hay que cambiar este campo en reserva!!!!!!!!!!!
+            if (r.señada){
+                precioUnica = precioUnica/2;
+            }
 
-            horario,
+            const horario =
+                `${claseGeneral.hora}:00 - ${claseGeneral.hora + 1}:00`;
 
-            fecha:
-                r.__t === "ReservaUnica"
-                ? new Date(r.reserva.fechaEspecifica)
-                    .toLocaleDateString("es-AR")
-                : null,
+            const fechaClase = new Date(r.idClaseEspecifica.fechaEspecifica); //En clase única, no entre por idClase.
 
-            dia:
-                r.tipo === "mensual"
-                ? r.idClaseEspecifica.idClaseGeneral.dia
-                : null,
+            return {
 
-            sala: r.idClaseEspecifica.idClaseGeneral.idSala.nombre,
+                idReserva: r._id,
 
-            profesor: r.idClaseEspecifica.idClaseGeneral.idProfesor.nombre,
+                actividad:
+                    claseGeneral.idActividad.nombre,
 
-            precio:
-                r.tipo === "unica"
-                //Tendría que conseguir el precio desde el arreglo de pagos?
-                // r.pagos[0 o 1?].monto -> depende, si es única habria que revisar el pago completo?
-                ? (r.idClaseEspecifica.idClaseGeneral.precioMensual)/4
-                : r.idClaseEspecifica.idClaseGeneral.precioMensual
-        };
+                tipo: "Unica",
+
+                horario,
+
+                fecha:
+                    new Date(r.idClaseEspecifica.fechaEspecifica)
+                        .toLocaleDateString("es-AR"),
+
+                dia: claseGeneral.dia,
+
+                sala:
+                    claseGeneral.idSala.nombre,
+
+                profesor:
+                    claseGeneral.idProfesor.nombre,
+
+                precio: precioUnica,
+
+                vencida: 
+                    fechaClase < fechaActual,
+
+                señada:
+                    r.señada,
+
+                estado: r.estado,
+                cancelada: r.estado === "cancelada",
+            };
+        }
+
+        // =========================================
+        // RESERVA MENSUAL
+        // =========================================
+        else {
+
+            // Uso la primera clase para info común
+            const primeraClase = r.clases[0].idClase;
+
+            const claseGeneral = primeraClase.idClaseGeneral;
+
+            const horario = `${claseGeneral.hora}:00 - ${claseGeneral.hora + 1}:00`;
+
+            const fechas = r.clases.map(c => ({
+                fecha: new Date(c.idClase.fechaEspecifica)
+                        .toLocaleDateString("es-AR", {
+                            day: "2-digit",
+                            month: "2-digit"
+                        }),
+
+                estado: c.estado,
+
+                cancelada: c.estado === "cancelada"
+            }));
+
+            const fechaClase = new Date(r.clases[r.clases.length - 1].idClase.fechaEspecifica);
+
+            
+            let vencida = false;
+
+            if (fechaClase < fechaActual) {
+                vencida = true;
+            }
+
+            return {
+
+                idReserva: r._id,
+
+                actividad:
+                    claseGeneral.idActividad.nombre,
+
+                tipo: "Mensual",
+
+                horario,
+                
+                clases: r.clases,
+
+                fecha: fechas,
+
+                //Se deben mostrar las fechas (15/5, etc) porque se pueden cancelar
+                //las clases únicas dentro de una mensualidad.
+                //Acá habria que recorrer r.clases y si:
+                //  1. alguna clase tiene estado cancelada, no mostrarla
+                //  2. alguna clase tiene estado en espera, mostrarla en color naranja
+                dia:
+                    claseGeneral.dia,
+
+                sala:
+                    claseGeneral.idSala.nombre,
+
+                profesor:
+                    claseGeneral.idProfesor.nombre,
+
+                precio:
+                    claseGeneral.idActividad.precioMensual,
+
+                vencida
+            };
+        }
     });
 
+    /* console.log("Estas son las actividades del usuario ya formateadas para mostrar: ");
+    console.log(actividadesUsuario); */
+
     renderActividades();
+}
+
+function mostrarConfirmacionCancelacion(fecha, callbackConfirmar) {
+
+    const modal = document.getElementById("confirmCancelModal");
+
+    const btnCerrar =
+    document.getElementById("btnCerrarConfirmacion");
+
+    btnCerrar.onclick = () => {
+        modal.style.display = "none";
+    };
+
+    const btnVolver =
+        document.getElementById("btnVolverCancelar");
+
+    const btnConfirmar =
+        document.getElementById("btnConfirmarCancelar");
+
+    btnConfirmar.textContent =
+        `Cancelar clase del ${fecha}`;
+
+    modal.style.display = "flex";
+
+    btnVolver.onclick = () => {
+        modal.style.display = "none";
+    };
+
+    btnConfirmar.onclick = async () => {
+        modal.style.display = "none";
+        await callbackConfirmar();
+    };
+
+    modal.onclick = (e) => {
+    if (e.target === modal) {
+        modal.style.display = "none";
+    }
+};
 }
 
 // Referencias a los filtros
 const activityFilter = document.getElementById("activityFilter");
 const tipeFilter = document.getElementById("tipeFilter");
 const dayFilter = document.getElementById("dayOfTheWeekFilter");
+const statusFilter = document.getElementById("statusFilter");
 
 // Contenedor principal donde se insertan las cajas
 const main = document.querySelector("main");
@@ -155,13 +216,30 @@ function renderActividades() {
 
   // Aplicamos filtros
   const filtradas = actividadesUsuario.filter(act => {
+    const esCancelada =
+        act.tipo === "Unica"
+            ? act.estado === "cancelada"
+            : act.fechas?.some(f => f.estado === "cancelada");
+
+    const estaEnEspera =
+        act.tipo === "Unica"
+            ? act.estado === "en espera"
+            : act.fechas?.some(f => f.estado === "en espera");
+            
     const filtroActividad = activityFilter.value === "Todas" || act.actividad.toLowerCase() === activityFilter.value.toLowerCase();
     const filtroTipo = tipeFilter.value === "Todas" || act.tipo.toLowerCase() === tipeFilter.value.toLowerCase();
     const filtroDia = dayFilter.value === "Todas" ||
       (act.fecha && act.fecha.includes(dayFilter.value)) ||
-      (act.dia && act.dia === dayFilter.value);
+      (act.dia && act.dia === dayFilter.value.toLowerCase());
 
-    return filtroActividad && filtroTipo && filtroDia;
+    const filtroEstado = statusFilter.value === "Todas" ||
+    (statusFilter.value === "NoVencidas" && !act.vencida && act.estado !== "en espera") ||
+    (statusFilter.value === "Vencidas" && act.vencida) ||
+    (statusFilter.value === "EnEspera" && estaEnEspera) ||
+    (statusFilter.value === "Canceladas" && esCancelada);
+
+
+    return filtroActividad && filtroTipo && filtroDia && filtroEstado;
   });
 
   // Si no hay actividades, mostramos un mensaje
@@ -174,14 +252,39 @@ function renderActividades() {
     return;
   }
 
+  const boxesVencidas = [];
+
   // Creamos una caja por cada actividad filtrada
   filtradas.forEach(act => {
+    console.log("Esto es actual dentro del filtradas.forEach: ")
+    console.log(act);
+
+    const esCancelada =
+        act.tipo === "Unica"
+            ? act.estado === "cancelada"
+            : act.fecha?.some(f => f.estado === "cancelada");
+
+    const estaEnEspera =
+        act.tipo === "Unica"
+            ? act.estado === "en espera"
+            : act.fecha?.some(f => f.estado === "en espera");
+
     const box = document.createElement("div");
+    if (esCancelada) {
+        box.classList.add("cancelada");
+    }
+
+    if (estaEnEspera) {
+        box.classList.add("en-espera");
+    }
     box.classList.add("box", act.tipo.toLowerCase());
 
     // Título dinámico: Actividad - tipo
     const h3 = document.createElement("h3");
-    h3.textContent = `${act.actividad} - ${act.tipo}`;
+    if (act.señada)
+        h3.textContent = `${act.actividad} - ${act.tipo} - Seña de Clase`;
+    else
+        h3.textContent = `${act.actividad} - ${act.tipo}`;
     box.appendChild(h3);
 
     const hr = document.createElement("hr");
@@ -202,7 +305,7 @@ function renderActividades() {
     pSala.textContent = `Sala: ${act.sala}`;
     boxData.appendChild(pSala);
 
-    if (act.tipo === "Unica") {
+    if (act.tipo === "Unica") {  //Revisar si tipo puede ser seña
       const pFecha = document.createElement("p");
       pFecha.textContent = `Fecha: ${act.fecha}`;
       boxData.appendChild(pFecha);
@@ -212,8 +315,9 @@ function renderActividades() {
       boxData.appendChild(pPrecio);
     } 
     else {
+
       const pDia = document.createElement("p");
-      pDia.textContent = `Día: ${act.dia}`;
+      pDia.textContent = `Días: ${act.fecha.map(f => f.fecha).join(" - ")}`;
       boxData.appendChild(pDia);
 
       const pPrecio = document.createElement("p");
@@ -223,48 +327,216 @@ function renderActividades() {
 
     boxContent.appendChild(boxData);
 
-    // Botones con listeners
     const buttonsContainer = document.createElement("div");
     buttonsContainer.classList.add("box-buttons-container");
 
-    const btnCancelar = document.createElement("button");
-    btnCancelar.classList.add("box-button", "cancel-reservation");
-    btnCancelar.textContent = "Cancelar Reserva";
-    btnCancelar.addEventListener("click", () => {
-      console.log(`Cancelaste la reserva de ${act.actividad} - ${act.tipo}`);
-    });
-    buttonsContainer.appendChild(btnCancelar);
+    if (estaEnEspera) {
+        const btnSalirEspera = document.createElement("button");
 
-    if (act.tipo === "Unica") {
-      const btnPagar = document.createElement("button");
-      btnPagar.classList.add("box-button", "pay-rest");
-      btnPagar.textContent = "Pagar resto";
-      btnPagar.addEventListener("click", () => {
-        console.log(`Pagaste el resto de la clase única de ${act.actividad}`);
-      });
-      buttonsContainer.appendChild(btnPagar);
-    } 
-    else {
-      const btnCancelarClase = document.createElement("button");
-      btnCancelarClase.classList.add("box-button", "cancel-next-class");
-      btnCancelarClase.textContent = "Cancelar Siguiente Clase";
-      btnCancelarClase.addEventListener("click", () => {
-        console.log(`Cancelaste la próxima clase de ${act.actividad}`);
-      });
-      buttonsContainer.appendChild(btnCancelarClase);
+        btnSalirEspera.textContent = "Salir de Lista de Espera";
+        btnSalirEspera.classList.add("btn-salir-espera");
 
-      const btnPagarMensual = document.createElement("button");
-      btnPagarMensual.classList.add("box-button", "pay-reservation");
-      btnPagarMensual.textContent = "Pagar Mensualidad";
-      btnPagarMensual.addEventListener("click", () => {
-        console.log(`Pagaste la mensualidad de ${act.actividad}`);
-      });
-      buttonsContainer.appendChild(btnPagarMensual);
+        btnSalirEspera.addEventListener("click", async () => {
+            let descripcion;
+            if (act.tipo === "Unica") 
+                descripcion = act.fecha;
+            else 
+                descripcion =act.fecha.map(f => f.fecha).join(" - ");
+
+            mostrarConfirmacionCancelacion(descripcion, async () => {
+                const resultado = await fetch("/api/reservas/salir-lista-espera", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({idReserva: act.idReserva})
+                });
+
+                const res = await resultado.json();
+
+                if (res.success) {
+                    console.log("Ha salido de lista de espera exitosamente.");
+                    await getMyReservations(); //actualizo el listado de actividades.
+                }
+                else {
+                    console.log(res.message);
+                }
+            });;  
+        });
+
+        buttonsContainer.appendChild(btnSalirEspera);
     }
 
+    // Si la actividad no está vencida, muestro botones de acción
+    if (!act.vencida) {
+    // Botones con listeners
+        /* console.log("La clase actual es de tipo ", act.tipo, " y estas son sus clases: ")    */ 
+
+        let clasesACancelar;
+        if (act.tipo === 'Mensual'){
+            console.log(act.clases);
+            clasesACancelar = act.clases;
+        }
+        else{
+            console.log(act.idClaseEspecifica);
+            clasesACancelar = act.claseEspecifica;
+        }
+
+        const btnCancelar = document.createElement("button");
+        btnCancelar.classList.add("box-button", "cancel-reservation");
+        btnCancelar.textContent = "Cancelar Reserva";
+
+
+        if (act.tipo === 'Mensual'){
+
+            btnCancelar.addEventListener("click", () => {
+            const modal = document.getElementById("cancelarMensualModal");
+            modal.onclick = (e) =>
+            {
+                if (e.target === modal) {
+                    modal.style.display = "none";
+                }
+            }
+            const lista = document.getElementById("listaClasesMensual");
+            lista.innerHTML = ""; // limpio antes de renderizar
+
+            act.clases.forEach(claseActual => {
+                const fecha = new Date(claseActual.idClase.fechaEspecifica)
+                                .toLocaleDateString("es-AR");
+                const btnClase = document.createElement("button");
+                btnClase.textContent = `Cancelar clase del ${fecha}`;
+                btnClase.classList.add("box-button");
+
+                const esCancelado = claseActual.idClase.anotados.some(
+                    u => u.estado === "cancelado" && u.idUsuario === userData.session.id
+                );
+                
+                const noExiste = claseActual.idClase.anotados.some(
+                    u => u.idUsuario === userData.session.id
+                );
+
+                //no creo que esto esté bien..              Facu: ¿Por? Lo que se podría hacer es que la clase btnClase tenga un addEventListener, y la clase y el tipo guardarlo en el dataset(?)
+                
+                if ((!esCancelado) && (noExiste)){
+                    btnClase.addEventListener("click", async () => {
+                        mostrarConfirmacionCancelacion(fecha, async () => {
+                            const res = await fetch('/api/reservas/cancelar-reserva', {
+                                method: 'POST',
+                                headers: {
+                                    "Content-Type": "application/json"
+                                },
+                                body: JSON.stringify({
+                                    clase: claseActual,
+                                    tipo: act.tipo
+                                })
+                            });
+                            const resData = await res.json();
+                            if (resData.success) {
+                                console.log(`Cancelaste la clase del ${fecha}`);
+                                await getMyReservations();
+                                document.getElementById(
+                                    "cancelarMensualModal"
+                                ).style.display = "none";
+                            }
+                            else {
+                                console.log(resData.message);
+                            }
+                        });
+                    });
+                }
+                else{
+                    btnClase.classList.add("boton-ya-cancelada");
+                    btnClase.disabled = true;
+                    btnClase.style.backgroundColor = "#858585";
+                    btnClase.textContent = `Clase del ${fecha} (Cancelada)`;
+                }
+
+                lista.appendChild(btnClase);
+            });
+
+            modal.style.display = "flex";
+            });
+
+            // Cerrar modal
+            document.querySelector("#cancelarMensualModal .close-cancellations")
+                    .addEventListener("click", () => {
+            document.getElementById("cancelarMensualModal").style.display = "none";
+            });
+        }
+        else{
+            btnCancelar.addEventListener("click", async () => {
+                mostrarConfirmacionCancelacion(act.fecha, async () => {
+                    const res = await fetch('/api/reservas/cancelar-reserva', {
+                        method: 'POST',
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            clase: clasesACancelar,
+                            tipo: act.tipo
+                        })
+                    });
+                    const resData = await res.json();
+
+                    if (resData.success) {
+                        console.log(`Cancelaste la reserva de ${act.actividad} - ${act.tipo}`);
+                        await getMyReservations();
+                    }
+                    else {
+                        console.log(resData.message);
+                    }
+                });
+            });
+        }
+        buttonsContainer.appendChild(btnCancelar);
+
+        if (act.señada) {            
+            const btnPagar = document.createElement("button");
+            btnPagar.classList.add("box-button", "pay-rest");
+            btnPagar.textContent = "Pagar resto";
+            btnPagar.addEventListener("click", () => {
+                //ACÁ HAY QUE AGREGAR EL FETCH QUE PERMITE PAGAR EL RESTO!!!!!
+
+
+
+                console.log(`Pagaste el resto de la clase única de ${act.actividad}`);
+            });
+            buttonsContainer.appendChild(btnPagar);
+        } 
+        else if (act.tipo === "Mensual") {
+            //?
+            const btnCancelarClase = document.createElement("button");
+            btnCancelarClase.classList.add("box-button", "cancel-next-class");
+            btnCancelarClase.textContent = "Cancelar Siguiente Clase";
+            btnCancelarClase.addEventListener("click", () => {
+                console.log(`Cancelaste la próxima clase de ${act.actividad}`);
+            });
+            buttonsContainer.appendChild(btnCancelarClase);
+
+            const btnPagarMensual = document.createElement("button");
+            btnPagarMensual.classList.add("box-button", "pay-reservation");
+            btnPagarMensual.textContent = "Pagar Mensualidad";
+            btnPagarMensual.addEventListener("click", () => {
+                console.log(`Pagaste la mensualidad de ${act.actividad}`);
+            });
+            buttonsContainer.appendChild(btnPagarMensual);
+        }
     boxContent.appendChild(buttonsContainer);
     box.appendChild(boxContent);
+        
+    }
+    else {
+        box.classList.add("vencida");
+        boxContent.appendChild(buttonsContainer);
+        box.appendChild(boxContent);
+        boxesVencidas.push(box);
+        return;
+    }
 
+    reservasContainter.appendChild(box);
+  });
+
+  boxesVencidas.forEach(box => {
     reservasContainter.appendChild(box);
   });
 }
@@ -273,6 +545,18 @@ function renderActividades() {
 activityFilter.addEventListener("change", renderActividades);
 tipeFilter.addEventListener("change", renderActividades);
 dayFilter.addEventListener("change", renderActividades);
+statusFilter.addEventListener("change", renderActividades);
 
 // Render inicial
 //renderActividades();
+
+
+//Esta función hay que exportarla, la estamos usando en 5 scripts distintos jaja
+async function getSessionData() {
+    const response = await fetch("/session-data");
+    if (!response.ok) {
+            throw new Error('Error al cargar información del usuario.');
+        }
+    const sessionData = await response.json();
+    userData = sessionData;
+}

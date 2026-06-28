@@ -85,7 +85,7 @@ function populateProfileForm(userData) {
     document.getElementById('email').value = userData.mail || '';
     document.getElementById('dni').value = userData.dni || '';
     
-    if (userData.estado === Status.DELETED)
+    if (userData.estado === Status.DELETED || userData._id !== userSessionData.id)
         profileEditBtn.style.display = 'none';
     else profileEditBtn.style.display = 'block';
 }

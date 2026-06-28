@@ -1,17 +1,20 @@
 import express from "express";
-import { crearActividad, crearProfesor, crearSala, crearSede, modificarActividad, modificarProfesor, modificarSala, modificarSede, eliminarActividad, eliminarProfesor, eliminarSala, eliminarSede, getActivities, getInstructors, getRooms, getFacilities, actualizarDiasAviso } from "../../controllers/admin.controller.js";
+import { crearActividad, crearProfesor, crearSala, crearSede, modificarProfesor, modificarSala, modificarSede, eliminarActividad, eliminarProfesor, eliminarSala, eliminarSede, getActivities, getInstructors, getRooms, getFacilities, inhabilitarProfesor, getActivitiesStats, actualizarDiasAviso, recuperarDiasAviso, modificarNombreActividad, modificarPrecioActividad, getAllClasses } from "../../controllers/admin.controller.js";
 
 export const adminRouter = express.Router();
 
 adminRouter.post("/actividad", crearActividad)
-adminRouter.put("/actividad", modificarActividad)
+adminRouter.put("/actividad", modificarNombreActividad)
+adminRouter.put("/actividad/change-price", modificarPrecioActividad);
 adminRouter.delete("/actividad", eliminarActividad)
 adminRouter.get("/actividad", getActivities)
+adminRouter.get("/activities-stats", getActivitiesStats)
 
 adminRouter.post("/profesor", crearProfesor)
 adminRouter.put("/profesor", modificarProfesor)
 adminRouter.delete("/profesor", eliminarProfesor)
 adminRouter.get("/profesor", getInstructors)
+adminRouter.put("/profesor/inhabilitar", inhabilitarProfesor)
 
 adminRouter.post("/sala", crearSala)
 adminRouter.put("/sala", modificarSala)
@@ -24,3 +27,6 @@ adminRouter.delete("/sede", eliminarSede)
 adminRouter.get("/sede", getFacilities)
 
 adminRouter.put("/diasaviso", actualizarDiasAviso)
+adminRouter.get("/diasaviso", recuperarDiasAviso)
+
+adminRouter.get("/getallclasses", getAllClasses)

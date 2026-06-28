@@ -276,6 +276,18 @@ input[type=number] {
     cursor: pointer;
 }
 
+.submit.blue {
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    margin-top: 30px;
+    font-size: 30px;
+    font-weight: 500;
+    background-color: #163F7A;
+    color: white;
+    cursor: pointer;
+}
+
 
 .options {
     display: flex;
@@ -302,6 +314,3 @@ input[type=number] {
 .inputError:focus, .passwordRequirementError:focus, .confirmPasswordError:focus {
     color: black;
 }
-
-
-

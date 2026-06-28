@@ -4,195 +4,22 @@
   <meta charset="UTF-8">
   <link rel="icon" href="/Images/Common/favicon.ico" type="image/x-icon">
   <link rel="stylesheet" href="/Home/Tabs/Table/tableStyle.css">
+  <!--<link rel="stylesheet" href="tStyle.css">-->
   <title>Tabla de Horarios</title> 
 </head>
 <body>
     <div class="table-container">
-        <div class="week-nav">
-            <button id="prevWeek">&larr;</button>
-            <div class="week-display" id="weekDisplay">13/04 - 18/04</div>
-            <button id="nextWeek">&rarr;</button>
+        <div class="week-nav-wrapper">
+            <div class="week-nav">
+                <button id="prevWeek">&larr;</button>
+                <div class="week-display" id="weekDisplay">13/04 - 18/04</div>
+                <button id="nextWeek">&rarr;</button>
+            </div>
         </div>
-
         
 
+        <table id="tablaHorarios">
 
-        <table>
-            <tr id="diasHeader">
-                <th>Horarios</th>
-                <th>Sala</th>
-                <th class = "slotHeader" data-dia="lunes">Lunes</th>
-                <th class = "slotHeader" data-dia="martes">Martes</th>
-                <th class = "slotHeader" data-dia="miércoles">Miércoles</th>
-                <th class = "slotHeader" data-dia="jueves">Jueves</th>
-                <th class = "slotHeader" data-dia="viernes">Viernes</th>
-                <th class = "slotHeader" data-dia="sábado">Sábado</th>
-            </tr>
-
-            <tr>
-                <td>7:00 - 8:00</td>
-                <td><div class="slotDeSala">1</div><div class="slotDeSala">2</div><div class="slotDeSala">3</div></td>
-                <td id="lunes-7"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="martes-7"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="miércoles-7"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="jueves-7"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="viernes-7"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="sábado-7"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-            </tr>
-
-            <tr>
-                <td>8:00 - 9:00</td>
-               <td><div class="slotDeSala">1</div><div class="slotDeSala">2</div><div class="slotDeSala">3</div></td>
-                <td id="lunes-8"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="martes-8"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="miércoles-8"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="jueves-8"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="viernes-8"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="sábado-8"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-            </tr>
-
-            <tr>
-                <td>9:00 - 10:00</td>
-                <td><div class="slotDeSala">1</div><div class="slotDeSala">2</div><div class="slotDeSala">3</div></td>
-                <td id="lunes-9"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="martes-9"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="miércoles-9"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="jueves-9"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="viernes-9"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="sábado-9"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-            </tr>
-
-            <tr>
-                <td>10:00 - 11:00</td>
-                <td><div class="slotDeSala">1</div><div class="slotDeSala">2</div><div class="slotDeSala">3</div></td>
-                <td id="lunes-10"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="martes-10"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="miércoles-10"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="jueves-10"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="viernes-10"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="sábado-10"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-            </tr>
-
-            <tr>
-                <td>11:00 - 12:00</td>
-                <td><div class="slotDeSala">1</div><div class="slotDeSala">2</div><div class="slotDeSala">3</div></td>
-                <td id="lunes-11"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="martes-11"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="miércoles-11"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="jueves-11"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="viernes-11"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="sábado-11"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-            </tr>
-
-            <tr>
-                <td>12:00 - 13:00</td>
-                <td><div class="slotDeSala">1</div><div class="slotDeSala">2</div><div class="slotDeSala">3</div></td>
-                <td id="lunes-12"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="martes-12"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="miércoles-12"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="jueves-12"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="viernes-12"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="sábado-12"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-            </tr>
-
-            <tr>
-                <td>13:00 - 14:00</td>
-                <td><div class="slotDeSala">1</div><div class="slotDeSala">2</div><div class="slotDeSala">3</div></td>
-                <td id="lunes-13"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="martes-13"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="miércoles-13"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="jueves-13"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="viernes-13"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="sábado-13"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-            </tr>
-
-            <tr>
-                <td>14:00 - 15:00</td>
-                <td><div class="slotDeSala">1</div><div class="slotDeSala">2</div><div class="slotDeSala">3</div></td>
-                <td id="lunes-14"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="martes-14"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="miércoles-14"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="jueves-14"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="viernes-14"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="sábado-14"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-            </tr>
-
-            <tr>
-                <td>15:00 - 16:00</td>
-                <td><div class="slotDeSala">1</div><div class="slotDeSala">2</div><div class="slotDeSala">3</div></td>
-                <td id="lunes-15"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="martes-15"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="miércoles-15"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="jueves-15"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="viernes-15"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="sábado-15"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-            </tr>
-
-            <tr>
-                <td>16:00 - 17:00</td>
-                <td><div class="slotDeSala">1</div><div class="slotDeSala">2</div><div class="slotDeSala">3</div></td>
-                <td id="lunes-16"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="martes-16"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="miércoles-16"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="jueves-16"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="viernes-16"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="sábado-16"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-            </tr>
-
-            <tr>
-                <td>17:00 - 18:00</td>
-                <td><div class="slotDeSala">1</div><div class="slotDeSala">2</div><div class="slotDeSala">3</div></td>
-                <td id="lunes-17"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="martes-17"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="miércoles-17"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="jueves-17"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="viernes-17"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="sábado-17"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-            </tr>
-
-            <tr>
-                <td>18:00 - 19:00</td>
-                <td><div class="slotDeSala">1</div><div class="slotDeSala">2</div><div class="slotDeSala">3</div></td>
-                <td id="lunes-18"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="martes-18"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="miércoles-18"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="jueves-18"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="viernes-18"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="sábado-18"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-            </tr>
-
-            <tr>
-                <td>19:00 - 20:00</td>
-                <td><div class="slotDeSala">1</div><div class="slotDeSala">2</div><div class="slotDeSala">3</div></td>
-                <td id="lunes-19"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="martes-19"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="miércoles-19"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="jueves-19"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="viernes-19"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="sábado-19"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-            </tr>
-
-            <tr>
-                <td>20:00 - 21:00</td>
-                <td><div class="slotDeSala">1</div><div class="slotDeSala">2</div><div class="slotDeSala">3</div></td>
-                <td id="lunes-20"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="martes-20"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="miércoles-20"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="jueves-20"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="viernes-20"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="sábado-20"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-            </tr>
-
-            <tr>
-                <td>21:00 - 22:00</td>
-                <td><div class="slotDeSala">1</div><div class="slotDeSala">2</div><div class="slotDeSala">3</div></td>
-                <td id="lunes-21"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="martes-21"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="miércoles-21"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="jueves-21"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="viernes-21"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-                <td id="sábado-21"><div class="slotDeClase" data-sala="Sala 1">Sin Clase</div><div class="slotDeClase" data-sala="Sala 2">Sin Clase</div><div class="slotDeClase" data-sala="Sala 3">Sin Clase</div></td>
-            </tr>
         </table>
     </div>
 
@@ -214,8 +41,6 @@
                 <span id="fechaClase"></s>
             </p>
 
-            <!-- Habría que agregar cuantos anotados hay en la clase
-             (cuantos clientes hay anotados)-->
             <p>
                 Capacidad:
                 <span id="capacidad"></span>
@@ -227,17 +52,69 @@
             </p>
 
             <div class="botones-pago">
-                <button class="paymentButtons" hidden onclick="pagarClaseUnica()">Pagar clase única</button>
-                <button class="paymentButtons" hidden onclick="pagarMensual()">Pago mensual</button>
+                <button id="btnClaseUnica" class="paymentButtons" hidden onclick="mostrarOpcionesClaseUnica()">Pagar clase única</button>
+                <button id="btnMensual" class="paymentButtons" hidden onclick="pagarMensual()">Pagar Mensualidad</button>
+                <div class="contenedor-opciones-unica">
+                    <button id="btnSeña" class="unica-opciones" hidden onclick="pagarSeñaClaseUnica()">Señar clase única</button>
+                    <button id="btnCompleta"class="unica-opciones" hidden onclick="pagarTotalidadClaseUnica()">Pagar total clase única</button>
+                </div>
+                <div class="contenedor-volver">
+                    <button id="btnVolver" class="btn-volver" hidden onclick="volverOpcionesPago()">← Volver</button>
+                </div>
+            </div>
+            <div id="mensajePago" class="mensaje-pago"></div>
+        </div>
+    </div>
+
+    <!-- Modal de asistencia -->
+    <div class="modalAsistencia" id="asistenciaModal">
+        <div class="modalAsistencia-content">
+            <span class="close" id="closeAsistencia">&times;</span>
+            <div id="asistenciaBody">
+                
             </div>
         </div>
     </div>
 
+    <!-- Modal de QR -->
+    <div id="qrModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span id="closeQRModal" style="cursor:pointer;">&times;</span>
+
+            <h3>Escanear QR</h3>
+
+            <div id="qr-reader" style="width:100%;"></div>
+            <button id="cancelarLectura" hidden>Cencelar</button>
+        </div>
+    </div>
 
     
     <!-- Script para asignar data-clase y abrir el panel -->
-    <script src="/Home/Tabs/Table//payPanel.js"></script>
-    <script src="/Home/Tabs/Table/classSlot.js"></script>
     <script src="/Home/Tabs/Table/weekNav.js"></script>
+
+    <!-- 
+    Esto no estaría andando, trete de hacerlo como esta en navbarSelector pero no se bien como se hace...
+    pero creo que es la forma de hacerlo
+    
+    No funciona porque la tabla es de tipo HTML, para que lo de abajo funcione,
+    la tabla debería ser un EJS.
+    
+    <% if (userRole === 'cliente') { %>
+    <script src="/Home/Tabs/Table/payPanel.js"></script>
+    <% } else { %>
+    <script src="/Home/Tabs/Table/classOptions.js"></script>
+    <% } %> -->
+
+    <script src="/Home/Tabs/Table/classOptions.js"></script>
+    <script src="/Home/Tabs/Table/payPanel.js"></script>
+
+    <script src="/Home/Tabs/Table/classSlot.js"></script>
+
+    <!-- Librería para generar el QR, habria que moverlo a la pestaña donde
+    se genere el qr(ahora lo genera classOptions dentro de table porlo que lo dejo acá)-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+
+
 </body>
 </html>

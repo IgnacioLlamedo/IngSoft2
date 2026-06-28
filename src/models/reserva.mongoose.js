@@ -35,9 +35,8 @@ const reservaMensualSchema = new Schema({
 
 const reservaSchema = new Schema({
     _id: { type: String, default: randomUUID },
-    idClase: { type: String, required: true, ref: 'clases' }, //Eliminado pagos, para evitar que la reserva unica lo cree.
+    //idClase: { type: String, required: true, ref: 'clases' }, //Eliminado pagos, para evitar que la reserva unica lo cree.
     idUsuario: { type: String, required: true, ref: 'usuarios' },
-    cancelada: { type: Boolean, default: false },
 }, {
     strict: false,
     versionKey: false,
@@ -52,20 +51,22 @@ const Reserva = model(collection, reservaSchema)
 export const ReservaUnica = Reserva.discriminator("ReservaUnica", new Schema({
     _id: { type: String, default: randomUUID },
     idClaseEspecifica: { type: String, required: true, ref: 'clasesEspecificas' },
+    estado: { type: String, enum: ['cancelada', 'activa', 'en espera'], default: 'activa'},
     pagos: [{ idPago: {type: String, required: true, ref: 'pagos'}}],
     señada: { type: Boolean },
     idUsuario: { type: String, required: true, ref: 'usuarios' },
-    cancelada: { type: Boolean, default: false },
     fechaEspecifica: { type: Date },
     tipo: { type: String, default: "unica" },
 }))
 
 export const ReservaMensual = Reserva.discriminator("ReservaMensual", new Schema({
     _id: { type: String, default: randomUUID },
-    clases: [{ idClase: {type: String, required: true, ref: 'clasesEspecificas'} }],
+    clases: [{
+        idClase: {type: String, required: true, ref: 'clasesEspecificas'},
+        estado: { type: String, enum: ['cancelada', 'activa', 'en espera'], default: 'activa'} 
+    }],
     pagos: [{ idPago: {type: String, required: true, ref: 'pagos'} }],
     idUsuario: { type: String, required: true, ref: 'usuarios' },
-    cancelada: { type: Boolean, default: false },
     fechaVencimiento: { type: Date },
     tipo: { type: String, default: "mensual" },
 }))

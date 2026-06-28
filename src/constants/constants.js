@@ -1,4 +1,3 @@
-// TODO: reemplazar en *todos* los archivos una vez hecho el merge
 export const Role = {
     VISITOR: "visitante",
     CLIENT: "cliente",

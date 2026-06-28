@@ -1,3 +1,4 @@
+import { Double } from "mongodb";
 import { Schema, model } from "mongoose";
 import { randomUUID } from "node:crypto"
 
@@ -5,10 +6,20 @@ const collection = 'pagos'
 
 const pagoSchema = new Schema({
     _id: { type: String, default: randomUUID },
-    monto: { type: Number, required: true },
+    monto: { type: Double, required: true },
     idUsuario: { type: String, required: true, ref: 'usuarios' },
-    idClase: { type: String, required: true, ref: 'clasesEspecificas' },
-    fecha: { type: Date, required: true },
+    clases: [{
+        idClase: {
+            type: String,
+            required: true,
+            ref: 'clasesGenerales'
+        },
+        fecha: {
+            type: Date,
+            required: true
+        }
+    }],
+    pendiente: { type: Boolean, required: true}
 }, {
     strict: 'throw',
     versionKey: false,
