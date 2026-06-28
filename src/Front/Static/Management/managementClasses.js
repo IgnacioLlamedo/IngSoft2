@@ -1,9 +1,15 @@
+const classesBtn = document.getElementById('classesBtn');
 
 const errorMsg = document.getElementById("createError");
 const successMsg = document.getElementById("createSuccess");
 
 const slotList = document.getElementById("slotList");
 const notDataAvailableMsg = document.getElementById("notDataAvailableMsg")
+
+
+window.addEventListener('DOMContentLoaded', () => {
+    classesBtn.classList.add("btn-active");
+});
 
 getAllSlots();
 

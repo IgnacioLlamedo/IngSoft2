@@ -1,5 +1,4 @@
-﻿const userlistBtn = document.getElementById('userlistBtn');
-const tableBody = document.getElementById('userlistTableBody');
+﻿const tableBody = document.getElementById('userlistTableBody');
 const userlistMsgDiv = document.getElementById('userlistMessage');
 const deleteMsgDiv = document.getElementById('deleteMessage');
 const deleteDialogForm = document.getElementById('deleteDialogForm');
@@ -25,7 +24,6 @@ let pendingDeleteMail = null;
 let pendingDeleteRole = null;
 
 window.addEventListener('DOMContentLoaded', () => {
-    userlistBtn.classList.add("btn-active");
     getSessionData();
     bindSortButtons();
     bindFilterControls();

@@ -185,10 +185,10 @@ webRouter.get("/users/userlist", (req,res) => {
 
 
 // Employee Sign Up
-webRouter.get("/users/employee-signup", (req,res) => {
+webRouter.get("/management/employee-signup", (req,res) => {
     if (!req.session.user) return res.redirect("/access/login");    
     if (req.session.user.rol !== Role.ADMIN) return res.redirect(homeRoute);
-    res.render(path.join(__dirname, "Front/Users/employeeSignUp.ejs"), { userRole: req.session.user.rol, Role, Status });
+    res.render(path.join(__dirname, "Front/Management/managementEmployeeSignUp.ejs"), { userRole: req.session.user.rol, Role, Status });
 });
 
 webRouter.get("/access/employee-auth", async (req, res, next) => {

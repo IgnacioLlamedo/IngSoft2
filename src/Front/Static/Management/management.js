@@ -1,3 +1,4 @@
+const managementBtn = document.getElementById('managementBtn');
 const submitButton = document.getElementById("submit");
 const cancelButton = document.getElementById("cancel");
 const successMsg = document.getElementById("editSuccess");
@@ -12,7 +13,6 @@ let activitiesPriceTemp;
 
 setInputDisabled(true);
 fetchData();
-
 
 function setInputDisabled(state) {
     daysInput.disabled = state;
@@ -36,6 +36,9 @@ async function fetchData() {
     loadActivitiesOptions(activitiesResData.data);
 }
 
+window.addEventListener('DOMContentLoaded', () => {
+    managementBtn.classList.add("btn-active");
+});
 
 function loadActivitiesOptions(data) {
     

@@ -1,4 +1,4 @@
-const signUpEmployeeBtn = document.getElementById('signUpEmployeeBtn');
+const employeeSignUpBtn = document.getElementById('employeeSignUpBtn');
 const fechaInput = document.getElementById("fechaInput");
 const registerErrorMsg = document.getElementById("registerError");
 const registerForm = document.getElementById("registerForm");
@@ -15,7 +15,7 @@ fechaInput.max = fechaMax.toISOString().split('T')[0];
 
 
 window.addEventListener('DOMContentLoaded', () => {
-    signUpEmployeeBtn.classList.add("btn-active");
+    employeeSignUpBtn.classList.add("btn-active");
 });
 
 function validateSignUpForm() {

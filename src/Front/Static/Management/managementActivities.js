@@ -40,7 +40,7 @@ const fieldsToFillWithSlotData = (slot) => {
 
 
 
-
+const activitiesBtn = document.getElementById('activitiesBtn');
 
 const createForm = document.getElementById("create-form");
 const templateEditForm = document.getElementById("edit-form");
@@ -54,6 +54,11 @@ const notDataAvailableMsg = document.getElementById("notDataAvailableMsg");
 const dialog = document.getElementById("confirmPanel");
 
 const priceInput = document.getElementById("price");
+
+
+window.addEventListener('DOMContentLoaded', () => {
+    activitiesBtn.classList.add("btn-active");
+});
 
 getAllSlots();
 
