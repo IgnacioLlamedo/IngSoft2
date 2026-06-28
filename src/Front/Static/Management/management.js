@@ -199,17 +199,10 @@ async function saveDays() {
     activitiesPriceTemp = null;
 
     return [true, ""]
-<<<<<<< HEAD
 } */
 
 
 /* async function saveActivity(index) {
-=======
-}
-
-
-async function saveActivity(index) {
->>>>>>> origin/testNacho
     let newActivity = {
         id: activitiesData[index]._id,
         nombre: activitiesData[index].nombre,
