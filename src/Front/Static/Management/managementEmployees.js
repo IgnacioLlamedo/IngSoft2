@@ -1,4 +1,5 @@
 ﻿const employeesBtn = document.getElementById('employeesBtn');
+const employeesSubBtn = document.getElementById('employeesSubBtn');
 const tableBody = document.getElementById('userlistTableBody');
 const userlistMsgDiv = document.getElementById('userlistMessage');
 const deleteMsgDiv = document.getElementById('deleteMessage');
@@ -25,6 +26,7 @@ let pendingDeleteMail = null;
 
 window.addEventListener('DOMContentLoaded', () => {
     employeesBtn.classList.add("btn-active");
+    employeesSubBtn.classList.add("btn-active");
     Status = JSON.parse(table.dataset.statusEnum);
     Role = JSON.parse(table.dataset.roleEnum);
     getSessionData();

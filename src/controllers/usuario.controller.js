@@ -72,7 +72,7 @@ export async function postController(req, res) {
         userData.motivoEstado = 'Falta completar registro';
 
 		const user = await usuarioDao.create(userData);
-        await generarOTP(user)
+        // await generarOTP(user);
         const redirect = `/access/authentication?email=${userData.mail}`;
 		res.json({
 			success: true,

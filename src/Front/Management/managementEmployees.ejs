@@ -24,6 +24,19 @@
 
     <%- include('../Management/managementNav.html') %>
         
+    <div class="management-navbar">    
+        <nav class="management-nav">        
+            <a id="employeesSubBtn" href="/management/employees" class="management-nav-button">
+                Lista de Empleados
+            </a>
+
+            <a id="employeeSignUpSubBtn" href="/management/employee-signup" class="management-nav-button" style="min-width: 225px">
+                Registrar Empleado
+            </a>
+        </nav>
+        <hr>
+    </div>
+
     <main class="main-container">
         <section class="filter-panel" aria-label="Filtrar lista de empleados">
             <label for="filterColumnSelect" style="margin-right: 20px;">
