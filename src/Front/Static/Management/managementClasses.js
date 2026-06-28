@@ -8,7 +8,7 @@ const notDataAvailableMsg = document.getElementById("notDataAvailableMsg")
 getAllSlots();
 
 async function getAllSlots() {
-    const res = await fetch("/api/admin/getallclasses", {
+    const res = await fetch("/api/admin/clase", {
         method: 'GET',
         headers: {
             "Content-Type" : "application/json",
