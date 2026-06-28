@@ -265,6 +265,7 @@ function bindDeleteDialogControls() {
     if (!deleteDialog) return;
 
     confirmDelBtn.addEventListener('click', async () => {
+        confirmDelBtn.disabled = true;
         try {
             await deleteUser(pendingDeleteId);
         } catch (err) {
@@ -277,6 +278,7 @@ function bindDeleteDialogControls() {
                 deleteMsgDiv.className = 'message';
                 deleteDialogForm.style.display = 'grid';
                 deleteDialog.close();
+                confirmDelBtn.disabled = false;
             }, 3000);
             pendingDeleteId = pendingDeleteMail = pendingDeleteRole = null;
         }
