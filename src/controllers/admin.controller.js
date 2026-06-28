@@ -261,7 +261,8 @@ export async function modificarSala(req, res) {
         
         if(
             (data.nombre === currentRoom.nombre) &&
-            (data.limiteSala === currentRoom.limiteSala)
+            (data.limiteSala === currentRoom.limiteSala) &&
+            (data.estado === currentRoom.estado)
         ) {
             return res.json({
                 success: false,
