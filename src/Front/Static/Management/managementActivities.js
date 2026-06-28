@@ -305,7 +305,7 @@ async function switchToEdit(slot) {
         event.preventDefault();
         EditCleanMsgs();
 
-        let data =  getFormData(event.target);
+        let data =  getEditFormData(event.target);
         data.id = slot._id;
 
         const dataString = JSON.stringify(data);

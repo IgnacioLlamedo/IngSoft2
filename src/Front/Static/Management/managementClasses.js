@@ -8,7 +8,7 @@ const notDataAvailableMsg = document.getElementById("notDataAvailableMsg")
 getAllSlots();
 
 async function getAllSlots() {
-    const res = await fetch("/api/clases/get-all", {
+    const res = await fetch("/api/admin/clase", {
         method: 'GET',
         headers: {
             "Content-Type" : "application/json",
@@ -16,11 +16,17 @@ async function getAllSlots() {
     });
 
     const resData = await res.json();
+    console.log("res:")
+    console.log(resData.data)
 
-    if(resData.success)
-        printSlots(resData.clases);
-    else
+    if(resData.success){
+        console.log("entro en el if")
+        printSlots(resData.data);
+    }
+    else{
         notDataAvailableMsg.hidden = false;
+        console.log("NO entro en el if")
+    }  
 }
 
 
@@ -42,13 +48,13 @@ function printSlots(slots) {
         slotData.classList.add("slot-data");
 
         slotData.innerHTML =`
-            <p>Sala: ${slot.sala.nombre}</p>
-            <p>Actividad: ${slot.actividad.nombre}</p>
-            <p>Día: ${slot.clase.dia}</p>
-            <p>Hora: ${slot.clase.hora}</p>
-            <p>Cupo máximo: ${slot.clase.limiteClase}</p>
-            <p>Profesor: ${slot.profesor.nombre}</p>
-            <p>Precio: ${slot.clase.precioMensual}</p>
+            <p>Sala: ${slot.idSala.nombre}</p>
+            <p>Actividad: ${slot.idActividad.nombre}</p>
+            <p>Día: ${slot.dia}</p>
+            <p>Hora: ${slot.hora}</p>
+            <p>Cupo máximo: ${slot.limiteClase}</p>
+            <p>Profesor: ${slot.idProfesor.nombre}</p>
+            <p>Precio de actividad: ${slot.idActividad.precioMensual}</p>
         `;
 
         const slotError = document.createElement("div");

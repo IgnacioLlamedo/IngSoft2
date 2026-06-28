@@ -5,6 +5,7 @@ import config from "../config.js";
 import { Role } from "../constants/constants.js";
 import { now } from "mongoose";
 
+
 export async function crearPreferencia(req, res) {
 
     try {
@@ -14,6 +15,9 @@ export async function crearPreferencia(req, res) {
         const clases = req.body.clases;
         const datosExternos = req.body.idCupo;
 
+        console.log("Desde crearPreferencia. Los tipos de clases y fechas son: ")
+/*         const clases = [];
+        const fechas = []; */
         /* for (const c of clasesObtenidas.clases) {
 
             clases.push(c.idClaseGeneral);
@@ -32,6 +36,7 @@ export async function crearPreferencia(req, res) {
         const clasesFormateadasString = JSON.stringify(clasesFormateadas);
 
         const fechaPago = new Date(Date.now());
+
 
         const pagoPendiente = await pagoDao.create({
             monto: precio,

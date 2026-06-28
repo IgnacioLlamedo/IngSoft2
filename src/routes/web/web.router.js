@@ -218,6 +218,12 @@ webRouter.get("/stats/subscriptions-activity", (req,res) => {
 });
 
 
+webRouter.get("/stats/cancellations-class", (req, res) => {
+    if (!req.session.user) return res.redirect("/access/login");
+    if (req.session.user.rol !== Role.ADMIN) return res.redirect(homeRoute);
+    res.render(path.join(__dirname, "Front/Stats/statsCancellationsClass.ejs"), { userRole: req.session.user.rol, Role, Status });
+});
+
 
 // Cupo
 webRouter.get("/cupo", (req,res) => {

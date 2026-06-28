@@ -1,17 +1,19 @@
-﻿const subscriptionsActivityBtn = document.getElementById('subscriptionsActivityBtn');
+﻿const cancellationsClassBtn = document.getElementById('cancellationsClassBtn');
 const tableBody = document.getElementById('statsTableBody');
 const statsMsgDiv = document.getElementById('statsMessage');
 const table = document.getElementById('statsTable');
 const filterSelect = document.getElementById('filterColumnSelect');
 const filterInput = document.getElementById('filterInput');
 const clearFilterButton = document.getElementById('clearFilterButton');
-const chartContainer = document.getElementById('statsChart');
+
 
 let currentStats = [];
-const currentSort = { key: null, direction: 'asc' };
+const currentSort = { key: 'cancelaciones', direction: 'desc' };
+// DEBUG: Activar para ver datos de prueba
+let testing = true;
 
 window.addEventListener('DOMContentLoaded', () => {
-    subscriptionsActivityBtn.classList.add("btn-active");
+    cancellationsClassBtn.classList.add("btn-active");
     bindSortButtons();
     bindFilterControls();
     loadStats();
@@ -25,7 +27,7 @@ function bindFilterControls() {
     if (clearFilterButton) {
         clearFilterButton.addEventListener('click', () => {
             filterInput.value = '';
-            filterSelect.value = 'nombre';
+            filterSelect.value = 'clase';
             applyFiltersAndRender();
         });
     }
@@ -36,12 +38,12 @@ function getFilteredStats() {
     if (!filterInput || !filterSelect) return currentStats;
 
     const searchValue = filterInput.value.trim().toLowerCase();
-    let searchKey = filterSelect.value;
+    const searchKey = filterSelect.value;
 
-    return currentStats.filter((activity) => {
+    return currentStats.filter((payment) => {
         // Filtrado por texto
         if (searchValue) {
-            const fieldValue = String(activity[searchKey] || '').toLowerCase();
+            const fieldValue = String(payment[searchKey] || '').toLowerCase();
             if (!fieldValue.includes(searchValue)) return false;
         }
 
@@ -57,14 +59,27 @@ function applyFiltersAndRender() {
 
 async function loadStats() {
     try {
-        const response = await fetch('/api/admin/activities-stats', { credentials: 'include' });
+        const response = await fetch('/api/reservas/get-cancellations', { credentials: 'include' });
         if (!response.ok) {
             throw new Error('No se pudieron cargar las estadísticas.');
         }
 
         const stats = await response.json();
-        console.log("Estadísticas de actividades:",stats);
         currentStats = Array.isArray(stats) ? stats : [];
+        if (testing) {
+            if (currentStats[0]) {
+                currentStats[0].reservas = 25;
+                currentStats[0].cancelaciones = 25;
+            }
+            if (currentStats[1]) {
+                currentStats[1].reservas = 8;
+                currentStats[1].cancelaciones = 0;
+            }
+            if (currentStats[2]) {
+                currentStats[2].reservas = 15;
+                currentStats[2].cancelaciones = 5;
+            }
+        }
         renderStatsTable(getFilteredStats());
     } catch (error) {
         showMessage(error.message, 'error', 'statsMessage');
@@ -73,63 +88,32 @@ async function loadStats() {
 }
 
 
-
-function renderStatsTable(activities) {
+function renderStatsTable(generalClasses) {
     tableBody.innerHTML = '';
 
-    if (!activities.length) {
-        return showMessage('No se encontraron actividades.', 'info', 'statsMessage');
+    if (!generalClasses.length) {
+        return showMessage('No se encontraron clases.', 'info', 'statsMessage');
     }
 
     statsMsgDiv.textContent = '';
     statsMsgDiv.className = 'message';
-    
-    const sortedActivities = currentSort.key ? sortStats(activities, currentSort.key, currentSort.direction) : activities;
+
+    const sortedGeneralClasses = currentSort.key ? sortStats(generalClasses, currentSort.key, currentSort.direction) : generalClasses;
     updateSortIndicators();
-    
-    // TODO: Convendría agregar algún dato más!! Queda feo si la tabla y el gráfico muestran la misma información
-    // El tema es qué mostrar, no se me ocurre nada que no deba ir ya en las otras stats 
-    tableBody.innerHTML = sortedActivities
-		.map((a) => {
+
+    tableBody.innerHTML = sortedGeneralClasses
+        .map((gc) => {
+            const porcentaje = (gc.reservas === 0)
+                ? '0'
+                : (gc.cancelaciones / gc.reservas * 100).toFixed(2);
             return `
                 <tr>
-                    <td>${escapeHtml(a.nombre)}</td>
-                    <td>${escapeHtml(a.abonados)}</td>
+                    <td>${escapeHtml(gc.id)}</td>
+                    <td>${escapeHtml(gc.clase)}</td>
+                    <td>${escapeHtml(gc.profesor)}</td>
+                    <td>${escapeHtml(gc.reservas)}</td>
+                    <td>${escapeHtml(gc.cancelaciones)} (${porcentaje}% de las reservas)</td>
                 </tr>
-            `;
-        })
-		.join('');
-
-    renderChart(currentStats);
-}
-
-function renderChart(activities) {
-    const chartActivities = activities.map((activity) => ({
-        label: activity.nombre,
-        value: activity.abonados,
-    }));
-
-    // TODO: Arreglar la parte del mensaje
-    if (!chartActivities.length || chartActivities.length < 1) {
-        chartContainer.innerHTML = '<div class="chart-empty">No existe información disponible.</div>';
-        return;
-    }
-
-    const maxValue = Math.max(...chartActivities.map((item) => item.value), 1);
-
-    chartContainer.innerHTML = chartActivities
-        .map((item) => {
-            const barHeight = item.value > 0
-                ? Math.max(Math.round((item.value / maxValue) * 180), 50)
-                : 10;
-            return `
-                <div class="chart-bar">
-                    <div class="bar-wrapper" title="${escapeHtml(item.label)}: ${item.value}">
-                        <div class="bar" style="height: ${barHeight}px"></div>
-                    </div>
-                    <div class="bar-value">${escapeHtml(item.value)}</div>
-                    <div class="bar-label">${escapeHtml(item.label)}</div>
-                </div>
             `;
         })
         .join('');

@@ -83,9 +83,14 @@ class mailService{
         await this.send(user.mail, 'Finalizar registro de empleado - CEF', body);
     }
     
-    async cancelledClass(mail, nombre, fecha) {
+    // TODO: Terminar de testear
+    async cancelledClass(mail, nombre, fecha, actividad) {
         const imgUrl = "https://res.cloudinary.com/dk6gvpuys/image/upload/v1781481259/Logo-mini_bzbhny.png";
-        // const extra = "... ¿Nos perdonás? 🥺"; // para casos de emergencia
+        const diaNombre = new Date(fecha).toLocaleString('es', { weekday: 'long' });
+        const dia = new Date(fecha).getDate();
+        const mes = new Date(fecha).toLocaleString('es', { month: 'long' });
+        const hora = new Date(fecha).getHours();
+        const fechaStr = `<i>${dia} ${diaNombre} de ${mes}</i> a las <i>${hora} hs</i>`;
 
         const body = `
             <div style="display: flex; justify-content: center; align-items: flex-end;">
@@ -93,7 +98,8 @@ class mailService{
                 <h2 style="text-align: center; font-size: 25px">CEF - Clase cancelada</h2>
             </div>
             <hr>
-            <p>Hola, <b>${nombre}</b>. Lamentamos informarte que debido a inconvenientes con nuestro personal, la clase asignada a la fecha <b>${fecha}</b> ha sido cancelada.</p><br/>
+            <p>Hola, <b>${nombre}</b>. Lamentamos informarte que debido a inconvenientes con nuestro personal, la clase de ${actividad}, que ` +
+            `estaba asignada para el ${fechaStr} ha sido cancelada.</p><br/>
             <br/>
             <p>Te invitamos a acercarte a nuestra sede para coordinar una devolución de dinero o reintegro de créditos en tu suscripción.</p><br/>
             <br/>

@@ -4,12 +4,9 @@ const ext = parametersURL.get('external_reference')
 const externo = JSON.parse(ext);
 const container = document.querySelector(".main-container");
 
-console.log("Estos son los datos que llegaron en la URL desde paymentApproved.js: ");
-console.log(externo);
 
 const pagoData = {
-    idPagoPendiente: externo.idPagoPendiente,
-    fechaPago: externo.fechaPago
+    idPagoPendiente: externo.idPagoPendiente
 }
 
 console.log("pagoData recibido por external_reference en paymentApproved: ");
@@ -31,7 +28,6 @@ async function confirmarPago(data, ext) {
         }, 
         body: JSON.stringify({
             idPagoPendiente: data.idPagoPendiente, //Para que no rompa el json parser
-            fechaPago: data.fechaPago
         })
     });
 //

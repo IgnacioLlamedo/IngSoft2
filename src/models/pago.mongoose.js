@@ -19,8 +19,7 @@ const pagoSchema = new Schema({
             required: true
         }
     }],
-    pendiente: { type: Boolean, required: true},
-    fechaPago: { type: Date, required: true }
+    pendiente: { type: Boolean, required: true}
 }, {
     strict: 'throw',
     versionKey: false,
