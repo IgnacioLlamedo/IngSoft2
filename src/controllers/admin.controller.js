@@ -4,6 +4,7 @@ import { profesorDao } from "../daos/index.js";
 import { salaDao } from "../daos/index.js";
 import { sedeDao } from "../daos/index.js";
 import { actividadDao } from "../daos/index.js";
+import { globalesDao } from "../daos/index.js";
 import { reservaDao } from "../daos/index.js";
 import { Status } from '../constants/constants.js';
 import { mailer } from "../servicios/mailer.servicio.js";
@@ -598,7 +599,7 @@ export async function crearActividad(req, res){
     }
 }
 
-export async function modificarActividad(req, res){
+export async function modificarNombreActividad(req, res){
     try {
         let data = req.body
         data.nombre = nameConvention(data.nombre);
@@ -637,6 +638,40 @@ export async function modificarActividad(req, res){
         });
     }
 }
+
+
+export async function modificarPrecioActividad(req, res){
+    try {
+        let data = req.body
+
+        const currentActivity = await actividadDao.readOne({_id: data.id});
+
+        if(
+            (data.precioMensual === currentActivity.precioMensual)
+        ) {
+            return res.json({
+                success: false,
+                message: "Error al modificar la actividad. No se han modificado datos."
+            })
+        }
+
+        await actividadDao.updateOne({_id: data.id}, data)
+
+        res.json({
+            success: true,
+            message: "¡Modificación de actividad realizada con éxito!"
+        });
+    }
+    catch(error) {
+        console.error("modificarActividad ERROR: ", error);
+        res.json({
+            success: false,
+            message: "Error al modificar actividad. Inténtelo de nuevo más tarde."
+        });
+    }
+}
+
+
 
 export async function eliminarActividad(req, res){
     try {
@@ -740,6 +775,43 @@ export async function getActivitiesStats(req, res){
         });
     }
 }
+
+
+
+export async function actualizarDiasAviso(req, res){
+    try {                                            //req.body.diasAviso es provisional
+        await globalesDao.updateOne({id: "1"}, {diasAviso: req.body.diasAviso});
+        res.json({
+            success: true,
+            message: "¡Modificaciones hechas con éxito!"
+        });
+    }
+    catch(error) {
+        console.error("actualizarDiasAviso ERROR: ", error);
+        res.json({
+            success: false,
+            message: "Error al actualizar los días del aviso. Inténtelo de nuevo más tarde."
+        });
+    }
+}
+
+
+export async function recuperarDiasAviso(req, res){
+    try {
+        const data = await globalesDao.readOne({id: "1"});
+        res.json({
+            data,
+        });
+    }
+    catch(error) {
+        console.error("recuperarDiasAviso ERROR: ", error);
+        res.json({
+            success: false,
+            message: "Error al recuperar los días del aviso. Inténtelo de nuevo más tarde."
+        });
+    }
+}
+
 
 
 

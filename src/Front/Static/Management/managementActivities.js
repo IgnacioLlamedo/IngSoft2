@@ -8,10 +8,18 @@ const endpoint = "/api/admin/actividad"; // Se usa el mismo fetch pero diferenci
 
 const slotHtml = (slot) => {return `
     <p>Nombre: ${slot.nombre}</p>
+    <p>Precio cuota: ${slot.precioMensual}</p>
 `};
 
 
 function getFormData(form) {
+    return {
+        nombre: form.name.value, // Se puede poner "Yo ga" pero bueno. Haría replaceAll(" ", "") pero entonces no podría existir nada con dos plaabras
+        precioMensual: form.price.value,
+    }
+}
+
+function getEditFormData(form) {
     return {
         nombre: form.name.value, // Se puede poner "Yo ga" pero bueno. Haría replaceAll(" ", "") pero entonces no podría existir nada con dos plaabras
     }
@@ -45,6 +53,7 @@ const notDataAvailableMsg = document.getElementById("notDataAvailableMsg");
 
 const dialog = document.getElementById("confirmPanel");
 
+const priceInput = document.getElementById("price");
 
 getAllSlots();
 
@@ -165,7 +174,19 @@ function createSeparator(slotList, index, lastIndex) {
 }
 
 
+priceInput.addEventListener('click', (event) => {
+    const newValue = checkNumberInput(event.target.value, 0);
+    priceInput.value = newValue;
+})
 
+function checkNumberInput(value, lenghtCap) {
+    value = value.replace(/[^0-9]/g, "");
+
+    if(value.charAt(0) === '0') value = "1";
+    if(lenghtCap !== 0 && value.length > lenghtCap) value = value.slice(0, 2);
+
+    return value;
+}
 
 
 createForm.addEventListener("submit", async (event) => {
@@ -289,7 +310,7 @@ async function switchToEdit(slot) {
         event.preventDefault();
         EditCleanMsgs();
 
-        let data =  getFormData(event.target);
+        let data =  getEditFormData(event.target);
         data.id = slot._id;
 
         const dataString = JSON.stringify(data);

@@ -316,3 +316,14 @@ dialog::backdrop {
     border-radius: 6px;
     cursor: pointer;
 }
+
+
+
+.activity-price {
+    display: flex;
+    gap: 10px;
+}
+
+.activity-price input{
+    flex: 1;
+}
