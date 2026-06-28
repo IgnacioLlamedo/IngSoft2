@@ -184,3 +184,20 @@ export async function registrarDNI(req,res) {
         })
     }
 }
+
+export async function getAsistencias(req, res){
+    try {
+        const data = await asistenciaDao.populate({idUsuario: req.body._id})
+        res.json({
+            success: true,
+            data,
+        });
+    }
+    catch(error) {
+        console.error(error);
+        res.json({
+            success: false,
+            message: "Error al mostrar las asistencias. Inténtelo de nuevo más tarde."
+        });
+    }
+}
