@@ -39,6 +39,12 @@ export async function getMyReservations(req, res) {
             reservaMensual1
             ]
          */
+        const reservas = [
+            ...reservasUnicas,
+            ...reservasMensuales
+        ];
+        /* console.log("Las reservas unicas y mensuales del usuario son: ")
+        console.log(reservas); */
 
         /* console.log("Las reservas unicas y mensuales (Desde getMyReservations) del usuario son: ")
         console.log(reservas); */
@@ -50,9 +56,7 @@ export async function getMyReservations(req, res) {
         reservasTotal = reservasTotal.concat(reservasMensualesTotal) */
 
         /* console.log("Las reservas TOTALES del usuario son: ")
-        console.log(reservasTotal);
-        console.log("Las clases que pertenecen a la reserva son:")
-        console.log(reservasTotal[0].clases); */
+        console.log(reservasTotal); */
         
         res.json({
             success: true,
@@ -353,9 +357,14 @@ export async function reemplazarAnotado(clase, usuario){
 export async function postReservaUnica(req, res) {
     try {
         const reservaData = req.body;
+
+        /* console.log("(Back) - Datos recibidos en postReservaUnica -> desde paymentApproved.js: ");
+        console.log(reservaData); */
         
         const idClaseGeneral = reservaData.clases[0].idClase;
         const fecha = reservaData.clases[0].fecha;
+/*         console.log("La fecha recibida es: " + fecha);
+        console.log("La fecha es de typeOF -> " + typeof(fecha)); */
 
         //Creo el objeto a anotar.
         const usuarioData = {
@@ -371,6 +380,8 @@ export async function postReservaUnica(req, res) {
         const claseGeneral = await claseGeneralDao.readOne({ _id: idClaseGeneral })
         let claseEspecifica = await claseEspecificaDao.readOne({ idClaseGeneral: claseGeneral._id,
             fechaEspecifica: fechaBuscada })
+        /* console.log("La clase especifica encontrada segun el idGeneral " + idClaseGeneral + " y la fecha especifica " + fecha + " es: ");
+        console.log(claseEspecifica); */
         if (!claseEspecifica) {
             console.log("Desde postReservaUnica, creando clase especifica y agregando a lista de anotados...");
             //Creo la clase especifica con el usuario anotado.
@@ -393,6 +404,13 @@ export async function postReservaUnica(req, res) {
                 enEspera: false
             });
         }
+        
+        //console.log("Existe clase específica (desde postReservaUnica)");
+        //Verifico si el usuario está anotado o en espera
+        
+
+        //console.log("Ya se checkeo que el usuario no este en lista de espera o anotados, ahora, a que lista se anotará? ");
+        //Si existe entonces -> Checkeo capacidad
         const capacidadActual = claseEspecifica.anotados.length;
 
         //Asigno el idClaseEspecifica
@@ -454,11 +472,10 @@ export async function postReservaMensual(req, res) {
     try {
 
         /* Esto contiene el req.body: 
-            clases: pagoData.clases, //Contiene la idClaseGeneral y FechasEspecificas (DE 4 CLASES!)
+            clases: pagoData.clases, //Contiene la idClaseGeneral y FechasEspecificas
             pagos: [{ idPago: pagoData._id }],
             idUsuario: pagoData.idUsuario,
-            tipoClase: "mensualidad"
-        */
+            tipoClase: "mensualidad" */
         const reservaData = req.body;
 
         /* console.log("(Back) - Datos recibidos en postReservaUnica:");
@@ -470,13 +487,6 @@ export async function postReservaMensual(req, res) {
         };
 
         const clasesReserva = [];
-
-
-        /**
-         * 
-         * Esto está mal, voy a modificarlo para que primero se consigan
-         * 
-         */
         //Itero sobre las 4 clases buscando si la claseEspecifica existe, creandola si no es el caso 
         for (const claseData of reservaData.clases) {
 
@@ -486,28 +496,32 @@ export async function postReservaMensual(req, res) {
             const fechaBuscada = new Date(fecha);
             fechaBuscada.setSeconds(0, 0);
 
-            let claseEspecifica = await claseEspecificaDao.readOne({ idClaseGeneral: idClaseGeneral, fechaEspecifica: fechaBuscada });
+            const claseGeneral = await claseGeneralDao.readOne({
+                _id: idClaseGeneral
+            });
+
+            let claseEspecifica = await claseEspecificaDao.readOne({
+                idClaseGeneral: claseGeneral._id,
+                fechaEspecifica: fechaBuscada
+            });
 
             /* console.log("Clase específica encontrada con el idGeneral " + idClaseGeneral + " y fechaEspecifica " + fechaBuscada + " es: ");
             console.log(claseEspecifica); */
 
-            const claseGeneral = await claseGeneralDao.readOne({ _id: idClaseGeneral});
-
             if (!claseEspecifica) {
 
-                console.log("No existe clase específica --- se crea");
+                console.log("No existe clase específica se crea");
 
                 const data = {
                     idClaseGeneral: claseGeneral._id,
                     fechaEspecifica: fecha,
                     anotados: [usuarioData],
-                    esperaUnica: [],
-                    esperaMensual: []
+                    espera: []
                 };
 
                 claseEspecifica = await claseEspecificaDao.create(data);
 
-                
+                // Crear reserva
                 clasesReserva.push({
                     idClase: claseEspecifica._id
                 });
@@ -537,30 +551,28 @@ export async function postReservaMensual(req, res) {
 
                 continue;
             }
-            /**
-             * Si la lista está llena debo consultar primero
-             * Por lo tanto devuelvo falso?
-             */
-            else{
-                //Despues veo que se tiene que hacer acá.
-            }
+
+            //console.log("Sin lugar por lo tanto a la cola de espera");
+
+            await claseEspecificaDao.updateOne(
+                { _id: claseEspecifica._id },
+                {
+                    $push: {
+                        espera: usuarioData
+                    }
+                }
+            );
+
+            return res.json({
+                success: true,
+                message: "Reserva mensual procesada"
+            });
         }
-
-        console.log("Estas son las clases que se cargarán al crear la reserva mensual: ")
-        console.log(clasesReserva);
-        //Por alguna razón, al pushear un idClase, también se creaba un _id para esa idClase especifica.
-
-        // Crear reserva
         await reservaDao.createMensual({
             clases: clasesReserva,
             pagos: reservaData.pagos,
             idUsuario: reservaData.idUsuario,
             cancelada: false
-        });
-
-        return res.json({
-            success: true,
-            message: "Reserva mensual procesada"
         });
     }
     catch(error) {

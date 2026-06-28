@@ -12,7 +12,7 @@ const pagoSchema = new Schema({
         idClase: {
             type: String,
             required: true,
-            ref: 'clasesGenerales'
+            ref: 'clases'
         },
         fecha: {
             type: Date,

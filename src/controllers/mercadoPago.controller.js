@@ -11,7 +11,6 @@ export async function crearPreferencia(req, res) {
         const precio = req.body.precio; 
         const tipoClase = req.body.tipoClase; //seña, unica o mensual
         const clases = req.body.clases;
-        const datosExternos = req.body.idCupo;
 
         console.log("Desde crearPreferencia. Los tipos de clases y fechas son: ")
 /*         const clases = [];
@@ -56,8 +55,7 @@ export async function crearPreferencia(req, res) {
                     idUsuario: req.session.user.id,
                     tipoClase: tipoClase,
                     nombre: nombre, //Nombre clase (yoga, spinning o funcional)
-                    idPagoPendiente: pagoPendiente._id,
-                    idCupo: datosExternos
+                    idPagoPendiente: pagoPendiente._id
                 }),
                 back_urls: {
                     success: `${config.link}/payment/approved`,
@@ -89,79 +87,44 @@ export async function consultar(req, res) {
     try {
 
         const { clases } = req.body;
-        let datos = []
-        let int = 0;
 
         for (const claseData of clases) {
 
-            /* console.log("La idClase General " + claseData.idClaseGeneral + " en la fecha " + claseData.fechaEspecifica);
-            console.log(claseData.fechaEspecifica); */
+            console.log("La idClase General " + claseData.idClaseGeneral + " en la fecha " + claseData.fechaEspecifica);
 
             //Consigo la clase especifica
-            const clase = await claseEspecificaDao.readOne({idClaseGeneral: claseData.idClaseGeneral, fechaEspecifica: claseData.fechaEspecifica});
-            //Si existe la primera del día 1/7, las del 8/7, 15/7 y 22/7 si o si
+            const claseEspecifica = await claseEspecificaDao.readOne({idClaseGeneral: claseData.idClaseGeneral, fechaEspecifica: claseData.fechaEspecifica}); //Si existe la primera del día 1/7, las del 8/7, 15/7 y 22/7 si o si
 
-            /* console.log("La idClase General " + claseData.idClaseGeneral + " en la fecha " + claseData.fechaEspecifica + ". Encontró la siguiente clase especifica: ");
-            console.log(claseEspecifica); */
+            console.log("La idClase General " + claseData.idClaseGeneral + " en la fecha " + claseData.fechaEspecifica + ". Encontró la siguiente clase especifica: ");
+            console.log(claseEspecifica);
             //Revisar listado de anotados y de esprea
 
             /**
              * Si no encuentra clase especifica, significa que la clase en la fecha claseData.fechaEspecifica (actual del for)
              * No fue creada y por lo tanto no tiene anotados, Por lo tanto, al pagar, se debe crear la claseEspecifica.
              */
-            if (!clase){
-                datos.push({
-                    clase: null,
-                    llena: false
-                });
-
+            if (!claseEspecifica) 
                 continue; //Saltea el resto del código y vuelve a entrar al for.
-            }
 
-            const claseGeneral = await claseGeneralDao.readOne({ _id: clase.idClaseGeneral })
-            const llena = clase.anotados.length >= claseGeneral.limiteClase
-
-            datos.push({
-                clase,
-                llena
-            });
-
-            /**
-             * Acá hay un problema:
-             * 
-             * Como no hacemos borrado físico, cuando una persona
-             * cancela su reservación a una clase (ya sea si está en lista de anotados
-             *  o en algúna lista de espera), al hacer estas consultas siempre devolverá 
-             * que el usuario ya está anotado o en espera.
-             *  Por lo que no te deja inscribirte nuevamente a una clase que ya cancelaste.
-             * ¿Esto está bien?
-             */
-            const yaAnotado = clase.anotados.some(
+            const yaAnotado = claseEspecifica.anotados.some(
                 u => u.idUsuario === req.session.user.id
             );
-            const yaEnEsperaUnica = clase.esperaUnica.some(
-                u => u.idUsuario === req.session.user.id
-            );
-            const yaEnEsperaMensual = clase.esperaMensual.some(
+            const yaEnEspera = claseEspecifica.espera.some(
                 u => u.idUsuario === req.session.user.id
             );
 
             //Si está en lista de anotados o de espera corta el bucle
-            if (yaAnotado || yaEnEsperaMensual || yaEnEsperaUnica) {
+            if (yaAnotado || yaEnEspera) {
                 return res.json({
                     success: false,
-                    message: `Ya se encuentra anotado en la actividad del día ${claseData.fechaEspecifica}`
+                    message: ("Ya se encuentra anotado en la actividad")
                 });
             }
-            int++;
         }
 
         return res.json({
-            success: true,
-            datos //Esto devuelve un arreglo con:
-            // .clase: (objeto) Clase especifica o
-            //                  NULL (en caso de que no exista la claseEspecifica).
-        }); // .llena: (boolean) Si la clase especifica está llena o no
+            success: true
+        });
 
     }
     catch(error) {
@@ -174,6 +137,22 @@ export async function consultar(req, res) {
         });
     }
 }
+
+/* export async function obtenerClaseGeneral(req, res){
+    try{
+        const claseGeneral = await claseGeneralDao.readOne
+
+
+    }
+    catch(error) {
+
+        console.log(error);
+        return res.json({
+            success: false,
+            message: "Error al conseguir clase General (obtenerClaseGeneral)"
+        })
+    }
+} */
 
 export async function confirmarPagoController(req, res){
     try {
