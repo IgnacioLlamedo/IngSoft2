@@ -812,6 +812,23 @@ export async function recuperarDiasAviso(req, res){
     }
 }
 
+export async function getAllClasses(req, res){
+    try {
+        const data = await claseGeneralDao.populate()
+        res.json({
+            success: true,
+            data,
+        });
+    }
+    catch(error) {
+        console.error(error);
+        res.json({
+            success: false,
+            message: "Error al mostrar las clases. Inténtelo de nuevo más tarde."
+        });
+    }
+}
+
 
 
 

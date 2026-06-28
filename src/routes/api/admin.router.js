@@ -1,5 +1,5 @@
 import express from "express";
-import { crearActividad, crearProfesor, crearSala, crearSede, modificarProfesor, modificarSala, modificarSede, eliminarActividad, eliminarProfesor, eliminarSala, eliminarSede, getActivities, getInstructors, getRooms, getFacilities, inhabilitarProfesor, getActivitiesStats, actualizarDiasAviso, recuperarDiasAviso, modificarNombreActividad, modificarPrecioActividad } from "../../controllers/admin.controller.js";
+import { crearActividad, crearProfesor, crearSala, crearSede, modificarProfesor, modificarSala, modificarSede, eliminarActividad, eliminarProfesor, eliminarSala, eliminarSede, getActivities, getInstructors, getRooms, getFacilities, inhabilitarProfesor, getActivitiesStats, actualizarDiasAviso, recuperarDiasAviso, modificarNombreActividad, modificarPrecioActividad, getAllClasses } from "../../controllers/admin.controller.js";
 
 export const adminRouter = express.Router();
 
@@ -28,3 +28,5 @@ adminRouter.get("/sede", getFacilities)
 
 adminRouter.put("/diasaviso", actualizarDiasAviso)
 adminRouter.get("/diasaviso", recuperarDiasAviso)
+
+adminRouter.get("/getallclasses", getAllClasses)
