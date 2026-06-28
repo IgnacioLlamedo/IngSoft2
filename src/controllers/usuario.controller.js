@@ -533,7 +533,8 @@ export async function getUserlistController(req, res) {
             return res.status(403).json({ success: false, message: 'Acceso denegado' });
         }
 
-        const query = req.query || {};
+        const queryRole = req.query && req.query.role;
+        const query = queryRole ? { rol: queryRole } : {};
 
         return res.json(await usuarioDao.readMany(query));
 
