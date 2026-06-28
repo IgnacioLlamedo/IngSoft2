@@ -606,7 +606,8 @@ export async function modificarActividad(req, res){
         data.nombre = nameConvention(data.nombre);
 
         const currentActivity = await actividadDao.readOne({_id: data.id});
-
+        console.log(data.precioMensual);
+        console.log(currentActivity.precioMensual)
         if(
             (data.nombre === currentActivity.nombre) &&
             (data.precioMensual === currentActivity.precioMensual)

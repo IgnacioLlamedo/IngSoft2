@@ -742,9 +742,8 @@ export async function salirListaEspera(req, res) {
             message: error
         })
     }
-<<<<<<< HEAD
-=======
 }
+
 export async function getCancellations(req, res) {
     try {
         const uniqueReservations = await reservaDao.readManyUnica({});
@@ -802,5 +801,4 @@ export async function getCancellations(req, res) {
             message: "Error al recuperar las cancelaciones. Inténtelo de nuevo más tarde."
         });
     }
->>>>>>> origin/testNacho
 }
