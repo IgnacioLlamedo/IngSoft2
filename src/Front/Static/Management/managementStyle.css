@@ -372,3 +372,19 @@ dialog::backdrop {
     border-radius: 6px;
     cursor: pointer;
 }
+
+
+
+
+.time-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+
+    gap: 50px;
+}
+
+.time-container select {
+    flex:1;
+}
