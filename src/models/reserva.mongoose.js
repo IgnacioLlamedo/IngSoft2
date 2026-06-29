@@ -67,6 +67,6 @@ export const ReservaMensual = Reserva.discriminator("ReservaMensual", new Schema
     }],
     pagos: [{ idPago: {type: String, required: true, ref: 'pagos'} }],
     idUsuario: { type: String, required: true, ref: 'usuarios' },
-    fechaVencimiento: { type: Date },
+    fechaVencimiento: { type: Date, required: true },
     tipo: { type: String, default: "mensual" },
 }))

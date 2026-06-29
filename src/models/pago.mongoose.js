@@ -12,7 +12,7 @@ const pagoSchema = new Schema({
         idClase: { type: String, required: true,ref: 'clasesGenerales' },
         fecha: { type: Date, required: true }
     }],
-    clavePago: { type: String, required: true, index: true }, //Es como un hasheo de las clases para identificar.
+    clavePago: { type: String, required: true, index: true, unique: true }, //Es como un hasheo de las clases para identificar.
     fechaPago: { type: Date, required: true },
     idPreferencia: { type: String, default: null },
     initPoint: { type: String, default: null },

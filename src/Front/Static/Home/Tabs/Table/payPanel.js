@@ -89,27 +89,33 @@ function mostrarDatos(elemento, fechaBase, fecha, clase, precio, horario) {
 }
 
 function conseguirClasesSeleccionadas(fechaBase, idClase) {
-    //Gracias chatgpt
+
     // Reinicio arreglo
     clasesSeleccionadas = [];
 
-    // Agrego clase seleccionada + próximas 3 semanas
+    const limite = new Date(fechaBase);
 
-    for(let i = 0; i < 5; i++) {
+    const dia = limite.getDate();
 
-        const nuevaFecha = new Date(fechaBase);
-        /* console.log("Fecha base: ");
-        console.log(nuevaFecha); */
+    limite.setDate(1);// Evita desbordar hacia el siguiente mes.
+    limite.setMonth(limite.getMonth() + 1);
 
-        // suma 7 dias por iteración
-        nuevaFecha.setDate(nuevaFecha.getDate() + (7 * i));
-        console.log(nuevaFecha)
+    const ultimoDiaMes = new Date(
+        limite.getFullYear(), limite.getMonth() + 1, 0).getDate();
 
+    limite.setDate(Math.min(dia, ultimoDiaMes));
+
+    let fecha = new Date(fechaBase);
+
+    while (fecha < limite) {
         clasesSeleccionadas.push({
             idClaseGeneral: idClase,
-            fechaEspecifica: nuevaFecha
+            fechaEspecifica: new Date(fecha)
         });
+        fecha.setDate(fecha.getDate() + 7);
     }
+    /* console.log(`Estas son las clases seleccionadas entre los días: ${fechaBase} y: ${limite} son:`);
+    console.log(clasesSeleccionadas);   */  
 }
 
 function mostrarOpcionesClaseUnica() {
@@ -153,15 +159,15 @@ function actualizarBotones() {
 }
 
 function pagarTotalidadClaseUnica() {
-    pagar("unica", precioSeleccionado/4, [clasesSeleccionadas[0]]);
+    pagar("unica", precioSeleccionado/4, [clasesSeleccionadas[0]], document.getElementById("btnCompleta"));
 }
 
 function pagarSeñaClaseUnica() {
-    pagar("seña", (precioSeleccionado/4)/2, [clasesSeleccionadas[0]]);
+    pagar("seña", (precioSeleccionado/4)/2, [clasesSeleccionadas[0]], document.getElementById("btnSeña"));
 }
 
 function pagarMensual() {
-    pagar("mensual", precioSeleccionado, clasesSeleccionadas);
+    pagar("mensual", precioSeleccionado, clasesSeleccionadas, document.getElementById("btnMensual"));
 }
 
 async function abrirPanelAsistencia(){
@@ -234,137 +240,137 @@ async function cerrarLectorQR() {
     document.getElementById("qrModal").style.display = "none";
 }
 
-async function pagar(tipoClase, precio, clasesPago) {
-    const nombre = document.getElementById("tituloClase").innerText;
-    const fecha = document.getElementById("fechaClase").innerText;
-    const sala = document.getElementById("salaClase").innerText;
-    console.log("Este es el arreglo con las clases que se pagarán (desde payPanel): ")
-    console.log(clasesPago);
-    console.log(tipoClase);
-
-    const res = await fetch('/api/pago/consultar-pago', {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-            clases: clasesPago
-        })
-    });
-
-    const resData = await res.json();
-
-    console.log("Desde consultar pago en pagar payPanel: ");
-    console.log(resData);
-    /* Ahora, resData recibe un arreglo de 4 objetos donde cada objeto tiene 2 elementos:
-        1. .clase: (objeto) claseEspecifica o NULL (si la clase especifica no existe)
-        2. .llena: (boolean) si la lista de anotados está llena o no.
-    */
-
+async function pagar(tipoClase, precio, clasesPago, boton) {
+    document.getElementById("mensajePago").innerText = "";
+    if (boton.disabled) return;
     
-    /*
-    Este es un ejemplo de lo que recibe resData
-    Evidentemente, si se consulta por una clase única, datos solo recibe un elemento.
+    boton.disabled = true;
+
+    try {
+        const nombre = document.getElementById("tituloClase").innerText;
+        const fecha = document.getElementById("fechaClase").innerText;
+        const sala = document.getElementById("salaClase").innerText;
+        console.log("Este es el arreglo con las clases que se pagarán (desde payPanel): ")
+        console.log(clasesPago);
+        console.log(tipoClase);
+
+        const res = await fetch('/api/pago/consultar-pago', {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ 
+                clases: clasesPago
+            })
+        });
+
+        const resData = await res.json();
+
+        console.log("Desde consultar pago en pagar payPanel: ");
+        console.log(resData);
+        /* Ahora, resData recibe un arreglo de 4 objetos donde cada objeto tiene 2 elementos:
+            1. .clase: (objeto) claseEspecifica o NULL (si la clase especifica no existe)
+            2. .llena: (boolean) si la lista de anotados está llena o no.
+        */
+
         
-    Object
-        datos: Array(4)
-            0: {clase: {…}, llena: false}
-            1: {clase: null, llena: false}
-            2: {clase: null, llena: false}
-            3: {clase: null, llena: false}
-        length: 4
-        success: true
-    */
+        /*
+        Este es un ejemplo de lo que recibe resData
+        Evidentemente, si se consulta por una clase única, datos solo recibe un elemento.
+            
+        Object
+            datos: Array(4)
+                0: {clase: {…}, llena: false}
+                1: {clase: null, llena: false}
+                2: {clase: null, llena: false}
+                3: {clase: null, llena: false}
+            length: 4
+            success: true
+        */
 
-    if (!resData.success) {
-        document.getElementById("mensajePago").innerText = resData.message;
-        return;
-    }
-    console.log("Estas son los datos de clases.datos desde payPanel.js: ");
-    console.log(resData.datos);
-
-    // Clase llena -> confirmar lista espera
-    /**
-     * Revisar el tema de clase llena para los 4 días de la mensualidad:
-     * 
-     * Si solo una de las clases de la mensualidad está llena,
-     * ¿Debería permitir anotarse en lista de espera?
-     * 
-     * Osea, si tengo la primer o tercer clase a la cual me quiero anotar mensualmente llena,
-     * ¿debería permitir anotarse a la lista de espera de esa clase llena y el resto de clases anoto normalmente?
-     * ¿o debería poner en espera en cada una de las 4 clases hasta que se pueda anotar a la que está llena?
-     * ¿?
-     */
-
-    //consulta si alguna de las clases que se quieren reservar está llena.
-    let hayLlena = false;
-    let clasesLlenas = [];
-    for(const act of resData.datos){
-        if (act.llena){
-            clasesLlenas.push(act.clase);
-            hayLlena = true;
+        if (!resData.success) {
+            document.getElementById("mensajePago").innerText = resData.message;
+            boton.disabled = false;
+            return;
         }
-    }
+        console.log("Estas son los datos de clases.datos desde payPanel.js: ");
+        console.log(resData.datos);
 
-    if (hayLlena) {
-        let mensajeLlena;
-        //Si hay más de una clase llena, modifico el mensaje para
-        if (clasesLlenas.length > 1){
-            for(const act of clasesLlenas){
-                
+        //consulta si alguna de las clases que se quieren reservar está llena.
+        let hayLlena = false;
+        let clasesLlenas = [];
+        for(const act of resData.datos){
+            if (act.llena){
+                clasesLlenas.push(act.clase);
+                hayLlena = true;
             }
         }
-        else{
 
+        if (hayLlena) {
+            let mensajeLlena;
+            //Si hay más de una clase llena, modifico el mensaje para
+            if (clasesLlenas.length > 1){
+                for(const act of clasesLlenas){
+                    
+                }
+            }
+            else{
+
+            }
+            const confirmar = confirm(
+                "La clase está llena. ¿Desea ingresar en lista de espera?"
+            );
+
+            if (!confirmar) {
+                boton.disabled = false;
+                return;
+            }
+            else {
+                //fetch a guardar en lista de espera
+                const resEspera = await fetch('/api/clases/ingresarAEspera', {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    //sigue haciendo falta mandar el tipo para la selección del reemplazo en lista de espera.
+                    body: JSON.stringify({ 
+                        clases: resData.datos, //resData.datos (contiene clasesEspecificas y si está llena o no)
+                        tipo: tipoClase
+                        //Acá puedo mandar las clases que recibo al consultar-pago (resData) así
+                        //en el ingresarAEspera decido que hacer con todas las clases en las que esté llena la lista de anotados.
+                    })
+                });
+
+                const resEsperaData = await resEspera.json();
+
+                document.getElementById("mensajePago").innerText = resEsperaData.message;
+                return;
+                boton.disabled = false;
+            }
         }
-        const confirmar = confirm(
-            "La clase está llena. ¿Desea ingresar en lista de espera?"
-        );
 
-        if (!confirmar) {
+        document.getElementById("mensajePago").innerText = "";
+
+        const resPref = await fetch('/api/pago/crear-preferencia', {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ 
+                nombre: nombre,
+                tipoClase: tipoClase, 
+                precio: precio, 
+                clases: clasesPago
+            })
+        });
+        const resPreferencia = await resPref.json();
+        boton.disabled = false;
+
+        if (!resPreferencia.success) {
+
+            document.getElementById("mensajePago").innerText =
+                resPreferencia.message;
+
             return;
         }
-        else {
-            //fetch a guardar en lista de espera
-            const resEspera = await fetch('/api/clases/ingresarAEspera', {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                //sigue haciendo falta mandar el tipo para la selección del reemplazo en lista de espera.
-                body: JSON.stringify({ 
-                    clases: resData.datos, //resData.datos (contiene clasesEspecificas y si está llena o no)
-                    tipo: tipoClase
-                    //Acá puedo mandar las clases que recibo al consultar-pago (resData) así
-                    //en el ingresarAEspera decido que hacer con todas las clases en las que esté llena la lista de anotados.
-                })
-            });
-
-            const resEsperaData = await resEspera.json();
-
-            document.getElementById("mensajePago").innerText = resEsperaData.message;
-            return;
-        }
+        
+        window.open(resPreferencia.init_point, "_blank");
     }
-
-    document.getElementById("mensajePago").innerText = "";
-
-    const resPref = await fetch('/api/pago/crear-preferencia', {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-            nombre: nombre,
-            tipoClase: tipoClase, 
-            precio: precio, 
-            clases: clasesPago
-        })
-    });
-    const resPreferencia = await resPref.json();
-
-    /**
-     * ¿Como hacer para que el usuario no pueda pagar 2 veces por una clase?
-     * 
-     * 1. Bloquear la llamada a crear-preferencia con un if.
-     * 2. Bloquear los botónes con un if.
-     * 3. Utilizar webhooks (?) ni idea como.
-     * 4. usar clave de idempotencia de Mercado Pago.
-     *      
-     */
-    window.open(resPreferencia.init_point, "_blank");
+    catch(error){
+        boton.disabled = false;
+    }
 }
