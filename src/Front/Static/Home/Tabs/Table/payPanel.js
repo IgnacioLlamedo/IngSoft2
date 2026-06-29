@@ -95,21 +95,7 @@ function conseguirClasesSeleccionadas(fechaBase, idClase) {
 
     // Agrego clase seleccionada + próximas 3 semanas
 
-    let indiceMaximo = 4;
-
-    /**
-     * Entonces, si alguien busca reservar mensualmente una clase el día 2 de julio,
-     * 2 de julio + 28 = 30 de julio
-     */
-    const fechaBaseMas28 = new Date(fechaBase);
-    fechaBaseMas28.setDate(fechaBaseMas28.getDate() + 28)
-
-    if (fechaBaseMas28.getMonth() === new Date(fechaBase).getMonth()){
-        console.log("En la reserva mensual entran 5 clases, cambiando indice máximo.")
-        indiceMaximo = 5
-    }
-
-    for(let i = 0; i < indiceMaximo; i++) {
+    for(let i = 0; i < 5; i++) {
 
         const nuevaFecha = new Date(fechaBase);
         /* console.log("Fecha base: ");
@@ -370,5 +356,15 @@ async function pagar(tipoClase, precio, clasesPago) {
         })
     });
     const resPreferencia = await resPref.json();
+
+    /**
+     * ¿Como hacer para que el usuario no pueda pagar 2 veces por una clase?
+     * 
+     * 1. Bloquear la llamada a crear-preferencia con un if.
+     * 2. Bloquear los botónes con un if.
+     * 3. Utilizar webhooks (?) ni idea como.
+     * 4. usar clave de idempotencia de Mercado Pago.
+     *      
+     */
     window.open(resPreferencia.init_point, "_blank");
 }

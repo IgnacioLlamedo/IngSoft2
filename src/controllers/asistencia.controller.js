@@ -1,3 +1,4 @@
+import e from 'express';
 import {claseEspecificaDao, asistenciaDao, usuarioDao} from '../daos/index.js'
 
 /**
@@ -29,9 +30,11 @@ export async function registrarQR(req,res) {
         if (!existeAnotado){
             return res.json({
                 success: false,
-                message: "El DNI de usuario no se encuentra anotado en la clase."
+                message: "El usuario no se encuentra anotado en la clase."
             })
         }
+
+        //Mostrar en caso de que este en lista de espera.
 
         const asistencia = await asistenciaDao.readOne({idUsuario: usuario.id, idClaseEspecifica: clase._id});
         if (asistencia){
