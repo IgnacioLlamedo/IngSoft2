@@ -238,6 +238,7 @@ export async function procesarWebhook(body){
 
     console.log("Parte número 2: ")
     console.log("Este es el pago registrado en la base de datos!!!");
+    console.log(pago);
     console.log("                                           ")
     console.log("                                           ")
 
@@ -253,9 +254,6 @@ export async function procesarWebhook(body){
     //confirmar el pago
     console.log("Parte número 3: ")
     const confirmadoElPago = await confirmarPagoInterno(mpPayment);
-    console.log("                                           ")
-    console.log("                                           ")
-    console.log("             ");
     console.log("El pago interno fue confirmado!!!");
     console.log(confirmadoElPago);
     console.log("             ");
@@ -278,6 +276,10 @@ export async function procesarWebhook(body){
     console.log("                                           ")
     console.log("                                           ")
     console.log("Parte número 5: ")
+
+//////////////////////////////////////////
+// Acá no debería haber cupos!!!!
+
     if(external.idCupo) {
         const aceptandoCupo = await aceptarCupoInterno(external.idCupo);
         console.log("             ");
@@ -415,9 +417,12 @@ export async function confirmarPagoInterno(mpPayment) {
     if (!pago)
         throw new Error("Pago no encontrado.");
 
-    if (pago.estado === "APROBADO")
+    if (pago.estado === "APROBADO"){
+        console.log("El pago ya está registrado como aprobado en la DB!")
         return pago;
+    }  
 
+    console.log("Desde confirmarPagoInterno::: El pago no estaba confirmado como aprobado en DB!! --- sería lo normal!")
     return await pagoDao.updateOne(
         { _id: pago._id },
         {

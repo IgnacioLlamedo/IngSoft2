@@ -386,11 +386,13 @@ export async function reemplazarAnotado(clase, usuario){
 //////////////////// Acá estaba lo viejo
 
 //Unir reservaUnica y mensual. separar por if
-export async function postReservaUnica(reservaData) {
+export async function postReservaUnica(reservaData, tipo) {
     try {
 
         console.log("esto tiene reservaData (desde postReservaUnica)");
         console.log(reservaData)
+        console.log("El tipo de clase unica es una seña?: ")
+        console.log(tipo)
         
         const idClaseGeneral = reservaData.clases[0].idClase;
         const fecha = reservaData.clases[0].fecha;
@@ -425,13 +427,32 @@ export async function postReservaUnica(reservaData) {
             reservaData.idClaseEspecifica = claseEspecifica._id;
 
             console.log("La data que se utilizará para crear la reserva única desde PostReservaUnica (Backend) es: ")
-            console.log(data);
+            console.log(reservaData);
+            console.log(claseEspecifica);
+
+            if (!claseEspecifica){
+                return {
+                    success: false,
+                    message: "Error al crear la clase especifica"
+                }
+            }
+
+            dataParaReservaUnica = {
+                idClaseEspecifica: claseEspecifica._id,
+                pagos: reservaData._id,      //revisar si este es efectivamente el id del pago.
+                señada: tipo,
+                idUsuario: reservaData.idUsuario,
+                fechaEspecifica: fecha
+            }
+
+            console.log("Estos son los datos de carga de reserva unica: ")
+            console.log(dataParaReservaUnica);
 
             /**
              * Acá hay que revisar si la data del schema está llegando para crearla bien.
              */
 
-            //await reservaDao.createUnica(reservaData);
+            await reservaDao.createUnica(reservaData);
 
             return {
                 success: true,
