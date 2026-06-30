@@ -811,7 +811,7 @@ function formatoFecha(fecha) {
 export async function enviarRecordatorioPago(req, res){
     try {
         const diasAviso = (await globalesDao.readOne({id: "1"})).diasAviso
-        const usuarios = await usuarioDao.readMany(/* {rol: "cliente"} */)
+        const usuarios = await usuarioDao.readMany({rol: "cliente"})
         for(let usuario of usuarios){
             const reservas = await reservaDao.readManyMensual({idUsuario: usuario._id})
             for(let reserva of reservas){
