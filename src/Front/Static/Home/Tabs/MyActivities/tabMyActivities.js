@@ -26,7 +26,7 @@ async function getMyReservations() {
         // RESERVA ÚNICA
         // =========================================
         if (r.tipo === "unica") {
-            
+             
             const claseGeneral = r.idClaseEspecifica.idClaseGeneral;
 
             /**
