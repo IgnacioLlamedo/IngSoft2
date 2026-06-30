@@ -1,6 +1,6 @@
 import { devolverPago } from "./mercadoPago.servicio.js";
 
-export async function procesarReintegro(reserva, clase, tipo){
+export async function procesarReintegro(reserva, clase, tipo, clasesEspecificas){
 
     if(tipo === "Unica"){
         return await devolverDinero(reserva);
@@ -70,9 +70,7 @@ export async function devolverDinero(reserva){
     if(!pago)
         throw new Error("Pago inexistente.");
 
-    const devolucion = await mercadoPagoService.devolverPago(
-            pago.idMercadoPago
-        );
+    const devolucion = await devolverPago(pago.idPagoMercadoPago);
 
     return devolucion;
 }
