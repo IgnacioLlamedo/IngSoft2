@@ -50,6 +50,8 @@ async function getMyReservations() {
 
                 idReserva: r._id,
 
+                claseEspecifica: r.idClaseEspecifica,
+
                 actividad:
                     claseGeneral.idActividad.nombre,
 
@@ -216,6 +218,7 @@ function renderActividades() {
 
   // Aplicamos filtros
   const filtradas = actividadesUsuario.filter(act => {
+
     const esCancelada =
         act.tipo === "Unica"
             ? act.estado === "cancelada"
@@ -264,6 +267,13 @@ function renderActividades() {
             ? act.estado === "cancelada"
             : act.fecha?.some(f => f.estado === "cancelada");
 
+    const esTotalmenteCancelada = 
+        esCancelada
+            ? act.tipo === "Unica"
+                ? act.estado === "cancelada"
+                : act.fechas?.every(f => f.estado === "cancelada")
+            : false;
+
     const estaEnEspera =
         act.tipo === "Unica"
             ? act.estado === "en espera"
@@ -271,7 +281,7 @@ function renderActividades() {
 
     const box = document.createElement("div");
     if (esCancelada) {
-        box.classList.add("cancelada");
+        box.classList.add(esTotalmenteCancelada ? "cancelada-total" : "cancelada");
     }
 
     if (estaEnEspera) {
@@ -399,13 +409,15 @@ function renderActividades() {
             }
             const lista = document.getElementById("listaClasesMensual");
             lista.innerHTML = ""; // limpio antes de renderizar
-
-            act.clases.forEach(claseActual => {
+            
+            act.clases.forEach((claseActual,index) => {
                 const fecha = new Date(claseActual.idClase.fechaEspecifica)
                                 .toLocaleDateString("es-AR");
                 const btnClase = document.createElement("button");
                 btnClase.textContent = `Cancelar clase del ${fecha}`;
                 btnClase.classList.add("box-button");
+
+                btnClase.dataset.indice = index;
 
                 const esCancelado = claseActual.idClase.anotados.some(
                     u => u.estado === "cancelado" && u.idUsuario === userData.session.id
@@ -420,13 +432,14 @@ function renderActividades() {
                 if ((!esCancelado) && (noExiste)){
                     btnClase.addEventListener("click", async () => {
                         mostrarConfirmacionCancelacion(fecha, async () => {
+                            console.log(btnClase.dataset)
                             const res = await fetch('/api/reservas/cancelar-reserva', {
                                 method: 'POST',
                                 headers: {
                                     "Content-Type": "application/json"
                                 },
                                 body: JSON.stringify({
-                                    clase: claseActual,
+                                    clase: claseActual[btnClase.dataset.indice],
                                     tipo: act.tipo
                                 })
                             });
@@ -505,13 +518,13 @@ function renderActividades() {
         } 
         else if (act.tipo === "Mensual") {
             //?
-            const btnCancelarClase = document.createElement("button");
+            /* const btnCancelarClase = document.createElement("button");
             btnCancelarClase.classList.add("box-button", "cancel-next-class");
             btnCancelarClase.textContent = "Cancelar Siguiente Clase";
             btnCancelarClase.addEventListener("click", () => {
                 console.log(`Cancelaste la próxima clase de ${act.actividad}`);
             });
-            buttonsContainer.appendChild(btnCancelarClase);
+            buttonsContainer.appendChild(btnCancelarClase); */
 
             const btnPagarMensual = document.createElement("button");
             btnPagarMensual.classList.add("box-button", "pay-reservation");
