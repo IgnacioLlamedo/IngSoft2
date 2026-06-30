@@ -82,6 +82,18 @@ app.use(express.static(path.join(__dirname, "Front/Static"), {
   }
 }));
 
+/* app.use((req, res, next) => {
+    console.log("➡️ INICIO REQUEST:", req.method, req.url);
+    
+    const originalSend = res.send;
+    res.send = function (body) {
+        console.log("⬅️ RESPUESTA:", req.method, req.url, res.statusCode);
+        return originalSend.call(this, body);
+    };
+
+    next();
+}); */
+
 // Access USE
 app.use('/api', apiRouter);
 

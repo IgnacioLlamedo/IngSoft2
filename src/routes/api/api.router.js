@@ -7,17 +7,25 @@ import { adminRouter } from "./admin.router.js";
 import { reservasRouter } from "./reservas.router.js"
 import { asistenciaRouter } from "./asistencia.router.js"
 import { cupoRouter } from "./cupo.router.js";
+import { webhookRouter } from "./webhook.router.js";
 
 
 export const apiRouter = Router()
 
+apiRouter.use('/webhook', webhookRouter);
 apiRouter.use(json());
-apiRouter.use('/', usuarioRouter);
+
+
+
 apiRouter.use('/clases', clasesRouter)
 apiRouter.use('/pago', pagoRouter);
 apiRouter.use('/admin', adminRouter)
 apiRouter.use('/reservas', reservasRouter);
 apiRouter.use('/asistencia', asistenciaRouter);
 apiRouter.use('/cupo', cupoRouter);
+
+apiRouter.use('/', usuarioRouter);
+
+
 
 apiRouter.use('/test', testRouter);

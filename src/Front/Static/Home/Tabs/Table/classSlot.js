@@ -130,6 +130,12 @@ async function getAllClasses(fechaSemana) {
         console.log(claseObj); */
         const tdId = `${claseObj.clase.dia}-${claseObj.clase.hora}`;
 
+        if (typeof claseObj.clase.dia !== "string" || !isNaN(claseObj.clase.dia)) {
+        console.log("Clase con día incorrecto:");
+        console.log(claseObj);
+    }
+        console.log(tdId);
+
         const celda = document.querySelector(`#${tdId} [data-sala="${claseObj.sala.nombre}"]`);
         
 
