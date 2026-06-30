@@ -98,9 +98,36 @@ export async function cancelarReservaRefactorizadoJsjs(req, res) {
                 }
         });
 
-        const reservaCancelada = await reservaDao.updateOne`${tipo}`({ _
-
-        })
+        //Busco la reserva del usuario que acaba de cancelar y en la clase que fue cancelada
+        //cambio el estado a 'cancelada'
+        let reservaCancelada;
+        if (tipo === "Mensual"){
+            reservaCancelada = await reservaDao.updateOneMensual(
+                {
+                    idUsuario: user,
+                    "clases.idClase": clase.idClase._id
+                },
+                {
+                    $set: {
+                        "clases.$.estado": "cancelada"
+                    }
+                }
+            );
+        }
+        else{
+            reservaCancelada = await reservaDao.updateOneUnica(
+            {
+                idUsuario: user,
+                idClaseEspecifica: clase.idClase._id
+            },
+            {
+                $set: {
+                    estado: "cancelada"
+                }
+            }
+        );
+        }
+        
 
         console.log("/////////////////////////////////////");
         console.log("/////////////////////////////////////");
@@ -385,9 +412,13 @@ export async function reemplazarAnotado(clase, usuario){
 //////////////////// Acá estaba lo viejo
 
 //Unir reservaUnica y mensual. separar por if
-export async function postReservaUnica(req, res) {
+export async function postReservaUnica(reservaData, esSeña) {
     try {
-        const reservaData = req.body;
+
+        /* console.log("esto tiene reservaData (desde postReservaUnica)");
+        console.log(reservaData)
+        console.log("El tipo de clase unica es una seña?: ")
+        console.log(esSeña) */
         
         const idClaseGeneral = reservaData.clases[0].idClase;
         const fecha = reservaData.clases[0].fecha;
@@ -404,8 +435,12 @@ export async function postReservaUnica(req, res) {
         fechaBuscada.setSeconds(0, 0);
         
         const claseGeneral = await claseGeneralDao.readOne({ _id: idClaseGeneral })
-        let claseEspecifica = await claseEspecificaDao.readOne({ idClaseGeneral: claseGeneral._id,
-            fechaEspecifica: fechaBuscada })
+        let claseEspecifica = await claseEspecificaDao.readOne(
+            {
+            idClaseGeneral: claseGeneral._id,
+            fechaEspecifica: fechaBuscada 
+            }
+        );
         if (!claseEspecifica) {
             console.log("Desde postReservaUnica, creando clase especifica y agregando a lista de anotados...");
             //Creo la clase especifica con el usuario anotado.
@@ -420,14 +455,46 @@ export async function postReservaUnica(req, res) {
             //Crea la clase especifica y asigna la nueva id, luego crea la reserva
             claseEspecifica = await claseEspecificaDao.create(data);
             reservaData.idClaseEspecifica = claseEspecifica._id;
-            await reservaDao.createUnica(reservaData);
 
-            return res.json({
+            /* console.log("La data que se utilizará para crear la reserva única desde PostReservaUnica (Backend) es: ")
+            console.log(reservaData);
+            console.log(claseEspecifica); */
+
+            if (!claseEspecifica){
+                return {
+                    success: false,
+                    message: "Error al crear la clase especifica"
+                }
+            }
+
+            const dataParaReservaUnica = {
+                idClaseEspecifica: claseEspecifica._id,
+                pagos: [{ idPago: reservaData._id }],
+                señada: esSeña,
+                idUsuario: reservaData.idUsuario,
+                fechaEspecifica: fecha
+            }
+
+            /* console.log("Estos son los datos de carga de reserva unica: ")
+            console.log(dataParaReservaUnica); */
+
+            /**
+             * Acá hay que revisar si la data del schema está llegando para crearla bien.
+             */
+
+            const reservaCreada = await reservaDao.createUnica(dataParaReservaUnica);
+
+            return {
                 success: true,
                 message: "Usuario anotado",
-                enEspera: false
-            });
+                enEspera: false,
+                reserva: reservaCreada
+            };
         }
+
+        console.log("(Desde postReservaUnica - reservas.controller) La clase especifica existe")
+        console.log("Revisando si la clase especifica tiene espacio para anotar en lista de anotados...")
+
         const capacidadActual = claseEspecifica.anotados.length;
 
         //Asigno el idClaseEspecifica
@@ -444,38 +511,44 @@ export async function postReservaUnica(req, res) {
                     }
                 }
             );
-            await reservaDao.createUnica(reservaData);
 
-            return res.json({
+            const reserva = await reservaDao.createUnica(reservaData);
+            
+            return {
                 success: true,
-                message: "Clase específica creada. Usuario anotado",
-                enEspera: false
-            });
+                message: "Clase específica ya existente. Usuario anotado y reserva creada",
+                enEspera: false,
+                reserva: reserva
+            };
         }   
 
-       //console.log("NO hay lugar en la clase para anotarse -> pasa a lista de ESPERA.");
+        /**
+         * En teoría esto no entra nunca
+         */
+        console.log("$$$$$$$$$$$$$$$ NO DEBERÍA LLEGAR EL CÓDIGO HASTA ACÁ!!! $$$$$$$$$$$$$$$")
+        console.log("NO hay lugar en la clase para anotarse -> pasa a lista de ESPERA.");
         // Si NO hay lugar -> agrego al arreglo de espera.
-        await claseEspecificaDao.updateOne(
-                { _id: claseEspecifica._id },
-                {
-                    $push: {
-                        espera: usuarioData
-                    }
+        const claseCreada = await claseEspecificaDao.updateOne(
+            { _id: claseEspecifica._id },
+            {
+                $push: {
+                    espera: usuarioData
                 }
-            );
+            }
+        );
 
-        return res.json({
+        return {
             success: true,
             message: "Usuario agregado a lista de espera",
             enEspera: true
-        });
+        };
     }
     catch(error) {
         console.log(error)
-        res.json({
+        return {
             success: false,
             message: error,
-        });
+        };
     }
 }
 
@@ -485,7 +558,7 @@ export async function postReservaUnica(req, res) {
  * (agregando el pago hecho), fecha (agregando la fecha específica del pago supongo) y 
  * fecha de vencimiento aumentando 1 mes la fecha de vencimiento.
  */
-export async function postReservaMensual(req, res) {
+export async function postReservaMensual(reservaData) {
     try {
 
         /* Esto contiene el req.body: 
@@ -494,27 +567,17 @@ export async function postReservaMensual(req, res) {
             idUsuario: pagoData.idUsuario,
             tipoClase: "mensualidad" ó "unico" (seña?)
         */
-        const reservaData = req.body;
 
-        console.log("(Back) - Datos recibidos en postReservaUnica:");
+        console.log("(Back) - Datos recibidos en postReservaMensual:");
         console.log(reservaData);
 
         const usuarioData = {
             idUsuario: reservaData.idUsuario,
-            tipo: reservaData.tipoClase
-
+            tipo: 'mensualidad'
         };
-
-
 
         const clasesReserva = [];
 
-
-        /**
-         * 
-         * Esto está mal, voy a modificarlo para que primero se consigan
-         * 
-         */
         //Itero sobre las 4 clases buscando si la claseEspecifica existe, creandola si no es el caso 
         for (const claseData of reservaData.clases) {
 
@@ -559,7 +622,6 @@ export async function postReservaMensual(req, res) {
             if (capacidadActual < claseGeneral.limiteClase) {
 
                 console.log("Hay lugar, por lo tanto se carga en anotados");
-
                 await claseEspecificaDao.updateOne(
                     { _id: claseEspecifica._id },
                     {
@@ -580,7 +642,10 @@ export async function postReservaMensual(req, res) {
              * Por lo tanto devuelvo falso?
              */
             else{
-                //Despues veo que se tiene que hacer acá.
+                //En teoría no se puede entrar por acá ya que antes de ejecutar el pago y llegar acá
+                //El sistema te debería indicar que la clase está llena y preguntarte si queres entrar
+                //a lista de espera...
+                console.log("La clase se encuentra llena, en teoría no deberías poder estar acá...")
             }
         }
 
@@ -588,25 +653,46 @@ export async function postReservaMensual(req, res) {
         console.log(clasesReserva);
         //Por alguna razón, al pushear un idClase, también se creaba un _id para esa idClase especifica.
 
-        // Crear reserva
-        await reservaDao.createMensual({
-            clases: clasesReserva,
-            pagos: reservaData.pagos,
-            idUsuario: reservaData.idUsuario,
-            cancelada: false
-        });
 
-        return res.json({
+        const limiteVencimiento = new Date(reservaData.clases[0].fecha)
+        const diaLimite = limiteVencimiento.getDate();
+
+        limiteVencimiento.setDate(1);// Evita desbordar hacia el siguiente mes.
+        limiteVencimiento.setMonth(limiteVencimiento.getMonth() + 1);
+
+        const ultimoDiaMes = new Date(
+            limiteVencimiento.getFullYear(),
+            limiteVencimiento.getMonth() + 1, 0).getDate();
+
+        limiteVencimiento.setDate(Math.min(diaLimite, ultimoDiaMes));
+
+        console.log("(Desde postReservaMensual) esta es la fecha en la que vence la mensualidad del usuario...");
+        console.log(limiteVencimiento);
+
+        const dataParaCrearReserva = {
+            clases: clasesReserva,
+            pagos: [{ idPago: reservaData._id }],
+            idUsuario: reservaData.idUsuario,
+            fechaVencimiento: limiteVencimiento
+        }
+
+        console.log("La data usada para crear la reserva mensual desde PostReservaMensual (backend) es: ")
+        console.log(dataParaCrearReserva);
+        // Crear reserva
+        const nuevaReserva = await reservaDao.createMensual(dataParaCrearReserva);
+
+        return {
             success: true,
-            message: "Reserva mensual procesada"
-        });
+            message: "Reserva mensual procesada",
+            reserva: nuevaReserva
+        };
     }
     catch(error) {
         console.log(error)
-        res.json({
+        return {
             success: false,
             message: error,
-        });
+        };
     }
 }
 

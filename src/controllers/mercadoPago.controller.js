@@ -1,19 +1,50 @@
-import { Preference } from "mercadopago";
+import { Preference, Payment } from "mercadopago";
 import { client } from "../servicios/mercado.servicio.js";
 import { pagoDao, claseEspecificaDao, claseGeneralDao, usuarioDao, actividadDao } from "../daos/index.js";
 import config from "../config.js";
 import { Role } from "../constants/constants.js";
 import { now } from "mongoose";
+import { webhookPago } from "./webhook.controller.js";
+import { aceptarCupoInterno } from "./cupo.controller.js";
+import { postReservaMensual, postReservaUnica } from "./reservas.controller.js";
 
 
 export async function crearPreferencia(req, res) {
 
+    const nombre = req.body.nombre;
+    const precio = req.body.precio;
+    const tipoClase = req.body.tipoClase;
+    const clases = req.body.clases;
+    const datosExternos = req.body.idCupo;
+
+    // Clases con el formato del schema Pago
+    const clasesFormateadas = clases.map(c => ({
+        idClase: c.idClaseGeneral,
+        fecha: c.fechaEspecifica
+    }));
+
+    // Clave única del pago
+    const clavePago = JSON.stringify(
+        clases
+            .map(c => ({
+                idClase: c.idClaseGeneral,
+                fecha: new Date(c.fechaEspecifica).toISOString()
+            }))
+            .sort((a, b) =>
+                a.idClase.localeCompare(b.idClase) ||
+                a.fecha.localeCompare(b.fecha)
+            )
+    );
+
+    const fechaPago = new Date();
+
+    let pagoPendiente;
+
+    //---------------------------------------
+    // Intento crear el pago pendiente
+    //---------------------------------------
+
     try {
-        const nombre = req.body.nombre; //Yoga, Funcional o Spinning
-        const precio = req.body.precio; 
-        const tipoClase = req.body.tipoClase; //seña, unica o mensual
-        const clases = req.body.clases;
-        const datosExternos = req.body.idCupo;
 
         console.log("Desde crearPreferencia. Los tipos de clases y fechas son: ")
 /*         const clases = [];
@@ -37,14 +68,50 @@ export async function crearPreferencia(req, res) {
 
         const fechaPago = new Date(Date.now());
 
-
-        const pagoPendiente = await pagoDao.create({
+        pagoPendiente = await pagoDao.create({
             monto: precio,
             idUsuario: req.session.user.id,
-            clases: clasesFormateadas, //Contiene los id de clases y fechas especificas (en el caso de Mensual, contiene 4 de c/u)
-            pendiente: true, //Lo uso previo al pago, al entrar en paymentApproved.js, se cambia a false.
-            fechaPago: fechaPago
+            clases: clasesFormateadas,
+            clavePago,
+            fechaPago,
+            estado: "CREANDO"
         });
+
+    }
+    catch (error) {
+
+        if (error.code === 11000) {
+
+            const pagoExistente = await pagoDao.readOne({
+                idUsuario: req.session.user.id,
+                clavePago
+            });
+
+            if (pagoExistente?.initPoint) {
+                return res.json({
+                    success: true,
+                    init_point: pagoExistente.initPoint,
+                    reutilizado: true
+                });
+            }
+
+            return res.status(409).json({
+                success: false,
+                message: "Ya se está generando un pago para estas clases."
+            });
+        }
+
+        throw error;
+    }
+
+    //---------------------------------------
+    // Creo la preferencia
+    //---------------------------------------
+
+    try {
+
+        const ahora = new Date();
+        const vence = new Date(ahora.getTime() + 60 * 1000); //La preferencia vence despues de 1 minuto...
 
         const preference = new Preference(client);
 
@@ -59,33 +126,187 @@ export async function crearPreferencia(req, res) {
                 ],
                 external_reference: JSON.stringify({
                     idUsuario: req.session.user.id,
-                    tipoClase: tipoClase,
-                    nombre: nombre, //Nombre clase (yoga, spinning o funcional)
+                    tipoClase,
+                    nombre,
                     idPagoPendiente: pagoPendiente._id,
                     idCupo: datosExternos
                 }),
+                notification_url: `${config.link}/api/webhook/webhook`,
                 back_urls: {
                     success: `${config.link}/payment/approved`,
                     failure: `${config.link}/payment/failure`,
-                    pending: `${config.link}/payment/pending`,
+                    pending: `${config.link}/payment/pending`
                 },
-                auto_return: "approved"
+                auto_return: "approved",
+                expires: true,
+                expiration_date_from: ahora.toISOString(),
+                expiration_date_to: vence.toISOString()
             }
         });
 
-        res.json({
+        await pagoDao.updateOne(
+            { _id: pagoPendiente._id },
+            {
+                estado: "PENDIENTE",
+                idPreferencia: response.id,
+                initPoint: response.init_point
+            }
+        );
+
+        return res.json({
+            success: true,
             init_point: response.init_point
         });
 
-    } 
-    catch(error) {
+    }
+    catch (error) {
+
+        // Si falló Mercado Pago, elimino el pago pendiente
+        await pagoDao.delete({ _id: pagoPendiente._id });
+
+        throw error;
+    }
+}
+
+export async function obtenerPago(req, res) {
+    try {
+
+        const { idPagoPendiente } = req.params;
+
+        const pago = await pagoDao.readOne({
+            _id: idPagoPendiente
+        });
+
+        if (!pago) {
+            return res.json({
+                success: false,
+                message: "Pago no encontrado."
+            });
+        }
+
+        return res.json({
+            success: true,
+            data: pago
+        });
+
+    } catch (error) {
 
         console.error(error);
 
-        res.status(500).json({
-            error: "Error al crear preferencia"
+        return res.status(500).json({
+            success: false,
+            message: "Error al obtener el pago."
         });
+
     }
+}
+
+//Básicamente hace toda la funcionalidad que hacia paymentApproved.js
+export async function procesarWebhook(body){
+
+    /* console.log("Desde procesarWebhook!!!!!");
+    console.log("                                           ")
+    console.log("                                           ") */
+
+
+    if(body.type !== "payment"){
+        /* console.log("El tipo del body NO es PAYMENT, saliendo...") */
+        return;
+    }
+
+    /* console.log("El tipo del body es 'PAYMENT' ---- Ahora sigue la secuencia de la función.")
+
+    console.log("Este es el body dentro de procesarWebhook: ")
+    console.log(body);
+    console.log("                                           ")
+    console.log("                                           ") */
+
+    //Busco el pago en la api de MP
+    const payment = new Payment(client);
+    const mpPayment = await payment.get({
+        id: body.data.id
+    })
+
+    console.log("Parte número 1: ")
+    console.log("Este es el pago de mercado pago: ")
+    console.log(mpPayment);
+    console.log("                                           ")
+    console.log("                                           ")
+
+    //Si el pago no fue aprobado, no tiene sentido continuar ejecución
+    if(mpPayment.status !== "approved"){
+        console.log("El estado del pago (recibido desde MercadoPago) NO es aprobado... retornando...");
+        return;
+    }
+
+    //Si el pago fue aprovado, controlo que no este aprobado en mi base de datos.-
+    const external = JSON.parse(mpPayment.external_reference);
+
+    /* console.log("Estos son los datos dentro de la referencia externa:  ");
+    console.log(external);
+    console.log("                                           ");
+    console.log("                                           "); */
+
+    const pago = await pagoDao.readOne({
+        _id: external.idPagoPendiente
+    });
+
+    /* console.log("Parte número 2: ")
+    console.log("Este es el pago registrado en la base de datos!!!");
+    console.log("En teoría el estado del pago debería ser 'PENDIENTE' hasta que se ejecute la parte 3 - unas lineas más adelante...")
+    console.log(pago);
+    console.log("                                           ");
+    console.log("                                           "); */
+
+    if (!pago) {
+        console.log("NO EXISTE PAGO... En teoría no debería poder ocurrir...")
+        return;
+    }
+
+    //Si el pago en la base de datos ya está aprobado, no sigo procesando.
+    if(pago.estado==="APROBADO"){
+        return;
+    }
+
+    /**
+     * Estos son los pasos que se realizaban en paymentApproved.js
+     */
+
+    //confirmar el pago
+    /* console.log("Parte número 3: ")
+    console.log("Buscando y confirmando el pago en la DB, si el mismo ya estaba aprobado, no hace nada: ") */
+    //en esta función se cambia el estado del pago en DB de pendiente a aprobado
+    //y también se cambia la fechaPago a new Date(mpPayment.date_approved)
+    const confirmadoElPago = await confirmarPagoInterno(mpPayment);
+    /* console.log("El estado del pago es: ");
+    console.log(confirmadoElPago.estado); */
+
+
+    let reservaCreada;
+    //crear reserva
+    if(external.tipoClase==="mensual"){
+        reservaCreada = await postReservaMensual(confirmadoElPago);
+        /* console.log("La reserva creada es de tipo MENSUAL: ");
+        console.log(reservaCreada); */
+    }
+    else {
+        reservaCreada = await postReservaUnica(confirmadoElPago, external.tipoClase==="seña");
+        /* console.log("La reserva creada es de tipo UNICA: ");
+        console.log(reservaCreada); */
+    }
+    /* console.log("                                           ")
+    console.log("                                           ") 
+    console.log("Parte número 4: ") */
+    console.log(`Esta es la reserva creada según su tipo (${external.tipoClase}): `)
+    if (reservaCreada.success)
+        console.log(reservaCreada.reserva);
+    else
+        console.log(reservaCreada.message)
+
+    /* console.log("             ");
+    console.log("             ");
+    console.log("Finalizado desde webhooks!!!!!!!!!!!!!"); */
+    
 }
 
 /* Función para consultar si el usuario ya está anotado en la/las clase
@@ -94,6 +315,43 @@ export async function consultar(req, res) {
     try {
 
         const { clases } = req.body;
+        const clasesBuscadas = clases.map(c => ({
+            idClase: c.idClaseGeneral,
+            fecha: new Date(c.fechaEspecifica).getTime()
+        }));
+
+        const pagosPendientes = await pagoDao.readMany({
+            idUsuario: req.session.user.id,
+            estado: "PENDIENTE"
+        });
+
+        const ahora = Date.now();
+        const tiempoExpiracion = 2 * 60 * 1000; // 2 minutos
+
+        for (const pago of pagosPendientes) {
+
+            // Si el pago venció, lo elimino y sigo buscando
+            if (ahora - new Date(pago.fechaPago).getTime() >= tiempoExpiracion) {
+                await pagoDao.deleteOne({ _id: pago._id });
+                continue;
+            }
+
+            // Verifico si alguna clase del pago coincide con alguna solicitada
+            const coincide = pago.clases.some(clasePago =>
+                clasesBuscadas.some(claseBuscada =>
+                    clasePago.idClase === claseBuscada.idClase &&
+                    new Date(clasePago.fecha).getTime() === claseBuscada.fecha
+                )
+            );
+
+            if (coincide) {
+                return res.json({
+                    success: false,
+                    message: "Ya existe un pago pendiente para una de las clases seleccionadas."
+                });
+            }
+        }
+        
         let datos = []
         let int = 0;
 
@@ -151,13 +409,30 @@ export async function consultar(req, res) {
                 u => u.idUsuario === req.session.user.id
             );
 
+            const fecha = new Intl.DateTimeFormat("es-AR").format(new Date(claseData.fechaEspecifica));
+
             //Si está en lista de anotados o de espera corta el bucle
-            if (yaAnotado || yaEnEsperaMensual || yaEnEsperaUnica) {
+            if (yaAnotado) {
                 return res.json({
                     success: false,
-                    message: `Ya se encuentra anotado en la actividad del día ${claseData.fechaEspecifica}`
+                    message: `Ya se encuentra anotado en la actividad del día ${fecha}`
                 });
             }
+
+            if (yaEnEsperaMensual){
+                return res.json({
+                    success: false,
+                    message: `Ya se encuentra en lista de espera mensual en la actividad del día ${fecha}`
+                })
+            }
+
+            if (yaEnEsperaUnica){
+                return res.json({
+                    success: false,
+                    message: `Ya se encuentra en lista de espera en la actividad del día ${fecha}`
+                })
+            }
+
             int++;
         }
 
@@ -178,6 +453,35 @@ export async function consultar(req, res) {
             message: "NO se encontró la clase Especifica buscada. -> en teoría no puede suceder xd"
         });
     }
+}
+
+export async function confirmarPagoInterno(mpPayment) {
+
+    const external = JSON.parse(mpPayment.external_reference);
+    console.log("Desde confirmarPagoInterno en MercadoPagoController.............. Este es el mpPayment y estoy buscando el idPago de Mercado Pago para guardarlo en mi Pago Mongoose:");
+    console.log(mpPayment);
+
+    const pago = await pagoDao.readOne({
+        _id: external.idPagoPendiente
+    });
+
+    if (!pago)
+        throw new Error("Pago no encontrado.");
+
+    if (pago.estado === "APROBADO"){
+        console.log("El pago ya está registrado como aprobado en la DB!")
+        return pago;
+    }  
+
+    console.log("Desde confirmarPagoInterno::: El pago no estaba confirmado como aprobado en DB!! --- sería lo normal!")
+    return await pagoDao.updateOne(
+        { _id: pago._id },
+        {
+            estado: "APROBADO",
+            idPagoMercadoPago: mpPayment.id,
+            fechaPago: new Date(mpPayment.date_approved)
+        }
+    );
 }
 
 export async function confirmarPagoController(req, res){
