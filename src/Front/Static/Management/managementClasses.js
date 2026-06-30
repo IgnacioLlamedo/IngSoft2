@@ -68,12 +68,12 @@ const roomSelect = document.getElementById("roomSelect");
 const activitySelect = document.getElementById("activitySelect");
 const instructorSelect = document.getElementById("instructorSelect");
 
-
-let roomsData = new Map();
+let roomsData;
 let activitiesData;
 let instructorsData;
 
 const classLimit = document.getElementById("classLimit");
+const instructorError = document.getElementById("instructorError");
 
 
 fetchData();
@@ -93,29 +93,51 @@ async function fetchData() {
         instructosRes.json(),
     ]);
 
+    roomsData = roomsResData.data;
+    activitiesData = activitiesResData.data;
+    instructorsData = instructosResData.data;
+
     printSlots(classesResData.data);
-    loadRoomsOptions(roomsResData.data);
-    loadActivitiesOptions(activitiesResData.data);
-    loadInstructorsOptions(instructosResData.data);
+    loadRoomsOptions(roomSelect);
+    loadActivitiesOptions(activitySelect);
+    loadInstructorsOptions(activitiesResData.data[0]._id, instructorSelect, instructorError);
 }
 
-function loadRoomsOptions(rooms) {
-    loadOptionsNames(rooms, roomSelect);
-    roomsData = rooms;
+function loadRoomsOptions(select) {
+    loadOptionsNames(roomsData, select);
 }
 
-function loadActivitiesOptions(activities) {
-    loadOptionsNames(activities, activitySelect);
-    activitiesData = activities;
+function loadActivitiesOptions(select) {
+    loadOptionsNames(activitiesData, select);
 }
 
-function loadInstructorsOptions(instructors) {
-    loadOptionsNames(instructors, instructorSelect);
-    instructorsData = instructors;
+function loadInstructorsOptions(idActivitySelected, select, errorElem) {
+    const activityInstructors = instructorsData.filter(instructor => 
+        instructor.actividades.some(idActivity => idActivity === idActivitySelected)
+    );
+
+    if(activityInstructors.length === 0) {
+        showInstructorErrorMsg(select, errorElem, "Error al cargar profesores. No existe ningún profesor que trabaje en la actividad seleccionada");
+        return;
+    }
+    
+    hideInstructorErrorMsg(errorElem);
+    loadOptionsNames(activityInstructors, select);
 }
+
+
+function showInstructorErrorMsg(select, errorElem, message) {
+    select.innerHTML = "";
+    errorElem.textContent = message;
+    errorElem.hidden = false;
+}
+
+function hideInstructorErrorMsg(errorElem) { errorElem.hidden = true; }
 
 
 function loadOptionsNames(data, selectHTMLElement) {
+    selectHTMLElement.innerHTML = "";
+
     const options = data.map((element, index) => {
         return {
             value: element._id,
@@ -131,6 +153,10 @@ function loadOptionsNames(data, selectHTMLElement) {
     });
 }
 
+
+activitySelect.addEventListener('input', (event) => {
+    loadInstructorsOptions(event.target.value, instructorSelect, instructorError);
+});
 
 classLimit.addEventListener('input', (event) => {
     classLimit.value = checkNumberInput(event.target.value);
@@ -255,7 +281,7 @@ createForm.addEventListener("submit", async (event) => {
 
     const data = getFormData(event.target);
 
-    const error = checkErrors(data);
+    const error = checkErrors(data, instructorError);
     if(error) {
         ErrorMsg(error);
         return;
@@ -282,10 +308,13 @@ createForm.addEventListener("submit", async (event) => {
 });
 
 
-function checkErrors(formData) {
+function checkErrors(formData, instructorError) {
     const roomLimit = getRoomLimit(formData.idSala);
     if(formData.limiteClase > roomLimit)
         return `Error al crear la clase. El límite de clase ingresado es mayor al límite de la sala. El límite de la sala es: ${roomLimit}`;
+
+    if(!instructorError.hidden)
+        return "Error con la clase. Primero solucione el error con el profesor."
 }
 
 function getRoomLimit(id) {
@@ -397,6 +426,8 @@ let editFormErrorMsg;
 let editFormSuccesMsg;
 let editId;
 
+let editInstructorError;
+
 
 async function switchToEdit(slot) {
     const templateClone = templateEditForm.content.cloneNode(true);
@@ -415,7 +446,7 @@ async function switchToEdit(slot) {
         let data = getFormData(event.target);
         data.id = slot._id;
 
-        const error = checkErrors(data);
+        const error = checkErrors(data, editInstructorError);
         if(error) {
             EditErrorMsg(error);
             return;
@@ -470,19 +501,24 @@ function fillFormWithData(editForm, slot) {
     const roomSelectField = editForm.querySelector("#roomSelectField");
     const activitySelectField = editForm.querySelector("#activitySelectField");
     const instructorSelectField = editForm.querySelector("#instructorSelectField");
+    editInstructorError = editForm.querySelector("#editInstructorError");
 
-    loadOptionsNames(roomsData, roomSelectField);
-    loadOptionsNames(activitiesData, activitySelectField);
-    loadOptionsNames(instructorsData, instructorSelectField);
-    //////////////////////////////////////
+    loadRoomsOptions(roomSelectField);
+    loadActivitiesOptions(activitySelectField);
+    loadInstructorsOptions(formFieldsContent.find(field => field.id === "#activitySelectField").content, instructorSelectField, editInstructorError);
 
-    formFieldsContent.forEach(field => {
-        editForm.querySelector(field.id).value = field.content;
-    });
+    activitySelectField.addEventListener('input', (event) => {
+        loadInstructorsOptions(event.target.value, instructorSelectField, editInstructorError)
+    })
 
     const editLimitClass = editForm.querySelector("#classLimitField");
     editLimitClass.addEventListener('input', (event) => {
         editLimitClass.value = checkNumberInput(event.target.value);
+    });
+    //////////////////////////////////////
+
+    formFieldsContent.forEach(field => {
+        editForm.querySelector(field.id).value = field.content;
     });
 }
 
