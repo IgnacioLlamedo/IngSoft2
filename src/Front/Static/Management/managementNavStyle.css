@@ -50,3 +50,9 @@
     margin-block: 5px;
   }
 }
+
+.btn-active {
+    background-color: white !important;
+    color: #D01F25 !important;
+    font-weight: 600;
+}

@@ -2,12 +2,6 @@
     margin-bottom: 75px;
 }
 
-.btn-active {
-    background-color: white !important;
-    color: #D01F25 !important;
-    font-weight: 600;
-}
-
 .user-stats {
     color: #eaeaea;
     text-align: center;
@@ -72,28 +66,22 @@
 
 .user-table th:nth-child(1),
 .user-table td:nth-child(1) {
-    width: 30%;
+    width: 25%;
 }
 
 .user-table th:nth-child(2),
 .user-table td:nth-child(2) {
-    width: 20%;
+    width: 25%;
 }
 
 .user-table th:nth-child(3),
 .user-table td:nth-child(3) {
-    width: 10%;
+    width: 15%;
 }
 
 .user-table th:nth-child(4),
 .user-table td:nth-child(4) {
-    width: 10%;
-}
-
-.user-table th:nth-child(5),
-.user-table td:nth-child(5) {
-    width: 10%;
-    min-width: 10%;
+    width: 15%;
 }
 
 /* .user-table th:nth-child(6),

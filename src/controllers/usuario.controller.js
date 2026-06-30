@@ -72,7 +72,7 @@ export async function postController(req, res) {
         userData.motivoEstado = 'Falta completar registro';
 
 		const user = await usuarioDao.create(userData);
-
+        // await generarOTP(user);
         const redirect = `/access/authentication?email=${userData.mail}`;
 		res.json({
 			success: true,
@@ -258,6 +258,20 @@ export async function authPass(req, res){
             message: "Error al validar el código. Inténtelo más tarde."
         });
     }
+}
+
+async function generarOTP(usuario){
+    const expirationTime = 20000;
+	const limite = new Date(Date.now() + expirationTime);
+	const otp = generateOtp();
+
+    const datos = { codigo: otp, limiteCodigo: limite };
+	const usuarioN = await usuarioDao.updateOne({_id: usuario._id}, datos);
+
+    console.log("codigo enviado: " + otp)
+    await mailer.clientAuth(usuario.mail, usuario.nombre, otp);
+
+    return usuarioN
 }
 
 export async function crearCodigo(req, res){
@@ -533,7 +547,8 @@ export async function getUserlistController(req, res) {
             return res.status(403).json({ success: false, message: 'Acceso denegado' });
         }
 
-        const query = req.query || {};
+        const queryRole = req.query && req.query.role;
+        const query = queryRole ? { rol: queryRole } : {};
 
         return res.json(await usuarioDao.readMany(query));
 

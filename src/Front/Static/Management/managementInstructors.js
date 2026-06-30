@@ -69,7 +69,7 @@ const fieldsToFillWithSlotData = (slot) => {
 
 
 
-
+const instructorsBtn = document.getElementById('instructorsBtn');
 
 const createForm = document.getElementById("create-form");
 const templateEditForm = document.getElementById("edit-form");
@@ -86,6 +86,7 @@ const dialog = document.getElementById("confirmPanel");
 let Status;
 
 window.addEventListener('DOMContentLoaded', async () => {
+    instructorsBtn.classList.add("btn-active");
     Status = JSON.parse(createForm.dataset.statusEnum);
     await initializeActivityCheckboxes();
     attachConfirmDialogHandlers();
@@ -342,6 +343,9 @@ async function deleteInstructor(event, _id, slotError, slotErrorMsg, motivoEstad
     const resData = await res.json();
 
     if (resData.success) {
+        if(isOnEditMode)
+            switchToCreateForm();
+
         showDeleteSuccessDialog("Profesor borrado correctamente.");
         getAllSlots();
     }
@@ -395,6 +399,7 @@ function showSlotError(slotError, slotErrorMsg, message) {
 // EDIT FORM //
 
 let currentForm = createForm;
+let isOnEditMode = false;
 
 let editForm;
 let editFormErrorMsg;
@@ -458,6 +463,8 @@ async function switchToEdit(slot) {
 
     currentForm.replaceWith(editForm);
     currentForm = editForm;
+
+    isOnEditMode = true;
 }
 
 
@@ -533,6 +540,8 @@ async function switchToSuspend(slot) {
 function switchToCreateForm() {
     currentForm.replaceWith(createForm);
     currentForm = createForm;
+
+    isOnEditMode = true;
 }
 
 

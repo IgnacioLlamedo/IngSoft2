@@ -35,7 +35,7 @@ const fieldsToFillWithSlotData = (slot) => {
 
 
 
-
+const roomsBtn = document.getElementById('roomsBtn');
 
 const createForm = document.getElementById("create-form");
 const templateEditForm = document.getElementById("edit-form");
@@ -48,6 +48,10 @@ const notDataAvailableMsg = document.getElementById("notDataAvailableMsg");
 
 const dialog = document.getElementById("confirmPanel");
 
+
+window.addEventListener('DOMContentLoaded', () => {
+    roomsBtn.classList.add("btn-active");
+});
 
 getAllSlots();
 
@@ -131,7 +135,7 @@ function createEditAndDeleteButtons(slotData, slotError, slotErrorMsg, slot) {
 
         dialog.addEventListener('close', (closeEvent) => {
             if (dialog.returnValue === 'default') {
-                deleteActivity(closeEvent, slot._id, slotError, slotErrorMsg);
+                deleteRoom(closeEvent, slot._id, slotError, slotErrorMsg);
             }
         }, { once: true });
     });
@@ -232,7 +236,7 @@ function hideSuccessMsg() {
 
 
 
-async function deleteActivity(event, _id, slotError, slotErrorMsg) {
+async function deleteRoom(event, _id, slotError, slotErrorMsg) {
     event.preventDefault();
 
     hideSlotError(slotError);
@@ -249,8 +253,11 @@ async function deleteActivity(event, _id, slotError, slotErrorMsg) {
 
     const resData = await res.json();
 
-    if(resData.success)
+    if(resData.success){
+        if(isOnEditMode)
+            switchToCreateForm();
         getAllSlots();
+    }
     else
         showSlotError(slotError, slotErrorMsg, resData.message);
 }
@@ -271,6 +278,7 @@ function showSlotError(slotError, slotErrorMsg, message) {
 // EDIT FORM //
 
 let currentForm = createForm;
+let isOnEditMode = false;
 
 let editForm;
 let editFormErrorMsg;
@@ -324,12 +332,16 @@ async function switchToEdit(slot) {
 
     currentForm.replaceWith(editForm);
     currentForm = editForm;
+
+    isOnEditMode = true;
 }
 
 
 function switchToCreateForm() {
     currentForm.replaceWith(createForm);
     currentForm = createForm;
+
+    isOnEditMode = false;
 }
 
 

@@ -15,13 +15,7 @@ const slotHtml = (slot) => {return `
 function getFormData(form) {
     return {
         nombre: form.name.value, // Se puede poner "Yo ga" pero bueno. Haría replaceAll(" ", "") pero entonces no podría existir nada con dos plaabras
-        precioMensual: form.price.value,
-    }
-}
-
-function getEditFormData(form) {
-    return {
-        nombre: form.name.value, // Se puede poner "Yo ga" pero bueno. Haría replaceAll(" ", "") pero entonces no podría existir nada con dos plaabras
+        precioMensual: Number(form.price.value),
     }
 }
 
@@ -29,6 +23,7 @@ function getEditFormData(form) {
 const fieldsToFillWithSlotData = (slot) => {
     return [
         {id: '#nameField', content: slot.nombre},
+        {id: '#priceField', content: slot.precioMensual}
     ];
 };
 
@@ -40,7 +35,7 @@ const fieldsToFillWithSlotData = (slot) => {
 
 
 
-
+const activitiesBtn = document.getElementById('activitiesBtn');
 
 const createForm = document.getElementById("create-form");
 const templateEditForm = document.getElementById("edit-form");
@@ -54,6 +49,11 @@ const notDataAvailableMsg = document.getElementById("notDataAvailableMsg");
 const dialog = document.getElementById("confirmPanel");
 
 const priceInput = document.getElementById("price");
+
+
+window.addEventListener('DOMContentLoaded', () => {
+    activitiesBtn.classList.add("btn-active");
+});
 
 getAllSlots();
 
@@ -215,6 +215,20 @@ createForm.addEventListener("submit", async (event) => {
 });
 
 
+priceInput.addEventListener("input", (event) => {
+    priceInput.value = checkNumberInput(event.target.value, 0);
+});
+
+function checkNumberInput(value, lenghtCap) {
+    value = value.replace(/[^0-9]/g, "");
+
+    if(value.charAt(0) === '0') value = "1";
+    if(lenghtCap !== 0 && value.length > lenghtCap) value = value.slice(0, 2);
+
+    return value;
+}
+
+
 
 
 
@@ -267,8 +281,11 @@ async function deleteActivity(event, _id, slotError, slotErrorMsg) {
 
     const resData = await res.json();
 
-    if(resData.success)
+    if(resData.success) {
+        if(isOnEditMode)
+            switchToCreateForm();
         getAllSlots();
+    }
     else
         showSlotError(slotError, slotErrorMsg, resData.message);
 }
@@ -289,6 +306,7 @@ function showSlotError(slotError, slotErrorMsg, message) {
 // EDIT FORM //
 
 let currentForm = createForm;
+let isOnEditMode = false;
 
 let editForm;
 let editFormErrorMsg;
@@ -306,11 +324,17 @@ async function switchToEdit(slot) {
     editFormErrorMsg = editForm.querySelector("#editError");
     editFormSuccessMsg = editForm.querySelector("#editSuccess");
 
+    const editPriceInput = editForm.querySelector("#priceField");
+
+    editPriceInput.addEventListener("input", (event) => {
+        editPriceInput.value = checkNumberInput(event.target.value, 0);
+    });
+
     editForm.addEventListener("submit", async (event) => {
         event.preventDefault();
         EditCleanMsgs();
 
-        let data =  getEditFormData(event.target);
+        let data =  getFormData(event.target);
         data.id = slot._id;
 
         const dataString = JSON.stringify(data);
@@ -342,12 +366,16 @@ async function switchToEdit(slot) {
 
     currentForm.replaceWith(editForm);
     currentForm = editForm;
+
+    isOnEditMode = true;
 }
 
 
 function switchToCreateForm() {
     currentForm.replaceWith(createForm);
     currentForm = createForm;
+
+    isOnEditMode = false;
 }
 
 

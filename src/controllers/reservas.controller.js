@@ -136,12 +136,13 @@ export async function validarYNotificar(tipo, claseLiberada, idCancelo){
 
     let reemplazo = null;
 
+    //////////////////////////////////
+    //          MENSUAL
+    //////////////////////////////////
     if (tipo === "Mensual"){
         let candidato;
-
-        //CONSULTAR: Si una persona se baja de una lista de espera mensual, se baja de una clase sola
-        //o de las 4/5 en las que está en lista de espera?
         
+        /**Por cada persona dentro de la lista de espera mensual de la clase liberada:  */
         for(const act in claseLiberada.esperaMensual){
 
             /**
@@ -151,6 +152,14 @@ export async function validarYNotificar(tipo, claseLiberada, idCancelo){
              *      clases: [],        --- clases tiene las 4/5 clases especificas
              *      candidatoValido: true
              *  }
+             * 
+             *  ó
+             * 
+             * let valida = {
+             *      clases: [],     --- puede o no tener clases, lo importante es candidatoValido
+             *      candidatoValido: false
+             * }
+             * 
              */
             candidato = await validarReemplazo(act.idUsuario, claseLiberada);
 
@@ -165,7 +174,9 @@ export async function validarYNotificar(tipo, claseLiberada, idCancelo){
                 
             y por lo tanto no sería elegible para reemplazo.*/
 
-            //si es válido
+            let nuevoCupo = null;
+
+            //si el candidato es válido
             if (candidato.valido){
 
                 const clasesDelCupo = [];
@@ -181,7 +192,7 @@ export async function validarYNotificar(tipo, claseLiberada, idCancelo){
                 }
 
                 //creo el nuevo cupo
-                const nuevoCupo = await await cupoDao.create({
+                nuevoCupo = await cupoDao.create({
                     idUsuario: act.idUsuario,
                     idUsuarioCanceloClase: idCancelo,
                     clasesEspecificas: clasesDelCupo,
@@ -193,21 +204,41 @@ export async function validarYNotificar(tipo, claseLiberada, idCancelo){
                     break;
                 }
 
+                await claseEspecificaDao.updateOne({_id: claseLiberada._id, "esperaMensual.idUsuario": act.idUsuario},
+                    { 
+                        $set:{
+                            "anotados.$.estado":"esperandoConfirmacion"
+                        }
+                    }
+                )
                 //consulto al usuario si acepta el nuevo cupo.
                 reemplazo = await notificarUsuario(act.idUsuario, candidato.clases, nuevoCupo._id);
                 break;
             }
-            //si no sirve sigo recorriendo.
+
+            else{
+                console.log()
+            }
+            //si el candidato no es válido, sigo con el siguiente en la lista de espera
         }
     }
-    //la clase cancelada es única -- simplemente busco al siguiente en
-    //lista de espera única
+    //////////////////////////////////
+    //          UNICA
+    //////////////////////////////////
     else{
+        //si la clase cancelada es única -- simplemente busco al siguiente en lista de espera única
+
+
+        //si existen personas en la lista de espera única
         if (claseLiberada.esperaUnica.length > 0){
+
+            //Itero sobre la lista de espera unica.
             for(const unicaAct in claseLiberada.esperaUnica){
-                //si el actual aún no fue consultado, aceptó o rechazo un cupo, creo el cupo y lo consulto.
+
+                //si el actual aún no está esperando confirmación, aceptó o rechazo un cupo
                 if (unicaAct.estado === 'activo') {
-                    
+
+                    //creo el cupo.
                     const nuevoCupo = await cupoDao.create({
                         idUsuario: unicaAct.idUsuario,
                         idUsuarioCanceloClase: idCancelo,
@@ -215,23 +246,27 @@ export async function validarYNotificar(tipo, claseLiberada, idCancelo){
                         tipo: tipo
                     });
                     
-                    await claseEspecificaDao.updateOne({_id: claseLiberada._id, "anotados.idUsuario": unicaAct.idUsuario},
+                    //Modifico el estado en la lista de espera única del usuario a esperandoConfirmación para que
+                    //no pueda ser elegído en caso de que otra persona cancele clase en el mismo moomento.
+                    await claseEspecificaDao.updateOne({_id: claseLiberada._id, "esperaUnica.idUsuario": unicaAct.idUsuario},
                     { 
                         $set:{
-                            "anotados.$.estado":"esperandoConfirmacion"
+                            "esperaUnica.$.estado":"esperandoConfirmacion"
                         }
                     })
 
+                    //Mando mail al usuario consultando si acepta el cupo.
                     reemplazo = await notificarUsuario(unicaAct.idUsuario, claseLiberada, nuevoCupo._id);
                 }
+
+                //si el actual ya fue notificado para confirmar anteriormente, aceptó una clase o la rechazó
                 else
+                    //Paso al siguiente candidato.
                     continue
             }
-
-            //solicito confirmación por parte del usuario
-            
         }
     }
+
     return reemplazo;
 }
 
@@ -457,17 +492,20 @@ export async function postReservaMensual(req, res) {
             clases: pagoData.clases, //Contiene la idClaseGeneral y FechasEspecificas (DE 4 CLASES!)
             pagos: [{ idPago: pagoData._id }],
             idUsuario: pagoData.idUsuario,
-            tipoClase: "mensualidad"
+            tipoClase: "mensualidad" ó "unico" (seña?)
         */
         const reservaData = req.body;
 
-        /* console.log("(Back) - Datos recibidos en postReservaUnica:");
-        console.log(reservaData); */
+        console.log("(Back) - Datos recibidos en postReservaUnica:");
+        console.log(reservaData);
 
         const usuarioData = {
             idUsuario: reservaData.idUsuario,
             tipo: reservaData.tipoClase
+
         };
+
+
 
         const clasesReserva = [];
 
@@ -572,6 +610,66 @@ export async function postReservaMensual(req, res) {
     }
 }
 
+
+export async function getCancellations(req, res) {
+    try {
+        const uniqueReservations = await reservaDao.readManyUnica({});
+        const monthlyReservations = await reservaDao.readManyMensual({});
+        const generalClasses = await claseGeneralDao.readMany({});
+
+        const newGeneralClasses = [];
+        for (const gc of generalClasses) {
+            const objProfesor = await profesorDao.readOne({ _id: gc.idProfesor });
+            const profesor = objProfesor.nombre || "Profesor desconocido";
+            newGeneralClasses.push({
+                id: gc._id,
+                clase: `${gc.dia}, ${gc.hora}:00 hs.`,
+                profesor,
+                precioMensual: gc.precioMensual,
+                reservas: 0,
+                cancelaciones: 0
+            })
+        }
+
+        uniqueReservations.forEach(r => {
+            let gc;
+            if (r.idClase) {
+                gc = newGeneralClasses.find(c => c.id === r.idClase);
+            }
+            else if (r.clases && r.clases.length > 0) {
+                gc = newGeneralClasses.find(c => c.id === r.clases[0].idClase);
+            }
+            if (!gc) return;
+            gc.reservas++;
+            if (r.cancelada) gc.cancelaciones++;
+        });
+
+
+        for (const r of monthlyReservations) {
+            let gc;
+            if (r.idClase) {
+                gc = newGeneralClasses.find(c => c.id === r.idClase);
+            }
+            else if (r.clases && r.clases.length > 0) {
+                const uniqueClass = await claseEspecificaDao.readOne({ _id: r.clases[0].idClase });
+                gc = newGeneralClasses.find(c => c.id === uniqueClass.idClaseGeneral);
+            }
+            if (!gc) return;
+            gc.reservas++;
+            if (r.cancelada) gc.cancelaciones++;
+        }
+
+        return res.json(newGeneralClasses);
+    }
+    catch (error) {
+        console.error("getCancellations ERROR: ", error);
+        res.json({
+            success: false,
+            message: "Error al recuperar las cancelaciones. Inténtelo de nuevo más tarde."
+        });
+    }
+}
+
 //Función que se llamará cuando el usuario desde tabMyActivities presione el botón salir de lista de espera.
 export async function salirListaEspera(req, res) {
     try {
@@ -604,6 +702,8 @@ export async function salirListaEspera(req, res) {
                     message: "Clase específica no encontrada"
                 });
             }
+
+            //Habría que hacer algun tipo de checkeo?
 
             await claseEspecificaDao.updateOne(
                 { _id: clase._id },
@@ -702,61 +802,4 @@ export async function salirListaEspera(req, res) {
         })
     }
 }
-export async function getCancellations(req, res) {
-    try {
-        const uniqueReservations = await reservaDao.readManyUnica({});
-        const monthlyReservations = await reservaDao.readManyMensual({});
-        const generalClasses = await claseGeneralDao.readMany({});
 
-        const newGeneralClasses = [];
-        for (const gc of generalClasses) {
-            const objProfesor = await profesorDao.readOne({ _id: gc.idProfesor });
-            const profesor = objProfesor.nombre || "Profesor desconocido";
-            newGeneralClasses.push({
-                id: gc._id,
-                clase: `${gc.dia}, ${gc.hora}:00 hs.`,
-                profesor,
-                precioMensual: gc.precioMensual,
-                reservas: 0,
-                cancelaciones: 0
-            })
-        }
-
-        uniqueReservations.forEach(r => {
-            let gc;
-            if (r.idClase) {
-                gc = newGeneralClasses.find(c => c.id === r.idClase);
-            }
-            else if (r.clases && r.clases.length > 0) {
-                gc = newGeneralClasses.find(c => c.id === r.clases[0].idClase);
-            }
-            if (!gc) return;
-            gc.reservas++;
-            if (r.cancelada) gc.cancelaciones++;
-        });
-
-
-        for (const r of monthlyReservations) {
-            let gc;
-            if (r.idClase) {
-                gc = newGeneralClasses.find(c => c.id === r.idClase);
-            }
-            else if (r.clases && r.clases.length > 0) {
-                const uniqueClass = await claseEspecificaDao.readOne({ _id: r.clases[0].idClase });
-                gc = newGeneralClasses.find(c => c.id === uniqueClass.idClaseGeneral);
-            }
-            if (!gc) return;
-            gc.reservas++;
-            if (r.cancelada) gc.cancelaciones++;
-        }
-
-        return res.json(newGeneralClasses);
-    }
-    catch (error) {
-        console.error("getCancellations ERROR: ", error);
-        res.json({
-            success: false,
-            message: "Error al recuperar las cancelaciones. Inténtelo de nuevo más tarde."
-        });
-    }
-}
