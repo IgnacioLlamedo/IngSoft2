@@ -1,5 +1,4 @@
 import express from "express";
-import { getMyReservations, cancelarReservaRefactorizadoJsjs, salirListaEspera, getCancellations } from "../../controllers/reservas.controller.js"
 import { getMyReservations, cancelarReservaRefactorizadoJsjs, getCancellations, salirListaEspera } from "../../controllers/reservas.controller.js"
 
 export const reservasRouter = express.Router();
