@@ -6,7 +6,8 @@ const collection = 'actividades'
 const actividadSchema = new Schema({
     _id: { type: String, default: randomUUID },
     nombre: { type: String, required: true },
-    precioMensual: { type: Number, required: true }
+    precioMensual: { type: Number, required: true },
+    color: { type: String, required: true },
 }, {
     strict: 'throw',
     versionKey: false

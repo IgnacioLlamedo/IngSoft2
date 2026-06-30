@@ -388,3 +388,22 @@ dialog::backdrop {
 .time-container select {
     flex:1;
 }
+
+
+
+.colorInput {
+    height: 80px;
+    width: 200px;
+}
+
+
+.colorPreview {
+    --value: red;
+
+    border-radius: 50%;
+
+    height: 30px;
+    width: 30px;
+
+    background-color: var(--value);
+}

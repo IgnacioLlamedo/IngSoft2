@@ -1,4 +1,4 @@
-import {claseEspecificaDao, asistenciaDao, usuarioDao} from '../daos/index.js'
+import {claseEspecificaDao, asistenciaDao, usuarioDao, reservaDao} from '../daos/index.js'
 
 /**
  * función que utilizará el cliente para registrar asistencia
@@ -13,7 +13,7 @@ export async function registrarQR(req,res) {
         if (!clase){
             return res.json({
                 success: false,
-                message: "Clase especifica con token dado no encontrada. "
+                message: "QR inválido"
             })
         }
 
@@ -29,9 +29,11 @@ export async function registrarQR(req,res) {
         if (!existeAnotado){
             return res.json({
                 success: false,
-                message: "El DNI de usuario no se encuentra anotado en la clase."
+                message: "El usuario no se encuentra anotado en la clase."
             })
         }
+
+        //Mostrar en caso de que este en lista de espera.
 
         const asistencia = await asistenciaDao.readOne({idUsuario: usuario.id, idClaseEspecifica: clase._id});
         if (asistencia){
@@ -42,7 +44,10 @@ export async function registrarQR(req,res) {
         }
 
         //Si NO tiene asistencia registrada, la creo y la retorno
-        const nueva = await asistenciaDao.create({idUsuario: usuario.user.id, idClaseEspecifica: clase._id})
+        const nueva = await asistenciaDao.create({idUsuario: usuario.id, idClaseEspecifica: clase._id})
+        
+        console.log("Esta es la nueva asistencia registrada.")
+        console.log(nueva)
 
         return res.json({
             success: true,
@@ -70,6 +75,25 @@ export async function obtenerQR(req,res){
             return res.json({
                 success: false,
                 message: "La clase no tiene inscriptos."
+            })
+        }
+
+        const fechaActual = new Date();
+        const fechaClase = new Date(clase.fechaEspecifica);
+
+        // Una hora antes de la clase
+        const inicioVentana = new Date(fechaClase);
+        inicioVentana.setHours(inicioVentana.getHours() - 1);
+
+        const estaEnHorario =
+            fechaActual >= inicioVentana &&
+            fechaActual <= fechaClase;
+
+        if (estaEnHorario){
+            return res.json({
+                success: false,
+                message: "La asistencia puede realizarse hasta 1 hora previo a la clase.",
+                estaEnHorario
             })
         }
 
@@ -116,10 +140,16 @@ export async function registrarDNI(req,res) {
                 message: "La clase seleccionada no tiene anotados."
             })
         }
+
+        console.log("Esta es la clase especifica encontrada: ");
+        console.log(clase);
+        console.log("Estos son los anotados dentro de esa clase especifica");
+        console.log(clase.anotados);
+
         //Si existe, busco en la lista de anotados al usuario por dni
         
         const existeAnotado = clase.anotados.some(
-            a => a.idUsuario === usuario.id
+            a => a.idUsuario === usuario._id
         );
 
         if (!existeAnotado){
@@ -129,34 +159,52 @@ export async function registrarDNI(req,res) {
             })
         }
 
-        //Si está anotado, busco en asistencias
-        console.log("La clase especifica encontrada desde registrarDNI: ");
-        console.log(clase);
+        console.log("Este es el usuario que existe EN LISTA DE ANOTADOS: ");
+        console.log(existeAnotado);
+
+        //Si está anotado, busco la reserva
         let esUnica = true;
 
-        //el usuario está anotado en esta clase especifica a traves de una reserva única?
-        let reserva = await reservaDao.readOneUnica({
-            idUsuario: usuario._id,
-            idClaseEspecifica: clase._id
-        });
+        let reserva;
 
-        //si no es una reserva unica tiene que ser una reserva mensual.
-        if (!reserva) {
+        //Es una reserva única o mensual?
+        if (existeAnotado.estado === 'mensualidad'){
             esUnica = false;
             reserva = await reservaDao.readOneMensual({
                 idUsuario: usuario._id,
                 "clases.idClase": clase._id
             });
         }
-
+        else{
+            reserva = await reservaDao.readOneUnica({
+                idUsuario: usuario._id,
+                idClaseEspecifica: clase._id
+            });
+        }
         //en teoria no debería poder entrar por acá, ya que si no es una reserva única
         //y no es una reserva mensual, no debería estar en la lista de anotados de la clase especifica.
         if (!reserva){
-
+            console.log("Si estás leyendo esto NO SE QUE CARAJO HICISTE FLACO");
+            return res.json({
+                success: false,
+                message: "El usuario no tiene reservada esta clase."
+            })
         }
         
+        /**
+         * 
+         * 
+         * Y si en vez de crear una asistencia, ¿agrego un estado en
+         * RESERVA y en CLASEESPECIFICA.anotados?
+         * 
+         * esto hace más fácil también consultar las asistencias en una clase
+         * especifica y las asistencias de un usuario en sus reservas...
+         * 
+         */
 
-        const asistencia = await asistenciaDao.findOne({idUsuario: usuario._id, idClaseEspecifica: clase._id})
+        
+        //Consulto si ya registró asistencia
+        const asistencia = await asistenciaDao.readOne({idUsuario: usuario._id, idClaseEspecifica: clase._id})
 
         //si tiene asistencia registrada no hago nada.
         if (asistencia){
@@ -177,6 +225,51 @@ export async function registrarDNI(req,res) {
 
     }
     catch(error) {
+        console.error(error);
+        return res.json({
+            success: false,
+            message: error
+        })
+    }
+}
+
+export async function tieneAnotados(req, res){
+    try {
+        const { idClase, fecha } = req.body;
+
+        const claseEspecifica = await claseEspecificaDao.readOne({ idClaseGeneral: idClase, fechaEspecifica: fecha })
+
+        if (!claseEspecifica){
+            return res.json({
+                success: false,
+                message: "La clase no tiene inscriptos."
+            })
+        }
+
+        const fechaActual = new Date();
+        const fechaClase = new Date(claseEspecifica.fechaEspecifica);
+
+        // Una hora antes de la clase
+        const inicioVentana = new Date(fechaClase);
+        inicioVentana.setHours(inicioVentana.getHours() - 1);
+
+        const estaEnHorario =
+            fechaActual >= inicioVentana &&
+            fechaActual <= fechaClase;
+
+        if (estaEnHorario){
+            return res.json({
+                success: false,
+                message: "La asistencia puede realizarse hasta 1 hora previo a la clase.",
+                estaEnHorario
+            })
+        }
+
+        return res.json({
+            success: true
+        })
+    }
+    catch(error){
         console.error(error);
         return res.json({
             success: false,

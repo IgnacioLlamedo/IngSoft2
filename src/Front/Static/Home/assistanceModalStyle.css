@@ -1,29 +1,185 @@
-.assistance-modal {
-  display: none; /* oculto al cargar */
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.5);
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
+/* ===========================
+   MODAL DE ASISTENCIA
+=========================== */
+
+.assistance-modal{
+    display:none;
+    position:fixed;
+    inset:0;
+
+    z-index:5000;
+
+    background:rgba(0,0,0,.55);
+
+    justify-content:center;
+    align-items:center;
 }
 
-
-.assistance-modal-content {
-  background: #fff;
-  padding: 20px 30px;
-  border-radius: 10px;
-  width: 350px;
-  max-width: 90%;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-  text-align: center;
-  position: relative;
+.assistance-modal.show{
+    display:flex;
 }
 
-.assistance-close {
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  font-size: 22px;
-  cursor: pointer;
+.assistance-modal-content{
+    position:relative;
+
+    width:420px;
+    max-width:90vw;
+
+    background:#fff;
+
+    border-radius:14px;
+
+    padding:25px;
+
+    text-align:center;
+
+    box-shadow:0 15px 40px rgba(0,0,0,.35);
+
+    animation:aparecerModal .2s ease;
+}
+
+@keyframes aparecerModal{
+    from{
+        opacity:0;
+        transform:translateY(-10px) scale(.98);
+    }
+    to{
+        opacity:1;
+        transform:none;
+    }
+}
+
+.assistance-modal-content h3{
+    margin:0 0 18px;
+    color:#163d77;
+}
+
+.assistance-modal-content p{
+    margin:12px 0;
+}
+
+.assistance-modal-content button{
+
+    background:#163d77;
+    color:white;
+
+    border:none;
+    border-radius:8px;
+
+    padding:10px 20px;
+
+    cursor:pointer;
+
+    font-size:15px;
+
+    transition:.2s;
+}
+
+.assistance-modal-content button:hover{
+    background:#2157a5;
+}
+
+.assistance-close{
+
+    position:absolute;
+
+    right:18px;
+    top:10px;
+
+    font-size:30px;
+
+    color:#666;
+
+    cursor:pointer;
+
+    transition:.2s;
+}
+
+.assistance-close:hover{
+    color:#c00;
+}
+
+/* ===========================
+   QR
+=========================== */
+/* Contenedor del lector */
+#qrReaderContainer{
+    margin-top: 24px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    
+    gap: 30px;
+}
+
+#qrContainer{
+    margin-top:20px;
+
+    display:flex;
+    justify-content:center;
+    align-items:center
+}
+
+#asistenciaBody {
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+}
+
+#qrContainer img{
+    display:block;
+    width:260px;
+    height:260px;
+}
+
+#btnCerrarQR{
+    margin:30px auto 0 auto;
+}
+
+/* Contenedor principal generado por html5-qrcode */
+#qr-reader{
+    width: 320px !important;
+    max-width: 320px;
+    margin: 0 auto;
+    border: none !important;
+}
+
+/* Centrar toda la región de escaneo */
+#qr-reader__scan_region{
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    margin-bottom: 24px;
+}
+
+/* Centrar la imagen/video del QR */
+#qr-reader__scan_region img,
+#qr-reader__scan_region video{
+    display: block;
+    margin: 0 auto !important;
+    border-radius: 12px;
+}
+
+/* Dashboard */
+#qr-reader__dashboard{
+    display:flex !important;
+    justify-content:center !important;
+    margin-top:20px;
+}
+
+/* Mensaje */
+#mensajeAsistencia{
+    margin-top:18px;
+}
+
+#qr-reader table{
+    width:100% !important;
+}
+
+#qr-reader td{
+    text-align:center !important;
 }

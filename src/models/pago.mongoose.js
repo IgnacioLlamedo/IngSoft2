@@ -9,18 +9,19 @@ const pagoSchema = new Schema({
     monto: { type: Double, required: true },
     idUsuario: { type: String, required: true, ref: 'usuarios' },
     clases: [{
-        idClase: {
-            type: String,
-            required: true,
-            ref: 'clasesGenerales'
-        },
-        fecha: {
-            type: Date,
-            required: true
-        }
+        idClase: { type: String, required: true,ref: 'clasesGenerales' },
+        fecha: { type: Date, required: true }
     }],
-    pendiente: { type: Boolean, required: true},
-    fechaPago: { type: Date, required: true }
+    clavePago: { type: String, required: true, index: true, unique: true }, //Es como un hasheo de las clases para identificar.
+    fechaPago: { type: Date, required: true },
+    idPreferencia: { type: String, default: null },
+    idPagoMercadoPago: { type: String, default: null },
+    initPoint: { type: String, default: null },
+    estado: {
+        type: String,
+        enum: ['CREANDO', 'PENDIENTE', 'APROBADO', 'CANCELADO', 'EXPIRADO'],
+        default: 'CREANDO'
+    }
 }, {
     strict: 'throw',
     versionKey: false,

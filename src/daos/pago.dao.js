@@ -8,7 +8,8 @@ export class pagoDao {
         const pago = await Pago.findOne(query).lean()
         if(!pago){
             //provisional, desarrollar luego
-            console.log("No se encontró ningún pago con id " + query)
+            console.log("No se encontró ningún pago con query ")
+            console.log(query);
         }
         return pago
     }
