@@ -1,4 +1,4 @@
-import { claseGeneralDao } from "../daos/index.js";
+import { claseGeneralDao, usuarioDao } from "../daos/index.js";
 import { claseEspecificaDao } from "../daos/index.js";
 import { profesorDao } from "../daos/index.js";
 import { salaDao } from "../daos/index.js";
@@ -793,6 +793,61 @@ export async function recuperarDiasAviso(req, res){
         res.json({
             success: false,
             message: "Error al recuperar los días del aviso. Inténtelo de nuevo más tarde."
+        });
+    }
+}
+
+function formatoFecha(fecha) {
+  const dia = fecha.getDate();
+  const mes = fecha.getMonth() + 1;
+  const año = fecha.getFullYear();
+
+  const diaFormateado = dia < 10 ? `0${dia}` : dia;
+  const mesFormateado = mes < 10 ? `0${mes}` : mes;
+
+  return `${diaFormateado}/${mesFormateado}/${año}`;
+}
+
+export async function enviarRecordatorioPago(req, res){
+    try {
+        const diasAviso = (await globalesDao.readOne({id: "1"})).diasAviso
+        const usuarios = await usuarioDao.readMany(/* {rol: "cliente"} */)
+        for(let usuario of usuarios){
+            const reservas = await reservaDao.readManyMensual({idUsuario: usuario._id})
+            for(let reserva of reservas){
+                if(
+                    (new Date(reserva.fechaVencimiento).getTime() - (diasAviso * (24 * 60 * 60 * 1000))) <= new Date(Date.now())
+                ){
+                    const clases = await claseGeneralDao.populate({_id: (await claseEspecificaDao.readOne({_id: reserva.clases[0].idClase})).idClaseGeneral})
+                    const clase = clases[0]
+                    console.log(clase)
+                    const data = {
+                        actividad: clase.idActividad.nombre,
+                        dia: clase.dia,
+                        hora: clase.hora,
+                        fecha: formatoFecha(reserva.fechaVencimiento),
+                    }
+                    await mailer.recordatorioPago(usuario, data)
+                }
+            }
+        }
+        /* const user = await usuarioDao.readOne({mail: "ignaciollamedo@hotmail.com"})
+        const data = {
+            actividad: "yoga",
+            dia: "martes",
+            hora: "09:00",
+            fecha: "01/07/2026",
+        }
+        await mailer.recordatorioPago(user, data) */
+        res.json({
+            success: true,
+        });
+    }
+    catch(error) {
+        console.error(error);
+        res.json({
+            success: false,
+            message: "Error al enviar el aviso. Inténtelo de nuevo más tarde."
         });
     }
 }

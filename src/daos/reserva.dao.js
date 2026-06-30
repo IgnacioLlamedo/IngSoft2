@@ -125,6 +125,9 @@ export class reservaDao {
         .populate({
             path: 'pagos.idPago'
         })
+        .populate({
+            path: 'idUsuario'
+        })
         if(!populated){
             //provisional, desarrollar luego
             console.log("error en populate mensual")
