@@ -317,8 +317,8 @@ async function validarReemplazo(candidato, clase){
     let reserva = null;
    
     //paso 1: Obtener la reserva del candidato a la que pertenece la clase.
-    reserva = reservaDao.readOne({ idUsuario: candidato.idUsuario,
-        cancelada: false,
+    reserva = reservaDao.readOne({ 
+        idUsuario: candidato.idUsuario,
         tipo: 'mensual',
         clases: {
             $elemMatch: {
