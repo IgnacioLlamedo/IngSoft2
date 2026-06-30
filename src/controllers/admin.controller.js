@@ -610,7 +610,8 @@ export async function modificarActividad(req, res){
         console.log(currentActivity.precioMensual)
         if(
             (data.nombre === currentActivity.nombre) &&
-            (data.precioMensual === currentActivity.precioMensual)
+            (data.precioMensual === currentActivity.precioMensual) &&
+            (data.color === currentActivity.color)
         ) {
             return res.json({
                 success: false,
