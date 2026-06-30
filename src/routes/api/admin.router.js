@@ -1,5 +1,9 @@
 import express from "express";
+<<<<<<< HEAD
 import { crearActividad, crearProfesor, crearSala, crearSede, modificarProfesor, modificarSala, modificarSede, eliminarActividad, eliminarProfesor, eliminarSala, eliminarSede, getActivities, getInstructors, getRooms, getFacilities, inhabilitarProfesor, getActivitiesStats, actualizarDiasAviso, recuperarDiasAviso, modificarActividad, getAllClasses, deleteClass, updateClass, createClass, enviarRecordatorioPago } from "../../controllers/admin.controller.js";
+=======
+import { crearActividad, crearProfesor, crearSala, crearSede, modificarProfesor, modificarSala, modificarSede, eliminarActividad, eliminarProfesor, eliminarSala, eliminarSede, getActivities, getInstructors, getRooms, getFacilities, inhabilitarProfesor, getActivitiesStats, actualizarDiasAviso, recuperarDiasAviso, modificarNombreActividad, modificarPrecioActividad, getAllClasses } from "../../controllers/admin.controller.js";
+>>>>>>> origin/Front-Bauti2
 
 export const adminRouter = express.Router();
 
@@ -27,9 +31,14 @@ adminRouter.get("/sede", getFacilities)
 
 adminRouter.put("/diasaviso", actualizarDiasAviso)
 adminRouter.get("/diasaviso", recuperarDiasAviso)
+<<<<<<< HEAD
 adminRouter.post("/enviar", enviarRecordatorioPago)
 
 adminRouter.post("/clase", createClass)
 adminRouter.put("/clase", updateClass)
 adminRouter.delete("/clase", deleteClass)
 adminRouter.get("/clase", getAllClasses)
+=======
+
+adminRouter.get("/getallclasses", getAllClasses)
+>>>>>>> origin/Front-Bauti2

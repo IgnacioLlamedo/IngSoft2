@@ -521,6 +521,7 @@ export async function confirmarPagoController(req, res){
 }
 
 
+// A partir de acá sería pagos.controller
 export async function getPaymentsController(req, res) {
     try {
         const sessionUser = req.session && req.session.user;
@@ -543,7 +544,6 @@ export async function getPaymentsController(req, res) {
         return res.status(500).json({ success: false, message: 'Error al obtener la lista de usuarios. Inténtelo más tarde.' });
     }
 }
-
 
 async function generatePaymentsWithInfo(payments) {
     const paymentsWithInfo = [];
@@ -574,4 +574,24 @@ async function generatePaymentsWithInfo(payments) {
         });
     }
     return paymentsWithInfo;
+}
+
+export async function getUserPaymentsController(req, res) {
+    try {
+        const sessionUser = req.session && req.session.user;
+
+        if (!sessionUser) {
+            return res.status(403).json({ success: false, message: 'Acceso denegado' });
+        }
+
+        const query = { idUsuario: sessionUser.id };
+
+        const payments = await pagoDao.readMany(query);
+
+        return res.json(payments);
+
+    } catch (error) {
+        console.error('getPaymentsController ERROR: ', error);
+        return res.status(500).json({ success: false, message: 'Error al obtener la lista de usuarios. Inténtelo más tarde.' });
+    }
 }

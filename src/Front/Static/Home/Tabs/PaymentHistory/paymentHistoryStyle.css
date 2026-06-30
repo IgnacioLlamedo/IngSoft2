@@ -1,0 +1,110 @@
+* {
+  font-family: sans-serif Arial, Helvetica;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: rgb(27, 27, 27);
+}
+
+main{
+  flex: 1;
+}
+
+main h1 {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+main {
+  padding: 20px;
+  font-family: sans-serif;
+  margin-left: 40px;
+  margin-right: 40px;
+}
+
+/* Filtros */
+.filters-container {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+  gap: 15px;
+}
+
+.date-filter-container,
+.show-methods-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.filters-container label {
+  font-weight: bold;
+}
+
+#filterButton {
+  background-color: #1e90ff;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#filterButton:hover {
+  background-color: #0d6efd;
+}
+
+/* Historial de pagos */
+.payment-history-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.pay-container {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  align-items: center;
+  background: #f0f8ff;
+  border: 1px solid #dcdcdc;
+  border-radius: 6px;
+  padding: 12px 16px;
+  transition: transform 0.2s ease;
+}
+
+.pay-container:hover {
+  transform: scale(1.02);
+}
+
+.pay-date {
+  font-weight: bold;
+  color: #555;
+  width: 20%;
+}
+
+.pay-detail {
+  flex: 1;
+  text-align: left;
+  margin-left: 20px;
+  color: black;
+}
+
+.pay-amount {
+  font-weight: bold;
+  color: #1e90ff;
+  width: 20%;
+  text-align: right;
+}
+

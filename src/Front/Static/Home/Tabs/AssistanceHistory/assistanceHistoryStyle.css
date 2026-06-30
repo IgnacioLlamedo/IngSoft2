@@ -1,0 +1,115 @@
+/* Contenedor principal */
+main {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+  color: #f5f5f5;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: rgb(27, 27 ,27);
+}
+
+/* Título */
+main h1 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #00aaff;
+}
+
+/* Filtros */
+.filters-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.filters-container label {
+  font-weight: bold;
+  color: #ddd;
+}
+
+.filters-container select,
+.filters-container button {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: none;
+  font-size: 14px;
+}
+
+.filters-container select {
+  background-color: #2c2c2c;
+  color: #fff;
+}
+
+.filters-container button {
+  background-color: #00aaff;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.filters-container button:hover {
+  background-color: #0088cc;
+}
+
+/* Contenedor de asistencias */
+.assistance-history-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Caja individual */
+.assistance-container {
+  background-color: #2c2c2c;
+  border-radius: 8px;
+  padding: 8px;
+  padding-left: 14px;
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  transition: transform 0.2s ease;
+}
+
+.assistance-container:hover {
+  transform: scale(1.02);
+}
+
+/* Fecha */
+.assistance-date {
+  font-weight: bold;
+  color: #00aaff;
+  font-size: 16px;
+}
+
+/* Detalle */
+.assistance-detail {
+  color: #ddd;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.assistance-container.yoga {
+  background: #00545f;
+}
+
+.assistance-container.spinning {
+  background: #660f00;
+}
+
+.assistance-container.funcional {
+  background: #032d00;
+}
+
+.assistance-container.crossfit {
+  background: #ff69b4;
+}
+

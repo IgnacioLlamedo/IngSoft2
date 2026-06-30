@@ -97,8 +97,16 @@ function conseguirClasesSeleccionadas(fechaBase, idClase) {
 
     const dia = limite.getDate();
 
+<<<<<<< HEAD
     limite.setDate(1);// Evita desbordar hacia el siguiente mes.
     limite.setMonth(limite.getMonth() + 1);
+=======
+    /**
+Entonces, si alguien busca reservar mensualmente una clase el día 2 de julio,
+2 de julio + 28 = 30 de julio*/
+const fechaBaseMas28 = new Date(fechaBase);
+fechaBaseMas28.setDate(fechaBaseMas28.getDate() + 28)
+>>>>>>> origin/Front-Bauti2
 
     const ultimoDiaMes = new Date(
         limite.getFullYear(), limite.getMonth() + 1, 0).getDate();
