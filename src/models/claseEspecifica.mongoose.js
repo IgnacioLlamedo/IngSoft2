@@ -10,7 +10,7 @@ const claseEspecificaSchema = new Schema({
     anotados : [{
         idUsuario: { type: String, ref: 'usuarios', required: true },
         tipo: { type: String, enum: ['mensualidad', 'unico', 'seña'], required: true },
-        estado: { type: String, enum: ['activo', 'cancelado'], default: 'activo' }
+        estado: { type: String, enum: ['activo', 'cancelado'], default: 'activo' } //agregar 'asistida'?
     }],
     esperaUnica : [{
         idUsuario: { type: String, ref: 'usuarios' },

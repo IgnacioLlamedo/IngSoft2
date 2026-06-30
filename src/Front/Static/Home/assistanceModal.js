@@ -23,6 +23,8 @@ btnEscanearQR.addEventListener("click", async () => {
     },
     async (decodedText) => {
       try {
+        console.log("Este es el codigo descodificado del QR.")
+        console.log(decodedText);
 
         await qrScanner.stop();
         await qrScanner.clear();
@@ -36,6 +38,8 @@ btnEscanearQR.addEventListener("click", async () => {
         });
 
         const data = await res.json();
+
+        console.log(data);
 
         mensajeAsistencia.innerText = data.message || "Asistencia registrada";
 
