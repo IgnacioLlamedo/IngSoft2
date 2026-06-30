@@ -34,18 +34,161 @@
                 
                 <section class="form-section">
 
-                    <p>No disponible todavía.</p>
+                    <div class="input-group">
+                        <label for="roomSelect">Sala:</label>
+                        <select id="roomSelect" name="room">  </select>   
+                    </div>
+
+                    <div class="input-group">
+                        <label for="activitySelect">Actividad:</label>
+                        <select id="activitySelect" name="activity"> </select>     
+                    </div>
+
+                    <div class="input-group">
+                        <label for="instructorSelect">Profesor:</label>
+                        <select id="instructorSelect" name="instructor"> </select>  
+                    </div>
+
+                    <p id="instructorError" class="errorMsg" hidden></p>
+
+                    <div class="input-group">
+                        <label for="classLimit">Límite de clase:</label>
+                        <input id="classLimit" type="text" name="classLimit" required> </input>  
+                    </div>
+
+                    <div class="time-container">
+
+                        <div class="input-group">
+                            <label for="day">Día:</label>
+                            <select id="day" name="day">
+                                <option value="lunes">Lunes</option>
+                                <option value="martes">Martes</option>
+                                <option value="miércoles">Miércoles</option>
+                                <option value="jueves">Jueves</option>
+                                <option value="viernes">Viernes</option>
+                                <option value="sábado">Sábado</option>
+                            </select>  
+                        </div>
+
+                        <div class="input-group">
+                            <label for="hour">Hora:</label>
+                            <select id="hour" name="hour">
+                                <option value="7">07:00</option>
+                                <option value="8">08:00</option>
+                                <option value="9">09:00</option>
+                                <option value="10">10:00</option>
+                                <option value="11">11:00</option>
+                                <option value="12">12:00</option>
+                                <option value="13">13:00</option>
+                                <option value="14">14:00</option>
+                                <option value="15">15:00</option>
+                                <option value="16">16:00</option>
+                                <option value="17">17:00</option>
+                                <option value="18">18:00</option>
+                                <option value="19">19:00</option>
+                                <option value="20">20:00</option>
+                                <option value="21">21:00</option>
+                            </select>  
+                        </div>
+
+                    </div>
 
                 </section>
 
                 <section class="form-section">
                     <p id="createError" class="errorMsg" hidden></p>
                     <p id="createSuccess" class="successMsg" hidden></p>
-                    <button hidden class="submit-blue">Crear Clase</button>
+                    <button class="submit-blue">Crear Clase</button>
                 </section>
 
             </div>
+
         </form>
+
+        <template id="edit-form">
+            <form class="form">
+            
+                <div class="form-card">
+
+                    <h1 class="form-card-title">Editar clase</h1>
+                    
+                    <section class="form-section">
+
+                        <div class="input-group">
+                            <label for="roomSelectField">Sala:</label>
+                            <select id="roomSelectField" name="room">  </select>   
+                        </div>
+
+                        <div class="input-group">
+                            <label for="activitySelectField">Actividad:</label>
+                            <select id="activitySelectField" name="activity"> </select>     
+                        </div>
+
+                        <div class="input-group">
+                            <label for="instructorSelectField">Profesor:</label>
+                            <select id="instructorSelectField" name="instructor"> </select>  
+                        </div>
+
+                        <p id="editInstructorError" class="errorMsg" hidden></p>
+
+                        <div class="input-group">
+                            <label for="classLimitField">Límite de clase:</label>
+                            <input id="classLimitField" type="text" name="classLimit" required> </input>  
+                        </div>
+
+                        <div class="time-container">
+
+                            <div class="input-group">
+                                <label for="dayField">Día:</label>
+                                <select id="dayField" name="day">
+                                    <option value="lunes">Lunes</option>
+                                    <option value="martes">Martes</option>
+                                    <option value="miércoles">Miércoles</option>
+                                    <option value="jueves">Jueves</option>
+                                    <option value="viernes">Viernes</option>
+                                    <option value="sábado">Sábado</option>
+                                </select>  
+                            </div>
+
+                            <div class="input-group">
+                                <label for="hourField">Hora:</label>
+                                <select id="hourField" name="hour">
+                                    <option value="7">07:00</option>
+                                    <option value="8">08:00</option>
+                                    <option value="9">09:00</option>
+                                    <option value="10">10:00</option>
+                                    <option value="11">11:00</option>
+                                    <option value="12">12:00</option>
+                                    <option value="13">13:00</option>
+                                    <option value="14">14:00</option>
+                                    <option value="15">15:00</option>
+                                    <option value="16">16:00</option>
+                                    <option value="17">17:00</option>
+                                    <option value="18">18:00</option>
+                                    <option value="19">19:00</option>
+                                    <option value="20">20:00</option>
+                                    <option value="21">21:00</option>
+                                </select>  
+                            </div>
+
+                        </div>
+
+                    </section>
+
+                    <section class="form-section">
+                        <p id="editError" class="errorMsg" hidden></p>
+                        <p id="editSuccess" class="successMsg" hidden></p>
+                        <div class="options">
+                            <button class="submit-blue">Modificar clase</button>
+                            <button id="editCancel" class="submit">Dejar de editar</button>
+                        </div>
+                    </section>
+
+                </div>
+
+            </form>
+
+        </template>
 
         <section class="list-card">
             <h1> Lista de Clases: </h1>
@@ -62,8 +205,7 @@
 
     <%- include('../Navbar/footer.html') %>
 
-    <script src="/Management/managementClasses.js"></script>
-
+    
     <dialog id="confirmPanel">
         <p>¿Está seguro que desea borrar la Clase?</p>
         <form method="dialog">
@@ -71,6 +213,8 @@
             <button id="confirmBtn" value="default">Borrar Clase</button>
         </form>
     </dialog>
+    
+    <script src="/Management/managementClasses.js"></script>
 
 </body>
 

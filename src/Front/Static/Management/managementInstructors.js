@@ -341,12 +341,47 @@ async function deleteInstructor(event, _id, slotError, slotErrorMsg, motivoEstad
 
     const resData = await res.json();
 
-    // TODO: agregar mensaje de éxito en algún lado (podría ser como al borrar/modificar en userlist)
+    if (resData.success) {
+        if(isOnEditMode)
+            switchToCreateForm();
 
-    if (resData.success) getAllSlots();
+        showDeleteSuccessDialog("Profesor borrado correctamente.");
+        getAllSlots();
+    }
     else showSlotError(slotError, slotErrorMsg, resData.message);
 }
 
+function showDeleteSuccessDialog(message) {
+    const overlay = document.createElement('div');
+    overlay.classList.add('delete-success-overlay');
+
+    const dialog = document.createElement('div');
+    dialog.classList.add('delete-success-dialog');
+
+    const text = document.createElement('p');
+    text.classList.add('delete-success-text');
+    text.textContent = message;
+
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.classList.add('delete-success-button');
+    button.textContent = 'Cerrar';
+
+    button.addEventListener('click', () => {
+        overlay.remove();
+    });
+
+    overlay.addEventListener('click', (event) => {
+        if (event.target === overlay) {
+            overlay.remove();
+        }
+    });
+
+    dialog.appendChild(text);
+    dialog.appendChild(button);
+    overlay.appendChild(dialog);
+    document.body.appendChild(overlay);
+}
 
 function hideSlotError(slotError) {
     slotError.classList.add("none");
@@ -363,6 +398,7 @@ function showSlotError(slotError, slotErrorMsg, message) {
 // EDIT FORM //
 
 let currentForm = createForm;
+let isOnEditMode = false;
 
 let editForm;
 let editFormErrorMsg;
@@ -388,12 +424,12 @@ async function switchToEdit(slot) {
         data.id = slot._id;
 
         if(data.dni.length !== 8) {
-            EditErrorMsg("Error al modificar el profesor. El DNI ingresado debe tener 8 caracteres");
+            EditErrorMsg("Error al modificar el profesor. El DNI ingresado debe tener 8 caracteres.");
             return;
         }
 
         if (data.actividades.length === 0) {
-            EditErrorMsg("Error al modificar el profesor. Debe ingresar al menos una actividad");
+            EditErrorMsg("Error al modificar el profesor. Debe ingresar al menos una actividad.");
             return;
         }
 
@@ -426,6 +462,8 @@ async function switchToEdit(slot) {
 
     currentForm.replaceWith(editForm);
     currentForm = editForm;
+
+    isOnEditMode = true;
 }
 
 
@@ -452,22 +490,28 @@ async function switchToSuspend(slot) {
         event.preventDefault();
         suspendCleanMsgs();
       
-        const data = getSuspendFormData(event.target);
-        data.id = slot._id;
+        const profesor = getSuspendFormData(event.target);
+        profesor._id = slot._id;
+        profesor.estado = Status.INACTIVE;
+        profesor.fechasEstado = {
+            desde: new Date(profesor.fechasEstado.desde),
+            hasta: new Date(profesor.fechasEstado.hasta)
+        };
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
 
-        if (data.fechasEstado.desde < Date.now() || data.fechasEstado.hasta < data.fechasEstado.desde) {
-            suspendErrorMsg("Error al inhabilitar el profesor. Las fechas ingresadas no son correctas");
+        // !!! fechasEstado.desde TIENE QUE SER MAYOR A HOY !!!
+        if (profesor.fechasEstado.desde < today || profesor.fechasEstado.hasta < profesor.fechasEstado.desde) {
+            suspendErrorMsg("Error al inhabilitar el profesor. Las fechas ingresadas no son correctas.");
             return;
         }
-
-        const dataString = JSON.stringify(data);
 
         const res = await fetch(`${instructorsEndpoint}/inhabilitar`, {
             method: 'PUT',
             headers: {
                 "Content-Type" : "application/json",
             },
-            body: dataString
+            body: JSON.stringify(profesor)
         });
 
         const resData = await res.json();
@@ -495,6 +539,8 @@ async function switchToSuspend(slot) {
 function switchToCreateForm() {
     currentForm.replaceWith(createForm);
     currentForm = createForm;
+
+    isOnEditMode = true;
 }
 
 

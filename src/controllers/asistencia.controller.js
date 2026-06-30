@@ -79,7 +79,7 @@ export async function obtenerQR(req,res){
         }
 
         const fechaActual = new Date();
-        const fechaClase = new Date(claseEspecifica.fechaEspecifica);
+        const fechaClase = new Date(clase.fechaEspecifica);
 
         // Una hora antes de la clase
         const inicioVentana = new Date(fechaClase);

@@ -8,6 +8,7 @@ import { webhookPago } from "./webhook.controller.js";
 import { aceptarCupoInterno } from "./cupo.controller.js";
 import { postReservaMensual, postReservaUnica } from "./reservas.controller.js";
 
+
 export async function crearPreferencia(req, res) {
 
     const nombre = req.body.nombre;
@@ -44,6 +45,28 @@ export async function crearPreferencia(req, res) {
     //---------------------------------------
 
     try {
+
+        console.log("Desde crearPreferencia. Los tipos de clases y fechas son: ")
+/*         const clases = [];
+        const fechas = []; */
+        /* for (const c of clasesObtenidas.clases) {
+
+            clases.push(c.idClaseGeneral);
+
+            fechas.push(c.fechaEspecifica);
+
+            console.log(c.idClaseGeneral);
+            console.log(c.fechaEspecifica);
+        } */
+
+        const clasesFormateadas = clases.map(c => ({
+            idClase: c.idClaseGeneral,
+            fecha: c.fechaEspecifica
+        }));
+        
+        const clasesFormateadasString = JSON.stringify(clasesFormateadas);
+
+        const fechaPago = new Date(Date.now());
 
         pagoPendiente = await pagoDao.create({
             monto: precio,

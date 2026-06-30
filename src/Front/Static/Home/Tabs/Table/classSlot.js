@@ -176,21 +176,8 @@ async function getAllClasses(fechaSemana) {
                 celda.onclick = () => abrirPago(celda);
             }
 
-
-            switch (claseObj.actividad.nombre) {
-                case "Spinning":
-                    celda.classList.add("spinning");
-                    break;
-                case "Yoga":
-                    celda.classList.add("yoga");
-                    break;
-                case "Funcional":
-                    celda.classList.add("funcional");
-                    break;
-                default:
-                    celda.classList.add("otro");
-                    break;
-            }
+            celda.classList.add("classColor");
+            celda.style.setProperty('--value', claseObj.actividad.color);
         }
     });
 
