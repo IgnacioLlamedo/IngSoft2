@@ -227,11 +227,11 @@ export async function procesarWebhook(body){
         id: body.data.id
     })
 
-    /* console.log("Parte número 1: ")
+    console.log("Parte número 1: ")
     console.log("Este es el pago de mercado pago: ")
     console.log(mpPayment);
     console.log("                                           ")
-    console.log("                                           ") */
+    console.log("                                           ")
 
     //Si el pago no fue aprobado, no tiene sentido continuar ejecución
     if(mpPayment.status !== "approved"){
@@ -458,6 +458,8 @@ export async function consultar(req, res) {
 export async function confirmarPagoInterno(mpPayment) {
 
     const external = JSON.parse(mpPayment.external_reference);
+    console.log("Desde confirmarPagoInterno en MercadoPagoController.............. Este es el mpPayment y estoy buscando el idPago de Mercado Pago para guardarlo en mi Pago Mongoose:");
+    console.log(mpPayment);
 
     const pago = await pagoDao.readOne({
         _id: external.idPagoPendiente
@@ -476,6 +478,7 @@ export async function confirmarPagoInterno(mpPayment) {
         { _id: pago._id },
         {
             estado: "APROBADO",
+            idPagoMercadoPago: mpPayment.id,
             fechaPago: new Date(mpPayment.date_approved)
         }
     );
