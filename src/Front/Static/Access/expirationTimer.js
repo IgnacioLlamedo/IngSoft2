@@ -1,5 +1,5 @@
-const paramsURL = new URLSearchParams(window.location.search);
-const emailParameter = paramsURL.get('email');
+const expirationParametersURL = new URLSearchParams(window.location.search);
+const emailParameter = expirationParametersURL.get('email');
 const verificationErrorMsgFirstCode = document.getElementById("authenticationError");
 
 class Timer {

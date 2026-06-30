@@ -281,8 +281,11 @@ async function deleteActivity(event, _id, slotError, slotErrorMsg) {
 
     const resData = await res.json();
 
-    if(resData.success)
+    if(resData.success) {
+        if(isOnEditMode)
+            switchToCreateForm();
         getAllSlots();
+    }
     else
         showSlotError(slotError, slotErrorMsg, resData.message);
 }
@@ -303,6 +306,7 @@ function showSlotError(slotError, slotErrorMsg, message) {
 // EDIT FORM //
 
 let currentForm = createForm;
+let isOnEditMode = false;
 
 let editForm;
 let editFormErrorMsg;
@@ -362,12 +366,16 @@ async function switchToEdit(slot) {
 
     currentForm.replaceWith(editForm);
     currentForm = editForm;
+
+    isOnEditMode = true;
 }
 
 
 function switchToCreateForm() {
     currentForm.replaceWith(createForm);
     currentForm = createForm;
+
+    isOnEditMode = false;
 }
 
 

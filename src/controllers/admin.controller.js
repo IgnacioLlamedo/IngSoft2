@@ -748,6 +748,21 @@ export async function getActivitiesStats(req, res){
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 export async function actualizarDiasAviso(req, res){
     try {                                            //req.body.diasAviso es provisional
         await globalesDao.updateOne({id: "1"}, {diasAviso: req.body.diasAviso});
@@ -781,6 +796,48 @@ export async function recuperarDiasAviso(req, res){
         });
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 //Clases
@@ -828,6 +885,7 @@ export async function createClass(req, res){
         res.json({
             success: true,
             data,
+            message: "¡Creación de clase realizada con éxito!",
         });
     }
     catch(error) {
@@ -844,6 +902,7 @@ export async function updateClass(req, res){
         res.json({
             success: true,
             data,
+            message: "Modificación de clase realizada con éxito!"
         });
     }
     catch(error) {
@@ -854,13 +913,15 @@ export async function updateClass(req, res){
         });
     }
 }
+
 //REVISAR QUE NO HAYA NADIE INSCRIPTO
 export async function deleteClass(req, res){
     try {
         console.log(req.body)
-        await claseGeneralDao.deleteOne({_id: req.body._id})
+        await claseGeneralDao.deleteOne({_id: req.body.id})
         res.json({
             success: true,
+            messag: "¡Eliminación de clase realizada con éxito!"
         });
     }
     catch(error) {

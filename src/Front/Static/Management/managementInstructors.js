@@ -343,6 +343,9 @@ async function deleteInstructor(event, _id, slotError, slotErrorMsg, motivoEstad
     const resData = await res.json();
 
     if (resData.success) {
+        if(isOnEditMode)
+            switchToCreateForm();
+
         showDeleteSuccessDialog("Profesor borrado correctamente.");
         getAllSlots();
     }
@@ -396,6 +399,7 @@ function showSlotError(slotError, slotErrorMsg, message) {
 // EDIT FORM //
 
 let currentForm = createForm;
+let isOnEditMode = false;
 
 let editForm;
 let editFormErrorMsg;
@@ -459,6 +463,8 @@ async function switchToEdit(slot) {
 
     currentForm.replaceWith(editForm);
     currentForm = editForm;
+
+    isOnEditMode = true;
 }
 
 
@@ -534,6 +540,8 @@ async function switchToSuspend(slot) {
 function switchToCreateForm() {
     currentForm.replaceWith(createForm);
     currentForm = createForm;
+
+    isOnEditMode = true;
 }
 
 
