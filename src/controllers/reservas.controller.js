@@ -102,14 +102,30 @@ export async function cancelarReservaRefactorizadoJsjs(req, res) {
         //cambio el estado a 'cancelada'
         let reservaCancelada;
         if (tipo === "Mensual"){
-            reservaCancelada = await reservaDao.updateOneMensual({ _
-
-            })
+            reservaCancelada = await reservaDao.updateOneMensual(
+                {
+                    idUsuario: user,
+                    "clases.idClase": clase.idClase._id
+                },
+                {
+                    $set: {
+                        "clases.$.estado": "cancelada"
+                    }
+                }
+            );
         }
         else{
-            reservaCancelada = await reservaDao.updateOneUnica({ _
-
-            })
+            reservaCancelada = await reservaDao.updateOneUnica(
+            {
+                idUsuario: user,
+                idClaseEspecifica: clase.idClase._id
+            },
+            {
+                $set: {
+                    estado: "cancelada"
+                }
+            }
+        );
         }
         
 
