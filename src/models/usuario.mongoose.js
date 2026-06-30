@@ -22,6 +22,7 @@ const usuarioSchema = new Schema({
     motivoEstado: { type: String, default: 'Sin motivo especificado' },
     codigo: { type: String },
     limiteCodigo: { type: Date },
+    credito: {type: Number, default: 0}
 }, {
     strict: false,
     versionKey: false,

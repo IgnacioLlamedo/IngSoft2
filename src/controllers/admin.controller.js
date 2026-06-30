@@ -881,6 +881,13 @@ export async function createClass(req, res){
                 message: "Error al crear clase, ya existe una clase en ese dia, horario y sala"
             })
         }
+        const profesor = await claseGeneralDao.readMany({dia: req.body.dia, hora: req.body.hora, idProfesor: req.body.idProfesor})
+        if(profesor.length > 0){
+            return res.json({
+                success: false,
+                message: "Error al crear clase, ya existe una clase en ese dia, horario y con ese profesor"
+            })
+        }
         const data = await claseGeneralDao.create(req.body)
         res.json({
             success: true,
@@ -898,7 +905,36 @@ export async function createClass(req, res){
 }
 export async function updateClass(req, res){
     try {
-        const data = await claseGeneralDao.updateOne({_id: req.body.id}, req.body)
+        let data = req.body
+        const current = await claseGeneralDao.readOne({_id: data.id})
+        if(
+            (data.idSala === current.idSala) &&
+            (data.idActividad === current.idActividad) &&
+            (data.idProfesor === current.idProfesor) &&
+            (Number(data.limiteClase) === current.limiteClase) &&
+            (data.dia === current.dia) &&
+            (Number(data.hora) === current.hora)
+        ) {
+            return res.json({
+                success: false,
+                message: "Error al modificar la clase. No se han modificado datos."
+            })
+        }
+        const clases = await claseGeneralDao.readMany({dia: data.dia, hora: data.hora, idSala: data.idSala})
+        if(clases.length > 0){
+            return res.json({
+                success: false,
+                message: "Error al modificar clase, ya existe una clase en ese dia, horario y sala"
+            })
+        }
+        const profesor = await claseGeneralDao.readMany({dia: data.dia, hora: data.hora, idProfesor: data.idProfesor})
+        if(profesor.length > 0){
+            return res.json({
+                success: false,
+                message: "Error al modificar clase, ya existe una clase en ese dia, horario y con ese profesor"
+            })
+        }
+        await claseGeneralDao.updateOne({_id: req.body.id}, req.body)
         res.json({
             success: true,
             data,
@@ -917,7 +953,15 @@ export async function updateClass(req, res){
 //REVISAR QUE NO HAYA NADIE INSCRIPTO
 export async function deleteClass(req, res){
     try {
-        console.log(req.body)
+        const borrar = await claseEspecificaDao.readMany({idClaseGeneral: req.body.id})
+        for(b of borrar){
+            if(b.anotado.length > 0){
+                    return res.json({
+                    success: false,
+                    message: "Error al eliminar clase, hay gente anotada en alguna clase especifica. Si quiere cancelar una (aca habria que explicar como inhabilitar una clase, pero no lo explico porque no se como lo va a hacer lean todavia)"
+                })
+            }
+        }
         await claseGeneralDao.deleteOne({_id: req.body.id})
         res.json({
             success: true,
