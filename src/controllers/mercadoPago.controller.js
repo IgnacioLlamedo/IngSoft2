@@ -204,11 +204,11 @@ export async function procesarWebhook(body){
         id: body.data.id
     })
 
-    console.log("Parte número 1: ")
+    /* console.log("Parte número 1: ")
     console.log("Este es el pago de mercado pago: ")
     console.log(mpPayment);
     console.log("                                           ")
-    console.log("                                           ")
+    console.log("                                           ") */
 
     //Si el pago no fue aprobado, no tiene sentido continuar ejecución
     if(mpPayment.status !== "approved"){
