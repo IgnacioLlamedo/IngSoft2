@@ -31,7 +31,6 @@ const pagosDePrueba = [
 
 
 let currentPayments = [];
-let userSessionData;
 
 function mostrarPagos(lista) {
   const container = document.querySelector(".payment-history-container");
@@ -121,20 +120,12 @@ async function cargarPagos() {
 }
 */
 
-async function getSessionData() {
-    const response = await fetch("/session-data");
-    if (!response.ok) {
-            throw new Error('Error al cargar información del usuario.');
-        }
-    const sessionData = await response.json();
-    userSessionData = sessionData.session;
-    console.log(sessionData);
-}
-
 async function cargarPagos() {
   try {
-    await getSessionData();
-    const res = await fetch(`/api/get-user-payments?idUsuario=${encodeURIComponent(userSessionData.id)}`, { credentials: "include" });
+    const res = await fetch(`/api/pago/get-user-payments`, { 
+        method: 'GET',
+        credentials: "include",
+    });
     if (!res.ok) throw new Error("No se pudieron cargar los pagos.");
     const pagos = await res.json();
     currentPayments = Array.isArray(pagos) ? pagos : [];
