@@ -2,7 +2,7 @@
    MODAL DE ASISTENCIA
 =========================== */
 
-.modalAsistencia{
+.assistance-modal{
     display:none;
     position:fixed;
     inset:0;
@@ -15,12 +15,11 @@
     align-items:center;
 }
 
-.modalAsistencia.show{
+.assistance-modal.show{
     display:flex;
 }
 
-.modalAsistencia-content{
-
+.assistance-modal-content{
     position:relative;
 
     width:420px;
@@ -50,16 +49,16 @@
     }
 }
 
-.modalAsistencia-content h3{
+.assistance-modal-content h3{
     margin:0 0 18px;
     color:#163d77;
 }
 
-.modalAsistencia-content p{
+.assistance-modal-content p{
     margin:12px 0;
 }
 
-.modalAsistencia-content button{
+.assistance-modal-content button{
 
     background:#163d77;
     color:white;
@@ -76,11 +75,11 @@
     transition:.2s;
 }
 
-.modalAsistencia-content button:hover{
+.assistance-modal-content button:hover{
     background:#2157a5;
 }
 
-.close{
+.assistance-close{
 
     position:absolute;
 
@@ -96,7 +95,7 @@
     transition:.2s;
 }
 
-.close:hover{
+.assistance-close:hover{
     color:#c00;
 }
 
@@ -111,6 +110,8 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    
+    gap: 30px;
 }
 
 #qrContainer{
@@ -118,7 +119,15 @@
 
     display:flex;
     justify-content:center;
-    align-items:center;
+    align-items:center
+}
+
+#asistenciaBody {
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
 }
 
 #qrContainer img{

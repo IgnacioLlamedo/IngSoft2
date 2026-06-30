@@ -11,6 +11,7 @@ const mensajeAsistencia = document.getElementById("mensajeAsistencia");
 //Muestra el modal para leer el qr y enciende la cámara trasera(en teoría)
 btnEscanearQR.addEventListener("click", async () => {
   btnEscanearQR.hidden = true;
+  btnCancelarQR.hidden = false;
   qrReaderContainer.hidden = false;
 
   qrScanner = new Html5Qrcode("qr-reader");
@@ -81,6 +82,7 @@ closeAssistance.addEventListener("click", async () => {
 
   qrReaderContainer.hidden = true;
   btnEscanearQR.hidden = false;
+  btnCancelarQR.hidden = true;
 });
 
 // engancha todos los botones con clase .asistenciaBtn
