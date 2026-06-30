@@ -286,6 +286,10 @@ export async function procesarWebhook(body){
     
 }
 
+export async function procesarWebhookPagoRestante(req, res){
+    
+}
+
 /* Función para consultar si el usuario ya está anotado en la/las clase
 específica/s (en caso de que sea mensual) */
 export async function consultar(req, res) {

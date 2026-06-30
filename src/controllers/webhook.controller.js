@@ -13,3 +13,16 @@ export async function webhookPago(req,res){
         res.sendStatus(500);
     }
 }
+
+export async function webhookPagoRestante(req, res){
+    try{
+        /* console.log("🔥 WEBHOOK ENTRÓ");
+        console.log("BODY:", req.body); */
+        res.sendStatus(200);
+        await procesarWebhookPagoRestante(req.body)
+    }
+    catch(error){
+        console.error(error);
+        res.sendStatus(500);
+    }
+}
