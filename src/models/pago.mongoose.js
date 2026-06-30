@@ -12,10 +12,6 @@ const pagoSchema = new Schema({
         idClase: { type: String, required: true,ref: 'clasesGenerales' },
         fecha: { type: Date, required: true }
     }],
-<<<<<<< HEAD
-    pendiente: { type: Boolean, required: true},
-    fechaPago: { type: Date, required: true }
-=======
     clavePago: { type: String, required: true, index: true, unique: true }, //Es como un hasheo de las clases para identificar.
     fechaPago: { type: Date, required: true },
     idPreferencia: { type: String, default: null },
@@ -26,7 +22,6 @@ const pagoSchema = new Schema({
         enum: ['CREANDO', 'PENDIENTE', 'APROBADO', 'CANCELADO', 'EXPIRADO'],
         default: 'CREANDO'
     }
->>>>>>> origin/Front-Facu-x-siEstoNoFuncionaMeMato
 }, {
     strict: 'throw',
     versionKey: false,
