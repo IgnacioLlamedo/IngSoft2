@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/Common/commonPageStyle.css">
+    <link rel="stylesheet" href="/Home/Tabs/PaymentHistory/paymentHistoryStyle.css">
+    <title>CEF - Historial de Pagos</title>
+</head>
+<body>
+    <header>
+        <%- include('../../Navbar/navbarSelector.ejs') %>
+    </header>
+
+
+    <main>
+        <h1>Historial de Pagos</h1>
+        
+        <div class="filters-container">
+            <div class="date-filter-container">
+                <label for="startDate">Filtrar por fechas: </label>
+                <input type="date" id="startDate" name="startDate">
+                <p> - </p>
+                <input type="date" id="endDate" name="endDate">
+            </div>
+            <div class="show-methods-container">
+                <label for="showMethods">Ordenar por: </label>
+                <select id="showMethods" name="showMethods">
+                    <option value="asc">Ascendente</option>
+                    <option value="desc">Descendente</option>
+                </select>
+            </div>
+            <button id="filterButton">Filtrar</button>
+        </div>
+
+        <div class="payment-history-container">
+             <div class="pay-container">
+                <div class="pay-date">18/05/2026</div>
+                <div class="pay-detail">Detalle: un ejemplo de detalle, pago de mensualidad clase funcional o pago de clase unica</div>
+                <div class="pay-amount">Total: $12222</div>
+             </div>
+        </div>
+
+
+    </main>
+
+    <%- include('../../Navbar/footer.html') %>
+
+    <script src="/Home/Tabs/PaymentHistory/paymentHistory.js"></script>
+</body>
+</html>

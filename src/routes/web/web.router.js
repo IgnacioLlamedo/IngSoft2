@@ -60,6 +60,18 @@ webRouter.get("/my-activities", (req, res) => {
     res.render(path.join(__dirname, "Front/Home/HomeTabs/tabMyActivities.ejs"), { userRole: req.session.user.rol, Role });
 });
 
+webRouter.get("/payment-history", (req, res) => {
+    if (!req.session.user) return res.redirect("/access/login");
+    if (req.session.user.rol !== Role.CLIENT) return res.redirect(homeRoute);
+    res.render(path.join(__dirname, "Front/Home/HomeTabs/tabPaymentHistory.ejs"), { userRole: req.session.user.rol, Role});
+});
+
+webRouter.get("/assistance-history", (req, res) => {
+    if (!req.session.user) return res.redirect("/access/login");
+    if (req.session.user.rol !== Role.CLIENT) return res.redirect(homeRoute);
+    res.render(path.join(__dirname, "Front/Home/HomeTabs/tabAssistance.ejs"), { userRole: req.session.user.rol, Role});
+});
+
 webRouter.get("/test-clases", (req, res) => {
     if (!req.session.user) return res.redirect("/access/login");
     if (req.session.user.rol !== Role.CLIENT) return res.redirect(homeRoute);

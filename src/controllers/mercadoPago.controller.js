@@ -234,6 +234,28 @@ export async function getPaymentsController(req, res) {
     }
 }
 
+export async function getUserPaymentsController(req, res) {
+    try {
+        const sessionUser = req.session && req.session.user;
+
+        if (!sessionUser || sessionUser.rol !== Role.ADMIN) {
+            return res.status(403).json({ success: false, message: 'Acceso denegado' });
+        }
+
+        const query = req.query || {};
+        console.log(query);
+
+        const payments = await pagoDao.readMany(query);
+        
+
+        return res.json(payments);
+
+    } catch (error) {
+        console.error('getPaymentsController ERROR: ', error);
+        return res.status(500).json({ success: false, message: 'Error al obtener la lista de usuarios. Inténtelo más tarde.' });
+    }
+}
+
 
 async function generatePaymentsWithInfo(payments) {
     const paymentsWithInfo = [];
