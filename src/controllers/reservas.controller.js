@@ -89,10 +89,11 @@ export async function cancelarReservaRefactorizadoJsjs(req, res) {
         //listados y todo lo de claseEspecifica)
         //y por otro lado tiene _id que no se que carajo es.
     
+        const id = tipo === 'Unica' ? clase._id : clase.idClase._id;
 
         //Marco en la lista de anotados en la posicion donde se encuentra
         //el usuario que cancelo la clase con estado "cancelado".
-        const claseLiberada = await claseEspecificaDao.updateOne({ _id: clase._id, "anotados.idUsuario": user},
+        const claseLiberada = await claseEspecificaDao.updateOne({ _id: id, "anotados.idUsuario": user},
             {                                                       //el clase.idClase._id puede estar mal, revisar.
                 $set:{
                     "anotados.$.estado":"cancelado"
@@ -129,7 +130,8 @@ export async function cancelarReservaRefactorizadoJsjs(req, res) {
         );
         }
         
-
+        console.log("Esta es la reserva que se canceló:");
+        console.log(reservaCancelada);
         console.log("/////////////////////////////////////");
         console.log("/////////////////////////////////////");
 

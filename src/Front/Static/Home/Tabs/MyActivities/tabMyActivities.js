@@ -271,7 +271,7 @@ function renderActividades() {
         esCancelada
             ? act.tipo === "Unica"
                 ? act.estado === "cancelada"
-                : act.fechas?.every(f => f.estado === "cancelada")
+                : act.fecha?.every(f => f.estado === "cancelada")
             : false;
 
     const estaEnEspera =
@@ -417,8 +417,6 @@ function renderActividades() {
                 btnClase.textContent = `Cancelar clase del ${fecha}`;
                 btnClase.classList.add("box-button");
 
-                btnClase.dataset.indice = index;
-
                 const esCancelado = claseActual.idClase.anotados.some(
                     u => u.estado === "cancelado" && u.idUsuario === userData.session.id
                 );
@@ -439,7 +437,7 @@ function renderActividades() {
                                     "Content-Type": "application/json"
                                 },
                                 body: JSON.stringify({
-                                    clase: claseActual[btnClase.dataset.indice],
+                                    clase: act.clases[index],
                                     tipo: act.tipo
                                 })
                             });
@@ -450,6 +448,7 @@ function renderActividades() {
                                 document.getElementById(
                                     "cancelarMensualModal"
                                 ).style.display = "none";
+                                await getMyReservations();
                             }
                             else {
                                 console.log(resData.message);
