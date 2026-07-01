@@ -7,6 +7,7 @@ const endpoint = "/api/admin/actividad"; // Se usa el mismo fetch pero diferenci
 
 
 const slotHtml = (slot) => {return `
+    <div class="colorPreview" style="--value: ${slot.color}"></div>
     <p>Nombre: ${slot.nombre}</p>
     <p>Precio cuota: ${slot.precioMensual}</p>
 `};
@@ -16,6 +17,7 @@ function getFormData(form) {
     return {
         nombre: form.name.value, // Se puede poner "Yo ga" pero bueno. Haría replaceAll(" ", "") pero entonces no podría existir nada con dos plaabras
         precioMensual: Number(form.price.value),
+        color: form.color.value,
     }
 }
 
@@ -23,7 +25,8 @@ function getFormData(form) {
 const fieldsToFillWithSlotData = (slot) => {
     return [
         {id: '#nameField', content: slot.nombre},
-        {id: '#priceField', content: slot.precioMensual}
+        {id: '#priceField', content: slot.precioMensual},
+        {id: '#colorField', content: slot.color},
     ];
 };
 

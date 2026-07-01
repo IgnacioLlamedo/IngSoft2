@@ -151,7 +151,7 @@ async function abrirAsistencia(elemento) {
     const dni = document.getElementById("dniInput").value.trim();
 
     if (!dni) {
-      alert("Ingrese un DNI");
+      mensajeAsistencia.innerHTML="Ingrese un DNI"
       return;
     }
 

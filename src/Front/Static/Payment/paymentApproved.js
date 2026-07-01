@@ -2,6 +2,7 @@ const ext = JSON.parse(parametersURL.get("external_reference"));
 const container = document.querySelector(".main-container");
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 console.log("Estos son los datos que llegaron en la URL desde paymentApproved.js: ");
 console.log(externo);
 
@@ -39,6 +40,12 @@ async function confirmarPago(data, ext) {
     });
 //
 =======
+>>>>>>> origin/Front-Facu-x-siEstoNoFuncionaMeMato
+=======
+mostrarPago();
+
+async function mostrarPago() {
+    const res = await fetch(`/api/pago/get-pago/${ext.idPagoPendiente}`);
 >>>>>>> origin/Front-Facu-x-siEstoNoFuncionaMeMato
     const resData = await res.json();
 
