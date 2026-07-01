@@ -99,8 +99,8 @@ export async function ingresarAEspera(req, res) {
         }
         let tipoFormateado;
         if (tipo !== 'mensual'){
-            nuevoEspera.tipo = "Unico"
-            tipoFormateado = "Unico"
+            nuevoEspera.tipo = "Unica"
+            tipoFormateado = "Unica"
         }
         else
             tipoFormateado = "Mensual"
