@@ -97,13 +97,13 @@ Para poder usar mercado pago se debe tener un URL https. Para ello podemos crear
 - Creación/Modificación/Eliminación de clases. Pueden ponerse inactivas y deberán avisar a todos sus inscriptos.
 - Tabla de clases dinámica en cuanto a salas. CHECK
 - Profesores ligados a actividad, estados de inactividad ligados a fechas y motivos. CHECK
-- Estadísticas de administrador. CHECK?
+- Estadísticas de administrador. CHECK
 - Asistencias con QR o DNI. CHECK
 - Avisos de cupos liberados, junto con su aceptación y rechazo.
 - Pagar resto de lo señado.
 - Cancelaciones, créditos y devoluciones.
 - Renovar mensualidades de 30 días cada una.
-- Crear funcionalidad de recordatorio de renovación. HACER BOTON PARA ENVIAR A TODOS LOS QUE HAYA QUE ENVIAR
+- Crear funcionalidad de recordatorio de renovación. CHECK
 - Historiales del usuario. CHECK
 - Registrar empleados. CHECK
 
