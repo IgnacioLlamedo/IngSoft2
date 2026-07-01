@@ -976,18 +976,35 @@ export async function updateClass(req, res){
             })
         }
         const clases = await claseGeneralDao.readMany({dia: data.dia, hora: data.hora, idSala: data.idSala})
-        if(clases.length > 0){
+        if((clases.length > 0) && !(
+            (data.idSala === current.idSala) &&
+            (data.dia === current.dia) &&
+            (Number(data.hora) === current.hora)
+        )){
             return res.json({
                 success: false,
                 message: "Error al modificar clase, ya existe una clase en ese dia, horario y sala"
             })
         }
         const profesor = await claseGeneralDao.readMany({dia: data.dia, hora: data.hora, idProfesor: data.idProfesor})
-        if(profesor.length > 0){
+        if((profesor.length > 0) && !(
+            (data.idSala === current.idSala) &&
+            (data.dia === current.dia) &&
+            (Number(data.hora) === current.hora)
+        )){
             return res.json({
                 success: false,
                 message: "Error al modificar clase, ya existe una clase en ese dia, horario y con ese profesor"
             })
+        }
+        const especificas = await claseEspecificaDao.readMany({idClaseGeneral: data.id})
+        for(const e of especificas){
+            if(e.anotados.length > data.limiteClase){
+                return res.json({
+                    success: false,
+                    message: "Error al modificar clase, hay una clase especifica erteneciente a esta clase general que tiene mas inscriptos que el nuevo limite"
+                })
+            }
         }
         await claseGeneralDao.updateOne({_id: req.body.id}, req.body)
         res.json({
