@@ -75,6 +75,23 @@ async function cargarActividades() {
 }
 */
 
+async function cargarAsistencias() {
+  try {
+    const res = await fetch("/api/asistencia/get-user-assistances", {
+      method: "GET",
+      credentials: "include"
+    });
+    if (!res.ok) throw new Error("Error al obtener asistencias");
+    currentAssistances = await res.json();
+    console.log("Asistencias recibidas del backend:", currentAssistances);
+    mostrarAsistencias(currentAssistances);
+  } catch (err) {
+    console.error("Error cargando asistencias:", err);
+    const container = document.querySelector(".assistance-history-container");
+    container.innerHTML = "<div class='assistance-detail'>Error al cargar asistencias.</div>";
+  }
+}
+
 
 function mostrarAsistencias(lista) {
   const container = document.querySelector(".assistance-history-container");
@@ -115,7 +132,7 @@ function mostrarAsistencias(lista) {
 }
 
 
-/* harcodeado*/
+/* harcodeado
 function cargarActividades() {
   const select = document.getElementById("showActivity");
   select.innerHTML = "";
@@ -136,7 +153,7 @@ function cargarActividades() {
 
   select.value = "todas";
 }
-
+*/
 
 
 // Filtrar por actividad
@@ -151,7 +168,7 @@ function aplicarFiltroActividad() {
   mostrarAsistencias(filtrados);
 }
 
-// Inicializar
+/* Inicializar
 document.addEventListener("DOMContentLoaded", () => {
   currentAssistances = asistenciasDePrueba; // usar datos de prueba
   actividadesDisponibles = actividadesDePrueba; // usar actividades de prueba
@@ -160,4 +177,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.getElementById("filterButton").addEventListener("click", aplicarFiltroActividad);
 });
+*/
 
+
+// Inicializar
+document.addEventListener("DOMContentLoaded", () => {
+  cargarAsistencias(); // ahora carga desde el backend
+  document.getElementById("filterButton").addEventListener("click", aplicarFiltroActividad);
+});
