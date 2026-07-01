@@ -4,13 +4,7 @@ const container = document.querySelector(".main-container");
 mostrarPago();
 
 async function mostrarPago() {
-<<<<<<< HEAD
-
     const res = await fetch(`/api/pago/get-pago/${ext.idPagoPendiente}`);
-
-=======
-    const res = await fetch(`/api/pago/get-pago/${ext.idPagoPendiente}`);
->>>>>>> origin/Front-Facu-x-siEstoNoFuncionaMeMato
     const resData = await res.json();
 
     if (!resData.success) {

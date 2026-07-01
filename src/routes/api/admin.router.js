@@ -1,10 +1,5 @@
 import express from "express";
-<<<<<<< HEAD
-//import { crearActividad, crearProfesor, crearSala, crearSede, modificarProfesor, modificarSala, modificarSede, eliminarActividad, eliminarProfesor, eliminarSala, eliminarSede, getActivities, getInstructors, getRooms, getFacilities, inhabilitarProfesor, getActivitiesStats, actualizarDiasAviso, recuperarDiasAviso, modificarNombreActividad, modificarPrecioActividad, getAllClasses } from "../../controllers/admin.controller.js";
-import { crearActividad, crearProfesor, crearSala, crearSede, modificarProfesor, modificarSala, modificarSede, eliminarActividad, eliminarProfesor, eliminarSala, eliminarSede, getActivities, getInstructors, getRooms, getFacilities, inhabilitarProfesor, getActivitiesStats, actualizarDiasAviso, recuperarDiasAviso, modificarActividad, getAllClasses, deleteClass, updateClass, createClass } from "../../controllers/admin.controller.js";
-=======
 import { crearActividad, crearProfesor, crearSala, crearSede, modificarProfesor, modificarSala, modificarSede, eliminarActividad, eliminarProfesor, eliminarSala, eliminarSede, getActivities, getInstructors, getRooms, getFacilities, inhabilitarProfesor, getActivitiesStats, actualizarDiasAviso, recuperarDiasAviso, modificarActividad, getAllClasses, deleteClass, updateClass, createClass, enviarRecordatorioPago } from "../../controllers/admin.controller.js";
->>>>>>> origin/Front-Facu-x-siEstoNoFuncionaMeMato
 
 export const adminRouter = express.Router();
 

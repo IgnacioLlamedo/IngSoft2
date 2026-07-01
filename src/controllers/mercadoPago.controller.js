@@ -7,6 +7,7 @@ import { now } from "mongoose";
 import { webhookPago } from "./webhook.controller.js";
 import { aceptarCupoInterno } from "./cupo.controller.js";
 import { postReservaMensual, postReservaUnica } from "./reservas.controller.js";
+//import { claseGeneralDao } from "../daos/claseGeneral.dao.js";
 
 
 export async function crearPreferencia(req, res) {
@@ -576,6 +577,7 @@ async function generatePaymentsWithInfo(payments) {
     return paymentsWithInfo;
 }
 
+/*
 export async function getUserPaymentsController(req, res) {
     try {
         const sessionUser = req.session && req.session.user;
@@ -593,5 +595,46 @@ export async function getUserPaymentsController(req, res) {
     } catch (error) {
         console.error('getPaymentsController ERROR: ', error);
         return res.status(500).json({ success: false, message: 'Error al obtener la lista de usuarios. Inténtelo más tarde.' });
+    }
+}
+    */
+
+export async function getUserPaymentsController(req, res) {
+    try {
+        const sessionUser = req.session && req.session.user;
+
+        if (!sessionUser) {
+            return res.status(403).json({ success: false, message: 'Acceso denegado' });
+        }
+
+        const query = { idUsuario: sessionUser.id };
+        const payments = await pagoDao.readMany(query);
+
+        // Enriquecer cada pago con info de la clase general
+        const paymentsWithInfo = [];
+        for (const p of payments) {
+            let claseInfo = "Clase desconocida";
+
+            if (p.clases && p.clases.length > 0) {
+                const idClaseGeneral = p.clases[0].idClase;
+                const claseGeneral = await claseGeneralDao.readOne(idClaseGeneral);
+                console.log(claseGeneral);
+
+                if (claseGeneral) {
+                    claseInfo = `${claseGeneral.dia}, ${claseGeneral.hora}:00 hs`;
+                }
+            }
+
+            paymentsWithInfo.push({
+                ...p,
+                claseInfo
+            });
+        }
+
+        return res.json(paymentsWithInfo);
+
+    } catch (error) {
+        console.error('getUserPaymentsController ERROR: ', error);
+        return res.status(500).json({ success: false, message: 'Error al obtener los pagos del usuario.' });
     }
 }

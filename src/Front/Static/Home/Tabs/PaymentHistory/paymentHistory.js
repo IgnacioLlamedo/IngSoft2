@@ -1,3 +1,4 @@
+/*
 const pagosDePrueba = [
   {
     _id: "40a36163-e530-496d-9fbc-9b821e745755",
@@ -28,7 +29,7 @@ const pagosDePrueba = [
     pendiente: false
   }
 ];
-
+*/
 
 let currentPayments = [];
 
@@ -56,8 +57,9 @@ function mostrarPagos(lista) {
     // Detalle: tipo + clase
     const detalle = document.createElement("div");
     detalle.classList.add("pay-detail");
-    const claseInfo = pago.clases && pago.clases.length > 0 ? pago.clases[0].idClase : "N/A";
+    const claseInfo = pago.claseInfo || "N/A";
     detalle.textContent = `Detalle: Pago ${pago.pendiente ? "Pendiente" : pago.estado} de clase ${claseInfo}`;
+    console.log(pago);
 
     // Monto
     const monto = document.createElement("div");
