@@ -130,18 +130,25 @@ export async function cancelarReservaRefactorizadoJsjs(req, res) {
             }
         );
         }
-        
-        console.log("Esta es la reserva que se canceló:");
+
+        console.log("Reserva marcada como cancelada.");
         console.log(reservaCancelada);
+        
+
         console.log("/////////////////////////////////////");
         console.log("/////////////////////////////////////");
 
         //////////////////////////////////////////// Llega hasta acá el código. Lo siguiente hay que probarlo.....
        
+        console.log("Buscando reemplazo...");
         const reemplazado = await validarYNotificar(tipo, claseLiberada, user);
+
+        console.log("¿Hubo reemplazo?");
+        console.log(reemplazado);
 
         //Si ningún usuario fue consultado para aceptar el cupo.
         if (!reemplazado){
+            console.log("Eliminando usuario de anotados...");
             //elimino físicamente al usuario que cancelo la reserva.
             await eliminarDeClase(user, clase.idClase);
 
@@ -155,8 +162,12 @@ export async function cancelarReservaRefactorizadoJsjs(req, res) {
             }
         });
 
+        console.log("Procesando reintegro...");
         const reintegro = await procesarReintegro(reservaCancelada, claseLiberada, tipo, clasesEspecificasDeReservaCancelada);
 
+
+        console.log("Resultado reintegro:");
+        console.log(reintegro);
         return res.json({
             success: true,
             message: "Reserva cancelada exitosamente"
@@ -171,140 +182,161 @@ export async function cancelarReservaRefactorizadoJsjs(req, res) {
     }
 }
 
-export async function validarYNotificar(tipo, claseLiberada, idCancelo){
+async function buscarReemplazoMensual(claseLiberada){
+    let candidato;
+    /**Por cada persona dentro de la lista de espera mensual de la clase liberada:  */
+    for(const act of claseLiberada.esperaMensual){
 
-    let reemplazo = null;
+        console.log("--------------------------------");
+        console.log("Analizando candidato:");
+        console.log(act.idUsuario);
 
-    //////////////////////////////////
-    //          MENSUAL
-    //////////////////////////////////
-    if (tipo === "Mensual"){
-        let candidato;
-        
-        /**Por cada persona dentro de la lista de espera mensual de la clase liberada:  */
-        for(const act of claseLiberada.esperaMensual){
+        /**
+         * validarReemplazo devuelve un elemento con esta forma:
+         * 
+         *  let valida = {
+         *      clases: [],        --- clases tiene las 4/5 clases especificas
+         *      candidatoValido: true
+         *  }
+         * 
+         *  ó
+         * 
+         * let valida = {
+         *      clases: [],     --- puede o no tener clases, lo importante es candidatoValido
+         *      candidatoValido: false
+         * }
+         * 
+         */
+        candidato = await validarReemplazo(act.idUsuario, claseLiberada);
 
-            /**
-             * validarReemplazo devuelve un elemento con esta forma:
-             * 
-             *  let valida = {
-             *      clases: [],        --- clases tiene las 4/5 clases especificas
-             *      candidatoValido: true
-             *  }
-             * 
-             *  ó
-             * 
-             * let valida = {
-             *      clases: [],     --- puede o no tener clases, lo importante es candidatoValido
-             *      candidatoValido: false
-             * }
-             * 
-             */
-            candidato = await validarReemplazo(act.idUsuario, claseLiberada);
+        /**Corroboro si el siguiente en lista de espera mensual
+        puede acceder a la clase (Osea que las otras clases que corresponden
+        a su reserva tengan espacio)
+        Ya que puede darse la situación:
+            clase1: espacio suficiente
+            clase2: llena -- esta fue la reserva cancelada.
+            clase3: llena
+            clase4: llena
+            
+        y por lo tanto no sería elegible para reemplazo.*/
 
-            /**Corroboro si el siguiente en lista de espera mensual
-            puede acceder a la clase (Osea que las otras clases que corresponden
-            a su reserva tengan espacio)
-            Ya que puede darse la situación:
-                clase1: espacio suficiente
-                clase2: llena -- esta fue la reserva cancelada.
-                clase3: llena
-                clase4: llena
-                
-            y por lo tanto no sería elegible para reemplazo.*/
+        console.log("¿Es válido?");
+        console.log(candidato.candidatoValido);
 
-            let nuevoCupo = null;
+        let nuevoCupo = null;
 
-            //si el candidato es válido
-            if (candidato.valido){
+        //si el candidato es válido
+        if (candidato.candidatoValido){
+            console.log("Candidato válido.");
+            console.log("Creando cupo...");
 
-                const clasesDelCupo = [];
-                for(const actual in candidato.clases){
-                    const claseAct = {
-                        clase: actual,
-                        esLiberada: false
-                    }
-                    if (actual._id === claseLiberada._id){
-                        claseAct.esLiberada = true;
-                    }
-                    clasesDelCupo.push(claseAct);
+            const clasesDelCupo = [];
+            for(const actual of candidato.clases){
+                const claseAct = {
+                    clase: actual,
+                    esLiberada: false
                 }
-
-                //creo el nuevo cupo
-                nuevoCupo = await cupoDao.create({
-                    idUsuario: act.idUsuario,
-                    idUsuarioCanceloClase: idCancelo,
-                    clasesEspecificas: clasesDelCupo,
-                    tipo: tipo
-                });
-
-                if (!nuevoCupo){
-                    console.log("error al crear cupo de reemplazo.");
-                    break;
+                if (actual._id === claseLiberada._id){
+                    claseAct.esLiberada = true;
                 }
+                clasesDelCupo.push(claseAct);
+            }
 
-                await claseEspecificaDao.updateOne({_id: claseLiberada._id, "esperaMensual.idUsuario": act.idUsuario},
-                    { 
-                        $set:{
-                            "anotados.$.estado":"esperandoConfirmacion"
-                        }
-                    }
-                )
-                //consulto al usuario si acepta el nuevo cupo.
-                reemplazo = await notificarUsuario(act.idUsuario, candidato.clases, nuevoCupo._id);
+            //creo el nuevo cupo
+            nuevoCupo = await cupoDao.create({
+                idUsuario: act.idUsuario,
+                idUsuarioCanceloClase: idCancelo,
+                clasesEspecificas: clasesDelCupo,
+                tipo: tipo
+            });
+
+            if (!nuevoCupo){
+                console.log("error al crear cupo de reemplazo.");
                 break;
             }
 
-            else{
-                console.log()
-            }
-            //si el candidato no es válido, sigo con el siguiente en la lista de espera
-        }
-    }
-    //////////////////////////////////
-    //          UNICA
-    //////////////////////////////////
-    else{
-        //si la clase cancelada es única -- simplemente busco al siguiente en lista de espera única
-
-
-        //si existen personas en la lista de espera única
-        if (claseLiberada.esperaUnica.length > 0){
-
-            //Itero sobre la lista de espera unica.
-            for(const unicaAct in claseLiberada.esperaUnica){
-
-                //si el actual aún no está esperando confirmación, aceptó o rechazo un cupo
-                if (unicaAct.estado === 'activo') {
-
-                    //creo el cupo.
-                    const nuevoCupo = await cupoDao.create({
-                        idUsuario: unicaAct.idUsuario,
-                        idUsuarioCanceloClase: idCancelo,
-                        clasesEspecificas: claseLiberada,
-                        tipo: tipo
-                    });
-                    
-                    //Modifico el estado en la lista de espera única del usuario a esperandoConfirmación para que
-                    //no pueda ser elegído en caso de que otra persona cancele clase en el mismo moomento.
-                    await claseEspecificaDao.updateOne({_id: claseLiberada._id, "esperaUnica.idUsuario": unicaAct.idUsuario},
-                    { 
-                        $set:{
-                            "esperaUnica.$.estado":"esperandoConfirmacion"
-                        }
-                    })
-
-                    //Mando mail al usuario consultando si acepta el cupo.
-                    reemplazo = await notificarUsuario(unicaAct.idUsuario, claseLiberada, nuevoCupo._id);
+            await claseEspecificaDao.updateOne({_id: claseLiberada._id, "esperaMensual.idUsuario": act.idUsuario},
+                { 
+                    $set:{
+                        "anotados.$.estado":"esperandoConfirmacion"
+                    }
                 }
+            )
+            //consulto al usuario si acepta el nuevo cupo.
+            console.log("Notificando usuario...");
+            reemplazo = await notificarUsuario(act.idUsuario, candidato.clases, nuevoCupo._id);
+            console.log("Usuario notificado.");
+            break;
+        }
+        else{
+            console.log("No es válido. Paso al siguiente.");
+            continue
+        }
+        //si el candidato no es válido, sigo con el siguiente en la lista de espera
+    }
+    return candidato;
+}
 
-                //si el actual ya fue notificado para confirmar anteriormente, aceptó una clase o la rechazó
-                else
-                    //Paso al siguiente candidato.
-                    continue
+async function buscarReemplazoUnico(claseLiberada, idCancelo){
+    let candidato;
+    //si la clase cancelada es única -- simplemente busco al siguiente en lista de espera única
+    //si existen personas en la lista de espera única
+    if (claseLiberada.esperaUnica.length > 0){
+
+        //Itero sobre la lista de espera unica.
+        for(const unicaAct of claseLiberada.esperaUnica){
+
+            console.log("=================================");
+            console.log("No hubo candidato mensual.");
+            console.log("Buscando candidato único...");
+
+            //si el actual aún no está esperando confirmación, aceptó o rechazo un cupo
+            if (unicaAct.estado === 'activo') {
+
+                //creo el cupo.
+                console.log("Creando cupo...");
+                const nuevoCupo = await cupoDao.create({
+                    idUsuario: unicaAct.idUsuario,
+                    idUsuarioCanceloClase: idCancelo,
+                    clasesEspecificas: claseLiberada,
+                    tipo: tipo
+                });
+                
+                //Modifico el estado en la lista de espera única del usuario a esperandoConfirmación para que
+                //no pueda ser elegído en caso de que otra persona cancele clase en el mismo moomento.
+                await claseEspecificaDao.updateOne({_id: claseLiberada._id, "esperaUnica.idUsuario": unicaAct.idUsuario},
+                { 
+                    $set:{
+                        "esperaUnica.$.estado":"esperandoConfirmacion"
+                    }
+                })
+
+                //Mando mail al usuario consultando si acepta el cupo.
+                console.log("Notificando usuario desde unica...");
+                reemplazo = await notificarUsuario(unicaAct.idUsuario, claseLiberada, nuevoCupo._id);
+                console.log("Usuario notificado.");
+            }
+
+            //si el actual ya fue notificado para confirmar anteriormente, aceptó una clase o la rechazó
+            else{
+                console.log("Usuario ya fue notificado anteriormente.");
+                //Paso al siguiente candidato.
+                continue
             }
         }
     }
+    return candidato;
+}
+
+export async function validarYNotificar(tipo, claseLiberada, idCancelo){
+
+    console.log("=================================");
+    console.log("Buscando reemplazo MENSUAL...");
+    console.log("Cantidad en espera mensual:", claseLiberada.esperaMensual.length);
+    let reemplazo = buscarReemplazoMensual(claseLiberada, idCancelo);
+    
+    if (!reemplazo)
+        reemplazo = await buscarReemplazoUnico(claseLiberada, idCancelo);
 
     return reemplazo;
 }
@@ -328,7 +360,7 @@ async function validarReemplazo(candidato, clase){
     let reserva = null;
    
     //paso 1: Obtener la reserva del candidato a la que pertenece la clase.
-    reserva = reservaDao.readOne({ 
+    reserva = await reservaDao.readOne({ 
         idUsuario: candidato.idUsuario,
         tipo: 'mensual',
         clases: {
@@ -351,8 +383,8 @@ async function validarReemplazo(candidato, clase){
         const claseGeneral = await claseGeneralDao.readOne({ _id: reserva.clases[0].idClaseGeneral })
 
         //revisar si todas las clases tienen espacio para anotar al usuario.
-        for(const claseAct in reserva.clases){
-            const especificaAct = await claseEspecificaDao.readOne({ idClase: claseAct.idClase });
+        for(const claseAct of reserva.clases){
+            const especificaAct = await claseEspecificaDao.readOne({ _id: claseAct.idClase });
 
             if(!especificaAct){ //En teoría no debería ocurrir a menos que modifiquemos la DB
                 valida.candidatoValido = false;
