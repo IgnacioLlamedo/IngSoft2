@@ -1,4 +1,4 @@
-import { devolverPago } from "./mercadoPago.servicio.js";
+import { devolverPago } from "./mercado.servicio.js";
 
 export async function procesarReintegro(reserva, clase, tipo, clasesEspecificas){
 
@@ -20,7 +20,7 @@ export async function procesarReintegro(reserva, clase, tipo, clasesEspecificas)
         return false;
     }
 
-    const cancelaciones = contarCancelacionesMes(reserva);
+    const cancelaciones = contarCancelacionesMes(reserva, clasesEspecificas);
 
     if(cancelaciones >= 3){
         return false;
@@ -40,6 +40,7 @@ export function contarCancelacionesMes(reserva, clasesEspecificas){
         if (clase.estado !== "cancelada")
             continue;
 
+        //¿Para que funciona esto?
         const especifica = clasesEspecificas.find(
             c => c._id == clase.idClase
         );
@@ -49,10 +50,7 @@ export function contarCancelacionesMes(reserva, clasesEspecificas){
 
         const fecha = new Date(especifica.fechaEspecifica);
 
-        if (
-            fecha.getMonth() === hoy.getMonth() &&
-            fecha.getFullYear() === hoy.getFullYear()
-        ){
+        if (fecha.getMonth() === hoy.getMonth() && fecha.getFullYear() === hoy.getFullYear()){
             total++;
         }
 
