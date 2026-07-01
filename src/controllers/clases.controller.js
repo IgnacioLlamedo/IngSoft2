@@ -148,16 +148,27 @@ export async function ingresarAEspera(req, res) {
 
 export async function getSalas(req, res) {
     try {
-        const salas = await salaDao.readMany({});
+        const salas = await salaDao.readMany({ estado: { $ne: "borrada" } });
+        
         if (!salas) {
             return res.json({
                 success: false,
                 message: "Error al conseguir salas"
             });
         }
+
+        // Las salas sin clases no tiene sentido mostrarlas
+        const salasConClases = [];
+
+        for (const sala of salas) {
+            const existe = await claseGeneralDao.readOne({ idSala: sala._id });
+            console.log(existe);
+            if (existe) salasConClases.push(sala);
+        }
+
         res.json({
             success: true,
-            salas: salas
+            salas: salasConClases
         });
     }
     catch(error) {

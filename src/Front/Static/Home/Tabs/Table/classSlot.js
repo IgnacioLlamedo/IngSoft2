@@ -184,6 +184,8 @@ async function getAllClasses(fechaSemana) {
     document.querySelectorAll('.slotDeClase').forEach(div => {
         if (div.innerText.trim() === "Sin Clase") {
             div.classList.add("sinclase");
+            // ocultar los slots vacíos (aunque no queda mucho mejor)
+            // div.style.display = "none";
         }
     });
 }

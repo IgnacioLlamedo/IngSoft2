@@ -5,10 +5,10 @@ export class claseGeneralDao {
         return await ClaseGeneral.create(datos)
     }
     async readOne(query){
-        const clase = await ClaseGeneral.findOne({ _id: query }).lean()
+        const clase = await ClaseGeneral.findOne(query).lean()
         if(!clase){
             //provisional, desarrollar luego
-            console.log("error")
+            console.log("ejecutando claseGeneralDao.readOne(query)")
         }
         return clase
     }
