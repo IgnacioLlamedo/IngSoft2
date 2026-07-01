@@ -29,7 +29,7 @@ const asistenciasDePrueba = [
   }
 ];
 
-/* simulando lo que devuelve la base
+/* simulando lo que devuelve la base*/
 const actividadesDePrueba = [
   { _id: "50825c5a-2e25-4839-9b7d-fb1a952421ce", nombre: "Yoga", precioMensual: 1007 },
   { _id: "d1d4a7f9-29be-41ba-baca-6f23fab51fd0", nombre: "Spinning", precioMensual: 1200 },
@@ -37,8 +37,8 @@ const actividadesDePrueba = [
   { _id: "bc226f6-c915-4776-aee1-202da6c6bb65", nombre: "Crossfit", precioMensual: 1300 },
   { _id: "7d3a3bdd-de04-41f1-9f58-1b61e4e68abb", nombre: "Hola", precioMensual: 2 }
 ];
-*/
 
+/*
 async function cargarActividades() {
   const select = document.getElementById("showActivity");
   select.innerHTML = "";
@@ -73,7 +73,7 @@ async function cargarActividades() {
     select.appendChild(optionError);
   }
 }
-
+*/
 
 
 function mostrarAsistencias(lista) {
@@ -115,7 +115,7 @@ function mostrarAsistencias(lista) {
 }
 
 
-/* harcodeado
+/* harcodeado*/
 function cargarActividades() {
   const select = document.getElementById("showActivity");
   select.innerHTML = "";
@@ -136,7 +136,7 @@ function cargarActividades() {
 
   select.value = "todas";
 }
-*/
+
 
 
 // Filtrar por actividad
@@ -154,7 +154,7 @@ function aplicarFiltroActividad() {
 // Inicializar
 document.addEventListener("DOMContentLoaded", () => {
   currentAssistances = asistenciasDePrueba; // usar datos de prueba
-  //actividadesDisponibles = actividadesDePrueba; // usar actividades de prueba
+  actividadesDisponibles = actividadesDePrueba; // usar actividades de prueba
   cargarActividades();
   mostrarAsistencias(currentAssistances);
 
