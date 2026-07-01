@@ -19,8 +19,8 @@ const slotHtml = (slot) => {
             ? `<b>${slot.estado}</b>`
             : `<b>${slot.estado}</b> con motivo <i>"${slot.motivoEstado}"</i>`;
     const fechasHtml = slot.fechasEstado.hasta == null
-            ? `<br>Ocurrido el <b>${new Date(slot.fechasEstado.desde).toLocaleString('es-AR')}</b>`
-            : `<br>Desde <b>${new Date(slot.fechasEstado.desde).toLocaleString('es-AR')}</b> hasta <b>${new Date(slot.fechasEstado.hasta).toLocaleString('es-AR')}</b>`;
+            ? `<br>Ocurrido el <b>${new Date(slot.fechasEstado.desde).toLocaleDateString('es-AR')}</b>`
+            : `<br>Desde <b>${new Date(slot.fechasEstado.desde).toLocaleDateString('es-AR')}</b> hasta <b>${new Date(slot.fechasEstado.hasta).toLocaleDateString('es-AR')}</b>`;
     statusHtml += fechasHtml;
 
     const innerHtml = `
@@ -47,8 +47,8 @@ function getSuspendFormData(form) {
     return {
         motivoEstado: form.reasonField.value,
         fechasEstado: {
-            desde: form.dateFromInput.value,
-            hasta: form.dateToInput.value
+            desde: form.dateFromInput.value + "T00:00:00",
+            hasta: form.dateToInput.value + "T00:00:00",
         },
     };
 }
@@ -82,6 +82,20 @@ const slotList = document.getElementById("slotList");
 const notDataAvailableMsg = document.getElementById("notDataAvailableMsg");
 
 const dialog = document.getElementById("confirmPanel");
+const confirmText = document.getElementById("confirmText");
+const confirmBtn = document.getElementById("confirmBtn");
+const reasonDiv = document.getElementById("reasonDiv");
+const deleteReasonField = document.getElementById("deleteReasonField");
+
+let currentDialogCloseHandler = null;
+function setDialogCloseHandler(handler) {
+    if (currentDialogCloseHandler) {
+        dialog.removeEventListener('close', currentDialogCloseHandler);
+        currentDialogCloseHandler = null;
+    }
+    currentDialogCloseHandler = handler;
+    dialog.addEventListener('close', currentDialogCloseHandler, { once: true });
+}
 
 let Status;
 
@@ -97,25 +111,6 @@ function attachConfirmDialogHandlers() {
     const cancelButton = dialog.querySelector('button[value="cancel"]');
     if (cancelButton) {
         cancelButton.addEventListener('click', () => dialog.close('cancel'));
-    }
-
-    const confirmForm = dialog.querySelector('form');
-    const reasonInput = dialog.querySelector('#deleteReasonField');
-    if (confirmForm && reasonInput) {
-        confirmForm.addEventListener('submit', (event) => {
-            const reason = reasonInput.value.trim();
-            if (!reason) {
-                reasonInput.setCustomValidity('Debe ingresar un motivo para borrar el profesor.');
-                reasonInput.reportValidity();
-                event.preventDefault();
-                return;
-            }
-            reasonInput.setCustomValidity('');
-        });
-
-        reasonInput.addEventListener('input', () => {
-            reasonInput.setCustomValidity('');
-        });
     }
 }
 
@@ -180,6 +175,7 @@ function createSlotData(slot) {
 }
 
 
+
 function createEditAndDeleteButtons(slotData, slotError, slotErrorMsg, slot) {
     const buttonsDiv = document.createElement("div");
     buttonsDiv.classList.add("buttons-container");
@@ -191,6 +187,26 @@ function createEditAndDeleteButtons(slotData, slotError, slotErrorMsg, slot) {
             slotSuspendButton.textContent = "Inhabilitar";
             slotSuspendButton.onclick = () => switchToSuspend(slot);
             buttonsDiv.appendChild(slotSuspendButton);
+        }
+        else if (slot.estado === Status.INACTIVE) {
+            const slotResumeButton = document.createElement("button");
+            slotResumeButton.classList.add("suspend-button");
+            slotResumeButton.textContent = "Habilitar";
+            buttonsDiv.appendChild(slotResumeButton);
+
+            slotResumeButton.addEventListener('click', () => {
+                reasonDiv.hidden = true;
+                confirmText.textContent = "¿Desea habilitar el profesor?";
+                confirmBtn.textContent = "Habilitar Profesor";
+
+                setDialogCloseHandler((closeEvent) => {
+                    if (dialog.returnValue === 'default') {
+                        resumeInstructor(closeEvent, slot._id, slotError, slotErrorMsg);
+                    }
+                });
+
+                dialog.showModal();
+            });
         }
     
         const slotEditButton = document.createElement("button");
@@ -206,14 +222,18 @@ function createEditAndDeleteButtons(slotData, slotError, slotErrorMsg, slot) {
         buttonsDiv.appendChild(slotDeleteButton);
     
         slotDeleteButton.addEventListener('click', () => {
-            dialog.showModal();
-    
-            dialog.addEventListener('close', (closeEvent) => {
+            reasonDiv.hidden = false;
+            confirmText.textContent = "¿Está seguro de que desea borrar el Profesor?";
+            confirmBtn.textContent = "Borrar Profesor";
+
+            setDialogCloseHandler((closeEvent) => {
                 if (dialog.returnValue === 'default') {
                     const deleteReason = dialog.querySelector('#deleteReasonField')?.value || '';
                     deleteInstructor(closeEvent, slot._id, slotError, slotErrorMsg, deleteReason);
                 }
-            }, { once: true });
+            });
+
+            dialog.showModal();
         });
     }
 
@@ -330,7 +350,10 @@ async function deleteInstructor(event, _id, slotError, slotErrorMsg, motivoEstad
 
     hideSlotError(slotError);
     
-    const data = JSON.stringify({ id: _id, motivoEstado: motivoEstado });
+    const data = JSON.stringify({
+        id: _id,
+        motivoEstado: motivoEstado || "Sin motivo especificado"
+    });
 
     const res = await fetch(instructorsEndpoint, {
         method: 'DELETE',
@@ -346,13 +369,46 @@ async function deleteInstructor(event, _id, slotError, slotErrorMsg, motivoEstad
         if(isOnEditMode)
             switchToCreateForm();
 
-        showDeleteSuccessDialog("Profesor borrado correctamente.");
+        showSuccessDialog("Profesor borrado correctamente.");
         getAllSlots();
     }
     else showSlotError(slotError, slotErrorMsg, resData.message);
 }
 
-function showDeleteSuccessDialog(message) {
+
+async function resumeInstructor(event, _id, slotError, slotErrorMsg, motivoEstado) {
+    event.preventDefault();
+
+    hideSlotError(slotError);
+    
+    const profesorData = {
+        _id: _id,
+        estado: Status.REGISTERED,
+        motivoEstado: "Rehabilitado vía sistema de gestión",
+        fechasEstado: { desde: Date.now(), hasta: null }
+    };
+
+    const res = await fetch(`${instructorsEndpoint}/habilitar`, {
+        method: 'PUT',
+        headers: {
+            "Content-Type" : "application/json",
+        },
+        body: JSON.stringify(profesorData)
+    });
+
+    const resData = await res.json();
+
+    if (resData.success) {
+        if(isOnEditMode)
+            switchToCreateForm();
+
+        showSuccessDialog("Profesor habilitado correctamente.");
+        getAllSlots();
+    }
+    else showSlotError(slotError, slotErrorMsg, resData.message);
+}
+
+function showSuccessDialog(message) {
     const overlay = document.createElement('div');
     overlay.classList.add('delete-success-overlay');
 
@@ -463,6 +519,9 @@ async function switchToEdit(slot) {
 
     currentForm.replaceWith(editForm);
     currentForm = editForm;
+    
+    const mountedNameField = currentForm.querySelector("#nameField");
+    if (mountedNameField) mountedNameField.focus();
 
     isOnEditMode = true;
 }
@@ -487,6 +546,13 @@ async function switchToSuspend(slot) {
     suspendFormErrorMsg = suspendForm.querySelector("#suspendError");
     suspendFormSuccessMsg = suspendForm.querySelector("#suspendSuccess");
 
+    const dateFromInput = suspendForm.querySelector('#dateFromInput');
+    if (dateFromInput) {
+        dateFromInput.addEventListener('change', () => {
+            console.log('Selected dateFromInput:', dateFromInput.value);
+        });
+    }
+    
     suspendForm.addEventListener("submit", async (event) => {
         event.preventDefault();
         suspendCleanMsgs();
@@ -534,6 +600,9 @@ async function switchToSuspend(slot) {
 
     currentForm.replaceWith(suspendForm);
     currentForm = suspendForm;
+
+    const mountedReasonField = currentForm.querySelector("#reasonField");
+    if (mountedReasonField) mountedReasonField.focus();
 }
 
 
