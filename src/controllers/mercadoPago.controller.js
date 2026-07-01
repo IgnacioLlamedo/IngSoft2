@@ -138,9 +138,9 @@ export async function crearPreferencia(req, res) {
                     pending: `${config.link}/payment/pending`
                 },
                 auto_return: "approved",
-                expires: true,
+                /* expires: true,
                 expiration_date_from: ahora.toISOString(),
-                expiration_date_to: vence.toISOString()
+                expiration_date_to: vence.toISOString() */
             }
         });
 
@@ -330,7 +330,7 @@ export async function consultar(req, res) {
         });
 
         const ahora = Date.now();
-        const tiempoExpiracion = 2 * 60 * 1000; // 2 minutos
+        const tiempoExpiracion = 1000;/* 2 * 60 * 1000; */ // 2 minutos
 
         for (const pago of pagosPendientes) {
 
