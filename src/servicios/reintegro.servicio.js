@@ -1,4 +1,4 @@
-import { devolverPago } from "./mercadoPago.servicio.js";
+import { devolverPago } from "./mercado.servicio.js";
 
 export async function procesarReintegro(reserva, clase, tipo, clasesEspecificas){
 

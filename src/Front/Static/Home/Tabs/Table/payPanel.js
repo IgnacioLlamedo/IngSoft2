@@ -245,6 +245,8 @@ async function pagar(tipoClase, precio, clasesPago, boton) {
             else{
 
             }
+
+            //! ME GUSTARÍA SACAR ESTE ALERT
             const confirmar = confirm(
                 "La clase está llena. ¿Desea ingresar en lista de espera?"
             );
