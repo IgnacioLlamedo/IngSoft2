@@ -842,6 +842,7 @@ export async function enviarRecordatorioPago(req, res){
         await mailer.recordatorioPago(user, data) */
         res.json({
             success: true,
+            message: "¡Avisos enviados con éxito!"
         });
     }
     catch(error) {
