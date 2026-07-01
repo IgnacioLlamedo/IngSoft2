@@ -198,7 +198,6 @@ async function notificarClientesPorProfesor(profesor, motivo) {
                     // 6) Enviar emails
                     // DEBUG
                     if (motivo === "rehabilitadas") {
-                        // TODO: Armar mail de clase rehabilitada
                         await mailer.restoredClass(a.mail, a.nombre, sc.fechaEspecifica, actividad);
 
                     }
@@ -582,7 +581,6 @@ async function notificarClientesPorSala(sala, motivo) {
                     // 7) Enviar emails
                     // DEBUG
                     if (motivo === "rehabilitadas") {
-                        // TODO: Armar mail de clase rehabilitada
                         await mailer.restoredClass(a.mail, a.nombre, sc.fechaEspecifica, actividad);
 
                     }
