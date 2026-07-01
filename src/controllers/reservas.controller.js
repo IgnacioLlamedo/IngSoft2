@@ -189,7 +189,7 @@ export async function cancelarReservaRefactorizadoJsjs(req, res) {
     }
 }
 
-async function buscarReemplazoMensual(claseLiberada, idCancelo){
+async function buscarReemplazoMensual(claseLiberada, idCancelo, tipo){
     let candidato = null;
     let reemplazo = null;
     /**Por cada persona dentro de la lista de espera mensual de la clase liberada:  */
@@ -198,7 +198,7 @@ async function buscarReemplazoMensual(claseLiberada, idCancelo){
         console.log("--------------------------------");
         console.log("Analizando candidato:");
         console.log(act.idUsuario);
-        candidato = await validarReemplazo(act.idUsuario, claseLiberada);
+        candidato = await validarReemplazo(act, claseLiberada);
 
         console.log("Este es el usuario candidato actual de lista de espera mensual:  ");
         console.log(candidato)
@@ -260,7 +260,7 @@ async function buscarReemplazoMensual(claseLiberada, idCancelo){
     return reemplazo;
 }
 
-async function buscarReemplazoUnico(claseLiberada, idCancelo){
+async function buscarReemplazoUnico(claseLiberada, idCancelo, tipo){
     let reemplazo = null;
     //si la clase cancelada es única -- simplemente busco al siguiente en lista de espera única
     //si existen personas en la lista de espera única
@@ -283,7 +283,10 @@ async function buscarReemplazoUnico(claseLiberada, idCancelo){
                 const nuevoCupo = await cupoDao.create({
                     idUsuario: unicaAct.idUsuario,
                     idUsuarioCanceloClase: idCancelo,
-                    clasesEspecificas: claseLiberada,
+                    clasesEspecificas: {
+                        clase: claseLiberada._id,
+                        esLiberada: true
+                    },
                     tipo: tipo
                 });
                 
@@ -298,7 +301,7 @@ async function buscarReemplazoUnico(claseLiberada, idCancelo){
 
                 //Mando mail al usuario consultando si acepta el cupo.
                 console.log("Notificando usuario desde unica...");
-                await notificarUsuario(unicaAct.idUsuario, claseLiberada, nuevoCupo._id);
+                await notificarUsuario(unicaAct.idUsuario, [claseLiberada], nuevoCupo._id);
                 reemplazo = unicaAct.idUsuario;
                 console.log("Usuario notificado.");
             }
@@ -319,13 +322,15 @@ export async function validarYNotificar(tipo, claseLiberada, idCancelo){
     console.log("=================================");
     console.log("Buscando reemplazo MENSUAL...");
     console.log("Cantidad en espera mensual:", claseLiberada.esperaMensual.length);
-    let reemplazo = await buscarReemplazoMensual(claseLiberada, idCancelo);
+    let reemplazo = await buscarReemplazoMensual(claseLiberada, idCancelo, tipo);
     
     console.log("Este fue el usuario conseguido de la lista de espera mensual para el reemplazo...");
     console.log(reemplazo);
     if (!reemplazo){
         console.log("No hubo reemplazo encontrado en lista de espera mensual, buscando en lista de espera unica:")
-        reemplazo = await buscarReemplazoUnico(claseLiberada, idCancelo);
+        reemplazo = await buscarReemplazoUnico(claseLiberada, idCancelo, tipo);
+        console.log("El candidato unico encontrado fue:");
+        console.log(reemplazo);
     }
     return reemplazo;
 }
