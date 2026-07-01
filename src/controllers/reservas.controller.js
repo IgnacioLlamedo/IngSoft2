@@ -190,43 +190,18 @@ export async function cancelarReservaRefactorizadoJsjs(req, res) {
 }
 
 async function buscarReemplazoMensual(claseLiberada, idCancelo){
-    let candidato;
+    let candidato = null;
+    let reemplazo = null;
     /**Por cada persona dentro de la lista de espera mensual de la clase liberada:  */
     for(const act of claseLiberada.esperaMensual){
 
         console.log("--------------------------------");
         console.log("Analizando candidato:");
         console.log(act.idUsuario);
-
-        /**
-         * validarReemplazo devuelve un elemento con esta forma:
-         * 
-         *  let valida = {
-         *      clases: [],        --- clases tiene las 4/5 clases especificas
-         *      candidatoValido: true
-         *  }
-         * 
-         *  ó
-         * 
-         * let valida = {
-         *      clases: [],     --- puede o no tener clases, lo importante es candidatoValido
-         *      candidatoValido: false
-         * }
-         * 
-         */
         candidato = await validarReemplazo(act.idUsuario, claseLiberada);
 
-        /**Corroboro si el siguiente en lista de espera mensual
-        puede acceder a la clase (Osea que las otras clases que corresponden
-        a su reserva tengan espacio)
-        Ya que puede darse la situación:
-            clase1: espacio suficiente
-            clase2: llena -- esta fue la reserva cancelada.
-            clase3: llena
-            clase4: llena
-            
-        y por lo tanto no sería elegible para reemplazo.*/
-
+        console.log("Este es el usuario candidato actual de lista de espera mensual:  ");
+        console.log(candidato)
         console.log("¿Es válido?");
         console.log(candidato.candidatoValido);
 
@@ -271,7 +246,8 @@ async function buscarReemplazoMensual(claseLiberada, idCancelo){
             )
             //consulto al usuario si acepta el nuevo cupo.
             console.log("Notificando usuario...");
-            reemplazo = await notificarUsuario(act.idUsuario, candidato.clases, nuevoCupo._id);
+            await notificarUsuario(act.idUsuario, candidato.clases, nuevoCupo._id);
+            reemplazo = act.idUsuario;
             console.log("Usuario notificado.");
             break;
         }
@@ -281,14 +257,16 @@ async function buscarReemplazoMensual(claseLiberada, idCancelo){
         }
         //si el candidato no es válido, sigo con el siguiente en la lista de espera
     }
-    return candidato;
+    return reemplazo;
 }
 
 async function buscarReemplazoUnico(claseLiberada, idCancelo){
-    let candidato;
+    let reemplazo = null;
     //si la clase cancelada es única -- simplemente busco al siguiente en lista de espera única
     //si existen personas en la lista de espera única
-    if (claseLiberada.esperaUnica.length > 0){
+    console.log("Este es el largo de la lista de espera unica.")
+    console.log(claseLiberada.esperaUnica.length)
+    if (claseLiberada.esperaUnica.length >= 0){
 
         //Itero sobre la lista de espera unica.
         for(const unicaAct of claseLiberada.esperaUnica){
@@ -320,7 +298,8 @@ async function buscarReemplazoUnico(claseLiberada, idCancelo){
 
                 //Mando mail al usuario consultando si acepta el cupo.
                 console.log("Notificando usuario desde unica...");
-                reemplazo = await notificarUsuario(unicaAct.idUsuario, claseLiberada, nuevoCupo._id);
+                await notificarUsuario(unicaAct.idUsuario, claseLiberada, nuevoCupo._id);
+                reemplazo = unicaAct.idUsuario;
                 console.log("Usuario notificado.");
             }
 
@@ -332,7 +311,7 @@ async function buscarReemplazoUnico(claseLiberada, idCancelo){
             }
         }
     }
-    return candidato;
+    return reemplazo;
 }
 
 export async function validarYNotificar(tipo, claseLiberada, idCancelo){
@@ -340,11 +319,14 @@ export async function validarYNotificar(tipo, claseLiberada, idCancelo){
     console.log("=================================");
     console.log("Buscando reemplazo MENSUAL...");
     console.log("Cantidad en espera mensual:", claseLiberada.esperaMensual.length);
-    let reemplazo = buscarReemplazoMensual(claseLiberada, idCancelo);
+    let reemplazo = await buscarReemplazoMensual(claseLiberada, idCancelo);
     
-    if (!reemplazo)
+    console.log("Este fue el usuario conseguido de la lista de espera mensual para el reemplazo...");
+    console.log(reemplazo);
+    if (!reemplazo){
+        console.log("No hubo reemplazo encontrado en lista de espera mensual, buscando en lista de espera unica:")
         reemplazo = await buscarReemplazoUnico(claseLiberada, idCancelo);
-
+    }
     return reemplazo;
 }
 
@@ -464,10 +446,10 @@ export async function reemplazarAnotado(clase, usuario){
 export async function postReservaUnica(reservaData, esSeña) {
     try {
 
-        /* console.log("esto tiene reservaData (desde postReservaUnica)");
+        console.log("esto tiene reservaData (desde postReservaUnica)");
         console.log(reservaData)
         console.log("El tipo de clase unica es una seña?: ")
-        console.log(esSeña) */
+        console.log(esSeña)
         
         const idClaseGeneral = reservaData.clases[0].idClase;
         const fecha = reservaData.clases[0].fecha;
@@ -561,7 +543,15 @@ export async function postReservaUnica(reservaData, esSeña) {
                 }
             );
 
-            const reserva = await reservaDao.createUnica(reservaData);
+            const dataParaReservaUnica = {
+                idClaseEspecifica: claseEspecifica._id,
+                pagos: [{ idPago: reservaData._id }],
+                señada: esSeña,
+                idUsuario: reservaData.idUsuario,
+                fechaEspecifica: fecha
+            }
+
+            const reserva = await reservaDao.createUnica(dataParaReservaUnica);
             
             return {
                 success: true,

@@ -278,8 +278,8 @@ export async function procesarWebhook(body){
     //en esta función se cambia el estado del pago en DB de pendiente a aprobado
     //y también se cambia la fechaPago a new Date(mpPayment.date_approved)
     const confirmadoElPago = await confirmarPagoInterno(mpPayment);
-    /* console.log("El estado del pago es: ");
-    console.log(confirmadoElPago.estado); */
+    console.log("El estado del pago es: ");
+    console.log(confirmadoElPago);
 
 
     let reservaCreada;
