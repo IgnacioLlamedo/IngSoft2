@@ -410,7 +410,7 @@ function renderActividades() {
             const lista = document.getElementById("listaClasesMensual");
             lista.innerHTML = ""; // limpio antes de renderizar
             
-            act.clases.forEach((claseActual,index) => {
+            act.clases.forEach(claseActual => {
                 const fecha = new Date(claseActual.idClase.fechaEspecifica)
                                 .toLocaleDateString("es-AR");
                 const btnClase = document.createElement("button");
@@ -437,7 +437,7 @@ function renderActividades() {
                                     "Content-Type": "application/json"
                                 },
                                 body: JSON.stringify({
-                                    clase: act.clases[index],
+                                    clase: claseActual,
                                     tipo: act.tipo
                                 })
                             });
