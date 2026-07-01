@@ -245,7 +245,7 @@ async function generatePaymentsWithInfo(payments) {
     const paymentsWithInfo = [];
 
     for (const p of payments) {
-        const fecha = (p.fecha != null) ? p.fecha : p.clases[0].fecha;
+        const fecha = p.fechaPago;
 
         const objUsuario = await usuarioDao.readOne({ _id: p.idUsuario });
         const usuario = (objUsuario) ? objUsuario.mail : "Usuario desconocido";
