@@ -95,16 +95,16 @@ export async function ingresarAEspera(req, res) {
         console.log("El tipo tiene formato: ", tipo);
 
         const nuevoEspera = {
-            idUsuario: req.session.user.id
+            idUsuario: req.session.user.id,
+            estado: "activo"
         }
         let tipoFormateado;
         if (tipo !== 'mensual'){
-            nuevoEspera.tipo = "Unica"
+            nuevoEspera.tipo = "unico"
             tipoFormateado = "Unica"
         }
         else
             tipoFormateado = "Mensual"
-
         let claseAnotado;
         for(const especificaActual of clases){
             console.log(especificaActual)
