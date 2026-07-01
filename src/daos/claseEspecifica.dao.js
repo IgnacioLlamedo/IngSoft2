@@ -52,7 +52,13 @@ export class claseEspecificaDao {
                 }
             },
             {
-                path: 'espera',
+                path: 'esperaUnica',
+                populate: {
+                    path: 'idUsuario'
+                }
+            },
+            {
+                path: 'esperaMensual',
                 populate: {
                     path: 'idUsuario'
                 }
