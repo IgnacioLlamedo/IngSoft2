@@ -35,7 +35,7 @@ const fieldsToFillWithSlotData = (slot) => {
 
 
 
-
+const roomsBtn = document.getElementById('roomsBtn');
 
 const createForm = document.getElementById("create-form");
 const templateEditForm = document.getElementById("edit-form");
@@ -48,6 +48,10 @@ const notDataAvailableMsg = document.getElementById("notDataAvailableMsg");
 
 const dialog = document.getElementById("confirmPanel");
 
+
+window.addEventListener('DOMContentLoaded', () => {
+    roomsBtn.classList.add("btn-active");
+});
 
 getAllSlots();
 

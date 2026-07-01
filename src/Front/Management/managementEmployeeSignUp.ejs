@@ -4,11 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <link rel="icon" href="/Images/Common/favicon.ico" type="image/x-icon">
+    
     <link rel="stylesheet" href="/Common/commonPageStyle.css">
     <link rel="stylesheet" href="/Common/commonFormPageStyle.css">
-    <link rel="stylesheet" href="/Account/profileStyle.css">
-    <link rel="stylesheet" href="/Users/userlistStyle.css">    
+    <link rel="stylesheet" href="/Management/managementStyle.css">
     <title>CEF - Registrar empleado</title>
 </head>
 
@@ -17,10 +18,23 @@
         <%- include('../Navbar/navbarSelector.ejs') %>
     </header>
     
-    <h1 class="title">Usuarios</h1>
+    <h1 class="title">Gestión</h1>
 
-    <%- include('../Users/usersNav.html') %>
+    <%- include('../Management/managementNav.html') %>
     
+    <div class="management-navbar">    
+        <nav class="management-nav">        
+            <a id="employeesSubBtn" href="/management/employees" class="management-nav-button">
+                Lista de Empleados
+            </a>
+
+            <a id="employeeSignUpSubBtn" href="/management/employee-signup" class="management-nav-button" style="min-width: 225px">
+                Registrar Empleado
+            </a>
+        </nav>
+        <hr>
+    </div>
+
     <main class="main-container">
         <form id="registerForm" class="form" data-role-enum="<%= JSON.stringify(Role) %>">       
             <div class="form-card">
@@ -56,6 +70,6 @@
 
     <%- include('../Navbar/footer.html') %>
 
-    <script src="/Users/employeeSignUpLogic.js"></script>   
+    <script src="/Management/managementEmployeeSignUp.js"></script>   
 </body>
 </html>

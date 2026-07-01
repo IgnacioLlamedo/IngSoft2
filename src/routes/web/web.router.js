@@ -174,21 +174,24 @@ webRouter.get("/management/instructors", (req,res) => {
 
 
 // Userlist
-webRouter.get("/users/userlist", (req,res) => {
-    // capaz por seguridad no conviene exponer que existe la ruta
-    // aunque si ahora se muestran las páginas de error...
-    // ...para evitar eso mismo, lo más seguro sería mostrar un error 404 en vez de redirigir al login
+webRouter.get("/management/clients", (req,res) => {
     if (!req.session.user) return res.redirect("/access/login");    
     if (req.session.user.rol !== Role.ADMIN) return res.redirect(homeRoute);
-    res.render(path.join(__dirname, "Front/Users/userlist.ejs"), { userRole: req.session.user.rol, Role, Status });
+    res.render(path.join(__dirname, "Front/Management/managementClients.ejs"), { userRole: req.session.user.rol, Role, Status });
+});
+
+webRouter.get("/management/employees", (req,res) => {
+    if (!req.session.user) return res.redirect("/access/login");    
+    if (req.session.user.rol !== Role.ADMIN) return res.redirect(homeRoute);
+    res.render(path.join(__dirname, "Front/Management/managementEmployees.ejs"), { userRole: req.session.user.rol, Role, Status });
 });
 
 
 // Employee Sign Up
-webRouter.get("/users/employee-signup", (req,res) => {
+webRouter.get("/management/employee-signup", (req,res) => {
     if (!req.session.user) return res.redirect("/access/login");    
     if (req.session.user.rol !== Role.ADMIN) return res.redirect(homeRoute);
-    res.render(path.join(__dirname, "Front/Users/employeeSignUp.ejs"), { userRole: req.session.user.rol, Role, Status });
+    res.render(path.join(__dirname, "Front/Management/managementEmployeeSignUp.ejs"), { userRole: req.session.user.rol, Role, Status });
 });
 
 webRouter.get("/access/employee-auth", async (req, res, next) => {
@@ -216,7 +219,6 @@ webRouter.get("/stats/subscriptions-activity", (req,res) => {
     if (req.session.user.rol !== Role.ADMIN) return res.redirect(homeRoute);
     res.render(path.join(__dirname, "Front/Stats/statsSubscriptionsActivity.ejs"), { userRole: req.session.user.rol, Role, Status });
 });
-
 
 webRouter.get("/stats/cancellations-class", (req, res) => {
     if (!req.session.user) return res.redirect("/access/login");

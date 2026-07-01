@@ -13,8 +13,8 @@ export class pagoDao {
         }
         return pago
     }
-    async readMany(query){
-        return await Pago.find(query).lean()
+    async readMany(query){                 //1 para asc, -1 para desc
+        return await Pago.find(query).sort({fechaPago: -1}).lean()
     }
     async updateOne(query, datos){
         const updated = await Pago.findOneAndUpdate(query, datos, { returnDocument: 'after' }).lean()

@@ -236,24 +236,11 @@ async function pagar(tipoClase, precio, clasesPago, boton) {
         }
 
         if (hayLlena) {
-            let mensajeLlena;
-            if (clasesLlenas.length === 1) {
-                const clase = clasesLlenas[0];
-                mensajeLlena =`La siguiente clase está llena:\n\n` +
-                    `• ${clase.fecha} - ${clase.horario} - Sala ${clase.sala.nombre}\n\n` +
-                    `¿Desea ingresar en la lista de espera?`;
-            }
-            else {
-                mensajeLlena = "Las siguientes clases están llenas:\n\n";
-
-                for (const clase of clasesLlenas) {
-                    mensajeLlena +=`• ${clase.fecha} - ${clase.horario} - Sala ${clase.sala.nombre}\n`;
-                }
-
-                mensajeLlena += "\n¿Desea ingresar en la lista de espera?";
-            }
-
-            const confirmar = confirm(mensajeLlena);
+            //! ME GUSTARÍA SACAR ESTE ALERT
+            const confirmar = confirm(
+                `La siguiente clase está llena:\n
+                ¿Desea ingresar en la lista de espera?`
+            );
 
             if (!confirmar) {
                 boton.disabled = false;
@@ -274,10 +261,11 @@ async function pagar(tipoClase, precio, clasesPago, boton) {
             console.log("resEsperaData: ");
             console.log(resEsperaData);
 
-            if (!resEsperaData.success){
-                
+            const mensajePago = document.getElementById("mensajePago");
+            if (resEsperaData.success){
+                mensajePago.classList.add("mid-success-msg");
             }
-            document.getElementById("mensajePago").innerText = resEsperaData.message;
+            mensajePago.innerText = resEsperaData.message;
             boton.disabled = false;
             return;
         }

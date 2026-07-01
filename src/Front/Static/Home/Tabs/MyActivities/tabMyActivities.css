@@ -326,13 +326,13 @@ hr {
 
 /* Cancelada pero no todas sus clases */
 .cancelada {
-  background: #ffa34d;
+  background: #ff9028;
   color: white;
 }
 
 /* ttoalmente cancelada */
 .cancelada-total {
-  background: #ff6767;
+  background: #ff3f3f;
   color: white;
 }
 

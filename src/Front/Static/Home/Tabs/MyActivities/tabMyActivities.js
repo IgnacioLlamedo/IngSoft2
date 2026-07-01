@@ -271,7 +271,7 @@ function renderActividades() {
         esCancelada
             ? act.tipo === "Unica"
                 ? act.estado === "cancelada"
-                : act.fechas?.every(f => f.estado === "cancelada")
+                : act.fecha?.every(f => f.estado === "cancelada")
             : false;
 
     const estaEnEspera =
@@ -410,14 +410,12 @@ function renderActividades() {
             const lista = document.getElementById("listaClasesMensual");
             lista.innerHTML = ""; // limpio antes de renderizar
             
-            act.clases.forEach((claseActual,index) => {
+            act.clases.forEach(claseActual => {
                 const fecha = new Date(claseActual.idClase.fechaEspecifica)
                                 .toLocaleDateString("es-AR");
                 const btnClase = document.createElement("button");
                 btnClase.textContent = `Cancelar clase del ${fecha}`;
                 btnClase.classList.add("box-button");
-
-                btnClase.dataset.indice = index;
 
                 const esCancelado = claseActual.idClase.anotados.some(
                     u => u.estado === "cancelado" && u.idUsuario === userData.session.id
@@ -439,17 +437,18 @@ function renderActividades() {
                                     "Content-Type": "application/json"
                                 },
                                 body: JSON.stringify({
-                                    clase: claseActual[btnClase.dataset.indice],
+                                    clase: claseActual,
                                     tipo: act.tipo
                                 })
                             });
                             const resData = await res.json();
                             if (resData.success) {
                                 console.log(`Cancelaste la clase del ${fecha}`);
-                                await getMyReservations();
+                                //await getMyReservations();
                                 document.getElementById(
                                     "cancelarMensualModal"
                                 ).style.display = "none";
+                                await getMyReservations();
                             }
                             else {
                                 console.log(resData.message);

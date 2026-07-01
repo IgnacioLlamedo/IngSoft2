@@ -1,4 +1,4 @@
-import { claseGeneralDao } from "../daos/index.js";
+import { claseGeneralDao, usuarioDao } from "../daos/index.js";
 import { claseEspecificaDao } from "../daos/index.js";
 import { profesorDao } from "../daos/index.js";
 import { salaDao } from "../daos/index.js";
@@ -308,8 +308,7 @@ export async function modificarSala(req, res) {
         
         if(
             (data.nombre === currentRoom.nombre) &&
-            (data.limiteSala === currentRoom.limiteSala) &&
-            (data.estado === currentRoom.estado)
+            (data.limiteSala === currentRoom.limiteSala)
         ) {
             return res.json({
                 success: false,
@@ -799,6 +798,61 @@ export async function recuperarDiasAviso(req, res){
     }
 }
 
+function formatoFecha(fecha) {
+  const dia = fecha.getDate();
+  const mes = fecha.getMonth() + 1;
+  const año = fecha.getFullYear();
+
+  const diaFormateado = dia < 10 ? `0${dia}` : dia;
+  const mesFormateado = mes < 10 ? `0${mes}` : mes;
+
+  return `${diaFormateado}/${mesFormateado}/${año}`;
+}
+
+export async function enviarRecordatorioPago(req, res){
+    try {
+        const diasAviso = (await globalesDao.readOne({id: "1"})).diasAviso
+        const usuarios = await usuarioDao.readMany(/* {rol: "cliente"} */)
+        for(let usuario of usuarios){
+            const reservas = await reservaDao.readManyMensual({idUsuario: usuario._id})
+            for(let reserva of reservas){
+                if(
+                    (new Date(reserva.fechaVencimiento).getTime() - (diasAviso * (24 * 60 * 60 * 1000))) <= new Date(Date.now())
+                ){
+                    const clases = await claseGeneralDao.populate({_id: (await claseEspecificaDao.readOne({_id: reserva.clases[0].idClase})).idClaseGeneral})
+                    const clase = clases[0]
+                    console.log(clase)
+                    const data = {
+                        actividad: clase.idActividad.nombre,
+                        dia: clase.dia,
+                        hora: clase.hora,
+                        fecha: formatoFecha(reserva.fechaVencimiento),
+                    }
+                    await mailer.recordatorioPago(usuario, data)
+                }
+            }
+        }
+        /* const user = await usuarioDao.readOne({mail: "ignaciollamedo@hotmail.com"})
+        const data = {
+            actividad: "yoga",
+            dia: "martes",
+            hora: "09:00",
+            fecha: "01/07/2026",
+        }
+        await mailer.recordatorioPago(user, data) */
+        res.json({
+            success: true,
+        });
+    }
+    catch(error) {
+        console.error(error);
+        res.json({
+            success: false,
+            message: "Error al enviar el aviso. Inténtelo de nuevo más tarde."
+        });
+    }
+}
+
 
 
 
@@ -883,6 +937,13 @@ export async function createClass(req, res){
                 message: "Error al crear clase, ya existe una clase en ese dia, horario y sala"
             })
         }
+        const profesor = await claseGeneralDao.readMany({dia: req.body.dia, hora: req.body.hora, idProfesor: req.body.idProfesor})
+        if(profesor.length > 0){
+            return res.json({
+                success: false,
+                message: "Error al crear clase, ya existe una clase en ese dia, horario y con ese profesor"
+            })
+        }
         const data = await claseGeneralDao.create(req.body)
         res.json({
             success: true,
@@ -900,7 +961,36 @@ export async function createClass(req, res){
 }
 export async function updateClass(req, res){
     try {
-        const data = await claseGeneralDao.updateOne({_id: req.body.id}, req.body)
+        let data = req.body
+        const current = await claseGeneralDao.readOne({_id: data.id})
+        if(
+            (data.idSala === current.idSala) &&
+            (data.idActividad === current.idActividad) &&
+            (data.idProfesor === current.idProfesor) &&
+            (Number(data.limiteClase) === current.limiteClase) &&
+            (data.dia === current.dia) &&
+            (Number(data.hora) === current.hora)
+        ) {
+            return res.json({
+                success: false,
+                message: "Error al modificar la clase. No se han modificado datos."
+            })
+        }
+        const clases = await claseGeneralDao.readMany({dia: data.dia, hora: data.hora, idSala: data.idSala})
+        if(clases.length > 0){
+            return res.json({
+                success: false,
+                message: "Error al modificar clase, ya existe una clase en ese dia, horario y sala"
+            })
+        }
+        const profesor = await claseGeneralDao.readMany({dia: data.dia, hora: data.hora, idProfesor: data.idProfesor})
+        if(profesor.length > 0){
+            return res.json({
+                success: false,
+                message: "Error al modificar clase, ya existe una clase en ese dia, horario y con ese profesor"
+            })
+        }
+        await claseGeneralDao.updateOne({_id: req.body.id}, req.body)
         res.json({
             success: true,
             data,
@@ -919,7 +1009,15 @@ export async function updateClass(req, res){
 //REVISAR QUE NO HAYA NADIE INSCRIPTO
 export async function deleteClass(req, res){
     try {
-        console.log(req.body)
+        const borrar = await claseEspecificaDao.readMany({idClaseGeneral: req.body.id})
+        for(b of borrar){
+            if(b.anotado.length > 0){
+                    return res.json({
+                    success: false,
+                    message: "Error al eliminar clase, hay gente anotada en alguna clase especifica. Si quiere cancelar una (aca habria que explicar como inhabilitar una clase, pero no lo explico porque no se como lo va a hacer lean todavia)"
+                })
+            }
+        }
         await claseGeneralDao.deleteOne({_id: req.body.id})
         res.json({
             success: true,

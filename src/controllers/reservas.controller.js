@@ -90,15 +90,23 @@ export async function cancelarReservaRefactorizadoJsjs(req, res) {
         //listados y todo lo de claseEspecifica)
         //y por otro lado tiene _id que no se que carajo es.
     
+        const id = tipo === 'Unica' ? clase._id : clase.idClase._id;
+        console.log("Id resultante: ", id);
+
+        const existe = await claseEspecificaDao.readOne({ _id: id, "anotados.idUsuario": user});
+        console.log(existe);
 
         //Marco en la lista de anotados en la posicion donde se encuentra
         //el usuario que cancelo la clase con estado "cancelado".
-        const claseLiberada = await claseEspecificaDao.updateOne({ _id: clase._id, "anotados.idUsuario": user},
+        const claseLiberada = await claseEspecificaDao.updateOne({ _id: id, "anotados.idUsuario": user},
             {                                                       //el clase.idClase._id puede estar mal, revisar.
                 $set:{
                     "anotados.$.estado":"cancelado"
                 }
         });
+
+        console.log("Clase liberada")
+        console.log(claseLiberada)
 
         //Busco la reserva del usuario que acaba de cancelar y en la clase que fue cancelada
         //cambio el estado a 'cancelada'
@@ -149,20 +157,20 @@ export async function cancelarReservaRefactorizadoJsjs(req, res) {
         if (!reemplazado){
             console.log("Eliminando usuario de anotados...");
             //elimino físicamente al usuario que cancelo la reserva.
-            await eliminarDeClase(user, clase.idClase);
+            await eliminarDeClase(user, id);
 
             /* ¿Debería hacer una lista de usuarios que cancelaron la reserva de una claseEspecifica?
             ¿o simplemente reviso las reservas de los usuarios? */
         }
         
-        const clasesEspecificasDeReservaCancelada = await claseEspecificaDao.readMany({
+        /* const clasesEspecificasDeReservaCancelada = await claseEspecificaDao.readMany({
             _id: {
                 $in: reservaCancelada.clases.map(c => c.idClase)
             }
-        });
+        }); */
 
         console.log("Procesando reintegro...");
-        const reintegro = await procesarReintegro(reservaCancelada, claseLiberada, tipo, clasesEspecificasDeReservaCancelada);
+        const reintegro = await procesarReintegro(reservaCancelada, claseLiberada, tipo, claseLiberada);
 
 
         console.log("Resultado reintegro:");
@@ -181,7 +189,7 @@ export async function cancelarReservaRefactorizadoJsjs(req, res) {
     }
 }
 
-async function buscarReemplazoMensual(claseLiberada){
+async function buscarReemplazoMensual(claseLiberada, idCancelo){
     let candidato;
     /**Por cada persona dentro de la lista de espera mensual de la clase liberada:  */
     for(const act of claseLiberada.esperaMensual){
@@ -422,7 +430,7 @@ export async function eliminarDeClase(user, clase){
     console.log("Dentro de eliminarDeClase, esta es la clase de la que eliminar de la lista de anotados al usuario con id: ", user);
     console.log(clase);
     const updateado = await claseEspecificaDao.updateOne(
-        { _id: clase._id },
+        { _id: clase },
         {
             $pull: {
                 anotados: {
@@ -737,6 +745,66 @@ export async function postReservaMensual(reservaData) {
     }
 }
 
+
+export async function getCancellations(req, res) {
+    try {
+        const uniqueReservations = await reservaDao.readManyUnica({});
+        const monthlyReservations = await reservaDao.readManyMensual({});
+        const generalClasses = await claseGeneralDao.readMany({});
+
+        const newGeneralClasses = [];
+        for (const gc of generalClasses) {
+            const objProfesor = await profesorDao.readOne({ _id: gc.idProfesor });
+            const profesor = objProfesor.nombre || "Profesor desconocido";
+            newGeneralClasses.push({
+                id: gc._id,
+                clase: `${gc.dia}, ${gc.hora}:00 hs.`,
+                profesor,
+                precioMensual: gc.precioMensual,
+                reservas: 0,
+                cancelaciones: 0
+            })
+        }
+
+        uniqueReservations.forEach(r => {
+            let gc;
+            if (r.idClase) {
+                gc = newGeneralClasses.find(c => c.id === r.idClase);
+            }
+            else if (r.clases && r.clases.length > 0) {
+                gc = newGeneralClasses.find(c => c.id === r.clases[0].idClase);
+            }
+            if (!gc) return;
+            gc.reservas++;
+            if (r.cancelada) gc.cancelaciones++;
+        });
+
+
+        for (const r of monthlyReservations) {
+            let gc;
+            if (r.idClase) {
+                gc = newGeneralClasses.find(c => c.id === r.idClase);
+            }
+            else if (r.clases && r.clases.length > 0) {
+                const uniqueClass = await claseEspecificaDao.readOne({ _id: r.clases[0].idClase });
+                gc = newGeneralClasses.find(c => c.id === uniqueClass.idClaseGeneral);
+            }
+            if (!gc) return;
+            gc.reservas++;
+            if (r.cancelada) gc.cancelaciones++;
+        }
+
+        return res.json(newGeneralClasses);
+    }
+    catch (error) {
+        console.error("getCancellations ERROR: ", error);
+        res.json({
+            success: false,
+            message: "Error al recuperar las cancelaciones. Inténtelo de nuevo más tarde."
+        });
+    }
+}
+
 //Función que se llamará cuando el usuario desde tabMyActivities presione el botón salir de lista de espera.
 export async function salirListaEspera(req, res) {
     try {
@@ -870,61 +938,3 @@ export async function salirListaEspera(req, res) {
     }
 }
 
-export async function getCancellations(req, res) {
-    try {
-        const uniqueReservations = await reservaDao.readManyUnica({});
-        const monthlyReservations = await reservaDao.readManyMensual({});
-        const generalClasses = await claseGeneralDao.readMany({});
-
-        const newGeneralClasses = [];
-        for (const gc of generalClasses) {
-            const objProfesor = await profesorDao.readOne({ _id: gc.idProfesor });
-            const profesor = objProfesor.nombre || "Profesor desconocido";
-            newGeneralClasses.push({
-                id: gc._id,
-                clase: `${gc.dia}, ${gc.hora}:00 hs.`,
-                profesor,
-                precioMensual: gc.precioMensual,
-                reservas: 0,
-                cancelaciones: 0
-            })
-        }
-
-        uniqueReservations.forEach(r => {
-            let gc;
-            if (r.idClase) {
-                gc = newGeneralClasses.find(c => c.id === r.idClase);
-            }
-            else if (r.clases && r.clases.length > 0) {
-                gc = newGeneralClasses.find(c => c.id === r.clases[0].idClase);
-            }
-            if (!gc) return;
-            gc.reservas++;
-            if (r.cancelada) gc.cancelaciones++;
-        });
-
-
-        for (const r of monthlyReservations) {
-            let gc;
-            if (r.idClase) {
-                gc = newGeneralClasses.find(c => c.id === r.idClase);
-            }
-            else if (r.clases && r.clases.length > 0) {
-                const uniqueClass = await claseEspecificaDao.readOne({ _id: r.clases[0].idClase });
-                gc = newGeneralClasses.find(c => c.id === uniqueClass.idClaseGeneral);
-            }
-            if (!gc) return;
-            gc.reservas++;
-            if (r.cancelada) gc.cancelaciones++;
-        }
-
-        return res.json(newGeneralClasses);
-    }
-    catch (error) {
-        console.error("getCancellations ERROR: ", error);
-        res.json({
-            success: false,
-            message: "Error al recuperar las cancelaciones. Inténtelo de nuevo más tarde."
-        });
-    }
-}
