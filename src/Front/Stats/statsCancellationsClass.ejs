@@ -29,7 +29,6 @@
                         <label for="filterColumnSelect" style="margin-right: 5px">
                             Columna:
                             <select id="filterColumnSelect">
-                                <option value="id">ID</option>
                                 <option value="clase">Clase</option>
                                 <option value="profesor">Profesor</option>
                             </select>
@@ -47,11 +46,6 @@
                     data-role-enum="<%= JSON.stringify(Role) %>">
                     <thead>
                         <tr>
-                            <th>
-                                <button type="button" class="btn-sort" data-sort-key="id">
-                                    ID<span class="sort-indicator"></span>
-                                </button>
-                            </th>
                             <th>
                                 <button type="button" class="btn-sort" data-sort-key="clase">
                                     Clase<span class="sort-indicator"></span>

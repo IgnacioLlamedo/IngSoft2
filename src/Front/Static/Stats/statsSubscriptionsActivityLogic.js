@@ -12,7 +12,7 @@ const currentSort = { key: null, direction: 'asc' };
 
 window.addEventListener('DOMContentLoaded', () => {
     subscriptionsActivityBtn.classList.add("btn-active");
-    bindSortButtons();
+    // bindSortButtons();
     bindFilterControls();
     loadStats();
 });
@@ -75,7 +75,7 @@ async function loadStats() {
 
 
 function renderStatsTable(activities) {
-    tableBody.innerHTML = '';
+    // tableBody.innerHTML = '';
 
     if (!activities.length) {
         return showMessage('No se encontraron actividades.', 'info', 'statsMessage');
@@ -84,23 +84,21 @@ function renderStatsTable(activities) {
     statsMsgDiv.textContent = '';
     statsMsgDiv.className = 'message';
     
-    const sortedActivities = currentSort.key ? sortStats(activities, currentSort.key, currentSort.direction) : activities;
-    updateSortIndicators();
+    // const sortedActivities = currentSort.key ? sortStats(activities, currentSort.key, currentSort.direction) : activities;
+    // updateSortIndicators();
     
-    // TODO: Convendría agregar algún dato más!! Queda feo si la tabla y el gráfico muestran la misma información
-    // El tema es qué mostrar, no se me ocurre nada que no deba ir ya en las otras stats 
-    tableBody.innerHTML = sortedActivities
-		.map((a) => {
-            return `
-                <tr>
-                    <td>${escapeHtml(a.nombre)}</td>
-                    <td>${escapeHtml(a.abonados)}</td>
-                </tr>
-            `;
-        })
-		.join('');
+    // tableBody.innerHTML = sortedActivities
+	// 	.map((a) => {
+    //         return `
+    //             <tr>
+    //                 <td>${escapeHtml(a.nombre)}</td>
+    //                 <td>${escapeHtml(a.abonados)}</td>
+    //             </tr>
+    //         `;
+    //     })
+	// 	.join('');
 
-    renderChart(currentStats);
+    renderChart(getFilteredStats());
 }
 
 function renderChart(activities) {
