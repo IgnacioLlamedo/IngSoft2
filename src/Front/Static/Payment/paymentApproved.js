@@ -4,9 +4,7 @@ const container = document.querySelector(".main-container");
 mostrarPago();
 
 async function mostrarPago() {
-
     const res = await fetch(`/api/pago/get-pago/${ext.idPagoPendiente}`);
-
     const resData = await res.json();
 
     if (!resData.success) {

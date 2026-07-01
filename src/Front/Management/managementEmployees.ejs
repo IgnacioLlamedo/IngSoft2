@@ -4,12 +4,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <link rel="icon" href="/Images/Common/favicon.ico" type="image/x-icon">
+
     <link rel="stylesheet" href="/Common/commonPageStyle.css">
     <link rel="stylesheet" href="/Common/commonFormPageStyle.css">
+    <link rel="stylesheet" href="/Management/managementStyle.css">
     <link rel="stylesheet" href="/Account/profileStyle.css">
     <link rel="stylesheet" href="/Users/userlistStyle.css">
-    <title>CEF - Lista de Usuarios</title>
+    <title>CEF - Lista de Empleados</title>
 </head>
 
 <body>
@@ -17,19 +20,31 @@
         <%- include('../Navbar/navbarSelector.ejs') %>
     </header>
 
-    <h1 class="title">Usuarios</h1>
+    <h1 class="title">Gestión</h1>
 
-    <%- include('../Users/usersNav.html') %>
-    
+    <%- include('../Management/managementNav.html') %>
+        
+    <div class="management-navbar">    
+        <nav class="management-nav">        
+            <a id="employeesSubBtn" href="/management/employees" class="management-nav-button">
+                Lista de Empleados
+            </a>
+
+            <a id="employeeSignUpSubBtn" href="/management/employee-signup" class="management-nav-button" style="min-width: 225px">
+                Registrar Empleado
+            </a>
+        </nav>
+        <hr>
+    </div>
+
     <main class="main-container">
-        <section class="filter-panel" aria-label="Filtrar lista de usuarios">
+        <section class="filter-panel" aria-label="Filtrar lista de empleados">
             <label for="filterColumnSelect" style="margin-right: 20px;">
                 Columna:
                 <select id="filterColumnSelect" aria-label="Seleccionar columna a filtrar">
                     <option value="nombre">Nombre</option>
                     <option value="mail">Correo</option>
                     <option value="dni">DNI</option>
-                    <option value="rol">Rol</option>
                     <option value="estado">Estado</option>
                 </select>
             </label>
@@ -63,11 +78,6 @@
                             </button>
                         </th>
                         <th>
-                            <button type="button" class="btn-sort" data-sort-key="rol">
-                                Rol <span class="sort-indicator"></span>
-                            </button>
-                        </th>
-                        <th>
                             <button type="button" class="btn-sort" data-sort-key="estado">
                                 Estado <span class="sort-indicator"></span>
                             </button>
@@ -87,7 +97,6 @@
                 <h2 id="deleteDialogTitle">Confirmar baja de usuario</h2>
                 <div class="delete-user-info-container">
                     <p>Correo: <span id="deleteUserMail" class="delete-user-info"></span></p>
-                    <p>Rol: <span id="deleteUserRole" class="delete-user-info"></span></p>
                 </div>
                 <textarea id="deletionReasonInput" rows="2" placeholder="Ingrese un motivo para la baja"></textarea>
                 <div class="delete-dialog-actions">
@@ -101,7 +110,7 @@
         <div id="userStats" class="user-stats">Cargando estadísticas…</div>
     </main>
 
-    <script src="/Users/userlistLogic.js" defer></script>
+    <script src="/Management/managementEmployees.js" defer></script>
 
     <%- include('../Navbar/footer.html') %>
 </body>

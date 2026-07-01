@@ -1,3 +1,4 @@
+const classesBtn = document.getElementById('classesBtn');
 
 
 
@@ -61,7 +62,15 @@ const successMsg = document.getElementById("createSuccess");
 const slotList = document.getElementById("slotList");
 const notDataAvailableMsg = document.getElementById("notDataAvailableMsg");
 
+
+/* window.addEventListener('DOMContentLoaded', () => {
+    classesBtn.classList.add("btn-active");
+});
+
+getAllSlots(); */
+
 const dialog = document.getElementById("confirmPanel");
+
 
 
 const roomSelect = document.getElementById("roomSelect");
