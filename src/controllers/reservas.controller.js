@@ -148,6 +148,14 @@ export async function cancelarReservaRefactorizadoJsjs(req, res) {
             /* ¿Debería hacer una lista de usuarios que cancelaron la reserva de una claseEspecifica?
             ¿o simplemente reviso las reservas de los usuarios? */
         }
+        
+        const clasesEspecificasDeReservaCancelada = await claseEspecificaDao.readMany({
+            _id: {
+                $in: reservaCancelada.clases.map(c => c.idClase)
+            }
+        });
+
+        const reintegro = await procesarReintegro(reservaCancelada, claseLiberada, tipo, clasesEspecificasDeReservaCancelada);
 
         return res.json({
             success: true,
@@ -412,8 +420,6 @@ export async function reemplazarAnotado(clase, usuario){
         }
     )
 }
-
-//////////////////// Acá estaba lo viejo
 
 //Unir reservaUnica y mensual. separar por if
 export async function postReservaUnica(reservaData, esSeña) {
