@@ -98,7 +98,7 @@ class mailService{
                 <h2 style="text-align: center; font-size: 25px">CEF - Clase cancelada</h2>
             </div>
             <hr>
-            <p>Hola, <b>${nombre}</b>. Lamentamos informarte que debido a inconvenientes con nuestro personal, la clase de ${actividad}, que ` +
+            <p>Hola, <b>${nombre}</b>. Lamentamos informarte que debido a una situación inesperada, la clase de ${actividad}, que ` +
             `estaba asignada para el ${fechaStr} ha sido cancelada.</p><br/>
             <br/>
             <p>Te invitamos a acercarte a nuestra sede para coordinar una devolución de dinero o reintegro de créditos en tu suscripción.</p><br/>
@@ -109,6 +109,31 @@ class mailService{
         `;
 
         await this.send(user.mail, `Clase cancelada (${fecha}) - CEF`, body);        
+    }
+    
+    // TODO: Terminar de testear
+    async restoredClass(mail, nombre, fecha, actividad) {
+        const imgUrl = "https://res.cloudinary.com/dk6gvpuys/image/upload/v1781481259/Logo-mini_bzbhny.png";
+        const diaNombre = new Date(fecha).toLocaleString('es', { weekday: 'long' });
+        const dia = new Date(fecha).getDate();
+        const mes = new Date(fecha).toLocaleString('es', { month: 'long' });
+        const hora = new Date(fecha).getHours();
+        const fechaStr = `<i>${dia} ${diaNombre} de ${mes}</i> a las <i>${hora} hs</i>`;
+
+        const body = `
+            <div style="display: flex; justify-content: center; align-items: flex-end;">
+                <img src="${imgUrl}" style="width: 64px; height: 64px; margin-right: 10px" alt="Logo de CEF"/>
+                <h2 style="text-align: center; font-size: 25px">CEF - Clase cancelada</h2>
+            </div>
+            <hr>
+            <p>Hola, <b>${nombre}</b>. Nos alegra informarte que los inconvenientes que impedían el desarrollo de la clase de ${actividad}, originalmente pactada para el ${fechaStr}, ya han sido resuelts y la clase se encuentra disponible nuevamente.</p><br/>
+            <br/>
+            <p>Atte. El equipo de CEF.</p><br/>
+            <br/>
+            <p style="text-align: center; font-size: 11px; color: #797979">© 2026 CEF Servicios • Todos los derechos reservados.</p>
+        `;
+
+        await this.send(user.mail, `Clase restablecida (${fecha}) - CEF`, body);        
     }
 }
 
