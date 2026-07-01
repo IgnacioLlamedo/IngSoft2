@@ -88,13 +88,15 @@ export async function cancelarReservaRefactorizadoJsjs(req, res) {
         console.log(clase);//cuidado, tiene idClase (que dentro tiene el idClaseEspecifica,
         //listados y todo lo de claseEspecifica)
         //y por otro lado tiene _id que no se que carajo es.
+    
+        const id = tipo === 'Unica' ? clase._id : clase.idClase._id;
 
         //Marco en la lista de anotados en la posicion donde se encuentra
         //el usuario que cancelo la clase con estado "cancelado".
-        const claseLiberada = await claseEspecificaDao.updateOne({ _id: clase.idClase._id,"anotados.idUsuario": user},
+        const claseLiberada = await claseEspecificaDao.updateOne({ _id: id, "anotados.idUsuario": user},
             {                                                       //el clase.idClase._id puede estar mal, revisar.
                 $set:{
-                "anotados.$.estado":"cancelado"
+                    "anotados.$.estado":"cancelado"
                 }
         });
 
@@ -118,7 +120,7 @@ export async function cancelarReservaRefactorizadoJsjs(req, res) {
             reservaCancelada = await reservaDao.updateOneUnica(
             {
                 idUsuario: user,
-                idClaseEspecifica: clase.idClase._id
+                idClaseEspecifica: clase._id
             },
             {
                 $set: {
@@ -128,7 +130,8 @@ export async function cancelarReservaRefactorizadoJsjs(req, res) {
         );
         }
         
-
+        console.log("Esta es la reserva que se canceló:");
+        console.log(reservaCancelada);
         console.log("/////////////////////////////////////");
         console.log("/////////////////////////////////////");
 
@@ -170,7 +173,7 @@ export async function validarYNotificar(tipo, claseLiberada, idCancelo){
         let candidato;
         
         /**Por cada persona dentro de la lista de espera mensual de la clase liberada:  */
-        for(const act in claseLiberada.esperaMensual){
+        for(const act of claseLiberada.esperaMensual){
 
             /**
              * validarReemplazo devuelve un elemento con esta forma:
@@ -316,8 +319,8 @@ async function validarReemplazo(candidato, clase){
     let reserva = null;
    
     //paso 1: Obtener la reserva del candidato a la que pertenece la clase.
-    reserva = reservaDao.readOne({ idUsuario: candidato.idUsuario,
-        cancelada: false,
+    reserva = reservaDao.readOne({ 
+        idUsuario: candidato.idUsuario,
         tipo: 'mensual',
         clases: {
             $elemMatch: {

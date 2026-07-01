@@ -17,7 +17,7 @@ export class reservaDao {
         return await ReservaUnica.find(query).lean()
     }
     async updateOneUnica(query, datos){
-        const updated = await ReservaUnica.findOneAndUpdate({ _id: query }, datos, { returnDocument: 'after' }).lean()
+        const updated = await ReservaUnica.findOneAndUpdate(query, datos, { returnDocument: 'after' }).lean()
         if(!updated){
             //provisional, desarrollar luego
             console.log("error")
@@ -25,7 +25,7 @@ export class reservaDao {
         return updated
     }
     async deleteOneUnica(query){
-        const deleted = await ReservaUnica.findOneAndDelete({ _id: query }).lean()
+        const deleted = await ReservaUnica.findOneAndDelete(query).lean()
         if(!deleted){
             //provisional, desarrollar luego
             console.log("error")
@@ -82,7 +82,7 @@ export class reservaDao {
         return await ReservaMensual.find(query).lean()
     }
     async updateOneMensual(query, datos){
-        const updated = await ReservaMensual.findOneAndUpdate({ _id: query }, datos, { returnDocument: 'after' }).lean()
+        const updated = await ReservaMensual.findOneAndUpdate(query , datos, { returnDocument: 'after' }).lean()
         if(!updated){
             //provisional, desarrollar luego
             console.log("error")
@@ -90,7 +90,7 @@ export class reservaDao {
         return updated
     }
     async deleteOneMensual(query){
-        const deleted = await ReservaMensual.findOneAndDelete({ _id: query }).lean()
+        const deleted = await ReservaMensual.findOneAndDelete(query).lean()
         if(!deleted){
             //provisional, desarrollar luego
             console.log("error")
@@ -124,6 +124,9 @@ export class reservaDao {
         })
         .populate({
             path: 'pagos.idPago'
+        })
+        .populate({
+            path: 'idUsuario'
         })
         if(!populated){
             //provisional, desarrollar luego

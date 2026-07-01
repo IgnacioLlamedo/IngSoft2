@@ -108,7 +108,16 @@ class mailService{
             <p style="text-align: center; font-size: 11px; color: #797979">© 2026 CEF Servicios • Todos los derechos reservados.</p>
         `;
 
-        await this.send(user.mail, `Clase cancelada (${fecha}) - CEF`, body);        
+        await this.send(mail, `Clase cancelada (${fecha}) - CEF`, body);        
+    }
+    async recordatorioPago(user, data) {
+        const body = `
+        <h1>Recordatorio de pago de la siguiente mensualidad de ${data.actividad} del ${data.dia} a las ${data.hora}</h1>
+        <p>Para mantener la reserva de la mensualidad de esta clase recuerde realizar el pago antes del ${data.fecha}.</p>
+        <p>Para realizar el pago debe ir a la pestaña de "Mis Actividades", buscar la clase correspondiente y presionar el boton "Renovar Mensualidad".</p>
+        `
+
+        await this.send(user.mail, `Recordatorio pago - CEF`, body);        
     }
 }
 
