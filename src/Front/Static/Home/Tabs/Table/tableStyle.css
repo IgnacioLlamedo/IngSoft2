@@ -54,7 +54,6 @@ table {
 }
 
 .slotDeClase {
-  background: linear-gradient(135deg, #ff9a9e, #ff6a6a); /* rojo/rosa */
   margin: 4px;
   padding: 3px;
   border-radius: 6px;
@@ -153,18 +152,15 @@ html {
   scroll-behavior: smooth;
 }
 
-.spinning {
-  background: linear-gradient(135deg, #da9aff, #bf51ff); /* rojo/rosa */
-  color: #222;
-}
+.classColor {
+  --value: red;
+  
+  background: linear-gradient(
+    135deg, 
+    var(--value), 
+    color-mix(in srgb, var(--value), #ffffff 20%) /* Mezcla con 20% de negro */
+  );
 
-.yoga {
-  background: linear-gradient(135deg, #a0e9ff, #70c1ff); /* celeste */
-  color: #222;
-}
-
-.funcional {
-  background: linear-gradient(135deg, #b0ffb0, #4caf50); /* verde */
   color: #222;
 }
 
@@ -491,3 +487,8 @@ html {
   }
 }
 
+
+
+.mid-success-msg {
+  color: orangered;
+}

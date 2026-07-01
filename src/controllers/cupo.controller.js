@@ -60,48 +60,73 @@ export async function getCupoData(req, res) {
 
 
 export async function acceptCupo(req, res) {
-    try{
-        let cupoData = await cupoDao.readOne({ _id: req.body.idCupo });
-        cupoData.estado = 'aceptado';
 
-        await cupoDao.updateOne({ _id: cupoData._id }, cupoData);
-        
-        for(const claseAct in cupoData.clasesEspecificas){
-            //La persona que rechaza el cupo (y si es mensual), rechaza las 4 clases dentro del cupo.
-            await claseEspecificaDao.updateOne({_id: claseAct._id},
-                {
-                    $set: {
-                        // Reemplaza al usuario cancelado en anotados
-                        "anotados.$[anotado].idUsuario": req.session.user.id,
-                        "anotados.$[anotado].tipo": cupoData.tipo,
-                        "anotados.$[anotado].estado": "activo",
+    try {
+        await aceptarCupoInterno(req.body.idCupo);
 
-                        // Actualiza su estado en la lista de espera
-                        [`espera${cupoData.tipo}.$.estado`]: "aceptado"
-                    }
-                },
-                {
-                    arrayFilters: [
-                        {
-                            "anotado.idUsuarioD": cupoData.idUsuarioCanceloClase,
-                            "anotado.estado": "cancelado"
-                        },
-                        { "espera.idUsuario": req.session.user.id }
-                    ]
-                }
-            );
-        }
-        res.json({
-            success: true,
+        return res.json({
+            success: true
         });
     }
-    catch(error) {
-        console.error("acceptCupo ERROR: ", error);
-		res.json({
-			success: false,
-			message: "Error al aceptar el cupo. Inténtelo de nuevo más tarde.",
-		});
+    catch (error) {
+
+        console.error(error);
+
+        return res.json({
+            success: false,
+            message: "Error al aceptar el cupo."
+        });
+
     }
+}
+
+export async function aceptarCupoInterno(idCupo) {
+
+    let cupoData = await cupoDao.readOne({ _id: idCupo });
+
+    if (!cupoData) {
+        throw new Error("No se encontró el cupo.");
+    }
+
+    if (cupoData.estado === "aceptado") {
+        return cupoData;
+    }
+
+    cupoData.estado = "aceptado";
+
+    await cupoDao.updateOne(
+        { _id: cupoData._id },
+        { estado: "aceptado" }
+    );
+
+    for (const claseAct of cupoData.clasesEspecificas) {
+
+        await claseEspecificaDao.updateOne(
+            { _id: claseAct._id },
+            {
+                $set: {
+                    "anotados.$[anotado].idUsuario": cupoData.idUsuario,
+                    "anotados.$[anotado].tipo": cupoData.tipo,
+                    "anotados.$[anotado].estado": "activo",
+
+                    [`espera${cupoData.tipo}.$[espera].estado`]: "aceptado"
+                }
+            },
+            {
+                arrayFilters: [
+                    {
+                        "anotado.idUsuarioD": cupoData.idUsuarioCanceloClase,
+                        "anotado.estado": "cancelado"
+                    },
+                    {
+                        "espera.idUsuario": cupoData.idUsuario
+                    }
+                ]
+            }
+        );
+
+    }
+    return cupoData;
 }
 
 export async function rejectCupo(req, res) {
@@ -115,6 +140,8 @@ export async function rejectCupo(req, res) {
         let reemplazado;
 
         let claseLiberada;
+
+        //Solo se cancela una claseEspecifica aunque sea mensual.
         for(const claseAct in cupoData.clasesEspecificas){
             //La persona que rechaza el cupo (y si es mensual), rechaza las 4 clases dentro del cupo.
             await claseEspecificaDao.updateOne({_id: claseAct._id, [`espera${cupoData.tipo}.idUsuario`]: req.session.user.id},

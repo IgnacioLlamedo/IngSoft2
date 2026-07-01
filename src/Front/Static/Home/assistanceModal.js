@@ -11,6 +11,7 @@ const mensajeAsistencia = document.getElementById("mensajeAsistencia");
 //Muestra el modal para leer el qr y enciende la cámara trasera(en teoría)
 btnEscanearQR.addEventListener("click", async () => {
   btnEscanearQR.hidden = true;
+  btnCancelarQR.hidden = false;
   qrReaderContainer.hidden = false;
 
   qrScanner = new Html5Qrcode("qr-reader");
@@ -23,6 +24,8 @@ btnEscanearQR.addEventListener("click", async () => {
     },
     async (decodedText) => {
       try {
+        console.log("Este es el codigo descodificado del QR.")
+        console.log(decodedText);
 
         await qrScanner.stop();
         await qrScanner.clear();
@@ -36,6 +39,8 @@ btnEscanearQR.addEventListener("click", async () => {
         });
 
         const data = await res.json();
+
+        console.log(data);
 
         mensajeAsistencia.innerText = data.message || "Asistencia registrada";
 
@@ -77,6 +82,7 @@ closeAssistance.addEventListener("click", async () => {
 
   qrReaderContainer.hidden = true;
   btnEscanearQR.hidden = false;
+  btnCancelarQR.hidden = true;
 });
 
 // engancha todos los botones con clase .asistenciaBtn

@@ -324,9 +324,16 @@ hr {
     transform: scale(1.05);
 }
 
+/* Cancelada pero no todas sus clases */
 .cancelada {
-    background: #000000;
-    color: white;
+  background: #ff9028;
+  color: white;
+}
+
+/* ttoalmente cancelada */
+.cancelada-total {
+  background: #ff3f3f;
+  color: white;
 }
 
 .cancelada h3 {

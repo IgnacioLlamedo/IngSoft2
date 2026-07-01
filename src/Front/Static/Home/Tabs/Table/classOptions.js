@@ -22,7 +22,7 @@ async function abrirAsistencia(elemento) {
     <p>Fecha: ${fecha}</p>
     <p>Sala: ${sala}</p>
 
-    <div id="mensajeAsistencia"></div>
+    
 
     <button id="btnQR">Tomar asistencia QR</button>
 
@@ -39,6 +39,7 @@ async function abrirAsistencia(elemento) {
   <button id="btnCerrarQR" hidden>
     Cerrar QR
   </button>
+  <div id="mensajeAsistencia"></div>
   `;
 
   // Mostrar modal
@@ -97,13 +98,18 @@ async function abrirAsistencia(elemento) {
     });
 
     if (data.success) {
+
+      qrContainer.innerHTML = "";   // <-- importante
+
       infoAsistencia.hidden = true;
       btnCerrarQR.hidden = false;
       qrContainer.hidden = false;
-      new QRCode(
-        qrContainer,
-        data.token
-      );
+
+      new QRCode(qrContainer, {
+        text: data.token,
+        width: 250,
+        height: 250
+      });
     }
     else
       mensajeAsistencia.innerHTML = data.message;
@@ -111,12 +117,32 @@ async function abrirAsistencia(elemento) {
 
   
 
-  document.getElementById("btnMostrarDNI").addEventListener("click", () => {
+  document.getElementById("btnMostrarDNI").addEventListener("click", async () => {
     mensajeAsistencia.innerHTML = "";
-    document.getElementById("btnQR").hidden = true;
-    document.getElementById("btnMostrarDNI").hidden = true;
+    
 
-    document.getElementById("dniContainer").hidden = false;
+    const res = await fetch("/api/asistencia/consulta-anotados-clase", {
+      method: "POST",
+      headers: {
+        "Content-Type" : "application/json"
+      },
+      body: JSON.stringify({
+        idClase: idClase,
+        fecha: fechaBase
+      })
+    })
+
+    const resData = await res.json();
+
+    if (resData.success){
+      document.getElementById("btnQR").hidden = true;
+      document.getElementById("btnMostrarDNI").hidden = true;
+      document.getElementById("dniContainer").hidden = false;
+    }
+    else{
+      mensajeAsistencia.innerHTML = resData.message;
+      return;
+    }
   });
 
   // Confirmar asistencia DNI
@@ -125,7 +151,7 @@ async function abrirAsistencia(elemento) {
     const dni = document.getElementById("dniInput").value.trim();
 
     if (!dni) {
-      alert("Ingrese un DNI");
+      mensajeAsistencia.innerHTML="Ingrese un DNI"
       return;
     }
 

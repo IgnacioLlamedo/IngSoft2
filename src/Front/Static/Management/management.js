@@ -6,76 +6,34 @@ const errorMsg = document.getElementById("editError");
 
 const daysInput = document.getElementById("days");
 
-/* const activityNameSelect = document.getElementById("activityName");
-const activityPriceInput = document.getElementById("activityPrice");
-let activitiesData;
-let activitiesPriceTemp; */
+const sendNotification = document.getElementById("notification");
+const notificationSuccessMsg = document.getElementById("notificationSuccessMsg");
+const notificationErrorMsg = document.getElementById("notificationErrorMsg");
 
 setInputDisabled(true);
 fetchData();
 
 function setInputDisabled(state) {
     daysInput.disabled = state;
-    /* activityPriceInput.disabled = state; */
     cancelButton.hidden = state;
 }
 
 
 async function fetchData() {
-    const [daysRes/* , activitiesRes */] = await Promise.all([
+    const [daysRes] = await Promise.all([
         fetch("/api/admin/diasaviso"),
-        /* fetch("/api/admin/actividad"), */
     ]);
 
-    const [daysResData/* , activitiesResData */] = await Promise.all([
+    const [daysResData] = await Promise.all([
         daysRes.json(),
-        /* activitiesRes.json(), */
     ]);
 
     daysInput.value = daysResData.data.diasAviso;
-    /* loadActivitiesOptions(activitiesResData.data); */
 }
 
 window.addEventListener('DOMContentLoaded', () => {
     managementBtn.classList.add("btn-active");
 });
-
-/* function loadActivitiesOptions(data) {
-    
-    const options = data.map((activity, index) => {
-        return {
-            value: index,
-            name: activity.nombre,
-        }
-    });
-
-    activitiesData = data;
-    activityPriceInput.value = activitiesData[0].precioMensual;
-
-    options.forEach(({ value, name }) => {
-        const option = document.createElement("option");
-        option.value = value;
-        option.textContent = name;
-        activityNameSelect.appendChild(option);
-    });
-}
-
-
-activityNameSelect.addEventListener('change', (event) => {
-    const index = event.target.value;
-
-    if(!isOnEditMode)
-        activityPriceInput.value = activitiesData[index].precioMensual;
-    else
-        activityPriceInput.value = activitiesPriceTemp[index];
-});
-
-activityPriceInput.addEventListener('input', (event) => {
-    const newValue = checkNumberInput(event.target.value, 0);
-    activityPriceInput.value = newValue;
-    activitiesPriceTemp[activityNameSelect.value] = newValue;
-}); */
-
 
 
 function checkNumberInput(value, lenghtCap) {
@@ -120,6 +78,16 @@ cancelButton.addEventListener('click', (event) => {
     resetValues();
 });
 
+sendNotification.addEventListener('click', async (event) => {
+    const res = await fetch('/api/admin/enviar');
+    const resData = await res.json();
+
+    if(resData.success)
+        SuccessMsg(resData.message, notificationSuccessMsg);
+    else
+        ErrorMsg(resData.message, notificationErrorMsg);
+})
+
 
 let isOnEditMode = false;
 function toggleEditMode() {
@@ -131,7 +99,6 @@ function toggleEditMode() {
 }
 
 function enterEditMode() {
-    /* activitiesPriceTemp = activitiesData.map((activity) => activity.precioMensual); */
     daysInitValue = daysInput.value;
 
     setInputDisabled(false);
@@ -146,24 +113,17 @@ function exitEditMode() {
 let daysInitValue;
 function resetValues() {
     daysInput.value = daysInitValue;
-    /* activityPriceInput.value = activitiesData[activityNameSelect.value].precioMensual; */
 }
 
 
 async function saveData() {
     const [daysSuccess, daysMessage] = await saveDays();
     if(!daysSuccess) {
-        ErrorMsg(daysMessage);
+        ErrorMsg(daysMessage, errorMsg);
         return;
     }
 
-    /* const [activitiesSuccess, activitiesMessage] = await saveActivities();
-    if(!activitiesSuccess) {
-        ErrorMsg(activitiesMessage);
-        return;
-    } */
-
-    SuccessMsg("¡Cambios realizados con éxito!");
+    SuccessMsg("¡Cambios realizados con éxito!", successMsg);
 }
 
 
@@ -185,73 +145,32 @@ async function saveDays() {
 }
 
 
-/* async function saveActivities() {
-    for (const [index, activity] of activitiesData.entries()) {
-        if(activitiesPriceTemp[index] === activitiesData[index].precioMensual) continue;
-        
-        const [success, message] = await saveActivity(index);
 
-        if(!success)
-            return [success, message];
-    };
+function SuccessMsg(message, elem) {
+    hideErrorMsg(elem);
 
-    activitiesData.forEach((activity, index) => {
-        activity.precioMensual = activitiesPriceTemp[index];
-    });
-
-    activitiesPriceTemp = null;
-
-    return [true, ""]
-} */
-
-
-/* async function saveActivity(index) {
-    let newActivity = {
-        id: activitiesData[index]._id,
-        nombre: activitiesData[index].nombre,
-        precioMensual: Number(activitiesPriceTemp[index]),
-    };
-
-    const activitiesRes = await fetch("/api/admin/actividad/change-price", {
-        method: 'PUT',
-        headers: {
-            "Content-Type" : "application/json",
-        },
-        body: JSON.stringify(newActivity)
-    });
-
-    const activitiesResData = await activitiesRes.json();
-
-    return [activitiesResData.success, activitiesResData.success ? "" : activitiesResData.message];
-} */
-
-
-
-function SuccessMsg(message) {
-    hideErrorMsg();
-
-    successMsg.textContent = message;
-    successMsg.hidden = false;
+    elem.textContent = message;
+    elem.hidden = false;
 }
 
-function ErrorMsg(message) {
-    hideSuccessMsg();
+function ErrorMsg(message, elem) {
+    hideSuccessMsg(elem);
 
-    errorMsg.hidden = false;
-    errorMsg.textContent = message;
+    elem.hidden = false;
+    elem.textContent = message;
 }
 
-function CleanMsgs() {
-    hideSuccessMsg();
-    hideErrorMsg();
+function CleanMsgs(elem) {
+    hideSuccessMsg(elem);
+    hideErrorMsg(elem);
 }
 
-function hideErrorMsg() {
-    errorMsg.hidden = true;
-    errorMsg.textContent = "";
+function hideErrorMsg(elem) {
+    elem.hidden = true;
+    elem.textContent = "";
 }
 
-function hideSuccessMsg() {
-    successMsg.hidden = true;
-    successMsg.textContent = "";
+function hideSuccessMsg(elem) {
+    elem.hidden = true;
+    elem.textContent = "";
 }
