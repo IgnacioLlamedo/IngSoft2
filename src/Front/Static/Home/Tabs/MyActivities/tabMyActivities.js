@@ -507,7 +507,7 @@ function renderActividades() {
                             const resData = await res.json();
                             if (resData.success) {
                                 console.log(`Cancelaste la clase del ${fecha}`);
-                                await getMyReservations();
+                                //await getMyReservations();
                                 document.getElementById(
                                     "cancelarMensualModal"
                                 ).style.display = "none";

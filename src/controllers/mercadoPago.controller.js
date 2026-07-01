@@ -138,9 +138,9 @@ export async function crearPreferencia(req, res) {
                     pending: `${config.link}/payment/pending`
                 },
                 auto_return: "approved",
-                expires: true,
+                /* expires: true,
                 expiration_date_from: ahora.toISOString(),
-                expiration_date_to: vence.toISOString()
+                expiration_date_to: vence.toISOString() */
             }
         });
 
@@ -278,8 +278,8 @@ export async function procesarWebhook(body){
     //en esta función se cambia el estado del pago en DB de pendiente a aprobado
     //y también se cambia la fechaPago a new Date(mpPayment.date_approved)
     const confirmadoElPago = await confirmarPagoInterno(mpPayment);
-    /* console.log("El estado del pago es: ");
-    console.log(confirmadoElPago.estado); */
+    console.log("El estado del pago es: ");
+    console.log(confirmadoElPago);
 
 
     let reservaCreada;
@@ -309,6 +309,10 @@ export async function procesarWebhook(body){
     
 }
 
+export async function procesarWebhookPagoRestante(req, res){
+    
+}
+
 /* Función para consultar si el usuario ya está anotado en la/las clase
 específica/s (en caso de que sea mensual) */
 export async function consultar(req, res) {
@@ -326,7 +330,7 @@ export async function consultar(req, res) {
         });
 
         const ahora = Date.now();
-        const tiempoExpiracion = 2 * 60 * 1000; // 2 minutos
+        const tiempoExpiracion = 1000;/* 2 * 60 * 1000; */ // 2 minutos
 
         for (const pago of pagosPendientes) {
 

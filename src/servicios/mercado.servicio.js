@@ -8,9 +8,7 @@ export const client = new MercadoPagoConfig({
 const payment = new Payment(client);
 
 export async function devolverPago(idPagoMercadoPago){
-
     return await payment.refund({
         id: idPagoMercadoPago
     });
-
 }
