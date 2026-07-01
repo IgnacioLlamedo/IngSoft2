@@ -11,12 +11,20 @@ async function getMyReservations() {
 
     const resData = await res.json();
 
+    const c = await fetch('/api/reservas/espera', {
+        method: 'GET'
+    });
+    const clases = await c.json();
+    const aux = resData.reservas.concat(clases.espera)
+    console.log("ACA NACHO ACA ACA MIRA ACA")
+    console.log(aux)
+
     /* console.log("Estas son todas las reservaciones DEL USUARIO: ")
     console.log(resData); */
 
     const fechaActual = new Date();
 
-    actividadesUsuario = resData.reservas.map(r => {
+    actividadesUsuario = aux.map(r => {
 
         console.log("Esta es una reserva del usuario: ");
         console.log(r);
@@ -87,7 +95,7 @@ async function getMyReservations() {
         // =========================================
         // RESERVA MENSUAL
         // =========================================
-        else {
+        else if(r.tipo === "mensual") {
 
             // Uso la primera clase para info común
             const primeraClase = r.clases[0].idClase;
@@ -150,6 +158,41 @@ async function getMyReservations() {
                     claseGeneral.idActividad.precioMensual,
 
                 vencida
+            };
+        }
+        else{
+            console.log("ESPERAAAAAA")
+            const claseGeneral = r.idClaseGeneral;
+
+            const horario =
+                `${claseGeneral.hora}:00 - ${claseGeneral.hora + 1}:00`;
+
+            const fechaClase = new Date(r.fechaEspecifica); //En clase única, no entre por idClase.
+            return {
+
+                claseEspecifica: r._id,
+
+                actividad:
+                    claseGeneral.idActividad.nombre,
+
+                horario,
+
+                fecha:
+                    new Date(r.fechaEspecifica)
+                        .toLocaleDateString("es-AR"),
+
+                dia: claseGeneral.dia,
+
+                sala:
+                    claseGeneral.idSala.nombre,
+
+                profesor:
+                    claseGeneral.idProfesor.nombre,
+
+                vencida: 
+                    fechaClase < fechaActual,
+
+                estado: "en espera",
             };
         }
     });
@@ -218,7 +261,8 @@ function renderActividades() {
 
   // Aplicamos filtros
   const filtradas = actividadesUsuario.filter(act => {
-
+    console.log("ESTADO:")
+    console.log(act.estado)
     const esCancelada =
         act.tipo === "Unica"
             ? act.estado === "cancelada"
@@ -262,39 +306,49 @@ function renderActividades() {
     console.log("Esto es actual dentro del filtradas.forEach: ")
     console.log(act);
 
-    const esCancelada =
+    let esCancelada
+    let esTotalmenteCancelada
+    if(act.estado !== "en espera"){
+        esCancelada =
         act.tipo === "Unica"
             ? act.estado === "cancelada"
             : act.fecha?.some(f => f.estado === "cancelada");
-
-    const esTotalmenteCancelada = 
+        esTotalmenteCancelada = 
         esCancelada
             ? act.tipo === "Unica"
                 ? act.estado === "cancelada"
                 : act.fecha?.every(f => f.estado === "cancelada")
             : false;
-
-    const estaEnEspera =
-        act.tipo === "Unica"
-            ? act.estado === "en espera"
-            : act.fecha?.some(f => f.estado === "en espera");
+    }
+    
+    const estaEnEspera = act.tipo === "en espera"
 
     const box = document.createElement("div");
     if (esCancelada) {
         box.classList.add(esTotalmenteCancelada ? "cancelada-total" : "cancelada");
     }
 
-    if (estaEnEspera) {
+    if (act.estado === "en espera") {
+        console.log("estoy en espera, el act es:")
+        console.log(act)
         box.classList.add("en-espera");
+        let a = "Unica"
+        box.classList.add("box", a.toLowerCase());
     }
-    box.classList.add("box", act.tipo.toLowerCase());
+    else{
+        console.log("no estoy en espera, el act es:")
+        console.log(act)
+        box.classList.add("box", act.tipo.toLowerCase());
+    }
 
     // Título dinámico: Actividad - tipo
     const h3 = document.createElement("h3");
     if (act.señada)
         h3.textContent = `${act.actividad} - ${act.tipo} - Seña de Clase`;
-    else
+    else if(act.estado !== "en espera")
         h3.textContent = `${act.actividad} - ${act.tipo}`;
+    else
+        h3.textContent = `${act.actividad}`;
     box.appendChild(h3);
 
     const hr = document.createElement("hr");
@@ -305,7 +359,13 @@ function renderActividades() {
 
     // Datos de la actividad
     const boxData = document.createElement("div");
-    boxData.classList.add("box-data", act.tipo.toLowerCase());
+    if(act.estado !== "en espera"){
+        boxData.classList.add("box-data", act.tipo.toLowerCase());
+    }
+    else{
+        let a = "Unica"
+        boxData.classList.add("box-data", a.toLowerCase());
+    }
 
     const pHorario = document.createElement("p");
     pHorario.textContent = `Horario: ${act.horario}`;
@@ -315,16 +375,18 @@ function renderActividades() {
     pSala.textContent = `Sala: ${act.sala}`;
     boxData.appendChild(pSala);
 
-    if (act.tipo === "Unica") {  //Revisar si tipo puede ser seña
+    if (act.tipo === "Unica" || act.estado === "en espera") {  //Revisar si tipo puede ser seña
       const pFecha = document.createElement("p");
       pFecha.textContent = `Fecha: ${act.fecha}`;
       boxData.appendChild(pFecha);
 
-      const pPrecio = document.createElement("p");
-      pPrecio.textContent = `Precio por clase: $${act.precio}`;
-      boxData.appendChild(pPrecio);
+        if(act.estado !== "en espera"){
+            const pPrecio = document.createElement("p");
+            pPrecio.textContent = `Precio por clase: $${act.precio}`;
+            boxData.appendChild(pPrecio);
+        }
     } 
-    else {
+    else if(act.tipo === "Mensual"){
 
       const pDia = document.createElement("p");
       pDia.textContent = `Días: ${act.fecha.map(f => f.fecha).join(" - ")}`;
@@ -340,18 +402,18 @@ function renderActividades() {
     const buttonsContainer = document.createElement("div");
     buttonsContainer.classList.add("box-buttons-container");
 
-    if (estaEnEspera) {
+    if (act.estado === "en espera") {
         const btnSalirEspera = document.createElement("button");
 
         btnSalirEspera.textContent = "Salir de Lista de Espera";
         btnSalirEspera.classList.add("btn-salir-espera");
 
         btnSalirEspera.addEventListener("click", async () => {
-            let descripcion;
-            if (act.tipo === "Unica") 
+            let descripcion = act.fecha;
+            /* if (act.tipo === "Unica") 
                 descripcion = act.fecha;
             else 
-                descripcion =act.fecha.map(f => f.fecha).join(" - ");
+                descripcion =act.fecha.map(f => f.fecha).join(" - "); */
 
             mostrarConfirmacionCancelacion(descripcion, async () => {
                 const resultado = await fetch("/api/reservas/salir-lista-espera", {
@@ -359,7 +421,7 @@ function renderActividades() {
                     headers: {
                         "Content-Type": "application/json"
                     },
-                    body: JSON.stringify({idReserva: act.idReserva})
+                    body: JSON.stringify(act)
                 });
 
                 const res = await resultado.json();
@@ -391,11 +453,12 @@ function renderActividades() {
             console.log(act.idClaseEspecifica);
             clasesACancelar = act.claseEspecifica;
         }
-
-        const btnCancelar = document.createElement("button");
-        btnCancelar.classList.add("box-button", "cancel-reservation");
-        btnCancelar.textContent = "Cancelar Reserva";
-
+        let btnCancelar
+        if(act.tipo === "Unica" || act.tipo === "Mensual"){
+            btnCancelar = document.createElement("button");
+            btnCancelar.classList.add("box-button", "cancel-reservation");
+            btnCancelar.textContent = "Cancelar Reserva";
+        }
 
         if (act.tipo === 'Mensual'){
 
@@ -475,7 +538,8 @@ function renderActividades() {
             document.getElementById("cancelarMensualModal").style.display = "none";
             });
         }
-        else{
+        else if(act.tipo === "Unica"){
+            console.log("carga porfis el btn")
             btnCancelar.addEventListener("click", async () => {
                 mostrarConfirmacionCancelacion(act.fecha, async () => {
                     const res = await fetch('/api/reservas/cancelar-reserva', {
@@ -500,7 +564,11 @@ function renderActividades() {
                 });
             });
         }
-        buttonsContainer.appendChild(btnCancelar);
+        if((act.tipo === "Unica" || act.tipo === "Mensual") && !(esCancelada || esTotalmenteCancelada)){
+            console.log("CARGA EL BOTON, GORDO HDP")
+            console.log(act.tipo)
+            buttonsContainer.appendChild(btnCancelar);
+        }
 
         if (act.señada) {            
             const btnPagar = document.createElement("button");
@@ -557,7 +625,54 @@ function renderActividades() {
 activityFilter.addEventListener("change", renderActividades);
 tipeFilter.addEventListener("change", renderActividades);
 dayFilter.addEventListener("change", renderActividades);
-statusFilter.addEventListener("change", renderActividades);
+statusFilter.addEventListener("change", renderActividades)
+/* statusFilter.addEventListener("change", async (e) => {
+    const selectedValue = e.target.value;
+    // Si el filtro es "EnEspera", hacemos un fetch específico
+    if (selectedValue === "EnEspera") {
+        try {
+            // 1. Hacer el fetch específico para obtener datos frescos de "En espera"
+            //console.log("aea yo soy debuggero")
+            const res = await fetch('/api/reservas/espera', {
+                method: 'GET'
+            });
+            const resData = await res.json();
+            console.log(resData)
+            
+            //Hola, aca habria que hacer el render para las clases en las que esta en lista de espera,
+            //porque no se puede usar 
+
+
+            //if (resData.success || Array.isArray(resData.reservas)) {
+                // 2. Actualizar el array global con los datos frescos
+                // Nota: Si tu backend devuelve solo las de espera, tendrás que fusionar con las otras
+                // o reemplazar todo si el endpoint devuelve TODAS las reservas pero con el estado corregido.
+                
+                // OPCIÓN A: Si el endpoint devuelve TODAS las reservas con el estado actualizado
+            //    actividadesUsuario = resData.reservas.map(r => {
+                    // Reutiliza tu lógica de mapeo original aquí si es necesario,
+                    // o asume que el backend ya te dio el formato correcto si es una respuesta diferente.
+                    // Pero lo más seguro es que necesites volver a mapear como en getMyReservations.
+                    // Para simplificar, asumo que resData.reservas ya viene mapeado o tienes que llamar a una función auxiliar.
+            //        return procesarReservaSingle(r); // Necesitarás extraer tu lógica de mapeo a una función
+            //    });
+
+                // OPCIÓN B (Más común): El endpoint devuelve SOLO las de espera.
+                // En este caso, necesitas mantener las otras y fusionar, o recargar todo.
+                // Si tu modelo requiere un fetch nuevo para "En espera", probablemente el backend
+                // calcule algo complejo. Lo ideal es recargar TODO el listado con la nueva info.
+                
+                // Recargamos todo para asegurar consistencia si el estado cambió
+            //    await getMyReservations(); 
+            //}
+        } catch (error) {
+            console.error("Error al cargar reservas en espera:", error);
+        }
+    } 
+    
+    // Para cualquier otro filtro, o después del fetch, renderizamos
+    //renderActividades();
+}); */
 
 // Render inicial
 //renderActividades();
