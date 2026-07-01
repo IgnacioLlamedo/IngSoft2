@@ -21,13 +21,6 @@ async function crearTabla() {
 
     salas = await getAllSalas();
 
-    /**
-     * El problema es que si las salas se guardan en orden erroneo
-     * en la DB, se muestran en ese orden, ahora están guardadas ->
-     * Sala 1 -> Sala 3 -> Sala 2. 
-     * Habría que reasignarlas o eliminar la 3 y volver a crearla.
-     */
-
     const tabla = document.getElementById("tablaHorarios");
 
     const header = document.createElement("tr");
@@ -165,6 +158,7 @@ async function getAllClasses(fechaSemana) {
             //Para informar pedir confirmación si quiere entrar en lista de espera.
             celda.dataset.llena = cantidadAnotados >= claseObj.clase.limiteClase;
 
+            /*
             if (sessionData.logged) {
                 if (sessionData.session.rol === "cliente") {
                     celda.onclick = () => abrirPago(celda);
@@ -175,6 +169,72 @@ async function getAllClasses(fechaSemana) {
             else {
                 celda.onclick = () => abrirPago(celda);
             }
+            */
+
+            // Función auxiliar para parsear fechas en formato DD/MM/YYYY
+            function parseFecha(fechaStr) {
+                const [dia, mes, año] = fechaStr.split('/').map(Number);
+                return new Date(año, mes - 1, dia); // mes - 1 porque Date usa 0-based
+            }
+
+            if (sessionData.logged) {
+                if (sessionData.session.rol === "cliente") {
+                    celda.onclick = () => {
+                        const colIndex = celda.closest("td").cellIndex;
+                        const header = document.querySelectorAll(".slotHeader")[colIndex - 2];
+                        const fechaCelda = header ? parseFecha(header.dataset.fecha) : null;
+
+                        const mesActual = ahora.getMonth();
+                        const añoActual = ahora.getFullYear();
+
+                        console.log(mesActual);
+
+                        if (fechaCelda && 
+                            (fechaCelda.getMonth() !== mesActual || fechaCelda.getFullYear() !== añoActual)) {
+                            alert("No puedes seleccionar clases del mes siguiente.");
+                            return;
+                        }
+
+                        abrirPago(celda);
+                    };
+                } else {
+                    celda.onclick = () => {
+                        const colIndex = celda.closest("td").cellIndex;
+                        const header = document.querySelectorAll(".slotHeader")[colIndex - 2];
+                        const fechaCelda = header ? parseFecha(header.dataset.fecha) : null;
+
+                        const mesActual = ahora.getMonth();
+                        const añoActual = ahora.getFullYear();
+
+                        if (fechaCelda && 
+                            (fechaCelda.getMonth() !== mesActual || fechaCelda.getFullYear() !== añoActual)) {
+                            alert("No puedes tomar asistencia de clases del mes siguiente.");
+                            return;
+                        }
+
+                        abrirAsistencia(celda);
+                    };
+                }
+            } else {
+                celda.onclick = () => {
+                    const colIndex = celda.closest("td").cellIndex;
+                    const header = document.querySelectorAll(".slotHeader")[colIndex - 2];
+                    const fechaCelda = header ? parseFecha(header.dataset.fecha) : null;
+
+                    const mesActual = ahora.getMonth();
+                    const añoActual = ahora.getFullYear();
+
+                    if (fechaCelda && 
+                        (fechaCelda.getMonth() !== mesActual || fechaCelda.getFullYear() !== añoActual)) {
+                        alert("No puedes seleccionar clases del mes siguiente.");
+                        return;
+                    }
+
+                    abrirPago(celda);
+                };
+            }
+
+
 
             celda.classList.add("classColor");
             celda.style.setProperty('--value', claseObj.actividad.color);
