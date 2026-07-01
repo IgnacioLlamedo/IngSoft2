@@ -397,76 +397,76 @@ function renderActividades() {
         btnCancelar.textContent = "Cancelar Reserva";
 
 
-        if (act.tipo === 'Mensual'){
+        if (act.tipo === 'Mensual') {
 
             btnCancelar.addEventListener("click", () => {
-            const modal = document.getElementById("cancelarMensualModal");
-            modal.onclick = (e) =>
-            {
-                if (e.target === modal) {
-                    modal.style.display = "none";
+                const modal = document.getElementById("cancelarMensualModal");
+                modal.onclick = (e) =>
+                {
+                    if (e.target === modal) {
+                        modal.style.display = "none";
+                    }
                 }
-            }
-            const lista = document.getElementById("listaClasesMensual");
-            lista.innerHTML = ""; // limpio antes de renderizar
-            
-            act.clases.forEach(claseActual => {
-                const fecha = new Date(claseActual.idClase.fechaEspecifica)
-                                .toLocaleDateString("es-AR");
-                const btnClase = document.createElement("button");
-                btnClase.textContent = `Cancelar clase del ${fecha}`;
-                btnClase.classList.add("box-button");
-
-                const esCancelado = claseActual.idClase.anotados.some(
-                    u => u.estado === "cancelado" && u.idUsuario === userData.session.id
-                );
+                const lista = document.getElementById("listaClasesMensual");
+                lista.innerHTML = ""; // limpio antes de renderizar
                 
-                const noExiste = claseActual.idClase.anotados.some(
-                    u => u.idUsuario === userData.session.id
-                );
+                act.clases.forEach(claseActual => {
+                    const fecha = new Date(claseActual.idClase.fechaEspecifica)
+                                    .toLocaleDateString("es-AR");
+                    const btnClase = document.createElement("button");
+                    btnClase.textContent = `Cancelar clase del ${fecha}`;
+                    btnClase.classList.add("box-button");
 
-                //no creo que esto esté bien..              Facu: ¿Por? Lo que se podría hacer es que la clase btnClase tenga un addEventListener, y la clase y el tipo guardarlo en el dataset(?)
-                
-                if ((!esCancelado) && (noExiste)){
-                    btnClase.addEventListener("click", async () => {
-                        mostrarConfirmacionCancelacion(fecha, async () => {
-                            console.log(btnClase.dataset)
-                            const res = await fetch('/api/reservas/cancelar-reserva', {
-                                method: 'POST',
-                                headers: {
-                                    "Content-Type": "application/json"
-                                },
-                                body: JSON.stringify({
-                                    clase: claseActual,
-                                    tipo: act.tipo
-                                })
+                    const esCancelado = claseActual.idClase.anotados.some(
+                        u => u.estado === "cancelado" && u.idUsuario === userData.session.id
+                    );
+                    
+                    const noExiste = claseActual.idClase.anotados.some(
+                        u => u.idUsuario === userData.session.id
+                    );
+
+                    //no creo que esto esté bien..              Facu: ¿Por? Lo que se podría hacer es que la clase btnClase tenga un addEventListener, y la clase y el tipo guardarlo en el dataset(?)
+                    
+                    if ((!esCancelado) && (noExiste)){
+                        btnClase.addEventListener("click", async () => {
+                            mostrarConfirmacionCancelacion(fecha, async () => {
+                                console.log(btnClase.dataset)
+                                const res = await fetch('/api/reservas/cancelar-reserva', {
+                                    method: 'POST',
+                                    headers: {
+                                        "Content-Type": "application/json"
+                                    },
+                                    body: JSON.stringify({
+                                        clase: claseActual,
+                                        tipo: act.tipo
+                                    })
+                                });
+                                const resData = await res.json();
+                                if (resData.success) {
+                                    console.log(`Cancelaste la clase del ${fecha}`);
+                                    //await getMyReservations();
+                                    document.getElementById(
+                                        "cancelarMensualModal"
+                                    ).style.display = "none";
+                                    await getMyReservations();
+                                }
+                                else {
+                                    console.log(resData.message);
+                                }
                             });
-                            const resData = await res.json();
-                            if (resData.success) {
-                                console.log(`Cancelaste la clase del ${fecha}`);
-                                //await getMyReservations();
-                                document.getElementById(
-                                    "cancelarMensualModal"
-                                ).style.display = "none";
-                                await getMyReservations();
-                            }
-                            else {
-                                console.log(resData.message);
-                            }
                         });
-                    });
-                }
-                else{
-                    btnClase.classList.add("boton-ya-cancelada");
-                    btnClase.disabled = true;
-                    btnClase.style.backgroundColor = "#858585";
-                    btnClase.textContent = `Clase del ${fecha} (Cancelada)`;
-                }
+                    }
+                    else{
+                        btnClase.classList.add("boton-ya-cancelada");
+                        btnClase.disabled = true;
+                        btnClase.style.backgroundColor = "#858585";
+                        btnClase.textContent = `Clase del ${fecha} (Cancelada)`;
+                    }
 
-                lista.appendChild(btnClase);
-            });
+                    lista.appendChild(btnClase);
+                });
 
-            modal.style.display = "flex";
+                modal.style.display = "flex";
             });
 
             // Cerrar modal
