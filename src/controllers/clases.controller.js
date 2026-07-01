@@ -139,7 +139,7 @@ export async function ingresarAEspera(req, res) {
     }
     catch(error) {
         console.log(error);
-        res.json({
+        return res.json({
             success: false,
             message: error
         });

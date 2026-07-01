@@ -420,8 +420,6 @@ export async function reemplazarAnotado(clase, usuario){
     )
 }
 
-//////////////////// Acá estaba lo viejo
-
 //Unir reservaUnica y mensual. separar por if
 export async function postReservaUnica(reservaData, esSeña) {
     try {
