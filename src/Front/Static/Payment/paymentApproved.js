@@ -4,14 +4,14 @@ const container = document.querySelector(".main-container");
 mostrarPago();
 
 async function mostrarPago() {
-    const res = await fetch(/api/pago/get-pago/${ext.idPagoPendiente});
+    const res = await fetch(`/api/pago/get-pago/${ext.idPagoPendiente}`);
     const resData = await res.json();
 
     if (!resData.success) {
 
-        container.innerHTML = 
+        container.innerHTML = `
             <h2>No se pudo recuperar la información del pago.</h2>
-        ;
+        `;
 
         return;
     }
@@ -23,12 +23,12 @@ async function mostrarPago() {
 
             const fecha = new Date(c.fecha);
 
-            return ${String(fecha.getDate()).padStart(2,'0')}/${String(fecha.getMonth()+1).padStart(2,'0')};
+            return `${String(fecha.getDate()).padStart(2,'0')}/${String(fecha.getMonth()+1).padStart(2,'0')}`;
 
         })
         .join(" - ");
 
-    container.innerHTML = 
+    container.innerHTML = `
         <div class="payment-success">
 
             <div class="payment-info">
@@ -43,17 +43,17 @@ async function mostrarPago() {
 
                 ${
                     ext.tipoClase === "seña"
-                    ? 
+                    ? `
                     <div class="mensaje-seña">
                         Recuerde que para acceder a la clase debe completar el pago desde
                         <strong>Mis actividades → Pagar restante</strong>.
                     </div>
-                    
+                    `
                     : ""
                 }
 
             </div>
 
         </div>
-    ;
+    `;
 }
