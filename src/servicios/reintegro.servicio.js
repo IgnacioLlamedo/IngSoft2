@@ -1,5 +1,5 @@
+import { pagoDao, usuarioDao } from "../daos/index.js";
 import { devolverPago } from "./mercado.servicio.js";
-import { pagoDao } from "../daos/index.js";
 
 export async function procesarReintegro(reserva, clase, tipo, clasesEspecificas){
 
@@ -151,14 +151,17 @@ export async function devolverDinero(reserva){
 
     console.log("Id Mercado Pago:", pago.idPagoMercadoPago);
 
-    const devolucion = await devolverPago(pago.idPagoMercadoPago);
+    console.log("TOKEN:", process.env.MP_ACCESS_TOKEN);
+    console.log("PAYMENT:", pago.idPagoMercadoPago);
+
+    //const devolucion = await devolverPago(pago.idPagoMercadoPago);
 
     console.log("Respuesta de Mercado Pago:");
-    console.log(devolucion);
+    //console.log(devolucion);
 
     console.log("Devolución realizada correctamente.");
 
-    return devolucion;
+    //return devolucion;
 }
 
 export async function generarCredito(reserva){

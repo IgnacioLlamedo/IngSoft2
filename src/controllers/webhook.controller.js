@@ -3,8 +3,11 @@ import { procesarWebhook } from "./mercadoPago.controller.js";
 
 export async function webhookPago(req,res){
     try{
-        /* console.log("🔥 WEBHOOK ENTRÓ");
-        console.log("BODY:", req.body); */
+        /* console.log("================================");
+        console.log("WEBHOOK RECIBIDO");
+        console.log("Método:", req.method);
+        console.log("Body:", req.body);
+        console.log("================================"); */
         res.sendStatus(200);
         await procesarWebhook(req.body)
     }

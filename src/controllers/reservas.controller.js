@@ -140,22 +140,26 @@ export async function cancelarReservaRefactorizadoJsjs(req, res) {
 
         console.log("Reserva marcada como cancelada.");
         console.log(reservaCancelada);
-        
-
-        console.log("/////////////////////////////////////");
-        console.log("/////////////////////////////////////");
+        console.log(" ")
+        console.log(" ")
 
         //////////////////////////////////////////// Llega hasta acá el código. Lo siguiente hay que probarlo.....
        
         console.log("Buscando reemplazo...");
+        console.log(" ")
+        console.log(" ")
         const reemplazado = await validarYNotificar(tipo, claseLiberada, user);
 
         console.log("¿Hubo reemplazo?");
         console.log(reemplazado);
+        console.log(" ")
+        console.log(" ")
 
         //Si ningún usuario fue consultado para aceptar el cupo.
         if (!reemplazado){
             console.log("Eliminando usuario de anotados...");
+            console.log(" ")
+            console.log(" ")
             //elimino físicamente al usuario que cancelo la reserva.
             await eliminarDeClase(user, id);
 
@@ -169,12 +173,16 @@ export async function cancelarReservaRefactorizadoJsjs(req, res) {
             }
         }); */
 
-        console.log("Procesando reintegro...");
-        const reintegro = await procesarReintegro(reservaCancelada, claseLiberada, tipo, claseLiberada);
+        /* console.log("Procesando reintegro...");
+        console.log(" ")
+        console.log(" ") */
+        //!const reintegro = await procesarReintegro(reservaCancelada, claseLiberada, tipo, claseLiberada);
 
 
-        console.log("Resultado reintegro:");
-        console.log(reintegro);
+        /* console.log("Resultado reintegro:");
+        console.log(" ")
+        console.log(" ")
+        console.log(reintegro); */
         return res.json({
             success: true,
             message: "Reserva cancelada exitosamente"
@@ -195,34 +203,37 @@ async function buscarReemplazoMensual(tipo, claseLiberada, idCancelo){
     /**Por cada persona dentro de la lista de espera mensual de la clase liberada:  */
     for(const act of claseLiberada.esperaMensual){
 
+        console.log(" ")
+        console.log(" ")
         console.log("--------------------------------");
         console.log("Analizando candidato:");
         console.log(act.idUsuario);
-        candidato = await validarReemplazo(act.idUsuario, claseLiberada);
+        candidato = await validarReemplazo(act, claseLiberada);
 
+        console.log(" ")
+        console.log(" ")
         console.log("Este es el usuario candidato actual de lista de espera mensual:  ");
         console.log(candidato)
         console.log("¿Es válido?");
         console.log(candidato.candidatoValido);
+        console.log(" ")
+        console.log(" ")
 
         let nuevoCupo = null;
 
         //si el candidato es válido
         if (candidato.candidatoValido){
+            console.log(" ")
+            console.log(" ")
             console.log("Candidato válido.");
             console.log("Creando cupo...");
+            console.log(" ")
+            console.log(" ")
 
-            const clasesDelCupo = [];
-            for(const actual of candidato.clases){
-                const claseAct = {
-                    clase: actual,
-                    esLiberada: false
-                }
-                if (actual._id === claseLiberada._id){
-                    claseAct.esLiberada = true;
-                }
-                clasesDelCupo.push(claseAct);
-            }
+            const clasesDelCupo = candidato.clases.map(actual => ({
+                clase: actual._id,
+                esLiberada: actual._id.toString() === claseLiberada._id.toString()
+            }));
 
             //creo el nuevo cupo
             nuevoCupo = await cupoDao.create({
@@ -245,10 +256,16 @@ async function buscarReemplazoMensual(tipo, claseLiberada, idCancelo){
                 }
             )
             //consulto al usuario si acepta el nuevo cupo.
+            console.log(" ")
+            console.log(" ")
             console.log("Notificando usuario...");
             await notificarUsuario(act.idUsuario, candidato.clases, nuevoCupo._id);
             reemplazo = act.idUsuario;
             console.log("Usuario notificado.");
+            console.log(" ")
+            console.log(" ")
+            console.log(" ")
+            console.log(" ")
             break;
         }
         else{
@@ -264,6 +281,8 @@ async function buscarReemplazoUnico(tipo, claseLiberada, idCancelo){
     let reemplazo = null;
     //si la clase cancelada es única -- simplemente busco al siguiente en lista de espera única
     //si existen personas en la lista de espera única
+    console.log(" ")
+    console.log(" ")
     console.log("Este es el largo de la lista de espera unica.")
     console.log(claseLiberada.esperaUnica.length)
     if (claseLiberada.esperaUnica.length >= 0){
@@ -271,21 +290,47 @@ async function buscarReemplazoUnico(tipo, claseLiberada, idCancelo){
         //Itero sobre la lista de espera unica.
         for(const unicaAct of claseLiberada.esperaUnica){
 
+            console.log(" ")
+            console.log(" ")
             console.log("=================================");
             console.log("No hubo candidato mensual.");
             console.log("Buscando candidato único...");
+            console.log(" ")
+            console.log(" ")
 
             //si el actual aún no está esperando confirmación, aceptó o rechazo un cupo
             if (unicaAct.estado === 'activo') {
 
                 //creo el cupo.
+                console.log(" ")
+                console.log(" ")
                 console.log("Creando cupo...");
                 const nuevoCupo = await cupoDao.create({
                     idUsuario: unicaAct.idUsuario,
                     idUsuarioCanceloClase: idCancelo,
-                    clasesEspecificas: claseLiberada,
+                    clasesEspecificas: [
+                        {
+                            clase: claseLiberada._id,
+                            esLiberada: true
+                        }
+                    ],
                     tipo: tipo
                 });
+
+                if(!nuevoCupo){
+                    console.log(" ")
+                    console.log(" ")
+                    console.log(" ")
+                    console.log(" ")
+                    console.log("HUBO UN ERROR AL CREAR EL CUPO")
+                    console.log(" ")
+                    console.log(" ")
+                    console.log(" ")
+                    console.log(" ")
+                }
+
+                console.log("CUPO:");
+                console.dir(nuevoCupo, { depth: null });
                 
                 //Modifico el estado en la lista de espera única del usuario a esperandoConfirmación para que
                 //no pueda ser elegído en caso de que otra persona cancele clase en el mismo moomento.
@@ -297,10 +342,14 @@ async function buscarReemplazoUnico(tipo, claseLiberada, idCancelo){
                 })
 
                 //Mando mail al usuario consultando si acepta el cupo.
+                console.log(" ")
+                console.log(" ")
                 console.log("Notificando usuario desde unica...");
-                await notificarUsuario(unicaAct.idUsuario, claseLiberada, nuevoCupo._id);
+                await notificarUsuario(unicaAct.idUsuario, [claseLiberada], nuevoCupo._id);
                 reemplazo = unicaAct.idUsuario;
                 console.log("Usuario notificado.");
+                console.log(" ")
+                console.log(" ")
             }
 
             //si el actual ya fue notificado para confirmar anteriormente, aceptó una clase o la rechazó
@@ -326,6 +375,9 @@ export async function validarYNotificar(tipo, claseLiberada, idCancelo){
     if (!reemplazo){
         console.log("No hubo reemplazo encontrado en lista de espera mensual, buscando en lista de espera unica:")
         reemplazo = await buscarReemplazoUnico(tipo, claseLiberada, idCancelo);
+        console.log("El candidato unico encontrado fue:");
+        console.log(reemplazo);
+
     }
     return reemplazo;
 }
@@ -798,123 +850,37 @@ export async function getCancellations(req, res) {
 //Función que se llamará cuando el usuario desde tabMyActivities presione el botón salir de lista de espera.
 export async function salirListaEspera(req, res) {
     try {
-        const { idReserva } = req.body;
-
-        const reserva = await reservaDao.readOne({
-            _id: idReserva,
-            idUsuario: req.session.user.id
-        });
-
-        if (!reserva) {
+        if(!req.session.user) {
             return res.json({
                 success: false,
-                message: "Reserva no encontrada"
+                message: "usuario no autenticado."
             });
         }
-
-        const idUsuario = req.session.user.id;
-
-        //RESERVA UNICA
-        if (reserva.tipo === "unica") {
-
-            const clase = await claseEspecificaDao.readOne({
-                _id: reserva.idClaseEspecifica
-            });
-
-            if (!clase) {
-                return res.json({
-                    success: false,
-                    message: "Clase específica no encontrada"
-                });
-            }
-
-            //Habría que hacer algun tipo de checkeo?
-
-            await claseEspecificaDao.updateOne(
-                { _id: clase._id },
-                {
-                    $pull: {
-                        esperaUnica: {
-                            idUsuario
-                        }
-                    }
+        const idUsuario = req.session.user.id
+        const clase = (await claseEspecificaDao.populate({_id: req.body.claseEspecifica}))[0]
+        let bool = false
+        for(const u of clase.esperaUnica){
+            if(u.idUsuario._id == idUsuario){
+                const index = clase.esperaUnica.indexOf(u)
+                if (index > -1) {
+                    clase.esperaUnica.splice(index, 1)
                 }
-            );
-
-            const claseActualizada = await claseEspecificaDao.readOne({
-                _id: clase._id
-            });
-
-            const sigueEnEspera = claseActualizada.esperaUnica.some(
-                u => u.idUsuario === idUsuario
-            );
-
-            if (sigueEnEspera) { //En teoría imposible porque no puede estar registrado en espera 2 veces
-                return res.json({
-                    success: false,
-                    message: "No se pudo eliminar de lista de espera"
-                });
+                bool = true
+                break
             }
-
-            console.log("Salió correctamente de lista de espera");
-            await reservaDao.updateOne({ _id: reserva._id },
-                {
-                    estado: "cancelada"
-                }
-            );
         }
-        //RESERVA MENSUAL
-        else {
-
-            for (const claseReserva of reserva.clases) {
-
-                const idClase = claseReserva.idClase;
-
-                await claseEspecificaDao.updateOne(
-                    { _id: idClase },
-                    {
-                        $pull: {
-                            esperaMensual: {
-                                idUsuario
-                            }
-                        }
+        if(!bool){
+            for(const u of clase.esperaMensual){
+                if(u.idUsuario._id == idUsuario){
+                    const index = clase.esperaMensual.indexOf(u)
+                    if (index > -1) {
+                        clase.esperaMensual.splice(index, 1)
                     }
-                );
-
-                const claseActualizada =
-                    await claseEspecificaDao.readOne({
-                        _id: idClase
-                    });
-
-                const sigueEnEspera =
-                    claseActualizada.esperaMensual.some(
-                        u => u.idUsuario === idUsuario
-                    );
-
-                if (sigueEnEspera) {
-                    return res.json({
-                        success: false,
-                        message:
-                            "No se pudo eliminar al usuario de todas las listas de espera"
-                    });
+                    break
                 }
             }
-
-            console.log(
-                "Salió correctamente de lista de espera"
-            );
-
-            await reservaDao.updateOne(
-                { _id: reserva._id },
-                {
-                    $set: {
-                        "clases.$[].estado":
-                            "cancelada"
-                    }
-                }
-            );
         }
-
+        await claseEspecificaDao.updateOne({_id: req.body.claseEspecifica}, clase)
         return res.json({
             success: true
         });
@@ -927,10 +893,6 @@ export async function salirListaEspera(req, res) {
         })
     }
 }
-
-
-
-
 
 
 export async function pagarRestoReserva(idReservaSeñada, pago) {
@@ -966,5 +928,40 @@ export async function pagarRestoReserva(idReservaSeñada, pago) {
             succes: false,
             message: "Error al encontrar la reserva indicada",
         };
+    }
+}
+
+
+//Creo que esto no deberia estar en este archivo pero ya fue
+export async function getListaEspera(req, res){
+    try {
+        //console.log("aea debuggero debuggero")
+        if(!req.session.user) {
+            return res.json({
+                success: false,
+                message: "usuario no autenticado."
+            });
+        }
+
+        const idUsuario = req.session.user.id;
+
+        /* console.log("Id de usuario desde reservas.controller: ");
+        console.log(idUsuario); */
+
+        const clases = await claseEspecificaDao.findUsuarioEspera(idUsuario)
+        //console.log(clases)
+        
+        res.json({
+            success: true,
+            espera: clases
+        });
+
+    }
+    catch(error) {
+        console.log(error);
+        res.json({
+            success: false,
+            message: error.message
+        });
     }
 }

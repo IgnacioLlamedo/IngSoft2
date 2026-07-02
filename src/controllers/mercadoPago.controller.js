@@ -114,6 +114,9 @@ export async function crearPreferencia(req, res) {
         const ahora = new Date();
         const vence = new Date(ahora.getTime() + 60 * 1000); //La preferencia vence despues de 1 minuto...
 
+        console.log(config.link);
+        console.log(`${config.link}/api/webhook/webhook`);
+
         const preference = new Preference(client);
 
         const response = await preference.create({
@@ -205,43 +208,78 @@ export async function obtenerPago(req, res) {
 
 //Básicamente hace toda la funcionalidad que hacia paymentApproved.js
 export async function procesarWebhook(body){
+    try {
 
-    /* console.log("Desde procesarWebhook!!!!!");
-    console.log("                                           ")
-    console.log("                                           ") */
+        /* console.log("1"); */
 
-    console.log("-- Esto le llega al webhook --")
-    console.log(body)
-    console.log("-- Fin de lo que le llega al webhook --")
 
-    if(body.type !== "payment"){
-        /* console.log("El tipo del body NO es PAYMENT, saliendo...") */
-        return;
+        console.log("-- Esto le llega al webhook --")
+        console.log(body)
+        console.log("-- Fin de lo que le llega al webhook --")
+
+        if(body.type !== "payment"){
+            return;
+        }
+
+
+        /* console.log("2"); */
+
+        const payment = new Payment(client);
+        const mpPayment = await payment.get({
+            id: body.data.id
+        });
+
+        /* console.log("3"); */
+
+        if(mpPayment.status !== "approved"){
+            console.log("No aprobado");
+            return;
+        }
+
+       /*  console.log("4"); */
+
+        const external = JSON.parse(mpPayment.external_reference);
+
+        /* console.log("5"); */
+
+        const pago = await pagoDao.readOne({
+            _id: external.idPagoPendiente
+        });
+
+        /* console.log("6"); */
+
+        const confirmadoElPago = await confirmarPagoInterno(mpPayment);
+
+        /* console.log("7"); */
+
+        let reservaCreada;
+        //crear reserva
+        if(external.tipoClase==="mensual"){
+            reservaCreada = await postReservaMensual(confirmadoElPago);
+            /* console.log("La reserva creada es de tipo MENSUAL: ");
+            console.log(reservaCreada); */
+        }
+        else {
+            reservaCreada = await postReservaUnica(confirmadoElPago, external.tipoClase==="seña");
+            /* console.log("La reserva creada es de tipo UNICA: ");
+            console.log(reservaCreada); */
+        }
+        /* console.log("                                           ")
+        console.log("                                           ") 
+        console.log("Parte número 4: ") */
+        console.log(`Esta es la reserva creada según su tipo (${external.tipoClase}): `)
+        if (reservaCreada.success)
+            console.log(reservaCreada.reserva);
+        else
+            console.log(reservaCreada.message)
+
+        /* console.log("             ");
+        console.log("             ");
+        console.log("Finalizado desde webhooks!!!!!!!!!!!!!"); */
     }
-
-    /* console.log("El tipo del body es 'PAYMENT' ---- Ahora sigue la secuencia de la función.")
-
-    console.log("Este es el body dentro de procesarWebhook: ")
-    console.log(body);
-    console.log("                                           ")
-    console.log("                                           ") */
-
-    //Busco el pago en la api de MP
-    const payment = new Payment(client);
-    const mpPayment = await payment.get({
-        id: body.data.id
-    })
-
-    /* console.log("Parte número 1: ")
-    console.log("Este es el pago de mercado pago: ")
-    console.log(mpPayment);
-    console.log("                                           ")
-    console.log("                                           ") */
-
-    //Si el pago no fue aprobado, no tiene sentido continuar ejecución
-    if(mpPayment.status !== "approved"){
-        console.log("El estado del pago (recibido desde MercadoPago) NO es aprobado... retornando...");
-        return;
+    catch(err){
+        console.error("ERROR EN procesarWebhook");
+        console.error(err);
     }
 
     //Si el pago fue aprovado, controlo que no este aprobado en mi base de datos.-
@@ -542,6 +580,7 @@ export async function confirmarPagoController(req, res){
 }
 
 
+// A partir de acá sería pagos.controller
 export async function getPaymentsController(req, res) {
     try {
         const sessionUser = req.session && req.session.user;
@@ -565,12 +604,11 @@ export async function getPaymentsController(req, res) {
     }
 }
 
-
 async function generatePaymentsWithInfo(payments) {
     const paymentsWithInfo = [];
 
     for (const p of payments) {
-        const fecha = (p.fecha != null) ? p.fecha : p.clases[0].fecha;
+        const fecha = p.fechaPago;
 
         const objUsuario = await usuarioDao.readOne({ _id: p.idUsuario });
         const usuario = (objUsuario) ? objUsuario.mail : "Usuario desconocido";
@@ -595,4 +633,66 @@ async function generatePaymentsWithInfo(payments) {
         });
     }
     return paymentsWithInfo;
+}
+
+/*
+export async function getUserPaymentsController(req, res) {
+    try {
+        const sessionUser = req.session && req.session.user;
+
+        if (!sessionUser) {
+            return res.status(403).json({ success: false, message: 'Acceso denegado' });
+        }
+
+        const query = { idUsuario: sessionUser.id };
+
+        const payments = await pagoDao.readMany(query);
+
+        return res.json(payments);
+
+    } catch (error) {
+        console.error('getPaymentsController ERROR: ', error);
+        return res.status(500).json({ success: false, message: 'Error al obtener la lista de usuarios. Inténtelo más tarde.' });
+    }
+}
+    */
+
+export async function getUserPaymentsController(req, res) {
+    try {
+        const sessionUser = req.session && req.session.user;
+
+        if (!sessionUser) {
+            return res.status(403).json({ success: false, message: 'Acceso denegado' });
+        }
+
+        const query = { idUsuario: sessionUser.id };
+        const payments = await pagoDao.readMany(query);
+
+        // Enriquecer cada pago con info de la clase general
+        const paymentsWithInfo = [];
+        for (const p of payments) {
+            let claseInfo = "Clase desconocida";
+
+            if (p.clases && p.clases.length > 0) {
+                const idClaseGeneral = p.clases[0].idClase;
+                const claseGeneral = await claseGeneralDao.readOne(idClaseGeneral);
+                console.log(claseGeneral);
+
+                if (claseGeneral) {
+                    claseInfo = `${claseGeneral.dia}, ${claseGeneral.hora}:00 hs`;
+                }
+            }
+
+            paymentsWithInfo.push({
+                ...p,
+                claseInfo
+            });
+        }
+
+        return res.json(paymentsWithInfo);
+
+    } catch (error) {
+        console.error('getUserPaymentsController ERROR: ', error);
+        return res.status(500).json({ success: false, message: 'Error al obtener los pagos del usuario.' });
+    }
 }

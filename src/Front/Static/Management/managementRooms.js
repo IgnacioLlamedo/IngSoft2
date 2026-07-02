@@ -6,9 +6,19 @@
 const endpoint = "/api/admin/sala"; // Se usa el mismo fetch pero diferenciando entre GET | POST | PUT | DELETE
 
 
-const slotHtml = (slot) => { return `
-    <p>Nombre: ${slot.nombre}</p>
-    <p>Cupo máximo: ${slot.limiteSala}</p>
+const slotHtml = (slot) => {
+    let statusHtml = slot.estado != null
+        ? `<b>${slot.estado}</b>`
+        : '';
+        //: `<b>${slot.estado}</b> con motivo <i>"${slot.motivoEstado}"</i>`;
+    const fechaHtml = slot.fechaEstado != null
+        ? `<br>Ocurrido el <b>${new Date(slot.fechaEstado).toLocaleDateString('es-AR')}</b>`
+        : '';
+    statusHtml += fechaHtml;
+    return `
+    <p><u>Nombre:</u> <b>${slot.nombre}</b></p>
+    <p><u>Cupo máximo:</u> <b>${slot.limiteSala}</b></p>
+    <p><u>Estado:</u> ${statusHtml}</p>
 `};
 
 
@@ -47,6 +57,18 @@ const slotList = document.getElementById("slotList");
 const notDataAvailableMsg = document.getElementById("notDataAvailableMsg");
 
 const dialog = document.getElementById("confirmPanel");
+const confirmText = document.getElementById("confirmText");
+const confirmBtn = document.getElementById("confirmBtn");
+
+let currentDialogCloseHandler = null;
+function setDialogCloseHandler(handler) {
+    if (currentDialogCloseHandler) {
+        dialog.removeEventListener('close', currentDialogCloseHandler);
+        currentDialogCloseHandler = null;
+    }
+    currentDialogCloseHandler = handler;
+    dialog.addEventListener('close', currentDialogCloseHandler, { once: true });
+}
 
 
 window.addEventListener('DOMContentLoaded', () => {
@@ -120,28 +142,71 @@ function createEditAndDeleteButtons(slotData, slotError, slotErrorMsg, slot) {
     const buttonsDiv = document.createElement("div");
     buttonsDiv.classList.add("buttons-container");
 
-    const slotEditButton = document.createElement("button");
-    slotEditButton.classList.add("edit-button");
-    slotEditButton.textContent = "Editar";
-    slotEditButton.onclick = () => switchToEdit(slot);
+    if (slot.estado !== "borrada") {
+        if (slot.estado === "habilitada") {
+            const slotSuspendButton = document.createElement("button");
+            slotSuspendButton.classList.add("suspend-button");
+            slotSuspendButton.textContent = "Inhabilitar";
+            buttonsDiv.appendChild(slotSuspendButton);
+            
+            slotSuspendButton.addEventListener('click', () => {
+                confirmText.textContent = "¿Desea inhabilitar la sala?";
+                confirmBtn.textContent = "Inhabilitar Sala";
 
-    const slotDeleteButton = document.createElement("button");
-    slotDeleteButton.classList.add("delete-button");
-    slotDeleteButton.type = "button";
-    slotDeleteButton.textContent = "Borrar";
+                setDialogCloseHandler((closeEvent) => {
+                    if (dialog.returnValue === 'default') {
+                        suspendRoom(closeEvent, slot._id, slotError, slotErrorMsg);
+                    }
+                });
 
-    slotDeleteButton.addEventListener('click', () => {
-        dialog.showModal();
+                dialog.showModal();
+            });
+        }
+        else if (slot.estado === "inhabilitada") {
+            const slotResumeButton = document.createElement("button");
+            slotResumeButton.classList.add("suspend-button");
+            slotResumeButton.textContent = "Habilitar";
+            buttonsDiv.appendChild(slotResumeButton);
 
-        dialog.addEventListener('close', (closeEvent) => {
-            if (dialog.returnValue === 'default') {
-                deleteRoom(closeEvent, slot._id, slotError, slotErrorMsg);
-            }
-        }, { once: true });
-    });
+            slotResumeButton.addEventListener('click', () => {
+                confirmText.textContent = "¿Desea habilitar la sala?";
+                confirmBtn.textContent = "Habilitar Sala";
 
-    buttonsDiv.appendChild(slotEditButton);
-    buttonsDiv.appendChild(slotDeleteButton);
+                setDialogCloseHandler((closeEvent) => {
+                    if (dialog.returnValue === 'default') {
+                        resumeRoom(closeEvent, slot._id, slotError, slotErrorMsg);
+                    }
+                });
+
+                dialog.showModal();
+            });
+        }
+        const slotEditButton = document.createElement("button");
+        slotEditButton.classList.add("edit-button");
+        slotEditButton.textContent = "Editar";
+        slotEditButton.onclick = () => switchToEdit(slot);
+        buttonsDiv.appendChild(slotEditButton);
+
+        const slotDeleteButton = document.createElement("button");
+        slotDeleteButton.classList.add("delete-button");
+        slotDeleteButton.type = "button";
+        slotDeleteButton.textContent = "Borrar";
+        buttonsDiv.appendChild(slotDeleteButton);
+
+        slotDeleteButton.addEventListener('click', () => {
+            confirmText.textContent = "¿Está seguro de que desea borrar la sala?";
+            confirmBtn.textContent = "Borrar Sala";
+
+            setDialogCloseHandler((closeEvent) => {
+                if (dialog.returnValue === 'default') {
+                    deleteRoom(closeEvent, slot._id, slotError, slotErrorMsg);
+                }
+            });
+            
+            dialog.showModal();
+        });
+        
+    }
 
     slotData.appendChild(buttonsDiv);
 }
@@ -241,27 +306,115 @@ async function deleteRoom(event, _id, slotError, slotErrorMsg) {
 
     hideSlotError(slotError);
     
-    const data = JSON.stringify({ id: _id });
+    const roomData = { id: _id, motivoEstado: "Borrada vía sistema de gestión" };
 
     const res = await fetch(endpoint, {
         method: 'DELETE',
         headers: {
             "Content-Type" : "application/json",
         },
-        body: data
+        body: JSON.stringify(roomData)
     });
 
     const resData = await res.json();
 
-    if(resData.success){
+    if (resData.success) {
         if(isOnEditMode)
             switchToCreateForm();
+
+        showSuccessDialog("Sala borrada correctamente.");
         getAllSlots();
     }
-    else
-        showSlotError(slotError, slotErrorMsg, resData.message);
+    else showSlotError(slotError, slotErrorMsg, resData.message);
 }
 
+
+async function suspendRoom(event, _id, slotError, slotErrorMsg) {
+    event.preventDefault();
+
+    hideSlotError(slotError);
+    
+    const roomData = { _id: _id };
+
+    const res = await fetch(`${endpoint}/inhabilitar`, {
+        method: 'PUT',
+        headers: {
+            "Content-Type" : "application/json",
+        },
+        body: JSON.stringify(roomData)
+    });
+
+    const resData = await res.json();
+
+    if (resData.success) {
+        if(isOnEditMode)
+            switchToCreateForm();
+
+        showSuccessDialog("Sala inhabilitada correctamente.");
+        getAllSlots();
+    }
+    else showSlotError(slotError, slotErrorMsg, resData.message);
+}
+
+
+async function resumeRoom(event, _id, slotError, slotErrorMsg) {
+    event.preventDefault();
+
+    hideSlotError(slotError);
+    
+    const roomData = { _id: _id};
+
+    const res = await fetch(`${endpoint}/habilitar`, {
+        method: 'PUT',
+        headers: {
+            "Content-Type" : "application/json",
+        },
+        body: JSON.stringify(roomData)
+    });
+
+    const resData = await res.json();
+
+    if (resData.success) {
+        if(isOnEditMode)
+            switchToCreateForm();
+
+        showSuccessDialog("Sala habilitada correctamente.");
+        getAllSlots();
+    }
+    else showSlotError(slotError, slotErrorMsg, resData.message);
+}
+
+function showSuccessDialog(message) {
+    const overlay = document.createElement('div');
+    overlay.classList.add('delete-success-overlay');
+
+    const dialog = document.createElement('div');
+    dialog.classList.add('delete-success-dialog');
+
+    const text = document.createElement('p');
+    text.classList.add('delete-success-text');
+    text.textContent = message;
+
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.classList.add('delete-success-button');
+    button.textContent = 'Cerrar';
+
+    button.addEventListener('click', () => {
+        overlay.remove();
+    });
+
+    overlay.addEventListener('click', (event) => {
+        if (event.target === overlay) {
+            overlay.remove();
+        }
+    });
+
+    dialog.appendChild(text);
+    dialog.appendChild(button);
+    overlay.appendChild(dialog);
+    document.body.appendChild(overlay);
+}
 
 function hideSlotError(slotError) {
     slotError.classList.add("none");
@@ -332,6 +485,9 @@ async function switchToEdit(slot) {
 
     currentForm.replaceWith(editForm);
     currentForm = editForm;
+    
+    const mountedNameField = currentForm.querySelector("#nameField");
+    if (mountedNameField) mountedNameField.focus();
 
     isOnEditMode = true;
 }

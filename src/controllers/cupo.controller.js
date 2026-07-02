@@ -23,11 +23,11 @@ export async function getCupoData(req, res) {
         const cupo = await cupoDao.readOne({ _id: req.query.idCupo });
 
         const specificClasses = await Promise.all(
-            cupo.clasesEspecificas.map(idSpecificClass =>
-                claseEspecificaDao.readOne({ _id: idSpecificClass })
+            cupo.clasesEspecificas.map(c =>
+                claseEspecificaDao.readOne({ _id: c.clase })
             )
         );
-
+        
         const generalClass = await claseGeneralDao.readOne({ _id: specificClasses[0].idClaseGeneral });
 
         const activity = await actividadDao.readOne({ _id: generalClass.idActividad });

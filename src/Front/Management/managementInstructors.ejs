@@ -133,16 +133,16 @@
 
                     <div class="input-group">
                         <label for="reasonField">Motivo:</label>
-                        <input id="reasonField" type="textarea" name="reason" required pattern=".*\S+.*">
+                        <input id="reasonField" type="textarea" name="reasonField" required pattern=".*\S+.*">
                     </div>
 
                     <div class="input-group">
-                        <label for="fechaInput">Desde:</label>
+                        <label for="dateFromInput">Desde:</label>
                         <input id="dateFromInput" type="date" name="dateFromInput" required placeholder="Desde...">
                     </div>
 
                     <div class="input-group">
-                        <label for="fechaInput">Hasta:</label>
+                        <label for="dateToInput">Hasta:</label>
                         <input id="dateToInput" type="date" name="dateToInput" required placeholder="Hasta...">
                     </div>
 
@@ -178,11 +178,11 @@
     <%- include('../Navbar/footer.html') %>
     
     <dialog id="confirmPanel">
-        <p>¿Está seguro que desea borrar el Profesor?</p>
+        <p id="confirmText">¿Está seguro de que desea borrar el Profesor?</p>
         <form method="dialog">
-            <div>
+            <div id="reasonDiv">
                 <label for="deleteReasonField">Motivo:</label>
-                <textarea id="deleteReasonField" name="reason" required rows="3"></textarea>
+                <textarea id="deleteReasonField" name="reason" rows="3"></textarea>
             </div>
             <div class="dialog-actions">
                 <button type="button" value="cancel">Cancelar</button>

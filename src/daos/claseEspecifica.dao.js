@@ -78,4 +78,54 @@ export class claseEspecificaDao {
         }
         return populated
     }
+    async findUsuarioEspera(query){
+        let res = []
+        const aux = await ClaseEspecifica.find().populate([
+            {
+                path: 'anotados',
+                populate: {
+                    path: 'idUsuario'
+                }
+            },
+            {
+                path: 'esperaUnica',
+                populate: {
+                    path: 'idUsuario'
+                }
+            },
+            {
+                path: 'esperaMensual',
+                populate: {
+                    path: 'idUsuario'
+                }
+            },
+            {
+                path: 'idClaseGeneral',
+                populate: [
+                    { path: 'idActividad' },
+                    { path: 'idProfesor' },
+                    { path: 'idSala' }
+                ]
+            }
+        ])
+        for(const a of aux){
+            for(const u of a.esperaUnica){
+                if(u.idUsuario._id == query){
+                    res = res.concat(a)
+                }
+            }
+        }
+        for(const a of aux){
+            for(const u of a.esperaMensual){
+                if(u.idUsuario._id == query){
+                    res = res.concat(a)
+                }
+            }
+        }
+        if(!res){
+            //provisional, desarrollar luego
+            console.log("error en findUsuario")
+        }
+        return res
+    }
 }

@@ -341,11 +341,7 @@ hr {
 }
 
 .en-espera {
-    background: linear-gradient(
-        135deg,
-        #ffb347,
-        #ff8c00
-    );
+    background: rgb(101, 101, 255);
     color: white;
 }
 
@@ -354,7 +350,7 @@ hr {
 }
 
 .btn-salir-espera {
-    background-color: #ff8c00;
+    background-color: rgb(255, 88, 46);
     color: white;
     border: none;
     padding: 10px;
@@ -364,6 +360,6 @@ hr {
 }
 
 .btn-salir-espera:hover {
-    background-color: #e67700;
+    background-color: rgb(255, 51, 0);
     transform: scale(1.05);
 }
