@@ -22,6 +22,16 @@ export async function getCupoData(req, res) {
     try {
         const cupo = await cupoDao.readOne({ _id: req.query.idCupo });
 
+        if (!cupo) {
+            throw new Error("No existe el cupo.");
+        }
+
+        console.log(cupo.clasesEspecificas);
+
+        if (!Array.isArray(cupo.clasesEspecificas)) {
+            throw new Error("clasesEspecificas no es un arreglo.");
+        }
+
         const specificClasses = await Promise.all(
             cupo.clasesEspecificas.map(c =>
                 claseEspecificaDao.readOne({ _id: c.clase })
