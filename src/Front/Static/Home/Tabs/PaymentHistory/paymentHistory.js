@@ -91,7 +91,7 @@ async function cargarPagos() {
   } catch (err) {
     console.error("Error cargando pagos:", err);
     const container = document.querySelector(".payment-history-container");
-    container.innerHTML = "<div class='pay-detail'>Error al cargar pagos.</div>";
+    container.innerHTML = "<div class='pay-error'>Error al cargar pagos.</div>";
   }
 }
 

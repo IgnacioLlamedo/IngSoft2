@@ -675,7 +675,7 @@ export async function getUserPaymentsController(req, res) {
 
             if (p.clases && p.clases.length > 0) {
                 const idClaseGeneral = p.clases[0].idClase;
-                const claseGeneral = await claseGeneralDao.readOne(idClaseGeneral);
+                const claseGeneral = await claseGeneralDao.readOne({ _id: idClaseGeneral});
                 console.log(claseGeneral);
 
                 if (claseGeneral) {
