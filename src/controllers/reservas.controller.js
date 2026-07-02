@@ -189,7 +189,7 @@ export async function cancelarReservaRefactorizadoJsjs(req, res) {
     }
 }
 
-async function buscarReemplazoMensual(claseLiberada, idCancelo){
+async function buscarReemplazoMensual(tipo, claseLiberada, idCancelo){
     let candidato = null;
     let reemplazo = null;
     /**Por cada persona dentro de la lista de espera mensual de la clase liberada:  */
@@ -260,7 +260,7 @@ async function buscarReemplazoMensual(claseLiberada, idCancelo){
     return reemplazo;
 }
 
-async function buscarReemplazoUnico(claseLiberada, idCancelo){
+async function buscarReemplazoUnico(tipo, claseLiberada, idCancelo){
     let reemplazo = null;
     //si la clase cancelada es única -- simplemente busco al siguiente en lista de espera única
     //si existen personas en la lista de espera única
@@ -319,13 +319,13 @@ export async function validarYNotificar(tipo, claseLiberada, idCancelo){
     console.log("=================================");
     console.log("Buscando reemplazo MENSUAL...");
     console.log("Cantidad en espera mensual:", claseLiberada.esperaMensual.length);
-    let reemplazo = await buscarReemplazoMensual(claseLiberada, idCancelo);
+    let reemplazo = await buscarReemplazoMensual(tipo, claseLiberada, idCancelo);
     
     console.log("Este fue el usuario conseguido de la lista de espera mensual para el reemplazo...");
     console.log(reemplazo);
     if (!reemplazo){
         console.log("No hubo reemplazo encontrado en lista de espera mensual, buscando en lista de espera unica:")
-        reemplazo = await buscarReemplazoUnico(claseLiberada, idCancelo);
+        reemplazo = await buscarReemplazoUnico(tipo, claseLiberada, idCancelo);
     }
     return reemplazo;
 }
@@ -928,3 +928,43 @@ export async function salirListaEspera(req, res) {
     }
 }
 
+
+
+
+
+
+export async function pagarRestoReserva(idReservaSeñada, pago) {
+    try {
+        const id = idReservaSeñada;
+        const reserva = await reservaDao.readOneUnica({ _id: id });
+
+        if(!reserva) {
+            return {
+                success: false,
+                message: `Error al encontrar la reserva con el id: ${id}`,
+            };
+        }
+
+        // vincular pago pagos: [{ idPago: reservaData._id }],
+        reserva.pagos.push({
+            idPago: pago._id,
+        });
+        reserva.señada = false;
+
+        await reservaDao.updateOneUnica({ _id: id }, reserva);
+    
+        return {
+            succes: true,
+            reserva,
+        };
+    }
+    catch(e) {
+        console.log("ERROR EN buscarReserva:");
+        console.log(e);
+
+        return {
+            succes: false,
+            message: "Error al encontrar la reserva indicada",
+        };
+    }
+}

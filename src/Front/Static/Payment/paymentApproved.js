@@ -1,52 +1,10 @@
 const ext = JSON.parse(parametersURL.get("external_reference"));
 const container = document.querySelector(".main-container");
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-console.log("Estos son los datos que llegaron en la URL desde paymentApproved.js: ");
-console.log(externo);
-
-const pagoData = {
-    idPagoPendiente: externo.idPagoPendiente,
-    fechaPago: externo.fechaPago
-}
-=======
-mostrarPago();
-
-async function mostrarPago() {
->>>>>>> origin/Front-Facu-x-siEstoNoFuncionaMeMato
-
-    const res = await fetch(`/api/pago/get-pago/${ext.idPagoPendiente}`);
-
-<<<<<<< HEAD
-console.log("El importante es el id de pago pendiente: ")
-console.log(pagoData.idPagoPendiente);
-
-confirmarPago(pagoData, ext)
-
-
-async function confirmarPago(data, ext) {
-    console.log("Dentro de confirmarPago (paymentApproved.js.)");
-
-    const res = await fetch("/api/pago/confirmarPago", {
-        method: "POST",
-        headers: {
-            "Content-Type" : "application/json"
-        }, 
-        body: JSON.stringify({
-            idPagoPendiente: data.idPagoPendiente, //Para que no rompa el json parser
-            fechaPago: data.fechaPago
-        })
-    });
-//
-=======
->>>>>>> origin/Front-Facu-x-siEstoNoFuncionaMeMato
-=======
 mostrarPago();
 
 async function mostrarPago() {
     const res = await fetch(`/api/pago/get-pago/${ext.idPagoPendiente}`);
->>>>>>> origin/Front-Facu-x-siEstoNoFuncionaMeMato
     const resData = await res.json();
 
     if (!resData.success) {

@@ -1,12 +1,12 @@
 import { Preference, Payment } from "mercadopago";
 import { client } from "../servicios/mercado.servicio.js";
-import { pagoDao, claseEspecificaDao, claseGeneralDao, usuarioDao, actividadDao } from "../daos/index.js";
+import { pagoDao, claseEspecificaDao, claseGeneralDao, usuarioDao, actividadDao, reservaDao } from "../daos/index.js";
 import config from "../config.js";
 import { Role } from "../constants/constants.js";
 import { now } from "mongoose";
 import { webhookPago } from "./webhook.controller.js";
 import { aceptarCupoInterno } from "./cupo.controller.js";
-import { postReservaMensual, postReservaUnica } from "./reservas.controller.js";
+import { postReservaMensual, postReservaUnica, pagarRestoReserva } from "./reservas.controller.js";
 
 
 export async function crearPreferencia(req, res) {
@@ -15,7 +15,8 @@ export async function crearPreferencia(req, res) {
     const precio = req.body.precio;
     const tipoClase = req.body.tipoClase;
     const clases = req.body.clases;
-    const datosExternos = req.body.idCupo;
+    const idCupo = req.body.idCupo;
+    const idReservaSeñada = req.body.idReservaSeñada;
 
     // Clases con el formato del schema Pago
     const clasesFormateadas = clases.map(c => ({
@@ -46,7 +47,7 @@ export async function crearPreferencia(req, res) {
 
     try {
 
-        console.log("Desde crearPreferencia. Los tipos de clases y fechas son: ")
+        //console.log("Desde crearPreferencia. Los tipos de clases y fechas son: ")
 /*         const clases = [];
         const fechas = []; */
         /* for (const c of clasesObtenidas.clases) {
@@ -129,7 +130,8 @@ export async function crearPreferencia(req, res) {
                     tipoClase,
                     nombre,
                     idPagoPendiente: pagoPendiente._id,
-                    idCupo: datosExternos
+                    idCupo,
+                    idReservaSeñada,
                 }),
                 notification_url: `${config.link}/api/webhook/webhook`,
                 back_urls: {
@@ -208,6 +210,9 @@ export async function procesarWebhook(body){
     console.log("                                           ")
     console.log("                                           ") */
 
+    console.log("-- Esto le llega al webhook --")
+    console.log(body)
+    console.log("-- Fin de lo que le llega al webhook --")
 
     if(body.type !== "payment"){
         /* console.log("El tipo del body NO es PAYMENT, saliendo...") */
@@ -282,26 +287,38 @@ export async function procesarWebhook(body){
     console.log(confirmadoElPago);
 
 
-    let reservaCreada;
-    //crear reserva
-    if(external.tipoClase==="mensual"){
-        reservaCreada = await postReservaMensual(confirmadoElPago);
-        /* console.log("La reserva creada es de tipo MENSUAL: ");
-        console.log(reservaCreada); */
+    //Corroboro que sea un resto - FacuH
+    if(external.tipoClase==="resto") {
+        const resReservaSeñada = await pagarRestoReserva(external.idReservaSeñada, confirmadoElPago);
+        
+        if(resReservaSeñada.success) {
+            console.log("¡Reserva señada modificada con éxito!")
+        }
     }
+
     else {
-        reservaCreada = await postReservaUnica(confirmadoElPago, external.tipoClase==="seña");
-        /* console.log("La reserva creada es de tipo UNICA: ");
-        console.log(reservaCreada); */
+        let reservaCreada;
+        //crear reserva
+        if(external.tipoClase==="mensual"){
+            reservaCreada = await postReservaMensual(confirmadoElPago);
+            /* console.log("La reserva creada es de tipo MENSUAL: ");
+            console.log(reservaCreada); */
+        }
+        else {
+            reservaCreada = await postReservaUnica(confirmadoElPago, external.tipoClase==="seña");
+            /* console.log("La reserva creada es de tipo UNICA: ");
+            console.log(reservaCreada); */
+        }
+        /* console.log("                                           ")
+        console.log("                                           ") 
+        console.log("Parte número 4: ") */
+        console.log(`Esta es la reserva creada según su tipo (${external.tipoClase}): `)
+        if (reservaCreada.success)
+            console.log(reservaCreada.reserva);
+        else
+            console.log(reservaCreada.message)
     }
-    /* console.log("                                           ")
-    console.log("                                           ") 
-    console.log("Parte número 4: ") */
-    console.log(`Esta es la reserva creada según su tipo (${external.tipoClase}): `)
-    if (reservaCreada.success)
-        console.log(reservaCreada.reserva);
-    else
-        console.log(reservaCreada.message)
+
 
     /* console.log("             ");
     console.log("             ");

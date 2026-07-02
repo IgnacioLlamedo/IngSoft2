@@ -216,6 +216,16 @@ function renderActividades() {
   //Elimino los mensajes de sin actividades por filtro.
   document.querySelectorAll(".no-activities-message").forEach(msg => msg.remove());
 
+    if(actividadesUsuario.length === 0) {
+        const msg = document.createElement("p");
+        msg.classList.add("no-activities-message"); //Le añado a la clase para poder eliminarlo
+        msg.textContent = "No tienes actividades.";
+        msg.style.color = "white";
+        main.appendChild(msg);
+
+        return;
+    }
+
   // Aplicamos filtros
   const filtradas = actividadesUsuario.filter(act => {
 
@@ -382,134 +392,152 @@ function renderActividades() {
     // Botones con listeners
         /* console.log("La clase actual es de tipo ", act.tipo, " y estas son sus clases: ")    */ 
 
-        let clasesACancelar;
-        if (act.tipo === 'Mensual'){
-            console.log(act.clases);
-            clasesACancelar = act.clases;
-        }
-        else{
-            console.log(act.idClaseEspecifica);
-            clasesACancelar = act.claseEspecifica;
-        }
+        if(!esTotalmenteCancelada) {
+            let clasesACancelar;
+            if (act.tipo === 'Mensual'){
+                console.log(act.clases);
+                clasesACancelar = act.clases;
+            }
+            else{
+                console.log(act.idClaseEspecifica);
+                clasesACancelar = act.claseEspecifica;
+            }
 
-        const btnCancelar = document.createElement("button");
-        btnCancelar.classList.add("box-button", "cancel-reservation");
-        btnCancelar.textContent = "Cancelar Reserva";
+            const btnCancelar = document.createElement("button");
+            btnCancelar.classList.add("box-button", "cancel-reservation");
+            btnCancelar.textContent = "Cancelar Reserva";
 
 
-        if (act.tipo === 'Mensual') {
+            if (act.tipo === 'Mensual') {
 
-            btnCancelar.addEventListener("click", () => {
-                const modal = document.getElementById("cancelarMensualModal");
-                modal.onclick = (e) =>
-                {
-                    if (e.target === modal) {
-                        modal.style.display = "none";
+                btnCancelar.addEventListener("click", () => {
+                    const modal = document.getElementById("cancelarMensualModal");
+                    modal.onclick = (e) =>
+                    {
+                        if (e.target === modal) {
+                            modal.style.display = "none";
+                        }
                     }
-                }
-                const lista = document.getElementById("listaClasesMensual");
-                lista.innerHTML = ""; // limpio antes de renderizar
-                
-                act.clases.forEach(claseActual => {
-                    const fecha = new Date(claseActual.idClase.fechaEspecifica)
-                                    .toLocaleDateString("es-AR");
-                    const btnClase = document.createElement("button");
-                    btnClase.textContent = `Cancelar clase del ${fecha}`;
-                    btnClase.classList.add("box-button");
-
-                    const esCancelado = claseActual.idClase.anotados.some(
-                        u => u.estado === "cancelado" && u.idUsuario === userData.session.id
-                    );
+                    const lista = document.getElementById("listaClasesMensual");
+                    lista.innerHTML = ""; // limpio antes de renderizar
                     
-                    const noExiste = claseActual.idClase.anotados.some(
-                        u => u.idUsuario === userData.session.id
-                    );
+                    act.clases.forEach(claseActual => {
+                        const fecha = new Date(claseActual.idClase.fechaEspecifica)
+                                        .toLocaleDateString("es-AR");
+                        const btnClase = document.createElement("button");
+                        btnClase.textContent = `Cancelar clase del ${fecha}`;
+                        btnClase.classList.add("box-button");
 
-                    //no creo que esto esté bien..              Facu: ¿Por? Lo que se podría hacer es que la clase btnClase tenga un addEventListener, y la clase y el tipo guardarlo en el dataset(?)
-                    
-                    if ((!esCancelado) && (noExiste)){
-                        btnClase.addEventListener("click", async () => {
-                            mostrarConfirmacionCancelacion(fecha, async () => {
-                                console.log(btnClase.dataset)
-                                const res = await fetch('/api/reservas/cancelar-reserva', {
-                                    method: 'POST',
-                                    headers: {
-                                        "Content-Type": "application/json"
-                                    },
-                                    body: JSON.stringify({
-                                        clase: claseActual,
-                                        tipo: act.tipo
-                                    })
+                        const esCancelado = claseActual.idClase.anotados.some(
+                            u => u.estado === "cancelado" && u.idUsuario === userData.session.id
+                        );
+                        
+                        const noExiste = claseActual.idClase.anotados.some(
+                            u => u.idUsuario === userData.session.id
+                        );
+
+                        //no creo que esto esté bien..              Facu: ¿Por? Lo que se podría hacer es que la clase btnClase tenga un addEventListener, y la clase y el tipo guardarlo en el dataset(?)
+                        
+                        if ((!esCancelado) && (noExiste)){
+                            btnClase.addEventListener("click", async () => {
+                                mostrarConfirmacionCancelacion(fecha, async () => {
+                                    console.log(btnClase.dataset)
+                                    const res = await fetch('/api/reservas/cancelar-reserva', {
+                                        method: 'POST',
+                                        headers: {
+                                            "Content-Type": "application/json"
+                                        },
+                                        body: JSON.stringify({
+                                            clase: claseActual,
+                                            tipo: act.tipo
+                                        })
+                                    });
+                                    const resData = await res.json();
+                                    if (resData.success) {
+                                        console.log(`Cancelaste la clase del ${fecha}`);
+                                        //await getMyReservations();
+                                        document.getElementById(
+                                            "cancelarMensualModal"
+                                        ).style.display = "none";
+                                        await getMyReservations();
+                                    }
+                                    else {
+                                        console.log(resData.message);
+                                    }
                                 });
-                                const resData = await res.json();
-                                if (resData.success) {
-                                    console.log(`Cancelaste la clase del ${fecha}`);
-                                    //await getMyReservations();
-                                    document.getElementById(
-                                        "cancelarMensualModal"
-                                    ).style.display = "none";
-                                    await getMyReservations();
-                                }
-                                else {
-                                    console.log(resData.message);
-                                }
                             });
-                        });
-                    }
-                    else{
-                        btnClase.classList.add("boton-ya-cancelada");
-                        btnClase.disabled = true;
-                        btnClase.style.backgroundColor = "#858585";
-                        btnClase.textContent = `Clase del ${fecha} (Cancelada)`;
-                    }
+                        }
+                        else{
+                            btnClase.classList.add("boton-ya-cancelada");
+                            btnClase.disabled = true;
+                            btnClase.style.backgroundColor = "#858585";
+                            btnClase.textContent = `Clase del ${fecha} (Cancelada)`;
+                        }
 
-                    lista.appendChild(btnClase);
-                });
-
-                modal.style.display = "flex";
-            });
-
-            // Cerrar modal
-            document.querySelector("#cancelarMensualModal .close-cancellations")
-                    .addEventListener("click", () => {
-            document.getElementById("cancelarMensualModal").style.display = "none";
-            });
-        }
-        else{
-            btnCancelar.addEventListener("click", async () => {
-                mostrarConfirmacionCancelacion(act.fecha, async () => {
-                    const res = await fetch('/api/reservas/cancelar-reserva', {
-                        method: 'POST',
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({
-                            clase: clasesACancelar,
-                            tipo: act.tipo
-                        })
+                        lista.appendChild(btnClase);
                     });
-                    const resData = await res.json();
 
-                    if (resData.success) {
-                        console.log(`Cancelaste la reserva de ${act.actividad} - ${act.tipo}`);
-                        await getMyReservations();
-                    }
-                    else {
-                        console.log(resData.message);
-                    }
+                    modal.style.display = "flex";
                 });
-            });
+
+                // Cerrar modal
+                document.querySelector("#cancelarMensualModal .close-cancellations")
+                        .addEventListener("click", () => {
+                document.getElementById("cancelarMensualModal").style.display = "none";
+                });
+            }
+            else{
+                btnCancelar.addEventListener("click", async () => {
+                    mostrarConfirmacionCancelacion(act.fecha, async () => {
+                        const res = await fetch('/api/reservas/cancelar-reserva', {
+                            method: 'POST',
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({
+                                clase: clasesACancelar,
+                                tipo: act.tipo
+                            })
+                        });
+                        const resData = await res.json();
+
+                        if (resData.success) {
+                            console.log(`Cancelaste la reserva de ${act.actividad} - ${act.tipo}`);
+                            await getMyReservations();
+                        }
+                        else {
+                            console.log(resData.message);
+                        }
+                    });
+                });
+            }
+            buttonsContainer.appendChild(btnCancelar);
         }
-        buttonsContainer.appendChild(btnCancelar);
 
         if (act.señada) {            
             const btnPagar = document.createElement("button");
             btnPagar.classList.add("box-button", "pay-rest");
             btnPagar.textContent = "Pagar resto";
-            btnPagar.addEventListener("click", () => {
-                //ACÁ HAY QUE AGREGAR EL FETCH QUE PERMITE PAGAR EL RESTO!!!!!
+            btnPagar.addEventListener("click", async () => {
+                // ACÁ HAY QUE AGREGAR EL FETCH QUE PERMITE PAGAR EL RESTO!!!!!
+                console.log("Esto es lo que tiene la poronga de act:")
+                console.log(act);
 
+                const resPref = await fetch('/api/pago/crear-preferencia', {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ 
+                        nombre: act.nombre,
+                        tipoClase: "resto", 
+                        precio: act.precio,
+                        clases: [act.claseEspecifica],
+                        idReservaSeñada: act.idReserva,
+                    })
+                });
 
+                const resPrefData = await resPref.json();
+
+                window.open(resPrefData.init_point, "_blank");
 
                 console.log(`Pagaste el resto de la clase única de ${act.actividad}`);
             });
