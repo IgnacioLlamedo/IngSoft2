@@ -53,7 +53,7 @@ function aplicarFiltros() {
   // rango incorrecto
   if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
     const container = document.querySelector(".payment-history-container");
-    container.innerHTML = "<div class='pay-detail'>El rango de fechas no es correcto.</div>";
+    container.innerHTML = "<div class='pay-detail' style='color:white'>El rango de fechas no es correcto.</div>";
     return;
   }
 

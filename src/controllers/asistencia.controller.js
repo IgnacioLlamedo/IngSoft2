@@ -83,7 +83,7 @@ export async function obtenerQR(req,res){
         const fechaClase = new Date(clase.fechaEspecifica);
 
         // Una hora antes de la clase
-        const inicioVentana = new Date(fechaClase);
+        /* const inicioVentana = new Date(fechaClase);
         inicioVentana.setHours(inicioVentana.getHours() - 1);
 
         const estaEnHorario =
@@ -96,7 +96,7 @@ export async function obtenerQR(req,res){
                 message: "La asistencia puede realizarse hasta 1 hora previo a la clase.",
                 estaEnHorario
             })
-        }
+        } */
 
         return res.json({
             success: true,
@@ -251,7 +251,7 @@ export async function tieneAnotados(req, res){
         const fechaClase = new Date(claseEspecifica.fechaEspecifica);
 
         // Una hora antes de la clase
-        const inicioVentana = new Date(fechaClase);
+        /* const inicioVentana = new Date(fechaClase);
         inicioVentana.setHours(inicioVentana.getHours() - 1);
 
         const estaEnHorario =
@@ -264,7 +264,7 @@ export async function tieneAnotados(req, res){
                 message: "La asistencia puede realizarse hasta 1 hora previo a la clase.",
                 estaEnHorario
             })
-        }
+        } */
 
         return res.json({
             success: true

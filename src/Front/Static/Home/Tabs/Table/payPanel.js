@@ -227,7 +227,8 @@ async function pagar(tipoClase, precio, clasesPago, boton) {
         //consulta si alguna de las clases que se quieren reservar está llena.
         let hayLlena = false;
         let clasesLlenas = [];
-        for(const act of resData.datos){
+        for(const act of resData.datos){ 
+            console.log(act);
             if (act.llena){
                 clasesLlenas.push(act.clase);
                 hayLlena = true;
@@ -235,44 +236,38 @@ async function pagar(tipoClase, precio, clasesPago, boton) {
         }
 
         if (hayLlena) {
-            let mensajeLlena;
-            //Si hay más de una clase llena, modifico el mensaje para
-            if (clasesLlenas.length > 1){
-                for(const act of clasesLlenas){
-                    
-                }
-            }
-            else{
-
-            }
+            //! ME GUSTARÍA SACAR ESTE ALERT
             const confirmar = confirm(
-                "La clase está llena. ¿Desea ingresar en lista de espera?"
+                `La siguiente clase está llena:\n
+                ¿Desea ingresar en la lista de espera?`
             );
 
             if (!confirmar) {
                 boton.disabled = false;
                 return;
             }
-            else {
-                //fetch a guardar en lista de espera
-                const resEspera = await fetch('/api/clases/ingresarAEspera', {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    //sigue haciendo falta mandar el tipo para la selección del reemplazo en lista de espera.
-                    body: JSON.stringify({ 
-                        clases: resData.datos, //resData.datos (contiene clasesEspecificas y si está llena o no)
-                        tipo: tipoClase
-                        //Acá puedo mandar las clases que recibo al consultar-pago (resData) así
-                        //en el ingresarAEspera decido que hacer con todas las clases en las que esté llena la lista de anotados.
-                    })
-                });
 
-                const resEsperaData = await resEspera.json();
+            const resEspera = await fetch('/api/clases/ingresarAEspera', {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    clases: resData.datos,
+                    tipo: tipoClase
+                })
+            });
 
-                document.getElementById("mensajePago").innerText = resEsperaData.message;
-                return;
-                boton.disabled = false;
+            const resEsperaData = await resEspera.json();
+
+            console.log("resEsperaData: ");
+            console.log(resEsperaData);
+
+            const mensajePago = document.getElementById("mensajePago");
+            if (resEsperaData.success){
+                mensajePago.classList.add("mid-success-msg");
             }
+            mensajePago.innerText = resEsperaData.message;
+            boton.disabled = false;
+            return;
         }
 
         document.getElementById("mensajePago").innerText = "";
