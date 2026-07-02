@@ -1,36 +1,3 @@
-/*
-const pagosDePrueba = [
-  {
-    _id: "40a36163-e530-496d-9fbc-9b821e745755",
-    monto: 251.75,
-    idUsuario: "878e3bdd-b1ab-4df4-8677-98d210df4a42",
-    clases: [
-      {
-        idClase: "3",
-        fecha: "2026-06-29T13:00:00.000Z"
-      }
-    ],
-    fechaPago: "2026-06-29T00:25:41.000Z",
-    estado: "APROBADO",
-    pendiente: false
-  },
-  {
-    _id: "f0f33290-cc14-4215-bb08-adb07601d248",
-    monto: 251.75,
-    idUsuario: "878e3bdd-b1ab-4df4-8677-98d210df4a42",
-    clases: [
-      {
-        idClase: "3",
-        fecha: "2026-06-29T13:00:00.000Z"
-      }
-    ],
-    fechaPago: "2026-05-29T00:25:44.000Z",
-    estado: "APROBADO",
-    pendiente: false
-  }
-];
-*/
-
 let currentPayments = [];
 
 function mostrarPagos(lista) {
@@ -41,6 +8,7 @@ function mostrarPagos(lista) {
     const mensaje = document.createElement("div");
     mensaje.classList.add("pay-detail");
     mensaje.textContent = "No hay pagos";
+    mensaje.style.color = "white";
     container.appendChild(mensaje);
     return;
   }
@@ -109,18 +77,6 @@ function aplicarFiltros() {
   mostrarPagos(filtrados);
 }
 
-/*
-async function cargarPagos() {
-  try {
-    currentPayments = pagosDePrueba;
-    mostrarPagos(currentPayments);
-  } catch (err) {
-    console.error("Error cargando pagos:", err);
-    const container = document.querySelector(".payment-history-container");
-    container.innerHTML = "<div class='pay-detail'>Error al cargar pagos.</div>";
-  }
-}
-*/
 
 async function cargarPagos() {
   try {

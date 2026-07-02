@@ -8,6 +8,7 @@ import { reservasRouter } from "./reservas.router.js"
 import { asistenciaRouter } from "./asistencia.router.js"
 import { cupoRouter } from "./cupo.router.js";
 import { webhookRouter } from "./webhook.router.js";
+import { actividadRouter } from "./actividad.router.js";
 
 
 export const apiRouter = Router()
@@ -16,6 +17,7 @@ apiRouter.use('/webhook', webhookRouter);
 apiRouter.use(json());
 
 
+apiRouter.use("/actividad", actividadRouter);
 
 apiRouter.use('/clases', clasesRouter)
 apiRouter.use('/pago', pagoRouter);
