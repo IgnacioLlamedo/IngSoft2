@@ -38,7 +38,7 @@ const actividadesDePrueba = [
   { _id: "7d3a3bdd-de04-41f1-9f58-1b61e4e68abb", nombre: "Hola", precioMensual: 2 }
 ];
 
-/*
+
 async function cargarActividades() {
   const select = document.getElementById("showActivity");
   select.innerHTML = "";
@@ -73,7 +73,6 @@ async function cargarActividades() {
     select.appendChild(optionError);
   }
 }
-*/
 
 async function cargarAsistencias() {
   try {
@@ -132,56 +131,9 @@ function mostrarAsistencias(lista) {
 }
 
 
-/* harcodeado
-function cargarActividades() {
-  const select = document.getElementById("showActivity");
-  select.innerHTML = "";
-
-  const optionTodas = document.createElement("option");
-  optionTodas.value = "todas";
-  optionTodas.textContent = "Todas";
-  select.appendChild(optionTodas);
-
-  
-  actividadesDisponibles.forEach(act => {
-    const option = document.createElement("option");
-    option.value = act.nombre.toLowerCase();
-    option.textContent = act.nombre;
-    select.appendChild(option);
-  });
-
-
-  select.value = "todas";
-}
-*/
-
-
-// Filtrar por actividad
-function aplicarFiltroActividad() {
-  const actividadSeleccionada = document.getElementById("showActivity").value.toLowerCase();
-  let filtrados = [...currentAssistances];
-
-  if (actividadSeleccionada !== "todas") {
-    filtrados = filtrados.filter(a => a.actividad.toLowerCase() === actividadSeleccionada);
-  }
-
-  mostrarAsistencias(filtrados);
-}
-
-/* Inicializar
-document.addEventListener("DOMContentLoaded", () => {
-  currentAssistances = asistenciasDePrueba; // usar datos de prueba
-  actividadesDisponibles = actividadesDePrueba; // usar actividades de prueba
-  cargarActividades();
-  mostrarAsistencias(currentAssistances);
-
-  document.getElementById("filterButton").addEventListener("click", aplicarFiltroActividad);
-});
-*/
-
-
 // Inicializar
 document.addEventListener("DOMContentLoaded", () => {
-  cargarAsistencias(); // ahora carga desde el backend
+  cargarAsistencias(); 
+  cargarActividades();
   document.getElementById("filterButton").addEventListener("click", aplicarFiltroActividad);
 });

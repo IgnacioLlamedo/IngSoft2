@@ -1,7 +1,7 @@
 import express from "express";
-import { actividadDao } from "../daos/actividad.dao.js";
+import { actividadDao } from "../../daos/actividad.dao.js";
 
-const actividadRouter = express.Router();
+export const actividadRouter = express.Router();
 const dao = new actividadDao();
 
 // GET /api/actividad/get-all
@@ -14,4 +14,5 @@ actividadRouter.get("/get-all", async (req, res) => {
   }
 });
 
-export default actividadRouter;
+//export default actividadRouter;
+
