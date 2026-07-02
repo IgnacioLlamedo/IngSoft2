@@ -1,4 +1,5 @@
-import {claseEspecificaDao, asistenciaDao, usuarioDao, reservaDao} from '../daos/index.js'
+//import {claseEspecificaDao, asistenciaDao, usuarioDao, reservaDao} from '../daos/index.js'
+import { claseEspecificaDao, asistenciaDao, usuarioDao, reservaDao, claseGeneralDao, actividadDao } from '../daos/index.js'
 
 /**
  * función que utilizará el cliente para registrar asistencia
@@ -275,5 +276,39 @@ export async function tieneAnotados(req, res){
             success: false,
             message: error
         })
+    }
+}
+
+export async function getUserAssistances(req, res) {
+    try {
+        const sessionUser = req.session && req.session.user;
+        if (!sessionUser) {
+            return res.status(403).json({ success: false, message: "Acceso denegado" });
+        }
+
+        // Traigo todas las asistencias del usuario
+        const asistencias = await asistenciaDao.readMany({ idUsuario: sessionUser.id });
+
+        const asistenciasConInfo = [];
+        for (const a of asistencias) {
+            const claseEspecifica = await claseEspecificaDao.readOne({ _id: a.idClaseEspecifica });
+            if (claseEspecifica) {
+                const claseGeneral = await claseGeneralDao.readOne(claseEspecifica.idClaseGeneral);
+                const actividad = claseGeneral ? await actividadDao.readOne({ _id: claseGeneral.idActividad }) : null;
+
+                asistenciasConInfo.push({
+                    ...a,
+                    actividad: actividad ? actividad.nombre : "Actividad desconocida",
+                    dia: claseGeneral ? claseGeneral.día : "Día desconocido",
+                    hora: claseGeneral ? claseGeneral.hora : "Hora desconocida",
+                    fecha: claseEspecifica.fechaEspecifica
+                });
+            }
+        }
+
+        return res.json(asistenciasConInfo);
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ success: false, message: "Error al obtener asistencias" });
     }
 }

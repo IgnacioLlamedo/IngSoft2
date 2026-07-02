@@ -854,48 +854,6 @@ export async function enviarRecordatorioPago(req, res){
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //Clases
 export async function getAllClasses(req, res){
     try {

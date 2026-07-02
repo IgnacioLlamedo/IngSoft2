@@ -221,6 +221,29 @@ function createSlotData(slot) {
     const slotData = document.createElement("div");
     slotData.classList.add("slot-data");
 
+        slotData.innerHTML =`
+            <p>Sala: ${slot.idSala.nombre}</p>
+            <p>Actividad: ${slot.idActividad.nombre}</p>
+            <p>Día: ${slot.dia}</p>
+            <p>Hora: ${slot.hora}</p>
+            <p>Cupo máximo: ${slot.limiteClase}</p>
+            <p>Profesor: ${slot.idProfesor.nombre}</p>
+            <p>Precio de actividad: ${slot.idActividad.precioMensual}</p>
+        `;
+
+        const slotError = document.createElement("div");
+        slotError.classList.add("slot-error");
+        slotError.classList.add("none");
+
+        const errorHr = document.createElement("hr");
+        const errorMsg = document.createElement("p");
+        errorMsg.classList.add("errorMsg");
+
+        slotError.appendChild(errorHr);
+        slotError.appendChild(errorMsg);
+
+        const buttonsDiv = document.createElement("div");
+        buttonsDiv.classList.add("buttons-container");
     slotData.innerHTML = slotHtml(slot);
 
     return slotData;

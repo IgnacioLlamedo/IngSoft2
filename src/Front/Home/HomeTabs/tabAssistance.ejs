@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/Common/commonPageStyle.css">
+    <link rel="stylesheet" href="/Home/Tabs/AssistanceHistory/assistanceHistoryStyle.css">
+    <title>CEF - Historial de Asistencias</title>
+</head>
+<body>
+    <header>
+        <%- include('../../Navbar/navbarSelector.ejs') %>
+    </header>
+
+
+    <main class="main-container">
+        <h1>Historial de Asistencias</h1>
+
+        
+            <div class="filters-container">
+                <div class="show-activity-container">
+                    <label for="showActivity">Actividad: </label>
+                    <select name="showActivity" id="showActivity">
+                        <option value="yoga">Yoga</option>
+                        <option value="spinning">Spinning</option>
+                        <option value="Funcional">Funcional</option>
+                    </select>
+                </div>
+                <button id="filterButton">Filtrar</button>
+            </div>
+
+            <div class="assistance-history-container">
+                <div class="assistance-container">
+                    <div class="assistance-date">18/05/2026</div>
+                    <div class="assistance-detail">Detalle: (tipo de actividad) (dia y hora de la calse)</div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+    </main>
+
+    <%- include('../../Navbar/footer.html') %>
+
+    <script src="/Home/Tabs/assistanceHistory/assistanceHistory.js"></script>
+</body>
+</html>

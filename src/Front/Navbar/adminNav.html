@@ -7,6 +7,7 @@
         <img class="logo-img" src="/Images/HomeImages/Logo.png" alt="Logo">
     </a>
     <ul class="nav-links">
+        <li><a href="#" class="classesLink" id="classesLink">Listar Clases</a></li>
         <li><a href="/stats/billing-period">Estadísticas</a></li>
         <li><a href="/management">Gestión</a></li>
         <li>
@@ -38,6 +39,7 @@
         <div class="menu-toggel">
             <div class="menu-toggel-wrapper">
                 <ul>
+                    <li><a href="#" class="classesLink">Listar Clases</a></li>
                     <li><a href="/stats/billing-period">Estadísticas</a></li>
                     <li><a href="/management">Gestión</a></li>
                     <li><a href="/account/"><p>Cuenta</p></a></li>
@@ -50,3 +52,11 @@
 </nav>
 
 <script src="/Navbar/navLogic.js"></script>
+
+<div class="modal" id="tablaModal">
+  <div class="modal-content">
+    <span class="close" id="closeModal">&times;</span>
+    <iframe src="/home/table" class="tabla-iframe"></iframe>
+  </div>
+</div>
+<script src="/Home/classesModal.js"></script>

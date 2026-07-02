@@ -91,14 +91,36 @@ document.getElementById("prevWeek").addEventListener("click", () => {
   if (posibleAnterior >= mondayActual) {
     currentMonday = posibleAnterior;
     refrescarSemana();
+  } else{
+    alert("No puedes retroceder más allá de la semana actual.");
   }
 });
 
-// Botón adelante: siempre avanza
+/** Botón adelante: siempre avanza
 document.getElementById("nextWeek").addEventListener("click", () => {
   currentMonday.setDate(currentMonday.getDate() + 7);
   refrescarSemana();
 });
+ */
+
+// Botón adelante: solo si no se pasa del mes actual
+document.getElementById("nextWeek").addEventListener("click", () => {
+    const posibleSiguiente = new Date(currentMonday);
+    posibleSiguiente.setDate(posibleSiguiente.getDate() + 7);
+
+    // Último día del mes actual
+    const finDeMes = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+
+    // Si el lunes siguiente está dentro del mismo mes, avanzamos
+    if (posibleSiguiente <= finDeMes) {
+        currentMonday = posibleSiguiente;
+        refrescarSemana();
+    } else {
+        console.log("No se puede avanzar más allá del mes actual");
+        alert("No se puede avanzar al mes siguiente.");
+    }
+});
+
 
 // Manejo de clic en clases
 document.querySelectorAll(".slotDeClase").forEach(div => {
