@@ -6,23 +6,20 @@ import config from '../config.js';
 export async function notificarUsuario(idCandidato, clasesLiberadas, idCupo){
     try{
 
+        console.log(" ")
+        console.log(" ")
         console.log("Estos son los datos que llegaron a notificarUsuario: ");
         console.log(clasesLiberadas);
         console.log("Y el id de cupo es: ");
         console.log(idCupo);
+        console.log(" ")
+        console.log(" ")
 
         const usuario = await usuarioDao.readOne({ _id: idCandidato });
 
         if(!usuario){
             throw new Error("Usuario no encontrado.");
         }
-
-        console.log(" ")
-        console.log(" ")
-        console.log("Los datos del usuario a notificar son: ")
-        console.log(usuario);
-        console.log(" ")
-        console.log(" ")
 
         const fechas = clasesLiberadas
             .map(clase =>
@@ -44,18 +41,34 @@ export async function notificarUsuario(idCandidato, clasesLiberadas, idCupo){
         const dominio = config.link;
         const url = `https://${dominio}/cupo/?idCupo=${idCupo}`;
 
-        const mensaje =
-            `Hola ${usuario.nombre}.
+        console.log(" ")
+        console.log(" ")
+        console.log("Estos son el dominio y el id del cupo a mandar al usuario a notificar por mail: ");
+        console.log(dominio);
+        console.log(idCupo);
+        console.log(" ")
+        console.log(" ")
 
-            Se liberó un lugar en una clase a la que estabas en lista de espera.
+        const mensaje = `
+<p>Hola ${usuario.nombre}.</p>
 
-            Horario: ${claseGeneral.dia}, a las ${claseGeneral.hora}hs
-            
-            Actividad: ${actividad.nombre}.
+<p>Se liberó un lugar en una clase a la que estabas en lista de espera.</p>
 
-            Fechas: ${fechas}.
+<p>
+<b>Horario:</b> ${claseGeneral.dia}, a las ${claseGeneral.hora} hs.<br>
+<b>Actividad:</b> ${actividad.nombre}.
+</p>
 
-            Para aceptar o rechazar ingrese a: ${url}`;
+<p>
+<b>Fechas:</b><br>
+${fechas.replace(/\n/g, "<br>")}
+</p>
+
+<p>
+Para aceptar o rechazar ingresá a:<br>
+${url}
+</p>
+`;
 
         //nosé si funciona así, corregime por Nacho
         await mailer.send(usuario.mail, "Lugar disponible", mensaje);
