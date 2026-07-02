@@ -113,6 +113,9 @@ export async function crearPreferencia(req, res) {
         const ahora = new Date();
         const vence = new Date(ahora.getTime() + 60 * 1000); //La preferencia vence despues de 1 minuto...
 
+        console.log(config.link);
+        console.log(`${config.link}/api/webhook/webhook`);
+
         const preference = new Preference(client);
 
         const response = await preference.create({
@@ -203,110 +206,73 @@ export async function obtenerPago(req, res) {
 
 //Básicamente hace toda la funcionalidad que hacia paymentApproved.js
 export async function procesarWebhook(body){
+    try {
 
-    /* console.log("Desde procesarWebhook!!!!!");
-    console.log("                                           ")
-    console.log("                                           ") */
+        /* console.log("1"); */
 
+        if(body.type !== "payment"){
+            return;
+        }
 
-    if(body.type !== "payment"){
-        /* console.log("El tipo del body NO es PAYMENT, saliendo...") */
-        return;
+        /* console.log("2"); */
+
+        const payment = new Payment(client);
+        const mpPayment = await payment.get({
+            id: body.data.id
+        });
+
+        /* console.log("3"); */
+
+        if(mpPayment.status !== "approved"){
+            console.log("No aprobado");
+            return;
+        }
+
+       /*  console.log("4"); */
+
+        const external = JSON.parse(mpPayment.external_reference);
+
+        /* console.log("5"); */
+
+        const pago = await pagoDao.readOne({
+            _id: external.idPagoPendiente
+        });
+
+        /* console.log("6"); */
+
+        const confirmadoElPago = await confirmarPagoInterno(mpPayment);
+
+        /* console.log("7"); */
+
+        let reservaCreada;
+        //crear reserva
+        if(external.tipoClase==="mensual"){
+            reservaCreada = await postReservaMensual(confirmadoElPago);
+            /* console.log("La reserva creada es de tipo MENSUAL: ");
+            console.log(reservaCreada); */
+        }
+        else {
+            reservaCreada = await postReservaUnica(confirmadoElPago, external.tipoClase==="seña");
+            /* console.log("La reserva creada es de tipo UNICA: ");
+            console.log(reservaCreada); */
+        }
+        /* console.log("                                           ")
+        console.log("                                           ") 
+        console.log("Parte número 4: ") */
+        console.log(`Esta es la reserva creada según su tipo (${external.tipoClase}): `)
+        if (reservaCreada.success)
+            console.log(reservaCreada.reserva);
+        else
+            console.log(reservaCreada.message)
+
+        /* console.log("             ");
+        console.log("             ");
+        console.log("Finalizado desde webhooks!!!!!!!!!!!!!"); */
     }
-
-    /* console.log("El tipo del body es 'PAYMENT' ---- Ahora sigue la secuencia de la función.")
-
-    console.log("Este es el body dentro de procesarWebhook: ")
-    console.log(body);
-    console.log("                                           ")
-    console.log("                                           ") */
-
-    //Busco el pago en la api de MP
-    const payment = new Payment(client);
-    const mpPayment = await payment.get({
-        id: body.data.id
-    })
-
-    /* console.log("Parte número 1: ")
-    console.log("Este es el pago de mercado pago: ")
-    console.log(mpPayment);
-    console.log("                                           ")
-    console.log("                                           ") */
-
-    //Si el pago no fue aprobado, no tiene sentido continuar ejecución
-    if(mpPayment.status !== "approved"){
-        console.log("El estado del pago (recibido desde MercadoPago) NO es aprobado... retornando...");
-        return;
+    catch(err){
+        console.error("ERROR EN procesarWebhook");
+        console.error(err);
     }
-
-    //Si el pago fue aprovado, controlo que no este aprobado en mi base de datos.-
-    const external = JSON.parse(mpPayment.external_reference);
-
-    /* console.log("Estos son los datos dentro de la referencia externa:  ");
-    console.log(external);
-    console.log("                                           ");
-    console.log("                                           "); */
-
-    const pago = await pagoDao.readOne({
-        _id: external.idPagoPendiente
-    });
-
-    /* console.log("Parte número 2: ")
-    console.log("Este es el pago registrado en la base de datos!!!");
-    console.log("En teoría el estado del pago debería ser 'PENDIENTE' hasta que se ejecute la parte 3 - unas lineas más adelante...")
-    console.log(pago);
-    console.log("                                           ");
-    console.log("                                           "); */
-
-    if (!pago) {
-        console.log("NO EXISTE PAGO... En teoría no debería poder ocurrir...")
-        return;
-    }
-
-    //Si el pago en la base de datos ya está aprobado, no sigo procesando.
-    if(pago.estado==="APROBADO"){
-        return;
-    }
-
-    /**
-     * Estos son los pasos que se realizaban en paymentApproved.js
-     */
-
-    //confirmar el pago
-    /* console.log("Parte número 3: ")
-    console.log("Buscando y confirmando el pago en la DB, si el mismo ya estaba aprobado, no hace nada: ") */
-    //en esta función se cambia el estado del pago en DB de pendiente a aprobado
-    //y también se cambia la fechaPago a new Date(mpPayment.date_approved)
-    const confirmadoElPago = await confirmarPagoInterno(mpPayment);
-    console.log("El estado del pago es: ");
-    console.log(confirmadoElPago);
-
-
-    let reservaCreada;
-    //crear reserva
-    if(external.tipoClase==="mensual"){
-        reservaCreada = await postReservaMensual(confirmadoElPago);
-        /* console.log("La reserva creada es de tipo MENSUAL: ");
-        console.log(reservaCreada); */
-    }
-    else {
-        reservaCreada = await postReservaUnica(confirmadoElPago, external.tipoClase==="seña");
-        /* console.log("La reserva creada es de tipo UNICA: ");
-        console.log(reservaCreada); */
-    }
-    /* console.log("                                           ")
-    console.log("                                           ") 
-    console.log("Parte número 4: ") */
-    console.log(`Esta es la reserva creada según su tipo (${external.tipoClase}): `)
-    if (reservaCreada.success)
-        console.log(reservaCreada.reserva);
-    else
-        console.log(reservaCreada.message)
-
-    /* console.log("             ");
-    console.log("             ");
-    console.log("Finalizado desde webhooks!!!!!!!!!!!!!"); */
-    
 }
 
 export async function procesarWebhookPagoRestante(req, res){
