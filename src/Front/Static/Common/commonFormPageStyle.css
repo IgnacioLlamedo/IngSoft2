@@ -314,3 +314,13 @@ input[type=number] {
 .inputError:focus, .passwordRequirementError:focus, .confirmPasswordError:focus {
     color: black;
 }
+
+
+
+
+.messages-container {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+}

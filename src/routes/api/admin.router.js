@@ -27,7 +27,7 @@ adminRouter.get("/sede", getFacilities)
 
 adminRouter.put("/diasaviso", actualizarDiasAviso)
 adminRouter.get("/diasaviso", recuperarDiasAviso)
-adminRouter.post("/enviar", enviarRecordatorioPago)
+adminRouter.get("/enviar", enviarRecordatorioPago)
 
 adminRouter.get("/getallclasses", getAllClasses)
 adminRouter.post("/clase", createClass)
