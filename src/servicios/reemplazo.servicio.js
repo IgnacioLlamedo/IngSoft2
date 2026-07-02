@@ -39,7 +39,7 @@ export async function notificarUsuario(idCandidato, clasesLiberadas, idCupo){
 
         // Después cambiarlo por tu dominio real
         const dominio = config.link;
-        const url = `https://${dominio}/cupo/?idCupo=${idCupo}`;
+        const url = `${dominio}/cupo/?idCupo=${idCupo}`;
 
         console.log(" ")
         console.log(" ")

@@ -87,10 +87,8 @@ td {
   display: flex;
   justify-content: center;
   align-items: center;
-
   margin: 4px;
-  padding: 3px;
-
+  padding: 0px 3px;
   min-height: 24px;
 }
 

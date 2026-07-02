@@ -5,10 +5,10 @@ export class claseGeneralDao {
         return await ClaseGeneral.create(datos)
     }
     async readOne(query){
-        const clase = await ClaseGeneral.findOne({ _id: query }).lean()
+        const clase = await ClaseGeneral.findOne(query).lean()
         if(!clase){
             //provisional, desarrollar luego
-            console.log("error")
+            console.log("ejecutando claseGeneralDao.readOne(query)")
         }
         return clase
     }
@@ -16,7 +16,7 @@ export class claseGeneralDao {
         return await ClaseGeneral.find(query).lean()
     }
     async updateOne(query, datos){
-        const updated = await ClaseGeneral.findOneAndUpdate({ _id: query }, datos, { returnDocument: 'after' }).lean()
+        const updated = await ClaseGeneral.findOneAndUpdate(query, datos, { returnDocument: 'after' }).lean()
         if(!updated){
             //provisional, desarrollar luego
             console.log("error")
@@ -24,7 +24,7 @@ export class claseGeneralDao {
         return updated
     }
     async deleteOne(query){
-        const deleted = await ClaseGeneral.findOneAndDelete({ _id: query }).lean()
+        const deleted = await ClaseGeneral.findOneAndDelete(query).lean()
         if(!deleted){
             //provisional, desarrollar luego
             console.log("error")
