@@ -586,7 +586,7 @@ function renderActividades() {
             buttonsContainer.appendChild(btnCancelar);
         }
 
-        if (act.señada) {            
+        if (act.señada && !esTotalmenteCancelada) {            
             const btnPagar = document.createElement("button");
             btnPagar.classList.add("box-button", "pay-rest");
             btnPagar.textContent = "Pagar resto";
@@ -615,7 +615,7 @@ function renderActividades() {
             });
             buttonsContainer.appendChild(btnPagar);
         } 
-        else if (act.tipo === "Mensual") {
+        else if (act.tipo === "Mensual" && !esTotalmenteCancelada) {
             //?
             /* const btnCancelarClase = document.createElement("button");
             btnCancelarClase.classList.add("box-button", "cancel-next-class");
