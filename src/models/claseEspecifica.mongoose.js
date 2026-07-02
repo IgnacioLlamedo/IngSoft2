@@ -23,6 +23,7 @@ const claseEspecificaSchema = new Schema({
     }],
     //Para lista de cancelados, simplemente recorremos las reservas de los usuarios.
     fechaEspecifica: { type: Date, required: true },
+    estado: { type: String, enum: ['habilitada', 'inhabilitada'], default: 'habilitada' },
 }, {
     strict: 'throw',
     versionKey: false

@@ -108,7 +108,6 @@ function renderStatsTable(generalClasses) {
                 : (gc.cancelaciones / gc.reservas * 100).toFixed(2);
             return `
                 <tr>
-                    <td>${escapeHtml(gc.id)}</td>
                     <td>${escapeHtml(gc.clase)}</td>
                     <td>${escapeHtml(gc.profesor)}</td>
                     <td>${escapeHtml(gc.reservas)}</td>

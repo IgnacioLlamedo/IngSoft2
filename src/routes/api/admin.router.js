@@ -1,5 +1,5 @@
 import express from "express";
-import { crearActividad, crearProfesor, crearSala, crearSede, modificarProfesor, modificarSala, modificarSede, eliminarActividad, eliminarProfesor, eliminarSala, eliminarSede, getActivities, getInstructors, getRooms, getFacilities, inhabilitarProfesor, getActivitiesStats, actualizarDiasAviso, recuperarDiasAviso, modificarActividad, getAllClasses, deleteClass, updateClass, createClass, enviarRecordatorioPago } from "../../controllers/admin.controller.js";
+import { crearActividad, crearProfesor, crearSala, crearSede, modificarProfesor, modificarSala, modificarSede, eliminarActividad, eliminarProfesor, eliminarSala, inhabilitarSala, habilitarSala, eliminarSede, getActivities, getInstructors, getRooms, getFacilities, inhabilitarProfesor, habilitarProfesor, getActivitiesStats, actualizarDiasAviso, recuperarDiasAviso, modificarActividad, getAllClasses, deleteClass, updateClass, createClass, enviarRecordatorioPago } from "../../controllers/admin.controller.js";
 
 export const adminRouter = express.Router();
 
@@ -14,11 +14,14 @@ adminRouter.put("/profesor", modificarProfesor)
 adminRouter.delete("/profesor", eliminarProfesor)
 adminRouter.get("/profesor", getInstructors)
 adminRouter.put("/profesor/inhabilitar", inhabilitarProfesor)
+adminRouter.put("/profesor/habilitar", habilitarProfesor)
 
 adminRouter.post("/sala", crearSala)
 adminRouter.put("/sala", modificarSala)
 adminRouter.delete("/sala", eliminarSala)
 adminRouter.get("/sala", getRooms)
+adminRouter.put("/sala/inhabilitar", inhabilitarSala)
+adminRouter.put("/sala/habilitar", habilitarSala)
 
 adminRouter.post("/sede", crearSede)
 adminRouter.put("/sede", modificarSede)

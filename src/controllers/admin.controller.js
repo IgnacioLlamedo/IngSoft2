@@ -28,7 +28,8 @@ export async function crearProfesor(req, res){
         const data = req.body;
         console.log("Crear profesor con datos: ", data);
 
-        const intructorAlreadyExists = await profesorDao.readOne({ dni: req.body.dni });
+        const query = { dni: req.body.dni, estado: { $ne: Status.DELETED } };
+        const intructorAlreadyExists = await profesorDao.readOne(query);
         if (intructorAlreadyExists) {
             return res.json({
                 success: false,
@@ -81,7 +82,8 @@ export async function modificarProfesor(req, res){
         }
 
         if (data.dni !== currentInstructor.dni) {
-            const instructorWithSameDni = await profesorDao.readOne({ dni: data.dni });
+            const query = { dni: data.dni, estado: { $ne: Status.DELETED } };
+            const instructorWithSameDni = await profesorDao.readOne(query);
             if (instructorWithSameDni) {
                 return res.json({
                     success: false,
@@ -106,7 +108,8 @@ export async function modificarProfesor(req, res){
     }
 }
 
-export async function inhabilitarProfesor(req, res){
+
+export async function inhabilitarProfesor(req, res) {
     try {
         const profesor = req.body;
         
@@ -121,57 +124,7 @@ export async function inhabilitarProfesor(req, res){
             });
         }
 
-        console.log("DEBUG: parte1");
-        // Debo chequear si hay clases activas con ese profesor
-        // De haberlas, corresponde suspenderla* y avisar vía email a los anotados
-        // *Creo que no fue solicitada la cancelación en sí, ni tampoco la devolución del dinero
-        //
-        // 1) Obtengo todas las clases generales con ese profesor
-        const generalClasses = await claseGeneralDao.readMany({ idProfesor: profesor._id });
-        
-        let cantClasesAfectadas = 0;
-        let cantEmailsEnviados = 0;
-
-        console.log("DEBUG: parte2");
-        if (generalClasses.length > 0) {
-            console.log("DEBUG: parte3");
-            // 2) Obtengo todas las clases específicas con ese profesor y fecha posterior a la actual            
-            const generalClassesIds = generalClasses.map((gc) => gc._id);
-            const specificClasses = await claseEspecificaDao.readMany({
-				$and: [
-					{ fechaEspecifica: { $gte: profesor.fechasEstado.desde } },
-					{ fechaEspecifica: { $lte: profesor.fechasEstado.hasta } },
-				],
-				idClaseGeneral: { $in: generalClassesIds },
-			});
-            cantClasesAfectadas = specificClasses.length;
-            
-            const activities = await actividadDao.readMany({});
-            generalClasses.forEach((gc) => {
-                gc.actividad = activities.find((a) => a._id === gc.idActividad).nombre;
-            })
-
-            // Y para cada clase específica...
-            for (const sc of specificClasses) {
-                console.log("parte4");
-                // 3) Obtengo los usuarios afectados
-                const anotados = sc.anotados.filter((a) => !a.estado || a.estado === "activo");
-                const actividad = generalClasses.find((gc) => gc._id === sc.idClaseGeneral).actividad;
-
-                for (const a of anotados) {
-                    console.log("parte5");
-                    // 4) Enviar emails
-                    // DEBUG
-                    await mailer.cancelledClass(a.mail, a.nombre, sc.fechaEspecifica, sc.actividad);
-                    cantEmailsEnviados++;
-                }
-            }
-        }
-
-        const clasesMsg = cantClasesAfectadas > 0 ? `. ${cantClasesAfectadas} clases fueron canceladas por este suceso` : '';
-        const emailsMsg = cantEmailsEnviados > 0 ? `. ${cantEmailsEnviados} emails fueron enviados` : '';
-        console.log("modificarProfesor: ", clasesMsg, emailsMsg);
-        const resultMsg = "Se actualizó el estado del profesor" + clasesMsg + emailsMsg + ".";
+        const resultMsg = await notificarClientesPorProfesor(profesor, "inhabilitadas");
         
         res.json({
             success: true,
@@ -179,13 +132,124 @@ export async function inhabilitarProfesor(req, res){
         });
     }
     catch(error) {
-        console.error("modificarProfesor ERROR: ", error);
+        console.error("inhabilitarProfesor ERROR: ", error);
         res.json({
             success: false,
-            message: "Error al modificar profesor. Inténtelo de nuevo más tarde."
+            message: "Error al inhabilitar profesor. Inténtelo de nuevo más tarde."
         });
     }
 }
+
+
+async function notificarClientesPorProfesor(profesor, motivo) {
+    console.log("DEBUG: parte1");
+    // Debo chequear si hay clases ACTIVAS con ese profesor
+    // De haberlas, corresponde avisar vía email a los anotados
+    //
+    // 1) Obtengo todas las clases generales con ese profesor
+    let clasesGenerales = await claseGeneralDao.readMany({ idProfesor: profesor._id });
+    console.log("hay " + clasesGenerales.length + " clases generales asociadas al profesor");
+
+    let cantClasesAfectadas = 0;
+    let cantEmailsEnviados = 0;
+
+    if (clasesGenerales.length > 0) {
+        console.log("DEBUG: parte2");
+        // 2) Si se llevan a cabo en salas inhabilitadas, no requiere avisar
+        const salasHabilitadas = await salaDao.readMany({ estado: "habilitada" });
+        const salasHabilitadasIds = salasHabilitadas.map((s) => s._id);
+        clasesGenerales = clasesGenerales.filter((gc) => salasHabilitadasIds.includes(gc.idSala));
+        console.log("entre ellas, " + clasesGenerales.length + " ocurren en salas habilitadas");
+
+        if (clasesGenerales.length > 0) {
+            console.log("DEBUG: parte3");
+            // 3) Obtengo todas las clases específicas de esas clases generales, siempre que:
+            // 3a) ...estén entre las fechas indicadas y...
+            // 3b) ...que las clases específicas se encuentren habilitadas
+            //
+            const clasesGeneralesIds = clasesGenerales.map((gc) => gc._id);
+            const clasesEspecificas = await claseEspecificaDao.readMany({
+                $and: [
+                    { fechaEspecifica: { $gte: profesor.fechasEstado.desde } },
+                    { fechaEspecifica: { $lte: profesor.fechasEstado.hasta } },
+                ],
+                idClaseGeneral: { $in: clasesGeneralesIds },
+                estado: "habilitada"
+            });
+            cantClasesAfectadas = clasesEspecificas.length;
+            console.log("esas clases poseen " + cantClasesAfectadas + " clases específicas habilitadas y designadas para esas fechas");
+
+            // 4) Obtengo el nombre de las actividades
+            console.log("DEBUG: parte4");
+            const actividades = await actividadDao.readMany({});
+            clasesGenerales.forEach((gc) => {
+                gc.actividad = actividades.find((a) => a._id === gc.idActividad).nombre;
+            });
+
+            // Y para cada clase específica:
+            for (const sc of clasesEspecificas) {
+                // 5) Obtengo los usuarios afectados
+                console.log("parte5");
+                const anotados = sc.anotados.filter((a) => !a.estado || a.estado === "activo");
+                const actividad = clasesGenerales.find((gc) => gc._id === sc.idClaseGeneral).actividad;
+
+                for (const a of anotados) {
+                    console.log("parte5");
+                    // 6) Enviar emails
+                    // DEBUG
+                    if (motivo === "rehabilitadas") {
+                        await mailer.restoredClass(a.mail, a.nombre, sc.fechaEspecifica, actividad);
+
+                    }
+                    else await mailer.cancelledClass(a.mail, a.nombre, sc.fechaEspecifica, actividad);
+                    cantEmailsEnviados++;
+                }
+            }
+        }
+    }
+
+    const clasesMsg = (cantClasesAfectadas > 0)
+        ? `. ${cantClasesAfectadas} clases fueron ${motivo} por este suceso`
+        : '';
+    const emailsMsg = (cantEmailsEnviados > 0)
+        ? `. ${cantEmailsEnviados} emails fueron enviados`
+        : '';
+    const resultMsg = "Se actualizó el estado del profesor" + clasesMsg + emailsMsg + ".";
+    return resultMsg;
+}
+
+
+export async function habilitarProfesor(req, res) {
+    try {
+        const profesor = req.body;
+        
+        // DEBUG
+        // const result = await profesorDao.readOne({ _id: profesor._id });
+        const result = await profesorDao.updateOne({ _id: profesor._id }, profesor);
+
+        if (!result) {
+            return res.json({
+                success: false,
+                message: "Error al habilitar el profesor. No se encontró el profesor en el sistema."
+            });
+        }
+
+        const resultMsg = await notificarClientesPorProfesor(profesor, "rehabilitadas");
+        
+        res.json({
+            success: true,
+            message: resultMsg
+        });
+    }
+    catch(error) {
+        console.error("habilitarProfesor ERROR: ", error);
+        res.json({
+            success: false,
+            message: "Error al habilitar profesor. Inténtelo de nuevo más tarde."
+        });
+    }
+}
+
 
 export async function eliminarProfesor(req, res){
     try {
@@ -272,8 +336,11 @@ export async function getInstructors(req, res){
 //sala
 export async function crearSala(req, res){
     try {
-        let data = req.body;
+        const data = req.body;
         data.nombre = nameConvention(data.nombre);
+        data.estado = "habilitada";
+        data.motivoEstado = "Creada vía sistema de gestión";
+        data.fechaEstado = JSON.stringify(Date.now());
 
         const roomAlreadyExists = await salaDao.readOne({nombre: req.body.nombre});
         if(roomAlreadyExists) {
@@ -283,7 +350,7 @@ export async function crearSala(req, res){
             })
         }
         
-        await salaDao.create(data)
+        await salaDao.create(data);
 
         res.json({
             success: true,
@@ -356,19 +423,26 @@ export async function modificarSala(req, res) {
     }
 }
 
-export async function eliminarSala(req, res){
+export async function eliminarSala(req, res) {
     try {
-        let data = req.body
+        const body = req.body;
 
-        const clases = await claseGeneralDao.readMany({idSala: data.id})
-        if(clases.length > 0){
+        const clases = await claseGeneralDao.readMany({ idSala: body.id });
+        if (clases.length > 0) {
             return res.json({
                 success: false,
                 message: "Error al eliminar sala. Hay clases que corresponden a esa sala, borre o edite primero las clases."
             });
         }
 
-        await salaDao.deleteOne({_id: data.id})
+        const query = { _id: body.id };
+        const datos = {
+            _id: body.id,
+            estado: "borrada",
+            motivoEstado: "Borrada vía sistema de gestión",
+            fechaEstado: Date.now(),
+        }
+        await salaDao.updateOne(query, datos);
 
         res.json({
             success: true,
@@ -408,15 +482,160 @@ export async function getRooms(req, res){
     }
 }
 
+export async function inhabilitarSala(req, res) {
+    try {
+        const sala = req.body;
+        const query = { _id: sala._id };
+        const datos = {
+            _id: sala._id,
+            estado: "inhabilitada",
+            motivoEstado: "Inhabilitada vía sistema de gestión",
+            fechaEstado: Date.now(),
+        }
+        const result = await salaDao.updateOne(query, datos);
+
+        if (!result) {
+            return res.json({
+                success: false,
+                message: "Error al inhabilitar la sala. No se encontró la sala en el sistema."
+            });
+        }
+
+        const resultMsg = await notificarClientesPorSala(sala, "inhabilitadas");
+
+        res.json({
+            success: true,
+            message: resultMsg
+        });
+    }
+    catch(error) {
+        console.error("inhabilitarSala ERROR: ", error);
+        res.json({
+            success: false,
+            message: "Error al inhabilitar sala. Inténtelo de nuevo más tarde."
+        });
+    }
+}
 
 
+async function notificarClientesPorSala(sala, motivo) {
+    console.log("DEBUG: parte1");
+    // Debo chequear si hay clases ACTIVAS en esa sala
+    // De haberlas, corresponde avisar vía email a los anotados
+    //
+    // 1) Obtengo todas las clases generales en esa sala
+    let clasesGenerales = await claseGeneralDao.readMany({ idSala: sala._id, estado: { $ne: "borrada" }});
+    console.log("hay " + clasesGenerales.length + " clases generales asociadas a la sala");
+
+    let cantClasesAfectadas = 0;
+    let cantEmailsEnviados = 0;
+
+    if (clasesGenerales.length > 0) {
+        console.log("DEBUG: parte2");
+        // 2) Obtengo los profesores de esas clases
+        const profesores = await profesorDao.readMany({ estado: { $ne: Status.DELETED } });
+        clasesGenerales.forEach((gc) => {
+            const profesor = profesores.find((p) => p._id.equals(gc.idProfesor));
+            if (profesor) gc.profesor = profesor;
+        });
+
+        console.log("DEBUG: parte3");
+        // 3) Obtengo todas las clases específicas de esas clases generales, siempre que:
+        // 3a) las clases específicas se encuentren habilitadas
+        const clasesGeneralesIds = clasesGenerales.map((gc) => gc._id);
+        const clasesEspecificas = await claseEspecificaDao.readMany({
+            idClaseGeneral: { $in: clasesGeneralesIds },
+            estado: "habilitada"
+        });
+
+        // 4) Obtengo el nombre de las actividades
+        console.log("DEBUG: parte4");
+        const actividades = await actividadDao.readMany({});
+        clasesGenerales.forEach((gc) => {
+            gc.actividad = actividades.find((a) => a._id === gc.idActividad).nombre;
+        });
+
+        // Y para cada clase específica:
+        for (const sc of clasesEspecificas) {
+            // 5) Controlo que el profesor no esté inactivo para esa fecha
+            console.log("parte5");
+            const claseGeneral = clasesGenerales.find((gc) => gc._id.equals(sc.idClaseGeneral));
+            const profesor = profesores.find((p) => p._id.equals(sc.idProfesor));
+            if (!claseGeneral || !profesor) continue;
+            
+            const fechas = profesor.fechasEstado;
+            if (
+                profesor.estado === Status.REGISTERED ||
+                (profesor.estado === Status.INACTIVE &&
+                (fechas.desde > sc.fechaEspecifica || fechas.hasta < sc.fechaEspecifica))
+            ) {
+                cantClasesAfectadas++;
+                
+                console.log("parte6");
+                // 6) Obtengo los usuarios afectados
+                const anotados = sc.anotados.filter((a) => !a.estado || a.estado === "activo");
+                const actividad = clasesGenerales.find((gc) => gc._id === sc.idClaseGeneral).actividad;
+
+                for (const a of anotados) {
+                    console.log("parte7");
+                    // 7) Enviar emails
+                    // DEBUG
+                    if (motivo === "rehabilitadas") {
+                        await mailer.restoredClass(a.mail, a.nombre, sc.fechaEspecifica, actividad);
+
+                    }
+                    else await mailer.cancelledClass(a.mail, a.nombre, sc.fechaEspecifica, actividad);
+                    cantEmailsEnviados++;
+                }
+            }
+        }
+    }
+
+    const clasesMsg = (cantClasesAfectadas > 0)
+        ? `. ${cantClasesAfectadas} clases fueron ${motivo} por este suceso`
+        : '';
+    const emailsMsg = (cantEmailsEnviados > 0)
+        ? `. ${cantEmailsEnviados} emails fueron enviados`
+        : '';
+    const resultMsg = "Se actualizó el estado de la sala" + clasesMsg + emailsMsg + ".";
+    return resultMsg;
+}
 
 
+export async function habilitarSala(req, res) {
+    try {        
+        const sala = req.body;
+        const query = { _id: sala._id };
+        const datos = {
+            _id: sala._id,
+            estado: "habilitada",
+            motivoEstado: "Habilitada vía sistema de gestión",
+            fechaEstado: Date.now(),
+        }
+        const result = await salaDao.updateOne(query, datos);
 
+        if (!result) {
+            return res.json({
+                success: false,
+                message: "Error al inhabilitar la sala. No se encontró la sala en el sistema."
+            });
+        }
+        
+        const resultMsg = await notificarClientesPorSala(sala, "rehabilitadas");
 
-
-
-
+        res.json({
+            success: true,
+            message: resultMsg
+        });
+    }
+    catch(error) {
+        console.error("HabilitarSala ERROR: ", error);
+        res.json({
+            success: false,
+            message: "Error al habilitar sala. Inténtelo de nuevo más tarde."
+        });
+    }
+}
 
 
 
@@ -982,19 +1201,23 @@ export async function updateClass(req, res){
     }
 }
 
-//REVISAR QUE NO HAYA NADIE INSCRIPTO
+// TODO: Borrado lógico
+// REVISAR QUE NO HAYA NADIE INSCRIPTO
 export async function deleteClass(req, res){
     try {
-        const borrar = await claseEspecificaDao.readMany({idClaseGeneral: req.body.id})
-        for(b of borrar){
-            if(b.anotado.length > 0){
-                    return res.json({
+        const borrar = await claseEspecificaDao.readMany({ idClaseGeneral: req.body.id });
+        for (b of borrar) {
+            if (b.anotado.length > 0) {
+                const noSePuedeFin = "Si quiere cancelar una (aca habria que explicar como inhabilitar una clase, pero no lo explico porque no se como lo va a hacer lean todavia)";
+                return res.json({
                     success: false,
-                    message: "Error al eliminar clase, hay gente anotada en alguna clase especifica. Si quiere cancelar una (aca habria que explicar como inhabilitar una clase, pero no lo explico porque no se como lo va a hacer lean todavia)"
+                    message: "Error al eliminar clase, hay gente anotada en alguna clase especifica.",
                 })
             }
         }
-        await claseGeneralDao.deleteOne({_id: req.body.id})
+
+        await claseGeneralDao.deleteOne({ _id: req.body.id });
+
         res.json({
             success: true,
             messag: "¡Eliminación de clase realizada con éxito!"
